@@ -94,7 +94,7 @@ This release is compatible with NumPy 2.5.
 * Fixed `astype` casting an out-of-range floating point value to a signed narrow integer type saturating to the destination min/max instead of wrapping like NumPy, generalizing the earlier unsigned-only fix [#3033](https://github.com/IntelPython/dpnp/pull/3033)
 * Fixed `dpnp.insert` silently ignoring out-of-bounds negative indices in a multi-element `obj`, so a mix of in-bounds and out-of-bounds indices now consistently raises `IndexError` [#3041](https://github.com/IntelPython/dpnp/pull/3041)
 * Fixed a per-call `sycl::queue` leak in `usm_ndarray::get_queue()`/`get_device()` [#3042](https://github.com/IntelPython/dpnp/pull/3042)
-* Fixed `dpnp.nonzero`, `dpnp.where`, `dpnp.extract`, `dpnp.place` and `dpnp.repeat` returning wrong results for a boolean array whose bytes are not `0x00`/`0x01`, e.g. a `view` of integer data [#3053](https://github.com/IntelPython/dpnp/pull/3053)
+* Fixed operations on a boolean array whose bytes are not `0x00`/`0x01`, e.g. a `view` of integer data, which returned wrong results or produced such bytes themselves. Affected comparison, logical, bitwise and arithmetic functions, `dpnp.max`/`dpnp.min`, `dpnp.argmax`/`dpnp.argmin`, `dpnp.sort`/`dpnp.argsort`, `dpnp.unique`, `dpnp.isin`, `dpnp.nonzero`, `dpnp.where`, `dpnp.extract`, `dpnp.place` and `dpnp.repeat` [#3053](https://github.com/IntelPython/dpnp/pull/3053)
 
 ### Security
 

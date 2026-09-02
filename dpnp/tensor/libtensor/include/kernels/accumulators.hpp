@@ -1311,8 +1311,8 @@ struct Cumsum1DContigFactory
             using cumsumT = std::int64_t;
             // CastTransformer, not NoOpTransformer: an implicit bool
             // conversion would read the raw byte, see gh-2121
-            fnT fn = cumsum_val_contig_impl<T, cumsumT,
-                                            CastTransformer<T, cumsumT>>;
+            fnT fn =
+                cumsum_val_contig_impl<T, cumsumT, CastTransformer<T, cumsumT>>;
             return fn;
         }
         else {

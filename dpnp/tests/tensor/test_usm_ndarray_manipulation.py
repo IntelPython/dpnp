@@ -34,6 +34,7 @@ import pytest
 from numpy.testing import assert_, assert_array_equal, assert_raises_regex
 
 import dpnp.tensor as dpt
+import dpnp.tensor._tensor_impl as ti
 from dpnp.tensor._numpy_helper import AxisError
 
 from .helper import get_queue_or_skip
@@ -1422,6 +1423,12 @@ def test_repeat_nonstandard_bool_bytes():
 
     res = dpt.repeat(x, reps)
     assert_array_equal(dpt.asnumpy(res), np.array([1, 2, 3, 5], dtype="i4"))
+
+    # `repeat` casts a non-int64 `reps` first, so drive the scan directly too
+    cumsum = dpt.empty(reps.size, dtype="i8")
+    total = ti._cumsum_1d(reps, cumsum, sycl_queue=reps.sycl_queue)
+    assert total == 4
+    assert_array_equal(dpt.asnumpy(cumsum), np.array([0, 1, 2, 3, 3, 4]))
 
 
 def test_repeat_size1_repeats():

@@ -46,6 +46,7 @@
 #include "utils/offset_utils.hpp"
 #include "utils/sycl_alloc_utils.hpp"
 #include "utils/sycl_utils.hpp"
+#include "utils/type_utils.hpp"
 
 #include "kernels/alignment.hpp"
 #include "kernels/dpnp_tensor_types.hpp"
@@ -59,6 +60,7 @@ using dpnp::tensor::kernels::alignment_utils::required_alignment;
 
 using dpnp::tensor::sycl_utils::sub_group_load;
 using dpnp::tensor::sycl_utils::sub_group_store;
+using dpnp::tensor::type_utils::normalize_bool;
 
 /*! @brief Functor for unary function evaluation on contiguous array */
 template <typename argT,
@@ -117,10 +119,12 @@ public:
                 }
             }
         }
+        // bool is excluded from the vector path: a byte other than 0x00/0x01
+        // cannot be normalized element-wise there, see gh-2121
         else if constexpr (enable_sg_loadstore &&
                            UnaryOperatorT::supports_sg_loadstore::value &&
                            UnaryOperatorT::supports_vec::value &&
-                           (vec_sz > 1)) {
+                           !std::is_same_v<argT, bool> && (vec_sz > 1)) {
             auto sg = ndit.get_sub_group();
             const std::uint16_t sgSize = sg.get_max_local_range()[0];
 
@@ -148,7 +152,7 @@ public:
                 const std::size_t lane_id = sg.get_local_id()[0];
                 for (std::size_t k = base + lane_id; k < nelems_; k += sgSize) {
                     // scalar call
-                    out[k] = op(in[k]);
+                    out[k] = op(normalize_bool(in[k]));
                 }
             }
         }
@@ -178,7 +182,7 @@ public:
                         sub_group_load<vec_sz>(sg, in_multi_ptr);
 #pragma unroll
                     for (std::uint32_t k = 0; k < vec_sz; ++k) {
-                        arg_vec[k] = op(arg_vec[k]);
+                        arg_vec[k] = op(normalize_bool(arg_vec[k]));
                     }
                     sub_group_store<vec_sz>(sg, arg_vec, out_multi_ptr);
                 }
@@ -186,7 +190,7 @@ public:
             else {
                 const std::size_t lane_id = sg.get_local_id()[0];
                 for (std::size_t k = base + lane_id; k < nelems_; k += sgSize) {
-                    out[k] = op(in[k]);
+                    out[k] = op(normalize_bool(in[k]));
                 }
             }
         }
@@ -216,7 +220,7 @@ public:
                     sycl::vec<resT, vec_sz> res_vec;
 #pragma unroll
                     for (std::uint8_t k = 0; k < vec_sz; ++k) {
-                        res_vec[k] = op(arg_vec[k]);
+                        res_vec[k] = op(normalize_bool(arg_vec[k]));
                     }
                     sub_group_store<vec_sz>(sg, res_vec, out_multi_ptr);
                 }
@@ -224,7 +228,7 @@ public:
             else {
                 const std::size_t lane_id = sg.get_local_id()[0];
                 for (std::size_t k = base + lane_id; k < nelems_; k += sgSize) {
-                    out[k] = op(in[k]);
+                    out[k] = op(normalize_bool(in[k]));
                 }
             }
         }
@@ -238,7 +242,7 @@ public:
                 (gid / sgSize) * (elems_per_sg - sgSize) + gid;
             const std::size_t end = std::min(nelems_, start + elems_per_sg);
             for (std::size_t offset = start; offset < end; offset += sgSize) {
-                out[offset] = op(in[offset]);
+                out[offset] = op(normalize_bool(in[offset]));
             }
         }
     }
@@ -268,7 +272,7 @@ public:
 
         UnaryOpT op{};
 
-        res_[res_offset] = op(inp_[inp_offset]);
+        res_[res_offset] = op(normalize_bool(inp_[inp_offset]));
     }
 };
 
@@ -419,9 +423,13 @@ public:
         /* Each work-item processes vec_sz elements, contiguous in memory */
         /* NOTE: work-group size must be divisible by sub-group size */
 
+        // bool is excluded from the vector path: a byte other than 0x00/0x01
+        // cannot be normalized element-wise there, see gh-2121
         if constexpr (enable_sg_loadstore &&
                       BinaryOperatorT::supports_sg_loadstore::value &&
-                      BinaryOperatorT::supports_vec::value && (vec_sz > 1)) {
+                      BinaryOperatorT::supports_vec::value &&
+                      !std::is_same_v<argT1, bool> &&
+                      !std::is_same_v<argT2, bool> && (vec_sz > 1)) {
             auto sg = ndit.get_sub_group();
             std::uint16_t sgSize = sg.get_max_local_range()[0];
 
@@ -456,7 +464,7 @@ public:
             else {
                 const std::size_t lane_id = sg.get_local_id()[0];
                 for (std::size_t k = base + lane_id; k < nelems_; k += sgSize) {
-                    out[k] = op(in1[k], in2[k]);
+                    out[k] = op(normalize_bool(in1[k]), normalize_bool(in2[k]));
                 }
             }
         }
@@ -491,8 +499,8 @@ public:
                     sycl::vec<resT, vec_sz> res_vec;
 #pragma unroll
                     for (std::uint8_t vec_id = 0; vec_id < vec_sz; ++vec_id) {
-                        res_vec[vec_id] =
-                            op(arg1_vec[vec_id], arg2_vec[vec_id]);
+                        res_vec[vec_id] = op(normalize_bool(arg1_vec[vec_id]),
+                                             normalize_bool(arg2_vec[vec_id]));
                     }
                     sub_group_store<vec_sz>(sg, res_vec, out_multi_ptr);
                 }
@@ -500,7 +508,7 @@ public:
             else {
                 const std::size_t lane_id = sg.get_local_id()[0];
                 for (std::size_t k = base + lane_id; k < nelems_; k += sgSize) {
-                    out[k] = op(in1[k], in2[k]);
+                    out[k] = op(normalize_bool(in1[k]), normalize_bool(in2[k]));
                 }
             }
         }
@@ -514,7 +522,8 @@ public:
                 (gid / sgSize) * (elems_per_sg - sgSize) + gid;
             const std::size_t end = std::min(nelems_, start + elems_per_sg);
             for (std::size_t offset = start; offset < end; offset += sgSize) {
-                out[offset] = op(in1[offset], in2[offset]);
+                out[offset] = op(normalize_bool(in1[offset]),
+                                 normalize_bool(in2[offset]));
             }
         }
     }
@@ -553,7 +562,8 @@ public:
         const auto &out_offset = three_offsets_.get_third_offset();
 
         BinaryOperatorT op{};
-        out[out_offset] = op(in1[inp1_offset], in2[inp2_offset]);
+        out[out_offset] = op(normalize_bool(in1[inp1_offset]),
+                             normalize_bool(in2[inp2_offset]));
     }
 };
 
@@ -610,14 +620,15 @@ public:
             const argT1 mat_el = sub_group_load(sg, in1_multi_ptr);
             const argT2 vec_el = sub_group_load(sg, in2_multi_ptr);
 
-            resT res_el = op(mat_el, vec_el);
+            resT res_el = op(normalize_bool(mat_el), normalize_bool(vec_el));
 
             sub_group_store(sg, res_el, out_multi_ptr);
         }
         else {
             const std::size_t lane_id = sg.get_local_id()[0];
             for (std::size_t k = base + lane_id; k < n_elems; k += sgSize) {
-                res[k] = op(mat[k], padded_vec[k % n1]);
+                res[k] = op(normalize_bool(mat[k]),
+                            normalize_bool(padded_vec[k % n1]));
             }
         }
     }
@@ -675,14 +686,15 @@ public:
             const argT2 mat_el = sub_group_load(sg, in2_multi_ptr);
             const argT1 vec_el = sub_group_load(sg, in1_multi_ptr);
 
-            resT res_el = op(vec_el, mat_el);
+            resT res_el = op(normalize_bool(vec_el), normalize_bool(mat_el));
 
             sub_group_store(sg, res_el, out_multi_ptr);
         }
         else {
             const std::size_t lane_id = sg.get_local_id()[0];
             for (std::size_t k = base + lane_id; k < n_elems; k += sgSize) {
-                res[k] = op(padded_vec[k % n1], mat[k]);
+                res[k] = op(normalize_bool(padded_vec[k % n1]),
+                            normalize_bool(mat[k]));
             }
         }
     }

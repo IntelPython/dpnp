@@ -50,6 +50,7 @@
 #include "kernels/dpnp_tensor_types.hpp"
 #include "kernels/sorting/sort_utils.hpp"
 #include "utils/sycl_alloc_utils.hpp"
+#include "utils/type_utils.hpp"
 
 namespace dpnp::tensor::kernels
 {
@@ -1785,7 +1786,13 @@ struct IndexedProj
     {
     }
 
-    auto operator()(IndexT i) const { return value_projector(ptr[i]); }
+    auto operator()(IndexT i) const
+    {
+        // normalize the value read from memory: for bool a byte other than
+        // 0x00/0x01 would otherwise order by its raw value, see gh-2121
+        return value_projector(
+            dpnp::tensor::type_utils::normalize_bool(ptr[i]));
+    }
 
 private:
     const ValueT *ptr;
