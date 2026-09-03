@@ -68,7 +68,7 @@ T normalize_bool(const T &v)
     if constexpr (std::is_same_v<T, bool>) {
         // read the storage as a byte: a bool copy would let the compiler
         // assume a 0/1 value and fold this away
-        const std::uint8_t u = *reinterpret_cast<const std::uint8_t *>(&v);
+        const std::uint8_t u = sycl::bit_cast<std::uint8_t>(v);
         return u != std::uint8_t{0};
     }
     else {

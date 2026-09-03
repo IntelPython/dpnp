@@ -152,7 +152,7 @@ public:
                 const std::size_t lane_id = sg.get_local_id()[0];
                 for (std::size_t k = base + lane_id; k < nelems_; k += sgSize) {
                     // scalar call
-                    out[k] = op(normalize_bool(in[k]));
+                    out[k] = op(in[k]);
                 }
             }
         }
@@ -464,7 +464,7 @@ public:
             else {
                 const std::size_t lane_id = sg.get_local_id()[0];
                 for (std::size_t k = base + lane_id; k < nelems_; k += sgSize) {
-                    out[k] = op(normalize_bool(in1[k]), normalize_bool(in2[k]));
+                    out[k] = op(in1[k], in2[k]);
                 }
             }
         }

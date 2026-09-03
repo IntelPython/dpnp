@@ -978,6 +978,8 @@ class TestNonstandardBoolBytes:
     )
     @pytest.mark.parametrize("kind", [None, "mergesort", "radixsort"])
     def test_sort_kinds_logically_ordered(self, values, kind):
+        # dpnp normalizes, so False elements sort before True ones; NumPy
+        # leaves the raw bytes in place, so only the logical order matches
         a, ia = self._views(values)
         kwargs = {} if kind is None else {"kind": kind}
 
@@ -995,15 +997,6 @@ class TestNonstandardBoolBytes:
         b, ib = self._views([1, 1, 0, 2, 0, 7])
 
         assert_array_equal(dpnp.isin(ia, ib), numpy.isin(a, b))
-
-    def test_sort_is_logically_ordered(self):
-        # dpnp normalizes, so False elements sort before True ones; NumPy
-        # leaves the raw bytes in place, so only the logical order matches
-        a, ia = self._views([0, 1, 2, 255, 3, 0])
-
-        result = dpnp.asnumpy(dpnp.sort(ia)).view(numpy.uint8) != 0
-        expected = numpy.sort(a).view(numpy.uint8) != 0
-        assert_array_equal(result, expected)
 
     def test_argsort_is_logically_ordered(self):
         raw = numpy.array([0, 1, 2, 255, 3, 0], dtype=numpy.uint8)

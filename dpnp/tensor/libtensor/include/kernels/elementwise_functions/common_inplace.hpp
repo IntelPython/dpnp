@@ -127,7 +127,7 @@ public:
             else {
                 const std::size_t lane_id = sg.get_local_id()[0];
                 for (std::size_t k = base + lane_id; k < nelems_; k += sgSize) {
-                    op(lhs[k], normalize_bool(rhs[k]));
+                    op(lhs[k], rhs[k]);
                 }
             }
         }
