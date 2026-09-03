@@ -28,63 +28,179 @@
 
 """Implementation of flatiter."""
 
+import numpy
+
 import dpnp
+import dpnp.tensor as dpt
+
+from .dpnp_array import dpnp_array
 
 
 class flatiter:
-    """Flat iterator object to iterate over arrays."""
+    """
+    Flat iterator object to iterate over arrays.
 
-    def __init__(self, X):
-        if type(X) is not dpnp.ndarray:
+    A flat iterator is returned by :obj:`dpnp.ndarray.flat` for any array. It
+    allows iterating over the array as if it were a 1-D array, either in a
+    for-loop or by calling its ``next`` method.
+
+    Iteration is done in row-major, C-style order (the last index varying the
+    fastest). The iterator can also be indexed using basic slicing or advanced
+    indexing.
+
+    For full documentation refer to :obj:`numpy.flatiter`.
+
+    See Also
+    --------
+    :obj:`dpnp.ndarray.flat` : Return a flat iterator over an array.
+    :obj:`dpnp.ndarray.flatten` : Return a flattened copy of an array.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.arange(6).reshape(2, 3)
+    >>> for item in x.flat:
+    ...     print(item)
+    0
+    1
+    2
+    3
+    4
+    5
+
+    >>> x.flat[2:4]
+    array([2, 3])
+
+    """
+
+    def __init__(self, a):
+        if not isinstance(a, dpnp_array):
             raise TypeError(
-                "Argument must be of type dpnp.ndarray, got {}".format(type(X))
+                f"An array must be of type dpnp.ndarray, but got {type(a)}"
             )
-        self.arr_ = X
-        self.size_ = X.size
-        self.i_ = 0
+        self._arr = a
+        self._size = a.size
+        self._i = 0
 
-    def _multiindex(self, i):
-        nd = self.arr_.ndim
-        if nd == 0:
-            if i == 0:
-                return ()
-            raise KeyError
-        elif nd == 1:
-            return (i,)
-        sh = self.arr_.shape
-        i_ = i
-        multi_index = [0] * nd
-        for k in reversed(range(1, nd)):
-            si = sh[k]
-            q = i_ // si
-            multi_index[k] = i_ - q * si
-            i_ = q
-        multi_index[0] = i_
-        return tuple(multi_index)
+    def _validate_key(self, key):
+        # Ellipsis/slice/tuple need no validation here
+        if key is Ellipsis or isinstance(key, (slice, tuple)):
+            return
+
+        # a genuine scalar int (not bool): regular indexing checks it
+        if not isinstance(key, bool) and (
+            isinstance(key, int)
+            or (
+                callable(getattr(key, "__index__", None))
+                and not hasattr(key, "ndim")
+            )
+        ):
+            return
+
+        if isinstance(key, dpnp_array):
+            idx = key
+        elif isinstance(key, dpt.usm_ndarray):
+            idx = dpnp_array._create_from_usm_ndarray(key)
+        else:
+            try:
+                idx = numpy.asarray(key)
+            except (TypeError, ValueError):
+                return  # let regular indexing raise
+
+        if dpnp.issubdtype(idx.dtype, dpnp.bool):
+            # only a boolean ndarray mask is valid; reject bool scalars/lists
+            if idx.ndim > 0 and not isinstance(key, (bool, list, tuple)):
+                return
+            raise IndexError("boolean indices for iterators are not supported")
+
+        if not dpnp.issubdtype(idx.dtype, dpnp.integer) or idx.size == 0:
+            return
+
+        # fancy int indices wrap instead of raising, so bounds-check
+        size = self._size
+        hi, lo = int(idx.max()), int(idx.min())
+        if hi >= size:
+            raise IndexError(f"index {hi} is out of bounds for size {size}")
+        if lo < -size:
+            raise IndexError(f"index {lo} is out of bounds for size {size}")
+
+    def _normalize_key(self, key):
+        # 1-D iterator: unwrap a 1-elem tuple; reject None and longer tuples
+        if isinstance(key, tuple) and len(key) == 1:
+            key = key[0]
+        if key is None or (isinstance(key, tuple) and len(key) > 1):
+            raise IndexError(
+                "only integers, slices (`:`), ellipsis (`...`) and integer "
+                "or boolean arrays are valid indices"
+            )
+        self._validate_key(key)
+        return key
 
     def __getitem__(self, key):
-        idx = getattr(key, "__index__", None)
-        if not callable(idx):
-            raise TypeError(key)
-        i = idx()
-        mi = self._multiindex(i)
-        return self.arr_.__getitem__(mi)
+        key = self._normalize_key(key)
+
+        # flat always yields a copy, never a view
+        return dpnp.reshape(self._arr, -1)[key].copy()
 
     def __setitem__(self, key, val):
-        idx = getattr(key, "__index__", None)
-        if not callable(idx):
-            raise TypeError(key)
-        i = idx()
-        mi = self._multiindex(i)
-        return self.arr_.__setitem__(mi, val)
+        key = self._normalize_key(key)
+
+        if isinstance(key, tuple) and len(key) == 0:
+            # NumPy rejects arr.flat[()] = val
+            raise IndexError(
+                "Assigning to a flat iterator with a 0-D index is not "
+                "supported"
+            )
+
+        a = self._arr
+        exec_q = a.sycl_queue
+        usm_type = a.usm_type
+
+        # resolve key to flat positions
+        if isinstance(key, int) and not isinstance(key, bool):
+            # fast path for a scalar index: avoid building a full index array
+            pos = key + a.size if key < 0 else key
+            if not 0 <= pos < a.size:
+                raise IndexError(
+                    f"index {key} is out of bounds for size {a.size}"
+                )
+            idx = dpnp.asarray(pos, sycl_queue=exec_q, usm_type=usm_type)
+        elif isinstance(key, slice):
+            # slice fast path: build only the selected positions
+            start, stop, step = key.indices(a.size)
+            idx = dpnp.arange(
+                start, stop, step, sycl_queue=exec_q, usm_type=usm_type
+            )
+        else:
+            flat_index = dpnp.arange(
+                a.size, sycl_queue=exec_q, usm_type=usm_type
+            )
+            idx = flat_index[key]
+
+        if not dpnp.isscalar(val):
+            val = dpnp.asarray(val, sycl_queue=exec_q, usm_type=usm_type)
+            if idx.ndim == 0 and val.ndim != 0:
+                # a scalar index targets a single item, reject an array value
+                raise ValueError("Error setting single item of array.")
+
+            val = val.ravel()
+            n = idx.size
+            if 0 < val.size != n:
+                # cycles the values over the selection
+                val = val[
+                    dpnp.arange(n, sycl_queue=exec_q, usm_type=usm_type)
+                    % val.size
+                ]
+
+        dpnp.put(a, idx, val)
 
     def __iter__(self):
         return self
 
     def __next__(self):
-        if self.i_ < self.size_:
-            val = self.__getitem__(self.i_)
-            self.i_ = self.i_ + 1
+        if self._i < self._size:
+            val = self.__getitem__(self._i)
+            self._i = self._i + 1
             return val
         else:
             raise StopIteration
