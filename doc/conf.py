@@ -8,8 +8,10 @@
 from datetime import datetime
 from urllib.parse import urljoin
 
+from jinja2.sandbox import SandboxedEnvironment
+from numpydoc.docscrape import NumpyDocString
+from numpydoc.docscrape_sphinx import SphinxDocString
 from sphinx.ext.autodoc import FunctionDocumenter
-from sphinx.ext.napoleon import NumpyDocstring, docstring
 
 from dpnp.dpnp_algo.dpnp_elementwise_common import (
     DPNPBinaryFunc,
@@ -64,7 +66,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.githubpages",
     "sphinx.ext.intersphinx",
-    "sphinx.ext.napoleon",
+    "numpydoc",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx_copybutton",
@@ -238,66 +240,64 @@ intersphinx_mapping = {
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
 
-# Napoleon settings
-napoleon_use_ivar = True
-napoleon_include_special_with_doc = True
-napoleon_custom_sections = ["limitations"]
+# Members come from autosummary; don't let numpydoc duplicate them
+numpydoc_show_class_members = False
+
+# Keep the dpnp-only "Limitations" section (numpydoc drops unknown sections):
+# register it and give it a slot in the template below
+NumpyDocString.sections.setdefault("Limitations", [])
+
+_NUMPYDOC_TEMPLATE = """\
+{{index}}
+{{summary}}
+{{extended_summary}}
+{{parameters}}
+{{attributes}}
+{{methods}}
+{{returns}}
+{{yields}}
+{{receives}}
+{{other_parameters}}
+{{raises}}
+{{warns}}
+{{warnings}}
+{{limitations}}
+{{see_also}}
+{{notes}}
+{{references}}
+{{examples}}
+"""
+
+_orig_load_config = SphinxDocString.load_config
 
 
-# Napoleon extension can't properly render "Returns" section in case of
-# namedtuple as a return type. That patch proposes to extend the parse logic
-# which allows text in a header of "Returns" section.
-def _parse_returns_section_patched(self, section: str) -> list[str]:
-    fields = self._consume_returns_section()
-    multi = len(fields) > 1
-    use_rtype = False if multi else self._config.napoleon_use_rtype
-    lines: list[str] = []
-    header: list[str] = []
-    is_logged_header = False
-
-    for _name, _type, _desc in fields:
-        # self._consume_returns_section() stores the header block
-        # into `_type` argument, while `_name` has to be empty string and
-        # `_desc` has to be empty list of strings
-        if _name == "" and (not _desc or len(_desc) == 1 and _desc[0] == ""):
-            if not is_logged_header:
-                docstring.logger.info(
-                    "parse a header block of 'Returns' section",
-                    location=self._get_location(),
-                )
-                is_logged_header = True
-
-            # build a list with lines of the header block
-            header.extend([_type])
-            continue
-
-        if use_rtype:
-            field = self._format_field(_name, "", _desc)
-        else:
-            field = self._format_field(_name, _type, _desc)
-
-        if multi:
-            if lines:
-                lines.extend(self._format_block("          * ", field))
-            else:
-                if header:
-                    # add the header block + the 1st parameter stored in `field`
-                    lines.extend([":returns:", ""])
-                    lines.extend(self._format_block(" " * 4, header))
-                    lines.extend(self._format_block("          * ", field))
-                else:
-                    lines.extend(self._format_block(":returns: * ", field))
-        else:
-            if any(field):  # only add :returns: if there's something to say
-                lines.extend(self._format_block(":returns: ", field))
-            if _type and use_rtype:
-                lines.extend([f":rtype: {_type}", ""])
-    if lines and lines[-1]:
-        lines.append("")
-    return lines
+def _load_config_with_limitations(self, config):
+    _orig_load_config(self, config)
+    # Use our template with the "limitations" slot
+    self.template = SandboxedEnvironment().from_string(_NUMPYDOC_TEMPLATE)
 
 
-NumpyDocstring._parse_returns_section = _parse_returns_section_patched
+SphinxDocString.load_config = _load_config_with_limitations
+
+_orig_str = SphinxDocString.__str__
+
+
+def _str_with_limitations(self, indent=0, func_role="obj"):
+    # Wrap render() to fill the "limitations" slot (a rubric, like "Notes")
+    orig_render = self.template.render
+
+    def render(**ns):
+        ns["limitations"] = "\n".join(self._str_section("Limitations"))
+        return orig_render(**ns)
+
+    self.template.render = render
+    try:
+        return _orig_str(self, indent=indent, func_role=func_role)
+    finally:
+        self.template.render = orig_render
+
+
+SphinxDocString.__str__ = _str_with_limitations
 
 
 # TODO: Remove once dpnp.tensor docs are generated in dpnp
