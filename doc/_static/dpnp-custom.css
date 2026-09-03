@@ -56,15 +56,3 @@ dt.sig.sig-object .sig-param > .n,
 dt.sig.sig-object .sig-param > .n * {
     font-weight: 700 !important;
 }
-
-/* Parameter/return descriptions: indented block on new line (via custom.js) */
-dl.field-list dd .param-desc {
-    display: block;
-    padding-left: 1.5em;
-}
-
-/* Parameter lists: no bullets, keep indentation */
-dl.field-list dd ul.simple {
-    list-style: none !important;
-    padding-left: 1.2em !important;
-}
