@@ -183,7 +183,6 @@ class TestFlatiter:
         with pytest.raises(ValueError):
             _ = a.flat[[[1, 2], [3]]]
 
-    @testing.with_requires("numpy>=2.4")
     def test_flat_single_element_tuple(self):
         a = np.arange(1, 7)
         ia = dpnp.array(a)
@@ -208,7 +207,6 @@ class TestFlatiter:
         with pytest.raises(IndexError):
             a.flat[key] = 0
 
-    @testing.with_requires("numpy>=2.4")
     @pytest.mark.parametrize("xp", [dpnp, np])
     def test_flat_tuple_array_out_of_bounds(self, xp):
         a = xp.array([1, 2, 3])
