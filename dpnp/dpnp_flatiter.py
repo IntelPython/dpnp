@@ -91,11 +91,10 @@ class flatiter:
         return key
 
     @staticmethod
-    def _reject_newaxis(key):
-        # newaxis (None) is valid for array indexing but not for flat indexing
-        if key is None or (
-            isinstance(key, tuple) and any(k is None for k in key)
-        ):
+    def _reject_invalid_key(key):
+        # newaxis (None) and multi-element tuples (a flat iterator is 1-D and
+        # takes a single index) are not valid, unlike regular array indexing
+        if key is None or (isinstance(key, tuple) and len(key) > 1):
             raise IndexError(
                 "only integers, slices (`:`), ellipsis (`...`) and integer "
                 "or boolean arrays are valid indices"
@@ -138,7 +137,7 @@ class flatiter:
 
     def __getitem__(self, key):
         key = self._unwrap_tuple(key)
-        self._reject_newaxis(key)
+        self._reject_invalid_key(key)
         self._check_bounds(key)
 
         # flat always yields a copy, never a view
@@ -146,7 +145,7 @@ class flatiter:
 
     def __setitem__(self, key, val):
         key = self._unwrap_tuple(key)
-        self._reject_newaxis(key)
+        self._reject_invalid_key(key)
         self._check_bounds(key)
 
         if isinstance(key, tuple) and len(key) == 0:

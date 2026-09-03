@@ -187,6 +187,19 @@ class TestFlatiter:
         )
 
     @pytest.mark.parametrize("xp", [dpnp, np])
+    @pytest.mark.parametrize(
+        "key",
+        [(Ellipsis, 2), (2, Ellipsis), (Ellipsis, slice(1, 3)), (1, 2)],
+        ids=["ell_int", "int_ell", "ell_slice", "int_int"],
+    )
+    def test_flat_multi_element_tuple(self, xp, key):
+        a = xp.arange(6)
+        with pytest.raises(IndexError):
+            _ = a.flat[key]
+        with pytest.raises(IndexError):
+            a.flat[key] = 0
+
+    @pytest.mark.parametrize("xp", [dpnp, np])
     def test_flat_tuple_array_out_of_bounds(self, xp):
         a = xp.array([1, 2, 3])
         idx = (xp.array([5]),)
