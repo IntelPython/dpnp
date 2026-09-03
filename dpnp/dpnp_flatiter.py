@@ -82,24 +82,6 @@ class flatiter:
         self._size = a.size
         self._i = 0
 
-    @staticmethod
-    def _unwrap_tuple(key):
-        # a flat iterator is 1-D, so a single-element index tuple is equivalent
-        # to its element (e.g. `flat[(idx,)]` behaves like `flat[idx]`)
-        if isinstance(key, tuple) and len(key) == 1:
-            return key[0]
-        return key
-
-    @staticmethod
-    def _reject_invalid_key(key):
-        # newaxis (None) and multi-element tuples (a flat iterator is 1-D and
-        # takes a single index) are not valid, unlike regular array indexing
-        if key is None or (isinstance(key, tuple) and len(key) > 1):
-            raise IndexError(
-                "only integers, slices (`:`), ellipsis (`...`) and integer "
-                "or boolean arrays are valid indices"
-            )
-
     def _check_bounds(self, key):
         # fancy int indices wrap instead of raising, so check them vs NumPy
         if key is Ellipsis or isinstance(key, (slice, bool, tuple)):
@@ -131,22 +113,26 @@ class flatiter:
         if lo < -size:
             raise IndexError(f"index {lo} is out of bounds for size {size}")
 
-    def _flatten(self):
-        # C-order flat view (copy if non-contiguous)
-        return dpnp.reshape(self._arr, -1)
+    def _normalize_key(self, key):
+        # 1-D iterator: unwrap a 1-elem tuple; reject None and longer tuples
+        if isinstance(key, tuple) and len(key) == 1:
+            key = key[0]
+        if key is None or (isinstance(key, tuple) and len(key) > 1):
+            raise IndexError(
+                "only integers, slices (`:`), ellipsis (`...`) and integer "
+                "or boolean arrays are valid indices"
+            )
+        self._check_bounds(key)
+        return key
 
     def __getitem__(self, key):
-        key = self._unwrap_tuple(key)
-        self._reject_invalid_key(key)
-        self._check_bounds(key)
+        key = self._normalize_key(key)
 
         # flat always yields a copy, never a view
-        return self._flatten()[key].copy()
+        return dpnp.reshape(self._arr, -1)[key].copy()
 
     def __setitem__(self, key, val):
-        key = self._unwrap_tuple(key)
-        self._reject_invalid_key(key)
-        self._check_bounds(key)
+        key = self._normalize_key(key)
 
         if isinstance(key, tuple) and len(key) == 0:
             # NumPy rejects arr.flat[()] = val
