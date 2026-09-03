@@ -82,16 +82,20 @@ class flatiter:
         self._size = a.size
         self._i = 0
 
-    def _check_bounds(self, key):
-        # fancy int indices wrap instead of raising, so check them vs NumPy
-        if key is Ellipsis or isinstance(key, (slice, bool, tuple)):
+    def _validate_key(self, key):
+        # Ellipsis/slice/tuple need no validation here
+        if key is Ellipsis or isinstance(key, (slice, tuple)):
             return
 
-        if isinstance(key, int) or (
-            callable(getattr(key, "__index__", None))
-            and not hasattr(key, "ndim")
+        # a genuine scalar int (not bool): regular indexing checks it
+        if not isinstance(key, bool) and (
+            isinstance(key, int)
+            or (
+                callable(getattr(key, "__index__", None))
+                and not hasattr(key, "ndim")
+            )
         ):
-            return  # scalar int: regular indexing checks it
+            return
 
         if isinstance(key, dpnp_array):
             idx = key
@@ -103,9 +107,16 @@ class flatiter:
             except (TypeError, ValueError):
                 return  # let regular indexing raise
 
+        if dpnp.issubdtype(idx.dtype, dpnp.bool):
+            # only a boolean ndarray mask is valid; reject bool scalars/lists
+            if idx.ndim > 0 and not isinstance(key, (bool, list, tuple)):
+                return
+            raise IndexError("boolean indices for iterators are not supported")
+
         if not dpnp.issubdtype(idx.dtype, dpnp.integer) or idx.size == 0:
             return
 
+        # fancy int indices wrap instead of raising, so bounds-check
         size = self._size
         hi, lo = int(idx.max()), int(idx.min())
         if hi >= size:
@@ -122,7 +133,7 @@ class flatiter:
                 "only integers, slices (`:`), ellipsis (`...`) and integer "
                 "or boolean arrays are valid indices"
             )
-        self._check_bounds(key)
+        self._validate_key(key)
         return key
 
     def __getitem__(self, key):
@@ -145,7 +156,7 @@ class flatiter:
         exec_q = a.sycl_queue
         usm_type = a.usm_type
 
-        # resolve key to flat positions, reusing regular indexing to validate
+        # resolve key to flat positions
         if isinstance(key, int) and not isinstance(key, bool):
             # fast path for a scalar index: avoid building a full index array
             pos = key + a.size if key < 0 else key

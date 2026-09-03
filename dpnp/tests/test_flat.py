@@ -227,6 +227,26 @@ class TestFlatiter:
         ia.flat[dpnp.array(mask)] = -1
         assert_array_equal(ia, a)
 
+    @testing.with_requires("numpy>=2.4")
+    @pytest.mark.parametrize("xp", [dpnp, np])
+    def test_flat_boolean_list_index(self, xp):
+        a = xp.arange(6)
+        mask = [True, False, True, False, True, False]
+        with pytest.raises(IndexError):
+            _ = a.flat[mask]
+        with pytest.raises(IndexError):
+            a.flat[mask] = 0
+
+    @pytest.mark.parametrize("index", [True, False])
+    def test_flat_boolean_scalar_index(self, index):
+        a = dpnp.arange(6)
+        with pytest.raises(IndexError):
+            _ = a.flat[index]
+        with pytest.raises(IndexError):
+            a.flat[index] = 9
+        with pytest.raises(IndexError):
+            _ = a.flat[dpnp.array(index)]
+
     def test_flat_non_contiguous(self):
         # C-order traversal + write-back for non-contiguous arrays
         a = np.arange(1, 7).reshape(2, 3).T

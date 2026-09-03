@@ -130,7 +130,7 @@ class TestFlatiterSubscript(unittest.TestCase):
     # the indices below are valid for flat iterators since NumPy 2.4
     # (numpy-gh-28590) and no longer raise an IndexError:
     # {"shape": (2, 3, 4), "index": (0,)},
-    # {"shape": (2, 3, 4), "index": True},
+    {"shape": (2, 3, 4), "index": True},
     # {"shape": (2, 3, 4), "index": cupy.array([0])},
     # {"shape": (2, 3, 4), "index": [0]},
 )
