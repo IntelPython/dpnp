@@ -26,7 +26,9 @@ class TestFlatiter:
     def test_flat_iteration(self):
         a = np.array([[1, 2], [3, 4]])
         ia = dpnp.array(a)
-        for ival, val in zip(ia.flat, a.flat):
+        result = list(ia.flat)
+        assert len(result) == a.size
+        for ival, val in zip(result, a.flat):
             assert ival == val
 
     def test_init_error(self):
@@ -181,6 +183,7 @@ class TestFlatiter:
         with pytest.raises(ValueError):
             _ = a.flat[[[1, 2], [3]]]
 
+    @testing.with_requires("numpy>=2.4")
     def test_flat_single_element_tuple(self):
         a = np.arange(1, 7)
         ia = dpnp.array(a)
@@ -205,6 +208,7 @@ class TestFlatiter:
         with pytest.raises(IndexError):
             a.flat[key] = 0
 
+    @testing.with_requires("numpy>=2.4")
     @pytest.mark.parametrize("xp", [dpnp, np])
     def test_flat_tuple_array_out_of_bounds(self, xp):
         a = xp.array([1, 2, 3])
