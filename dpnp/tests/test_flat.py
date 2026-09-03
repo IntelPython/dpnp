@@ -117,6 +117,7 @@ class TestFlatiter:
         with pytest.raises(IndexError, match="out of bounds"):
             a.flat[index] = 0
 
+    @testing.with_requires("numpy>=2.4")
     @pytest.mark.parametrize("xp", [dpnp, np])
     def test_flat_setitem_single_item_array_value(self, xp):
         for index in (0, xp.array(0), np.int64(0)):
@@ -185,7 +186,6 @@ class TestFlatiter:
         with pytest.raises(IndexError, match="out of bounds"):
             a.flat[idx] = 0
 
-    @testing.with_requires("numpy>=2.4")
     def test_flat_bool_mask(self):
         a = np.arange(1, 7).reshape(2, 3)
         ia = dpnp.array(a)
@@ -242,7 +242,6 @@ class TestFlatiter:
         with pytest.raises(IndexError, match="0-D index is not supported"):
             a.flat[()] = 0
 
-    @testing.with_requires("numpy>=2.4")
     @pytest.mark.parametrize("xp", [dpnp, np])
     @pytest.mark.parametrize("key", [[100], [-100]], ids=["oob", "neg_oob"])
     def test_flat_array_out_of_bounds(self, xp, key):
