@@ -118,7 +118,7 @@ class flatiter:
         else:
             try:
                 idx = numpy.asarray(key)
-            except Exception:
+            except (TypeError, ValueError):
                 return  # let regular indexing raise
 
         if not dpnp.issubdtype(idx.dtype, dpnp.integer) or idx.size == 0:

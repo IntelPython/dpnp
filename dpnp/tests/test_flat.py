@@ -175,6 +175,12 @@ class TestFlatiter:
         a = xp.arange(1, 7)
         assert_array_equal(a.flat[xp.array([], dtype=xp.intp)], a.flat[[]])
 
+    @pytest.mark.parametrize("xp", [dpnp, np])
+    def test_flat_ragged_index(self, xp):
+        a = xp.arange(6)
+        with pytest.raises(ValueError):
+            _ = a.flat[[[1, 2], [3]]]
+
     def test_flat_single_element_tuple(self):
         a = np.arange(1, 7)
         ia = dpnp.array(a)
