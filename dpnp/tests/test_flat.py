@@ -63,11 +63,20 @@ class TestFlatiter:
             slice(1, 4),
             slice(None),
             slice(None, None, 2),
+            slice(None, None, -1),
             [0, 2, 4],
             [-1, -2],
             Ellipsis,
         ],
-        ids=["slice", "full_slice", "step_slice", "list", "neg_list", "..."],
+        ids=[
+            "slice",
+            "full_slice",
+            "step_slice",
+            "neg_step_slice",
+            "list",
+            "neg_list",
+            "...",
+        ],
     )
     def test_flat_getitem_index_types(self, key):
         a = np.arange(1, 7).reshape(2, 3)
