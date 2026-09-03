@@ -74,7 +74,7 @@ class flatiter:
     """
 
     def __init__(self, a):
-        if not isinstance(a, dpnp.ndarray):
+        if not isinstance(a, dpnp_array):
             raise TypeError(
                 f"An array must be of type dpnp.ndarray, but got {type(a)}"
             )
