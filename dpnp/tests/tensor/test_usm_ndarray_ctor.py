@@ -39,27 +39,11 @@ from numpy.testing import assert_raises_regex
 import dpnp.tensor as dpt
 from dpnp.tensor import Device
 
+from .elementwise.utils import _all_dtypes, _integral_dtypes, _real_fp_dtypes
 from .helper import (
     get_queue_or_skip,
     skip_if_dtype_not_supported,
 )
-
-_all_dtypes = [
-    "b1",
-    "i1",
-    "u1",
-    "i2",
-    "u2",
-    "i4",
-    "u4",
-    "i8",
-    "u8",
-    "f2",
-    "f4",
-    "f8",
-    "c8",
-    "c16",
-]
 
 
 @pytest.mark.parametrize(
@@ -1039,6 +1023,22 @@ def test_astype_gh_2882():
     assert dpt.all(r == expected)
 
 
+@pytest.mark.usefixtures("suppress_overflow_encountered_in_cast_numpy_warnings")
+@pytest.mark.parametrize("dst_dtype", _integral_dtypes)
+@pytest.mark.parametrize("src_dtype", _real_fp_dtypes)
+def test_astype_out_of_range_float_to_int(src_dtype, dst_dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(src_dtype, q)
+
+    values = [0, 1, -1, 127, 128, -129, 255, 256, -256, 300, 60000, -60000]
+    x_np = np.asarray(values, dtype=src_dtype)
+    x = dpt.asarray(x_np, sycl_queue=q)
+
+    expected = x_np.astype(dst_dtype)
+    res = dpt.astype(x, dst_dtype)
+    assert dpt.all(res == dpt.asarray(expected, sycl_queue=q))
+
+
 def test_copy():
     try:
         X = dpt.usm_ndarray((5, 5), "i4")[2:4, 1:4]
@@ -1350,7 +1350,7 @@ def test_full_dtype_inference():
     assert np.issubdtype(dpt.full(10, 0.3 - 2j, dtype=rdt).dtype, np.floating)
 
 
-@pytest.mark.parametrize("dt", ["f2", "f4", "f8"])
+@pytest.mark.parametrize("dt", _real_fp_dtypes)
 def test_full_special_fp(dt):
     """See gh-1314"""
     q = get_queue_or_skip()
@@ -1434,7 +1434,7 @@ def test_full_strides():
     assert np.array_equal(dpt.asnumpy(X), Xnp)
 
 
-@pytest.mark.parametrize("dt", ["i1", "u1", "i2", "u2", "i4", "u4", "i8", "u8"])
+@pytest.mark.parametrize("dt", _integral_dtypes)
 def test_full_gh_1230(dt):
     get_queue_or_skip()
     dtype = dpt.dtype(dt)
@@ -1551,7 +1551,7 @@ def test_linspace_fp():
     assert X.strides == (1,)
 
 
-@pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
+@pytest.mark.parametrize("dtype", _real_fp_dtypes)
 def test_linspace_fp_max(dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)

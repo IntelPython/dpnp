@@ -19,6 +19,8 @@ This release is compatible with NumPy 2.5.
 * Added `dpnp.tensor.broadcast_shapes` to align with the 2025.12 version of the Python array API [#3009](https://github.com/IntelPython/dpnp/pull/3009)
 * Added support for free-threaded Python builds [gh-3026](https://github.com/IntelPython/dpnp/pull/3026)
 * Added `dpnp.broadcast` class implementation [#2901](https://github.com/IntelPython/dpnp/pull/2901)
+* Added the `ndmax` keyword to `dpnp.array` for compatibility with NumPy [#3044](https://github.com/IntelPython/dpnp/pull/3044)
+* Added `UsmNDArray_RemoveQueueRef` C API function to release a queue reference obtained from `UsmNDArray_GetQueueRef` [#3042](https://github.com/IntelPython/dpnp/pull/3042)
 
 ### Changed
 
@@ -89,6 +91,9 @@ This release is compatible with NumPy 2.5.
 * Fixed `dpnp.ndarray.view` ignoring the USM element offset of a sliced array, which also caused `dpnp.einsum` to silently return wrong results for a single sliced operand with no summed index [#3037](https://github.com/IntelPython/dpnp/pull/3037)
 * Fixed `dpnp.all` and `dpnp.any` aborting when reducing over an empty axis (e.g. an array with a zero-length dimension) [#3021](https://github.com/IntelPython/dpnp/pull/3021)
 * Released the GIL before the blocking OneMKL DFT calls in the FFT extension [#3040](https://github.com/IntelPython/dpnp/pull/3040)
+* Fixed `astype` casting an out-of-range floating point value to a signed narrow integer type saturating to the destination min/max instead of wrapping like NumPy, generalizing the earlier unsigned-only fix [#3033](https://github.com/IntelPython/dpnp/pull/3033)
+* Fixed `dpnp.insert` silently ignoring out-of-bounds negative indices in a multi-element `obj`, so a mix of in-bounds and out-of-bounds indices now consistently raises `IndexError` [#3041](https://github.com/IntelPython/dpnp/pull/3041)
+* Fixed a per-call `sycl::queue` leak in `usm_ndarray::get_queue()`/`get_device()` [#3042](https://github.com/IntelPython/dpnp/pull/3042)
 * Fixed `dpnp.linspace` returning `nan` for equal infinite endpoints [#3043](https://github.com/IntelPython/dpnp/pull/3043)
 
 ### Security
