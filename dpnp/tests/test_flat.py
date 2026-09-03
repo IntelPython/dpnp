@@ -117,6 +117,32 @@ class TestFlatiter:
         with pytest.raises(IndexError, match="out of bounds"):
             a.flat[index] = 0
 
+    @pytest.mark.parametrize("xp", [dpnp, np])
+    def test_flat_setitem_single_item_array_value(self, xp):
+        for index in (0, xp.array(0), np.int64(0)):
+            a = xp.arange(1, 7)
+            with pytest.raises(ValueError, match="single item"):
+                a.flat[index] = [1, 2, 3]
+
+    def test_flat_setitem_single_item_scalar_value(self):
+        a = np.arange(1, 7)
+        ia = dpnp.array(a)
+
+        a.flat[0] = 9
+        a.flat[np.array(1)] = np.asarray(8)
+
+        ia.flat[0] = 9
+        ia.flat[dpnp.array(1)] = dpnp.asarray(8)
+        assert_array_equal(ia, a)
+
+    def test_flat_setitem_length_one_slice_cycles(self):
+        a = np.arange(1, 7)
+        ia = dpnp.array(a)
+
+        a.flat[0:1] = [10, 20, 30]
+        ia.flat[0:1] = [10, 20, 30]
+        assert_array_equal(ia, a)
+
     def test_flat_index_array(self):
         a = np.arange(1, 7).reshape(2, 3)
         ia = dpnp.array(a)

@@ -182,9 +182,12 @@ class flatiter:
             idx = flat_index[key]
 
         if not dpnp.isscalar(val):
-            val = dpnp.asarray(
-                val, sycl_queue=exec_q, usm_type=usm_type
-            ).ravel()
+            val = dpnp.asarray(val, sycl_queue=exec_q, usm_type=usm_type)
+            if idx.ndim == 0 and val.ndim != 0:
+                # a scalar index targets a single item, reject an array value
+                raise ValueError("Error setting single item of array.")
+
+            val = val.ravel()
             n = idx.size
             if 0 < val.size != n:
                 # cycles the values over the selection
