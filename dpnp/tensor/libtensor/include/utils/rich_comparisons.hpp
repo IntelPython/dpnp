@@ -40,6 +40,8 @@
 
 #include "sycl/sycl.hpp"
 
+#include "utils/type_utils.hpp"
+
 namespace dpnp::tensor::rich_comparisons
 {
 
@@ -116,6 +118,26 @@ inline constexpr bool is_fp_v =
     (std::is_same_v<T, sycl::half> || std::is_same_v<T, float> ||
      std::is_same_v<T, double>);
 
+// takes by reference: copying a bool first would let the compiler assume a
+// 0/1 byte and fold the normalization away, see gh-2121
+struct BoolLess
+{
+    bool operator()(const bool &v1, const bool &v2) const
+    {
+        using dpnp::tensor::type_utils::normalize_bool;
+        return !normalize_bool(v1) && normalize_bool(v2);
+    }
+};
+
+struct BoolGreater
+{
+    bool operator()(const bool &v1, const bool &v2) const
+    {
+        using dpnp::tensor::type_utils::normalize_bool;
+        return normalize_bool(v1) && !normalize_bool(v2);
+    }
+};
+
 } // namespace detail
 
 template <typename argTy>
@@ -124,6 +146,12 @@ struct AscendingSorter
     using type = std::conditional_t<detail::is_fp_v<argTy>,
                                     detail::ExtendedRealFPLess<argTy>,
                                     std::less<argTy>>;
+};
+
+template <>
+struct AscendingSorter<bool>
+{
+    using type = detail::BoolLess;
 };
 
 template <typename T>
@@ -138,6 +166,12 @@ struct DescendingSorter
     using type = std::conditional_t<detail::is_fp_v<argTy>,
                                     detail::ExtendedRealFPGreater<argTy>,
                                     std::greater<argTy>>;
+};
+
+template <>
+struct DescendingSorter<bool>
+{
+    using type = detail::BoolGreater;
 };
 
 template <typename T>

@@ -34,6 +34,7 @@ import pytest
 from numpy.testing import assert_, assert_array_equal, assert_raises_regex
 
 import dpnp.tensor as dpt
+import dpnp.tensor._tensor_impl as ti
 from dpnp.tensor._numpy_helper import AxisError
 
 from .helper import get_queue_or_skip
@@ -1410,6 +1411,24 @@ def test_repeat_strided_repeats():
     res = dpt.repeat(x, reps)
     assert res.shape == x.shape
     assert dpt.all(res == x)
+
+
+def test_repeat_nonstandard_bool_bytes():
+    # NumPy treats any non-zero byte of a bool as True, see gh-2121
+    get_queue_or_skip()
+
+    raw = dpt.asarray([0, 1, 2, 255, 0, 1], dtype="u1")
+    reps = dpt.usm_ndarray(raw.shape, dtype="?", buffer=raw.usm_data)
+    x = dpt.arange(reps.size, dtype="i4")
+
+    res = dpt.repeat(x, reps)
+    assert_array_equal(dpt.asnumpy(res), np.array([1, 2, 3, 5], dtype="i4"))
+
+    # `repeat` casts a non-int64 `reps` first, so drive the scan directly too
+    cumsum = dpt.empty(reps.size, dtype="i8")
+    total = ti._cumsum_1d(reps, cumsum, sycl_queue=reps.sycl_queue)
+    assert total == 4
+    assert_array_equal(dpt.asnumpy(cumsum), np.array([0, 1, 2, 3, 3, 4]))
 
 
 def test_repeat_size1_repeats():
