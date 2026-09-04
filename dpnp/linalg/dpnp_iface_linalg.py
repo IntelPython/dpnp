@@ -481,8 +481,8 @@ def eig(a):
         ``eigenvectors[:,i]`` is the eigenvector corresponding to the
         eigenvalue ``eigenvalues[i]``.
 
-    Note
-    ----
+    Notes
+    -----
     Since there is no proper OneMKL LAPACK function, DPNP will calculate
     through a fallback on NumPy call.
 
@@ -645,8 +645,8 @@ def eigvals(a):
         They are not necessarily ordered, nor are they necessarily
         real for real matrices.
 
-    Note
-    ----
+    Notes
+    -----
     Since there is no proper OneMKL LAPACK function, DPNP will calculate
     through a fallback on NumPy call.
 

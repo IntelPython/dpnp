@@ -749,7 +749,7 @@ def asarray_chkfinite(
         already an ndarray.
 
     Raises
-    -------
+    ------
     ValueError
         Raises ``ValueError`` if `a` contains NaN (Not a Number) or
         Inf (Infinity).
