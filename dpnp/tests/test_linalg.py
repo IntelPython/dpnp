@@ -1690,6 +1690,125 @@ class TestEinsum:
         assert expected[0] == result[0]
         assert expected[1] == result[1]
 
+    @pytest.mark.parametrize(
+        "subscripts, shape1, shape2",
+        [
+            ("lkz,lxpq->kxpqz", (3, 2, 2), (3, 1, 6, 6)),
+            ("lkz,lxpq->kxpqz", (4, 3, 2), (4, 2, 5, 5)),
+            ("ij,jk->ik", (4, 5), (5, 6)),
+            ("ijk,ikl->ijl", (2, 3, 4), (2, 4, 5)),
+            ("lk,lpq->kpq", (3, 2), (3, 6, 6)),
+        ],
+    )
+    def test_contraction_order_k(self, subscripts, shape1, shape2):
+        # for order="K" (the default), a contraction is materialized into a
+        # newly allocated array, so the result is c-contiguous when the
+        # operands are, matching NumPy
+        a = generate_random_numpy_array(shape1)
+        b = generate_random_numpy_array(shape2)
+        ia, ib = dpnp.array(a), dpnp.array(b)
+
+        result = dpnp.einsum(subscripts, ia, ib)
+        expected = numpy.einsum(subscripts, a, b)
+        assert result.flags.c_contiguous == expected.flags.c_contiguous
+        assert result.flags.c_contiguous
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("order", ["C", "F", "A", "K", None])
+    @pytest.mark.parametrize("order1", ["C", "F"])
+    @pytest.mark.parametrize("order2", ["C", "F"])
+    def test_contraction_order(self, order, order1, order2):
+        a = generate_random_numpy_array((4, 5), order=order1)
+        b = generate_random_numpy_array((5, 6), order=order2)
+        ia, ib = dpnp.array(a), dpnp.array(b)
+
+        result = dpnp.einsum("ij,jk->ik", ia, ib, order=order)
+        expected = numpy.einsum("ij,jk->ik", a, b, order=order)
+        assert result.flags.c_contiguous == expected.flags.c_contiguous
+        assert result.flags.f_contiguous == expected.flags.f_contiguous
+        assert_dtype_allclose(result, expected)
+
+    def test_contraction_order_a_trivial(self):
+        # an operand that is both c- and f-contiguous (here 1-D) is
+        # f_contiguous, so order="A" resolves to "F" as it does in NumPy
+        a = generate_random_numpy_array(4)
+        b = generate_random_numpy_array((4, 5, 6), order="F")
+        ia, ib = dpnp.array(a), dpnp.array(b, order="F")
+
+        result = dpnp.einsum("i,ijk->jk", ia, ib, order="A")
+        expected = numpy.einsum("i,ijk->jk", a, b, order="A")
+        assert result.flags.c_contiguous == expected.flags.c_contiguous
+        assert result.flags.f_contiguous == expected.flags.f_contiguous
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("order", ["C", "F", "A", "K", None])
+    def test_empty_operand_order(self, order):
+        # a contraction over a size-0 dimension is all zeros, and `order` is
+        # honored for it as it is for a non-empty one
+        a = numpy.ones((2, 0))
+        b = numpy.ones((0, 4))
+        ia, ib = dpnp.array(a), dpnp.array(b)
+
+        result = dpnp.einsum("ij,jk->ik", ia, ib, order=order)
+        expected = numpy.einsum("ij,jk->ik", a, b, order=order)
+        assert result.flags.c_contiguous == expected.flags.c_contiguous
+        assert result.flags.f_contiguous == expected.flags.f_contiguous
+        assert_dtype_allclose(result, expected)
+
+    def test_empty_operand_out(self):
+        # `out` is filled with zeros and returned for a size-0 contraction
+        a = numpy.ones((2, 0))
+        b = numpy.ones((0, 4))
+        ia, ib = dpnp.array(a), dpnp.array(b)
+        iout = dpnp.full((2, 4), 9.0)
+        out = numpy.full((2, 4), 9.0)
+
+        result = dpnp.einsum("ij,jk->ik", ia, ib, out=iout)
+        expected = numpy.einsum("ij,jk->ik", a, b, out=out)
+        assert result is iout
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("subscripts", ["ij->ji", "ij->ij", "ii->i"])
+    @pytest.mark.parametrize("order", ["C", "F", "A", "K", None])
+    def test_unary_view_order(self, subscripts, order):
+        # a single-operand einsum with no summed index returns a view of the
+        # operand for every value of `order`, as it does in NumPy
+        # the dtype is pinned because the strides below scale with itemsize
+        a = generate_random_numpy_array((4, 4), dtype=dpnp.default_float_type())
+        ia = dpnp.array(a)
+
+        result = dpnp.einsum(subscripts, ia, order=order)
+        expected = numpy.einsum(subscripts, a, order=order)
+        assert result.get_array()._pointer == ia.get_array()._pointer
+        assert result.strides == expected.strides
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("subscripts", ["ij->ji", "ii->i"])
+    @pytest.mark.parametrize("order", ["C", "F", "A", "K"])
+    def test_unary_view_is_writeable(self, subscripts, order):
+        # the view returned for a unary einsum without summation is writeable,
+        # so an assignment through it is visible in the operand
+        a = generate_random_numpy_array((4, 4))
+        ia = dpnp.array(a)
+
+        result = dpnp.einsum(subscripts, ia, order=order)
+        result[...] = 0
+        expected = numpy.einsum(subscripts, a, order=order)
+        expected[...] = 0
+        assert_dtype_allclose(ia, a)
+
+    @pytest.mark.parametrize("order", ["W", "w", "", "CF"])
+    def test_order_error(self, order):
+        a = dpnp.ones((3, 3))
+        # a unary einsum without summation returns a view without going
+        # through dpnp.asarray, so `order` is validated up front
+        assert_raises(ValueError, dpnp.einsum, "ii->i", a, order=order)
+        assert_raises(ValueError, dpnp.einsum, "ij,jk->ik", a, a, order=order)
+
+    def test_order_type_error(self):
+        a = dpnp.ones((3, 3))
+        assert_raises(TypeError, dpnp.einsum, "ii->i", a, order=1)
+
 
 class TestInv:
     @pytest.mark.parametrize(

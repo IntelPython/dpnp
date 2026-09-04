@@ -95,6 +95,7 @@ This release is compatible with NumPy 2.5.
 * Fixed `dpnp.insert` silently ignoring out-of-bounds negative indices in a multi-element `obj`, so a mix of in-bounds and out-of-bounds indices now consistently raises `IndexError` [#3041](https://github.com/IntelPython/dpnp/pull/3041)
 * Fixed a per-call `sycl::queue` leak in `usm_ndarray::get_queue()`/`get_device()` [#3042](https://github.com/IntelPython/dpnp/pull/3042)
 * Fixed `dpnp.linspace` returning `nan` for equal infinite endpoints [#3043](https://github.com/IntelPython/dpnp/pull/3043)
+* Fixed `dpnp.einsum` returns a result whose memory layout differs from NumPy for the default `order="K"`, and ignores `out` and `order` for a contraction over a size-0 dimension [#3058](https://github.com/IntelPython/dpnp/pull/3058)
 
 ### Security
 

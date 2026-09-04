@@ -1039,8 +1039,22 @@ def dpnp_einsum(
             )
             arrays.append(operands[id])
     result_dtype = dpnp.result_type(*arrays) if dtype is None else dtype
-    if order is not None and order in "aA":
-        order = "F" if all(arr.flags.fnc for arr in arrays) else "C"
+    # validated here because the view path below skips `dpnp.asarray`
+    if order is None:
+        order = "K"
+    elif not isinstance(order, str):
+        raise TypeError(f"order must be str, not {type(order).__name__}")
+    elif len(order) == 1 and order in "afkcAFKC":
+        order = order.upper()
+    else:
+        raise ValueError(
+            f"order must be one of 'C', 'F', 'A', or 'K' (got '{order}')"
+        )
+    all_f_contiguous = all(arr.flags.f_contiguous for arr in arrays)
+    if order == "A":
+        # NumPy uses f_contiguous here, not fnc; they differ for an array that
+        # is both C- and F-contiguous, such as a 1-D or size-1 one
+        order = "F" if all_f_contiguous else "C"
 
     input_subscripts = [
         _parse_ellipsis_subscript(sub, idx, ndim=arr.ndim)
@@ -1110,12 +1124,16 @@ def dpnp_einsum(
     # no more raises
     if len(operands) >= 2:
         if any(arr.size == 0 for arr in operands):
-            return dpnp.zeros(
+            # every term of the sum is empty, so the result is all zeros;
+            # "K" has no layout to keep here, and NumPy falls back to "C"
+            arr_out = dpnp.zeros(
                 tuple(dimension_dict[label] for label in output_subscript),
                 dtype=result_dtype,
+                order="C" if order == "K" else order,
                 usm_type=res_usm_type,
                 sycl_queue=exec_q,
             )
+            return dpnp.get_result_array(arr_out, out, casting=casting)
 
         # Don't squeeze if unary, because this affects later (in trivial sum)
         # whether the return is a writeable view.
@@ -1226,6 +1244,14 @@ def dpnp_einsum(
         [dimension_dict[label] for label in output_subscript]
     )
 
-    arr_out = dpnp.asarray(arr_out, order=order)
+    # a unary einsum without summation returns a view, as NumPy does for every
+    # `order`
+    if not returns_view:
+        if order == "K" and not all_f_contiguous:
+            # NumPy copies the result into a new c-contiguous array, while
+            # the matmul above leaves a permuted one; for all-f-contiguous
+            # operands it keeps a layout chosen per contraction, so "K" stays
+            order = "C"
+        arr_out = dpnp.asarray(arr_out, order=order)
     assert returns_view or arr_out.dtype == result_dtype
     return dpnp.get_result_array(arr_out, out, casting=casting)
