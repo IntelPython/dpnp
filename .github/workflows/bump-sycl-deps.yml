@@ -1,0 +1,141 @@
+name: Bump open source SYCL build deps
+
+# Keeps the pinned oclcpuexp driver (intel/llvm YYYY-WWNN release) and oneTBB
+# release used by os-llvm-sycl-build.yml up to date by opening a pull request
+# when a newer upstream release is available.
+
+on:
+  # Check weekly on Saturday, and allow manual runs.
+  schedule:
+    - cron: "0 6 * * 6"
+  workflow_dispatch:
+
+permissions: read-all
+
+# Only one bump run at a time; a newer run supersedes an in-progress one.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  bump:
+    name: Bump oclcpuexp and oneTBB pins
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    env:
+      WF: .github/workflows/os-llvm-sycl-build.yml
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Find latest intel/llvm driver release tag
+        id: driver
+        uses: oprypin/find-latest-tag@6957ac556fa6d349727ecabfcaaf9f8e5ee37124 # v1.1.3
+        with:
+          repository: intel/llvm
+          releases-only: true
+          # Driver releases are tagged like "2026-WW28"; ignore nightly-* tags.
+          regex: '^\d{4}-WW\d+$'
+          # Pick the most recently published matching release. Must stay false:
+          # sort-tags: true would semver-sort and mis-parse the YYYY-WWNN tag.
+          sort-tags: false
+
+      - name: Find latest oneTBB release tag
+        id: tbb
+        uses: oprypin/find-latest-tag@6957ac556fa6d349727ecabfcaaf9f8e5ee37124 # v1.1.3
+        with:
+          repository: uxlfoundation/oneTBB
+          releases-only: true
+          regex: '^v\d+\.\d+\.\d+$'
+          # Most recently published matching release (see note above).
+          sort-tags: false
+
+      - name: Resolve asset names and derive values
+        id: resolve
+        env:
+          DRIVER_TAG: ${{ steps.driver.outputs.tag }}
+          TBB_TAG: ${{ steps.tbb.outputs.tag }}
+        run: |
+          set -euo pipefail
+
+          # The oclcpuexp filename embeds its own version and is not derivable
+          # from the tag, so read it back from the driver release assets.
+          OCLCPUEXP_FN=$(gh api "repos/intel/llvm/releases/tags/${DRIVER_TAG}" \
+                          --jq '.assets[].name' \
+                          | grep -E '^oclcpuexp-.*_rel\.tar\.gz$' | head -1)
+          if [[ -z "${OCLCPUEXP_FN}" ]]; then
+              echo "::error::no oclcpuexp asset found in intel/llvm release ${DRIVER_TAG}"
+              exit 1
+          fi
+
+          # oneTBB filenames are derived from the tag (e.g. v2023.1.0).
+          TBB_VER=${TBB_TAG#v}
+
+          {
+            echo "driver_tag=${DRIVER_TAG}"
+            echo "oclcpuexp_fn=${OCLCPUEXP_FN}"
+            echo "tbb_tag=${TBB_TAG}"
+            echo "tbb_fn=oneapi-tbb-${TBB_VER}-lin.tgz"
+            echo "tbb_dir=oneapi-tbb-${TBB_VER}"
+          } >> "${GITHUB_OUTPUT}"
+
+      - name: Apply pins to workflow file
+        env:
+          DRIVER_TAG: ${{ steps.resolve.outputs.driver_tag }}
+          OCLCPUEXP_FN: ${{ steps.resolve.outputs.oclcpuexp_fn }}
+          TBB_TAG: ${{ steps.resolve.outputs.tbb_tag }}
+          TBB_FN: ${{ steps.resolve.outputs.tbb_fn }}
+          TBB_DIR: ${{ steps.resolve.outputs.tbb_dir }}
+        run: |
+          set -euo pipefail
+          # Surgical, comment-preserving edits: rewrite only the value after each
+          # key and keep indentation. "|" delimiter so the "/"-heavy URL is safe.
+          sed -i -E \
+            -e "s|^( *DRIVER_PATH: ).*|\1${DRIVER_TAG}|" \
+            -e "s|^( *OCLCPUEXP_FN: ).*|\1${OCLCPUEXP_FN}|" \
+            -e "s|^( *TBB_URL: ).*|\1https://github.com/uxlfoundation/oneTBB/releases/download/${TBB_TAG}/|" \
+            -e "s|^( *TBB_INSTALL_DIR: ).*|\1${TBB_DIR}|" \
+            -e "s|^( *TBB_FN: ).*|\1${TBB_FN}|" \
+            "${WF}"
+          echo "---- resulting diff ----"
+          git diff -- "${WF}" || true
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          token: ${{ github.token }}
+          add-paths: ${{ env.WF }}
+          branch: bot/bump-sycl-build-deps
+          delete-branch: true
+          labels: autoupdate
+          commit-message: |
+            Bump oclcpuexp/oneTBB pins in os-llvm-sycl-build workflow
+
+            driver: ${{ steps.resolve.outputs.driver_tag }} / ${{ steps.resolve.outputs.oclcpuexp_fn }}
+            oneTBB: ${{ steps.resolve.outputs.tbb_tag }}
+          title: "Bump open source SYCL build dependencies"
+          body: |
+            Automated bump of the pinned open source SYCL build dependencies in
+            `os-llvm-sycl-build.yml`.
+
+            | dependency | new value |
+            | --- | --- |
+            | intel/llvm driver release | `${{ steps.resolve.outputs.driver_tag }}` |
+            | oclcpuexp | `${{ steps.resolve.outputs.oclcpuexp_fn }}` |
+            | oneTBB | `${{ steps.resolve.outputs.tbb_tag }}` |
+
+            The nightly DPC++ compiler is discovered at run time and is not
+            affected by this change.
+
+            Trigger the **Build with Open Source LLVM SYCL compiler** workflow on
+            this branch to validate before merging.
