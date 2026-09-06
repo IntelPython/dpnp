@@ -1,0 +1,10 @@
+﻿
+
+dpnp.random.logseries
+=====================
+
+.. currentmodule:: dpnp.random
+
+
+
+.. autofunction:: logseries
