@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import unittest
 
 import numpy
@@ -130,19 +132,13 @@ class TestRoundExtreme(unittest.TestCase):
 
     shape = (20,)
 
-    dtype_ = (
-        [numpy.float64, numpy.complex128]
-        if has_support_aspect64()
-        else [numpy.float32, numpy.complex64]
-    )
-
-    @testing.for_dtypes(dtype_)
+    @testing.for_dtypes([numpy.float64, numpy.complex128])
     @testing.numpy_cupy_allclose()
     def test_round_large(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, scale=1e100, dtype=dtype)
         return xp.around(a, self.decimals)
 
-    @testing.for_dtypes(dtype_)
+    @testing.for_dtypes([numpy.float64, numpy.complex128])
     @testing.numpy_cupy_allclose()
     def test_round_small(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, scale=1e-100, dtype=dtype)
