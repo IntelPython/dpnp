@@ -1,0 +1,14 @@
+
+:orphan:
+
+
+dpnp.broadcast.shape
+====================
+
+.. currentmodule:: dpnp
+
+
+property
+
+
+.. autoproperty:: broadcast.shape
