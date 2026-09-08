@@ -1856,8 +1856,6 @@ def putmask(a, /, mask, values):
 
     """
 
-    dpnp.check_supported_arrays_type(a)
-
     usm_a = dpnp.get_usm_ndarray(a)
     usm_mask = dpnp.as_usm_ndarray(
         mask,
@@ -1867,7 +1865,7 @@ def putmask(a, /, mask, values):
     usm_mask = dpt.astype(usm_mask, dpnp.bool, copy=False)
 
     if usm_a.shape != usm_mask.shape:
-        raise ValueError("mask and data must be the same size")
+        raise ValueError("mask and data must be the same shape")
 
     if dpnp.isscalar(values):
         usm_a[usm_mask] = values
@@ -1892,7 +1890,7 @@ def putmask(a, /, mask, values):
     # numpy putmask cycles values by the C-order flat index of the
     # destination (values.flat[c % N]), independent of memory layout, so
     # values must always be flattened in C-order.
-    usm_values_1d = dpnp.get_usm_ndarray(dpnp.ravel(usm_values, order="C"))
+    usm_values_1d = dpnp.ravel(usm_values, order="C").get_array()
     if usm_a.dtype != usm_values_1d.dtype:
         usm_values_1d = dpt.astype(
             usm_values_1d, usm_a.dtype, casting="safe", copy=False
