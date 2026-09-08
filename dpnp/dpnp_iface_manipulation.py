@@ -240,6 +240,39 @@ def _calc_parameters(a, axis, obj, values=None):
     )
 
 
+def _check_index_bounds(obj, indices, n, axis):
+    """
+    Raise ``IndexError`` if any index in `obj` is out of bounds for `axis`.
+
+    Mirrors the size-1 path in ``_insert_singleton_index``: when `obj` lives on
+    the host (a Python sequence/scalar or NumPy array) the bounds are validated
+    with NumPy, avoiding a device sync entirely. A slice cannot be out of bounds
+    (``obj.indices(n)`` is clamped to ``[0, n]``), so it is skipped. Only a
+    device array `obj` needs a single host transfer to read its extremes.
+
+    """
+
+    if isinstance(obj, slice) or indices.size == 0:
+        return
+
+    if dpnp.is_supported_array_type(obj):
+        min_idx, max_idx = dpnp.stack([indices.min(), indices.max()]).asnumpy()
+    else:
+        host_obj = numpy.asarray(obj)
+        if host_obj.dtype == dpnp.bool:
+            # a boolean mask selects positions, which (for an oversized mask)
+            # can fall out of bounds, so validate the flatnonzero result
+            host_obj = numpy.flatnonzero(host_obj)
+        min_idx, max_idx = host_obj.min(), host_obj.max()
+
+    min_idx, max_idx = int(min_idx), int(max_idx)
+    if min_idx < -n or max_idx > n:
+        oob = min_idx if min_idx < -n else max_idx
+        raise IndexError(
+            f"index {oob} is out of bounds for axis {axis} with size {n}"
+        )
+
+
 def _insert_array_indices(parameters, indices, values, obj):
     """
     Utility function for ``dpnp.insert`` when indices is an array with
@@ -2435,6 +2468,13 @@ def insert(arr, obj, values, axis=None):
         does not occur in-place: a new array is returned. If
         `axis` is ``None``, `out` is a flattened array.
 
+    Warnings
+    --------
+    This function might synchronize in order to validate that the indices are
+    within bounds. This may harm performance in some applications. To avoid
+    synchronization, pass `obj` as a Python scalar or sequence, or as a NumPy
+    array.
+
     See Also
     --------
     :obj:`dpnp.append` : Append elements at the end of an array.
@@ -2522,8 +2562,10 @@ def insert(arr, obj, values, axis=None):
             )
 
     if indices.size == 1:
+        # the size-1 path validates the bounds itself while reading the index
         return _insert_singleton_index(params, indices, values, obj)
 
+    _check_index_bounds(obj, indices, params.n, params.axis)
     return _insert_array_indices(params, indices, values, obj)
 
 

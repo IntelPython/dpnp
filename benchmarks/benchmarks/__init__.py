@@ -26,4 +26,4 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-from . import common
+"""ASV benchmarks for dpnp."""

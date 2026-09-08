@@ -229,8 +229,19 @@ def test_pyx_capi_get_queue_ref():
         fn_restype=ctypes.c_void_p,
         fn_argtypes=(ctypes.py_object,),
     )
+    remove_queue_ref_fn = _pyx_capi_fnptr_to_callable(
+        X,
+        "UsmNDArray_RemoveQueueRef",
+        b"void (DPCTLSyclQueueRef)",
+        fn_restype=None,
+        fn_argtypes=(ctypes.c_void_p,),
+    )
     queue_ref = get_queue_ref_fn(X)  # address of a copy, should be unequal
     assert queue_ref != X.sycl_queue.addressof_ref()
+    # UsmNDArray_GetQueueRef returns an owning copy;
+    # UsmNDArray_RemoveQueueRef must free it and be a no-op on NULL
+    remove_queue_ref_fn(queue_ref)
+    remove_queue_ref_fn(None)
 
 
 def test_pyx_capi_make_from_memory():

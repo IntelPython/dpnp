@@ -26,105 +26,142 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import numpy
+"""Benchmarks for elementwise ufuncs, dpnp against NumPy.
 
-import dpnp
+The ufunc is a parameter, as in NumPy's own ``bench_ufunc.py``.
+"""
 
-from .common import Benchmark
+from ._utils import (
+    _EXECUTOR_NAMES,
+    _EXECUTORS,
+    _FLOAT_DTYPES,
+    _SIZES_1D,
+    default_queue,
+    make_synchronizer,
+    skip_unsupported_dtype,
+)
+
+# One name per ufunc; rad2deg, deg2rad, abs, true_divide and pow are aliases.
+_UNARY = [
+    "absolute",
+    "arccos",
+    "arccosh",
+    "arcsin",
+    "arcsinh",
+    "arctan",
+    "arctanh",
+    "cbrt",
+    "ceil",
+    "cos",
+    "cosh",
+    "degrees",
+    "exp",
+    "exp2",
+    "expm1",
+    "floor",
+    "log",
+    "log10",
+    "log1p",
+    "log2",
+    "radians",
+    "reciprocal",
+    "rint",
+    "sign",
+    "sin",
+    "sinh",
+    "sqrt",
+    "square",
+    "tan",
+    "tanh",
+    "trunc",
+]
+
+_BINARY = [
+    "add",
+    "arctan2",
+    "divide",
+    "hypot",
+    "multiply",
+    "power",
+    "subtract",
+]
+
+# Ranges keeping each ufunc inside its domain.
+_RANGES = {
+    "arccos": (-1, 1),
+    "arccosh": (1, 10),
+    "arcsin": (-1, 1),
+    "arctanh": (-0.9, 0.9),
+    "log": (1, 10),
+    "log10": (1, 10),
+    "log1p": (1, 10),
+    "log2": (1, 10),
+    "reciprocal": (1, 10),
+    "sqrt": (1, 10),
+}
+_DEFAULT_RANGE = (-10, 10)
+
+# Positive first operand, small second: no divide by zero, no overflow.
+_BINARY_RANGES = ((1, 10), (1, 2))
 
 
-# asv run --python=python --bench Elementwise
-# --quick option will run every case once
-# but looks like first execution has additional overheads
-# (need to be investigated)
-class Elementwise(Benchmark):
-    executors = {"dpnp": dpnp, "numpy": numpy}
-    params = [
-        ["dpnp", "numpy"],
-        [2**16, 2**20, 2**24],
-        ["float64", "float32", "int64", "int32"],
-    ]
-    param_names = ["executor", "size", "dtype"]
+class _Ufunc:
+    """Shared setup for a ufunc benchmark.
 
-    def setup(self, executor, size, dtype):
-        self.np = self.executors[executor]
-        dt = getattr(self.np, dtype)
-        self.a = self.np.arange(size, dtype=dt)
+    Defines no ``time_*``, so ASV does not discover it as a benchmark.
+    """
 
-    def time_arccos(self, *args):
-        self.np.arccos(self.a)
+    param_names = ["executor", "ufunc", "size", "dtype"]
 
-    def time_arccosh(self, *args):
-        self.np.arccosh(self.a)
+    def setup(self, executor, ufunc, size, dtype):
+        self.np = _EXECUTORS[executor]
+        if executor == "dpnp":
+            skip_unsupported_dtype(default_queue(), dtype)
+        self.sync = make_synchronizer(executor)
+        self.fn = getattr(self.np, ufunc)
 
-    def time_arcsin(self, *args):
-        self.np.arcsin(self.a)
+    def _input(self, size, dtype, bounds):
+        lo, hi = bounds
+        return self.np.linspace(lo, hi, size, dtype=getattr(self.np, dtype))
 
-    def time_arcsinh(self, *args):
-        self.np.arcsinh(self.a)
 
-    def time_arctan(self, *args):
-        self.np.arctan(self.a)
+# ---------------------------------------------------------------------------
+# One input -- transcendental, rounding and sign ufuncs
+# ---------------------------------------------------------------------------
 
-    def time_arctanh(self, *args):
-        self.np.arctanh(self.a)
 
-    def time_cbrt(self, *args):
-        self.np.cbrt(self.a)
+class Unary(_Ufunc):
+    """Unary ufuncs, e.g. exp, sqrt, floor."""
 
-    def time_cos(self, *args):
-        self.np.cos(self.a)
+    params = [_EXECUTOR_NAMES, _UNARY, _SIZES_1D, _FLOAT_DTYPES]
 
-    def time_cosh(self, *args):
-        self.np.cosh(self.a)
+    def setup(self, executor, ufunc, size, dtype):
+        super().setup(executor, ufunc, size, dtype)
+        bounds = _RANGES.get(ufunc, _DEFAULT_RANGE)
+        self.a = self._input(size, dtype, bounds)
+        # Warm up.
+        self.sync(self.fn(self.a))
 
-    def time_degrees(self, *args):
-        self.np.degrees(self.a)
+    def time_unary(self, executor, ufunc, size, dtype):
+        self.sync(self.fn(self.a))
 
-    def time_exp(self, *args):
-        self.np.exp(self.a)
 
-    def time_exp2(self, *args):
-        self.np.exp2(self.a)
+# ---------------------------------------------------------------------------
+# Two inputs -- arithmetic ufuncs
+# ---------------------------------------------------------------------------
 
-    def time_expm1(self, *args):
-        self.np.expm1(self.a)
 
-    def time_log(self, *args):
-        self.np.log(self.a)
+class Binary(_Ufunc):
+    """Binary ufuncs, e.g. add, power, hypot."""
 
-    def time_log10(self, *args):
-        self.np.log10(self.a)
+    params = [_EXECUTOR_NAMES, _BINARY, _SIZES_1D, _FLOAT_DTYPES]
 
-    def time_log1p(self, *args):
-        self.np.log1p(self.a)
+    def setup(self, executor, ufunc, size, dtype):
+        super().setup(executor, ufunc, size, dtype)
+        first, second = _BINARY_RANGES
+        self.a = self._input(size, dtype, first)
+        self.b = self._input(size, dtype, second)
+        self.sync(self.fn(self.a, self.b))
 
-    def time_log2(self, *args):
-        self.np.log2(self.a)
-
-    def time_rad2deg(self, *args):
-        self.np.rad2deg(self.a)
-
-    def time_radians(self, *args):
-        self.np.radians(self.a)
-
-    def time_reciprocal(self, *args):
-        self.np.reciprocal(self.a)
-
-    def time_sin(self, *args):
-        self.np.sin(self.a)
-
-    def time_sinh(self, *args):
-        self.np.sinh(self.a)
-
-    def time_sqrt(self, *args):
-        self.np.sqrt(self.a)
-
-    def time_square(self, *args):
-        self.np.square(self.a)
-
-    def time_tan(self, *args):
-        self.np.tan(self.a)
-
-    def time_tanh(self, *args):
-        self.np.tanh(self.a)
+    def time_binary(self, executor, ufunc, size, dtype):
+        self.sync(self.fn(self.a, self.b))

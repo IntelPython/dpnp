@@ -98,15 +98,24 @@ dstTy convert_impl(const srcTy &v)
     }
     else if constexpr (!std::is_integral_v<srcTy> &&
                        !std::is_same_v<dstTy, bool> &&
-                       std::is_integral_v<dstTy> && std::is_unsigned_v<dstTy>) {
-        // for negative values, cast through signed integer to get two's
-        // complement wrapping
-        using intermediateT =
-            std::conditional_t<sizeof(dstTy) < sizeof(std::int32_t),
-                               std::int32_t, std::int64_t>;
-        return (v < srcTy{0})
-                   ? static_cast<dstTy>(static_cast<intermediateT>(v))
-                   : static_cast<dstTy>(v);
+                       std::is_integral_v<dstTy>) {
+        // Out-of-range float-to-int casts are UB; SYCL saturates while NumPy
+        // wraps. Funnel through a wider signed integer so the well-defined
+        // integer narrowing reproduces NumPy's wrapping, e.g. f32(128) ->
+        // i8(-128).
+        if constexpr (sizeof(dstTy) < sizeof(std::int64_t)) {
+            return static_cast<dstTy>(static_cast<std::int64_t>(v));
+        }
+        else if constexpr (std::is_unsigned_v<dstTy>) {
+            // uint64: no wider signed type, so only negatives need int64
+            return (v < srcTy{0})
+                       ? static_cast<dstTy>(static_cast<std::int64_t>(v))
+                       : static_cast<dstTy>(v);
+        }
+        else {
+            // int64: nothing wider to funnel through
+            return static_cast<dstTy>(v);
+        }
     }
     else {
         return static_cast<dstTy>(v);

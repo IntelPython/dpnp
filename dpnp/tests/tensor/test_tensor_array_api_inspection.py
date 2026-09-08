@@ -36,6 +36,7 @@ from dpnp.tensor._tensor_impl import (
     default_device_index_type,
     default_device_int_type,
 )
+from dpnp.tests.third_party.cupy.testing import with_requires
 
 _dtypes_no_fp16_fp64 = {
     "bool": dpt.bool,
@@ -72,6 +73,7 @@ def test_array_api_inspection_default_device():
     assert dpt.__array_namespace_info__().default_device().sycl_device == dev
 
 
+@with_requires("dpctl>=0.23.0dev0")
 def test_array_api_inspection_devices():
     try:
         devices2 = dpctl.get_devices()

@@ -231,7 +231,7 @@ def set_print_options(
             `"-"`, `"+"`, or `" "`.
             Default: `"-"`.
         numpy (bool, optional): If `True,` then before other specified print
-            options are set, a dictionary of Numpy's print options
+            options are set, a dictionary of NumPy's print options
             will be used to initialize dpctl's print options.
             Default: "False"
     """
@@ -412,7 +412,7 @@ def usm_ndarray_str(
             Default: `"-"`.
         numpy (bool, optional):
             If `True,` then before other specified print
-            options are set, a dictionary of Numpy's print options
+            options are set, a dictionary of NumPy's print options
             will be used to initialize dpctl's print options.
             Default: "False"
         separator (str, optional):

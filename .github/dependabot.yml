@@ -5,6 +5,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "saturday"
+    cooldown:
+      default-days: 7
     rebase-strategy: "disabled"
     labels: ["autoupdate"]
     groups:
@@ -17,6 +19,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "saturday"
+    cooldown:
+      default-days: 7
     rebase-strategy: "disabled"
     labels: ["autoupdate"]
     groups:
@@ -29,6 +33,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "saturday"
+    cooldown:
+      default-days: 7
     rebase-strategy: "disabled"
     labels: ["autoupdate"]
     groups:
@@ -40,6 +46,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "saturday"
+    cooldown:
+      default-days: 7
     rebase-strategy: "disabled"
     labels: ["autoupdate"]
     groups:

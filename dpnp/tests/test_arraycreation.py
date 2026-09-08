@@ -21,6 +21,7 @@ from .helper import (
     get_array,
     get_float_dtypes,
     has_support_aspect64,
+    numpy_version,
 )
 from .third_party.cupy import testing
 
@@ -54,6 +55,20 @@ class TestArray:
         assert a.flags.c_contiguous == ia.flags.c_contiguous
         assert a.flags.f_contiguous == ia.flags.f_contiguous
         assert_array_equal(ia, a)
+
+    @testing.with_requires("numpy>=2.4")
+    def test_ndmax_default(self):
+        # dpnp supports only the default `ndmax=0`, treating it as a no-op;
+        # the NumPy no-op is `ndmax >= ndim` (an explicit `ndmax=0` caps the
+        # result at zero dimensions and raises)
+        x = [[1, 2, 3], [4, 5, 6]]
+        a = numpy.array(x, ndmax=numpy.ndim(x))
+        ia = dpnp.array(x, ndmax=0)
+        assert_array_equal(ia, a)
+
+    @pytest.mark.parametrize("ndmax", [1, 2, 3])
+    def test_ndmax_unsupported(self, ndmax):
+        assert_raises(NotImplementedError, dpnp.array, [[1, 2, 3]], ndmax=ndmax)
 
     def test_error(self):
         x = numpy.ones((3, 4))
@@ -249,6 +264,59 @@ class TestLinspace:
     def test_axis(self, axis):
         func = lambda xp: xp.linspace([2, 3], [20, 15], num=10, axis=axis)
         assert_allclose(func(dpnp), func(numpy))
+
+    @pytest.mark.parametrize("val", [numpy.inf, -numpy.inf, numpy.inf + 1j])
+    @pytest.mark.parametrize("num", [1, 5])
+    @pytest.mark.parametrize("endpoint", [True, False])
+    def test_inf_equal_endpoints_scalar(self, val, num, endpoint):
+        result, step = dpnp.linspace(
+            val, val, num, endpoint=endpoint, retstep=True
+        )
+        if numpy_version() >= "2.6.0":
+            expected, exp_step = numpy.linspace(
+                val, val, num, endpoint=endpoint, retstep=True
+            )
+            assert_dtype_allclose(step, exp_step)
+        else:
+            expected = numpy.full(num, val)
+            step_val = step.asnumpy()
+            if (num - endpoint) > 0:
+                assert step_val == 0
+            else:
+                assert numpy.isnan(step_val)
+        assert_dtype_allclose(result, expected)
+
+    def test_inf_equal_endpoints_array(self):
+        start = numpy.array([numpy.inf, -numpy.inf, 1.0])
+        stop = numpy.array([numpy.inf, -numpy.inf, 1.0])
+
+        result = dpnp.linspace(start, stop, num=4)
+        if numpy_version() >= "2.6.0":
+            expected = numpy.linspace(start, stop, num=4)
+        else:
+            expected = numpy.full((4, 3), [numpy.inf, -numpy.inf, 1.0])
+        assert_dtype_allclose(result, expected)
+
+    def test_inf_mixed_endpoints_array(self):
+        start = numpy.array([numpy.inf, numpy.inf])
+        stop = numpy.array([numpy.inf, 2.0])
+
+        result = dpnp.linspace(start, stop, num=3)
+        if numpy_version() >= "2.6.0":
+            expected = numpy.linspace(start, stop, num=3)
+            assert_dtype_allclose(result, expected)
+        else:
+            # mixed infinities still yield NaN interior; equal column stays inf
+            res = result.asnumpy()
+            assert res[0, 0] == numpy.inf and res[-1, 0] == numpy.inf
+            assert numpy.isnan(res[1, 1])
+            assert res[-1, 1] == 2.0
+
+    @pytest.mark.parametrize("num", [1, 5])
+    def test_nan_endpoints(self, num):
+        result = dpnp.linspace(numpy.nan, numpy.nan, num)
+        expected = numpy.linspace(numpy.nan, numpy.nan, num)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("xp", [dpnp, numpy])
     def test_negative_num(self, xp):

@@ -48,7 +48,7 @@ from ._type_utils import (
 )
 
 
-def _boolean_reduction(x, axis, keepdims, func):
+def _boolean_reduction(x, axis, keepdims, func, identity):
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
 
@@ -77,37 +77,47 @@ def _boolean_reduction(x, axis, keepdims, func):
     exec_q = x.sycl_queue
     res_usm_type = x.usm_type
 
-    _manager = du.SequentialOrderManager[exec_q]
-    dep_evs = _manager.submitted_events
-    # always allocate the temporary as
-    # int32 and usm-device  to ensure that atomic updates
-    # are supported
-    res_tmp = dpt.empty(
-        res_shape,
-        dtype=dpt.int32,
-        usm_type="device",
-        sycl_queue=exec_q,
-    )
-    hev0, ev0 = func(
-        src=x_tmp,
-        trailing_dims_to_reduce=red_nd,
-        dst=res_tmp,
-        sycl_queue=exec_q,
-        depends=dep_evs,
-    )
-    _manager.add_event_pair(hev0, ev0)
+    if x_tmp.size == 0:
+        # empty input: fill with the reduction identity
+        # (all([]) → True, any([]) → False)
+        res = dpt.full(
+            res_shape,
+            identity,
+            dtype=dpt.bool,
+            usm_type=res_usm_type,
+            sycl_queue=exec_q,
+        )
+    else:
+        _manager = du.SequentialOrderManager[exec_q]
+        dep_evs = _manager.submitted_events
+        # always allocate the temporary as int32 and usm-device to ensure
+        # that atomic updates are supported
+        res_tmp = dpt.empty(
+            res_shape,
+            dtype=dpt.int32,
+            usm_type="device",
+            sycl_queue=exec_q,
+        )
+        hev0, ev0 = func(
+            src=x_tmp,
+            trailing_dims_to_reduce=red_nd,
+            dst=res_tmp,
+            sycl_queue=exec_q,
+            depends=dep_evs,
+        )
+        _manager.add_event_pair(hev0, ev0)
 
-    # copy to boolean result array
-    res = dpt.empty(
-        res_shape,
-        dtype=dpt.bool,
-        usm_type=res_usm_type,
-        sycl_queue=exec_q,
-    )
-    hev1, ev1 = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=res_tmp, dst=res, sycl_queue=exec_q, depends=[ev0]
-    )
-    _manager.add_event_pair(hev1, ev1)
+        # copy to boolean result array
+        res = dpt.empty(
+            res_shape,
+            dtype=dpt.bool,
+            usm_type=res_usm_type,
+            sycl_queue=exec_q,
+        )
+        hev1, ev1 = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=res_tmp, dst=res, sycl_queue=exec_q, depends=[ev0]
+        )
+        _manager.add_event_pair(hev1, ev1)
 
     if keepdims:
         res_shape = res_shape + (1,) * red_nd
@@ -142,7 +152,7 @@ def all(x, /, *, axis=None, keepdims=False):
             An array with a data type of `bool`
             containing the results of the logical AND reduction.
     """
-    return _boolean_reduction(x, axis, keepdims, tri._all)
+    return _boolean_reduction(x, axis, keepdims, tri._all, True)
 
 
 def any(x, /, *, axis=None, keepdims=False):
@@ -171,7 +181,7 @@ def any(x, /, *, axis=None, keepdims=False):
             An array with a data type of `bool`
             containing the results of the logical OR reduction.
     """
-    return _boolean_reduction(x, axis, keepdims, tri._any)
+    return _boolean_reduction(x, axis, keepdims, tri._any, False)
 
 
 def _validate_diff_shape(sh1, sh2, axis):

@@ -5019,9 +5019,9 @@ def trapezoid(y, x=None, dx=1.0, axis=-1):
 
     Integrate `y` (`x`) along each 1d slice on the given axis, compute
     :math:`\int y(x) dx`.
-    When `x` is specified, this integrates along the parametric curve,
-    computing :math:`\int_t y(t) dt =
-    \int_t y(t) \left.\frac{dx}{dt}\right|_{x=x(t)} dt`.
+    When `x` is specified, this integrates along the parametric curve :math:`C`
+    given by :math:`(x(t), y(t))`, computing the line integral
+    :math:`\int_C y \, dx = \int y(t) \frac{dx}{dt} \, dt`.
 
     For full documentation refer to :obj:`numpy.trapezoid`.
 
@@ -5046,9 +5046,9 @@ def trapezoid(y, x=None, dx=1.0, axis=-1):
     Returns
     -------
     out : dpnp.ndarray
-        Definite integral of `y` = n-dimensional array as approximated along
-        a single axis by the trapezoidal rule. The result is an `n`-1
-        dimensional array.
+        Definite integral of `y` = n-dimensional array as approximated along a
+        single axis by the trapezoidal rule. The result is an `n`-1 dimensional
+        array.
 
     See Also
     --------

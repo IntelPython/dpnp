@@ -593,6 +593,17 @@ class TestEinsum:
         expected = numpy.einsum("i,i,i", b_np, b_np, b_np, optimize="greedy")
         assert_dtype_allclose(result, expected)
 
+    def test_sliced_operand_view_path(self):
+        # a single-operand einsum with no summed index returns a view of the
+        # operand; the view must respect the USM offset of a sliced operand
+        a = numpy.arange(24.0, dtype=numpy.float32).reshape(2, 3, 4)
+        ia = dpnp.array(a)
+
+        for subscripts in ["abc->abc", "abc->cab"]:
+            result = dpnp.einsum(subscripts, ia[:, 1:, :])
+            expected = numpy.einsum(subscripts, a[:, 1:, :])
+            assert_dtype_allclose(result, expected)
+
     def test_out(self):
         a = dpnp.ones((5, 5))
         out = dpnp.empty((5,))
@@ -1812,7 +1823,7 @@ class TestLstsq:
 
         result = dpnp.linalg.lstsq(a_dp, b_dp)
         # if rcond is not set, FutureWarning is given.
-        # By default Numpy uses None for calculations
+        # By default NumPy uses None for calculations
         expected = numpy.linalg.lstsq(a_np, b_np, rcond=None)
 
         for param_dp, param_np in zip(result, expected):
@@ -1827,7 +1838,7 @@ class TestLstsq:
         b_dp = dpnp.array(b_np)
 
         # if rcond is not set, FutureWarning is given.
-        # By default Numpy uses None for calculations
+        # By default NumPy uses None for calculations
         expected = numpy.linalg.lstsq(a_np, b_np, rcond=None)
         result = dpnp.linalg.lstsq(a_dp, b_dp)
 
@@ -1848,7 +1859,7 @@ class TestLstsq:
 
         result = dpnp.linalg.lstsq(a_dp, b_dp)
         # if rcond is not set, FutureWarning is given.
-        # By default Numpy uses None for calculations
+        # By default NumPy uses None for calculations
         expected = numpy.linalg.lstsq(a_np, b_np, rcond=None)
 
         for param_dp, param_np in zip(result, expected):

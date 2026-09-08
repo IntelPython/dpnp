@@ -1,0 +1,3 @@
+# Installed by CI. scipy is needed by the NumPy reference black_scholes
+# validates against; it is not a dpnp runtime dependency.
+scipy
