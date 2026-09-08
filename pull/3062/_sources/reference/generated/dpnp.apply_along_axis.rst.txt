@@ -1,0 +1,10 @@
+﻿
+
+dpnp.apply\_along\_axis
+=======================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: apply_along_axis

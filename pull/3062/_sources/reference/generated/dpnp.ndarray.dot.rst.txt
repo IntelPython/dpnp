@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.ndarray.dot
+================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: ndarray.dot

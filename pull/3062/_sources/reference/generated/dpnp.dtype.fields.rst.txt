@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.dtype.fields
+=================
+
+.. currentmodule:: dpnp
+
+attribute
+
+.. autoattribute:: dtype.fields
