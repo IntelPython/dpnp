@@ -14,7 +14,7 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>dpnp.dpnp_array - Data Parallel Extension for NumPy (dpnp) 0.21.0dev6 documentation</title>
+        <title>dpnp.dpnp_array - Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -172,7 +172,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev6 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev6 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -1750,12 +1750,27 @@
         <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span>
 
+        <span class="n">new_itemsize</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">itemsize</span>
+
+        <span class="c1"># `buffer=self._array_obj` views the whole USM allocation, so `self`'s</span>
+        <span class="c1"># element offset within it must be forwarded explicitly</span>
+
+        <span class="n">byte_offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">_element_offset</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">itemsize</span>
+        <span class="n">offset</span><span class="p">,</span> <span class="n">rem</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">byte_offset</span><span class="p">,</span> <span class="n">new_itemsize</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rem</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">"The offset of the array data in memory is not a multiple "</span>
+                <span class="s2">"of the new data type size and so the requested view is "</span>
+                <span class="s2">"not possible"</span>
+            <span class="p">)</span>
+
         <span class="c1"># create the underlying usm_ndarray view</span>
         <span class="n">usm_view</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">(</span>
             <span class="n">shape</span><span class="p">,</span>
             <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
             <span class="n">buffer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="p">,</span>
-            <span class="n">strides</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">s</span> <span class="o">//</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">itemsize</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">strides</span><span class="p">),</span>
+            <span class="n">strides</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">s</span> <span class="o">//</span> <span class="n">new_itemsize</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">strides</span><span class="p">),</span>
+            <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># wrap the view into the appropriate class</span>
@@ -3791,7 +3806,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=f51dafa0"></script>
+</div><script src="../../_static/documentation_options.js?v=b97f887b"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
