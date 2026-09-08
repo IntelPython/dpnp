@@ -1,0 +1,10 @@
+﻿
+
+dpnp.cos
+========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: cos
