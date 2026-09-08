@@ -126,6 +126,23 @@ def test_strided_cumsum_axis_sint(dt):
     assert dpt.all(res == dpt.expand_dims(expected, axis=1))
 
 
+@pytest.mark.parametrize("func", ["cumulative_sum", "cumulative_prod"])
+def test_batched_multilevel_scan(func):
+    # axis > chunk_size**2 (chunk_size <= 2048) needs >=3 scan levels; with >1
+    # batch row the intermediate update mis-strided rows. 5e6 forces that path.
+    get_queue_or_skip()
+    n0, n1 = 3, 5_000_000
+    x = dpt.ones((n0, n1), dtype="i1")
+
+    if func == "cumulative_prod":
+        x[:, 0] = 2  # leading 2 then ones -> cumprod is 2 everywhere
+        res = dpt.cumulative_prod(x, axis=1, dtype="i4")
+        assert dpt.all(res == 2)
+    else:
+        res = dpt.cumulative_sum(x, axis=1, dtype="i4")
+        assert dpt.all(res == dpt.arange(1, n1 + 1, dtype="i4"))
+
+
 def test_accumulate_scalar():
     get_queue_or_skip()
 
