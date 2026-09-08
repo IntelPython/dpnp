@@ -27,12 +27,10 @@
 //*****************************************************************************
 
 #include <algorithm>
-#include <complex>
 #include <cstddef>
 #include <stdexcept>
 #include <string>
 #include <tuple>
-#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -272,61 +270,16 @@ std::pair<sycl::event, sycl::event>
     return std::make_pair(ht_ev, comp_ev);
 }
 
-/**
- * @brief A factory to define pairs of supported types for which
- * putmask function is available.
- *
- * @tparam T Type of input vector `dst` and `values` and of result vector `dst`.
- */
-template <typename T>
-struct PutMaskOutputType
-{
-    using value_type = typename std::disjunction<
-        td_ns::TypeMapResultEntry<T, bool>,
-        td_ns::TypeMapResultEntry<T, std::uint8_t>,
-        td_ns::TypeMapResultEntry<T, std::int8_t>,
-        td_ns::TypeMapResultEntry<T, std::uint16_t>,
-        td_ns::TypeMapResultEntry<T, std::int16_t>,
-        td_ns::TypeMapResultEntry<T, std::uint32_t>,
-        td_ns::TypeMapResultEntry<T, std::int32_t>,
-        td_ns::TypeMapResultEntry<T, std::uint64_t>,
-        td_ns::TypeMapResultEntry<T, std::int64_t>,
-        td_ns::TypeMapResultEntry<T, sycl::half>,
-        td_ns::TypeMapResultEntry<T, float>,
-        td_ns::TypeMapResultEntry<T, double>,
-        td_ns::TypeMapResultEntry<T, std::complex<float>>,
-        td_ns::TypeMapResultEntry<T, std::complex<double>>,
-        td_ns::DefaultResultEntry<void>>::result_type;
-};
-
 template <typename fnT, typename T>
 struct PutMaskStridedFactory
 {
-    fnT get()
-    {
-        if constexpr (std::is_same_v<typename PutMaskOutputType<T>::value_type,
-                                     void>) {
-            return nullptr;
-        }
-        else {
-            return putmask_strided_call<T>;
-        }
-    }
+    fnT get() { return putmask_strided_call<T>; }
 };
 
 template <typename fnT, typename T>
 struct PutMaskContigFactory
 {
-    fnT get()
-    {
-        if constexpr (std::is_same_v<typename PutMaskOutputType<T>::value_type,
-                                     void>) {
-            return nullptr;
-        }
-        else {
-            return putmask_contig_call<T>;
-        }
-    }
+    fnT get() { return putmask_contig_call<T>; }
 };
 
 static void populate_putmask_dispatch_vectors()
