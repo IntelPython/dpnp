@@ -1345,6 +1345,20 @@ def test_choose(usm_type_x, usm_type_ind):
     assert z.usm_type == dpt.get_coerced_usm_type([usm_type_x, usm_type_ind])
 
 
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types)
+@pytest.mark.parametrize("usm_type_mask", list_of_usm_types)
+@pytest.mark.parametrize("usm_type_values", list_of_usm_types)
+def test_putmask(usm_type_x, usm_type_mask, usm_type_values):
+    x = dpnp.arange(3, usm_type=usm_type_x)
+    mask = dpnp.array([True, False, True], usm_type=usm_type_mask)
+    values = dpnp.array([10, 20], usm_type=usm_type_values)
+    dpnp.putmask(x, mask, values)
+
+    assert x.usm_type == usm_type_x
+    assert mask.usm_type == usm_type_mask
+    assert values.usm_type == usm_type_values
+
+
 @pytest.mark.parametrize(
     "func, low, high",
     [
