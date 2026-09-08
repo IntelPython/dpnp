@@ -825,6 +825,7 @@ def histogram2d(x, y, bins=10, range=None, density=None, weights=None):
         If ``None`` all samples are assigned a weight of ``1``.
 
         Default: ``None``.
+
     Returns
     -------
     H : dpnp.ndarray of shape (nx, ny)
