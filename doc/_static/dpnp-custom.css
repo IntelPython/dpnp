@@ -56,3 +56,9 @@ dt.sig.sig-object .sig-param > .n,
 dt.sig.sig-object .sig-param > .n * {
     font-weight: 700 !important;
 }
+
+/* numpydoc param/return types: italic like NumPy, not bold */
+.classifier {
+    font-style: italic;
+    font-weight: 400;
+}
