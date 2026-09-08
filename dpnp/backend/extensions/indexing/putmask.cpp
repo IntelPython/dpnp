@@ -183,8 +183,8 @@ std::pair<sycl::event, sycl::event>
 
     // the contig kernel cycles `values` by the memory-linear index, which
     // matches numpy's C-order `values.flat` only for C-contiguous data
-    const bool all_c_contig = dst.is_c_contiguous() && mask.is_c_contiguous() &&
-                              values.is_c_contiguous();
+    // (`values` is already checked to be C-contiguous above)
+    const bool all_c_contig = dst.is_c_contiguous() && mask.is_c_contiguous();
 
     if (all_c_contig) {
         auto contig_fn = putmask_contig_dispatch_vector[dst_values_typeid];
@@ -211,24 +211,11 @@ std::pair<sycl::event, sycl::event>
     const auto &dst_strides = dst.get_strides_vector();
     const auto &mask_strides = mask.get_strides_vector();
 
+    // 0-d arrays go through the contig path, so here nd >= 1
     using shT = std::vector<py::ssize_t>;
-    shT common_shape;
-    shT s_dst_strides;
-    shT s_mask_strides;
-
-    int eff_nd = nd;
-    if (nd == 0) {
-        // scalar arrays: single-element 1D iteration
-        eff_nd = 1;
-        common_shape = {1};
-        s_dst_strides = {0};
-        s_mask_strides = {0};
-    }
-    else {
-        common_shape.assign(dst_shape, dst_shape + nd);
-        s_dst_strides = dst_strides;
-        s_mask_strides = mask_strides;
-    }
+    shT common_shape(dst_shape, dst_shape + nd);
+    shT s_dst_strides = dst_strides;
+    shT s_mask_strides = mask_strides;
 
     // trivial offsets: shape and strides are passed without simplification
     constexpr py::ssize_t dst_off = 0;
@@ -257,7 +244,7 @@ std::pair<sycl::event, sycl::event>
     all_deps.push_back(cpy_ev);
 
     sycl::event comp_ev =
-        strided_fn(exec_q, eff_nd, nelems, shape_strides_dev, dst_p, dst_off,
+        strided_fn(exec_q, nd, nelems, shape_strides_dev, dst_p, dst_off,
                    mask_p, mask_off, values_p, values_size, all_deps);
 
     sycl::event cleanup_ev = dpnp::tensor::alloc_utils::async_smart_free(
