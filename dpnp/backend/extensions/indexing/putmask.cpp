@@ -44,6 +44,7 @@
 #include "kernels/indexing/putmask.hpp"
 
 // dpnp tensor headers
+#include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
@@ -148,6 +149,11 @@ std::pair<sycl::event, sycl::event>
 
     // values must be C-contiguous
     check_c_contig({&values}, names);
+
+    const auto &overlap = dpnp::tensor::overlap::MemoryOverlap();
+    if (overlap(dst, mask) || overlap(dst, values)) {
+        throw py::value_error("Arrays have overlapping segments of memory");
+    }
 
     auto types = td_ns::usm_ndarray_types();
     // dst_typeid == values_typeid (check_same_dtype(&dst, &values, names))
