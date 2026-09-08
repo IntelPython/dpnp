@@ -128,8 +128,8 @@ def test_strided_cumsum_axis_sint(dt):
 
 @pytest.mark.parametrize("func", ["cumulative_sum", "cumulative_prod"])
 def test_batched_multilevel_scan(func):
-    # axis > chunk_size**2 (chunk_size <= 2048) needs >=3 scan levels; with >1
-    # batch row the intermediate update mis-strided rows. 5e6 forces that path.
+    # Regression test for gh-3063: multi-row scan over an axis needing >=3
+    # levels (axis > chunk_size**2, chunk_size <= 2048) mis-strided rows.
     get_queue_or_skip()
     n0, n1 = 3, 5_000_000
     x = dpt.ones((n0, n1), dtype="i1")
