@@ -1,3 +1,5 @@
+import operator
+
 import dpctl
 import numpy
 import pytest
@@ -935,6 +937,22 @@ class TestNonstandardBoolBytes:
         expected = getattr(numpy, op)(a, b)
         assert_array_equal(result, expected)
 
+    @pytest.mark.parametrize("op", ["iand", "ior", "ixor", "iadd", "imul"])
+    @pytest.mark.parametrize("strided", [False, True])
+    def test_inplace(self, op, strided):
+        # the destination is read as a value too, so its byte must normalize
+        a, ia = self._views([0, 1, 2, 255, 3, 0, 128, 127])
+        b, ib = self._views([1, 1, 0, 2, 0, 7, 255, 1])
+        if strided:
+            a, ia, b, ib = a[::2], ia[::2], b[::2], ib[::2]
+
+        getattr(operator, op)(ia, ib)
+        getattr(operator, op)(a, b)
+        assert_array_equal(ia, a)
+
+        raw = dpnp.asnumpy(ia).view(numpy.uint8)
+        assert numpy.all((raw == 0) | (raw == 1))
+
     @pytest.mark.parametrize("op", ["logical_not", "bitwise_invert"])
     def test_unary(self, op):
         a, ia = self._views([0, 1, 2, 255, 3, 0])
@@ -952,6 +970,23 @@ class TestNonstandardBoolBytes:
         result = getattr(dpnp, op)(ia)
         expected = getattr(numpy, op)(a)
         assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("op", ["cumulative_sum", "cumulative_prod"])
+    @pytest.mark.parametrize("include_initial", [False, True])
+    def test_cumulative_bool_out(self, op, include_initial):
+        # a bool accumulator must scan normalized values, not the raw bytes
+        a, ia = self._views([0, 1, 2, 255, 3, 0, 128, 127])
+
+        result = getattr(dpnp, op)(
+            ia, dtype=dpnp.bool, include_initial=include_initial
+        )
+        expected = getattr(numpy, op)(
+            a, dtype=numpy.bool_, include_initial=include_initial
+        )
+        assert_array_equal(result, expected)
+
+        raw = dpnp.asnumpy(result).view(numpy.uint8)
+        assert numpy.all((raw == 0) | (raw == 1))
 
     def test_result_has_canonical_bytes(self):
         # a computed bool result must only ever hold 0x00 or 0x01; `sort` and

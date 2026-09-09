@@ -93,7 +93,12 @@ struct NoOpTransformer
 {
     constexpr NoOpTransformer() {}
 
-    T operator()(const T &val) const { return val; }
+    // bool is normalized: a byte other than 0x00/0x01 would otherwise reach
+    // the scan operation and leak into the result, see gh-2121
+    T operator()(const T &val) const
+    {
+        return dpnp::tensor::type_utils::normalize_bool(val);
+    }
 };
 
 template <typename srcTy, typename dstTy>
