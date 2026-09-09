@@ -97,6 +97,7 @@ This release is compatible with NumPy 2.5.
 * Fixed a per-call `sycl::queue` leak in `usm_ndarray::get_queue()`/`get_device()` [#3042](https://github.com/IntelPython/dpnp/pull/3042)
 * Fixed `dpnp.linspace` returning `nan` for equal infinite endpoints [#3043](https://github.com/IntelPython/dpnp/pull/3043)
 * Fixed `dpnp.cumsum`, `dpnp.cumprod`, and their `nan`/`cumulative_*` variants (including `dpnp.tensor.cumulative_sum`/`cumulative_prod`) silently returning incorrect results when accumulating along an axis of an array with more than one row [#3063](https://github.com/IntelPython/dpnp/pull/3063)
+* Fixed `dpnp.einsum` returning a result whose memory layout differs from NumPy for the default `order="K"`, and ignoring `out` and `order` for a contraction over a size-0 dimension [#3058](https://github.com/IntelPython/dpnp/pull/3058)
 
 ### Security
 
