@@ -1033,6 +1033,12 @@ class TestNonstandardBoolBytes:
 
         assert_array_equal(dpnp.isin(ia, ib), numpy.isin(a, b))
 
+    def test_searchsorted(self):
+        a, ia = self._views([0, 0, 1, 1])
+        v, iv = self._views([2, 255, 0])
+
+        assert_array_equal(dpnp.searchsorted(ia, iv), numpy.searchsorted(a, v))
+
     def test_argsort_is_logically_ordered(self):
         raw = numpy.array([0, 1, 2, 255, 3, 0], dtype=numpy.uint8)
         ia = dpnp.asarray(raw).view(dpnp.bool)
