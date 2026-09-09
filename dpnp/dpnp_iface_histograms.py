@@ -574,7 +574,7 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
     :obj:`dpnp.digitize` : Return the indices of the bins to which each value
                            in input array belongs.
     :obj:`dpnp.histogram_bin_edges` : Return only the edges of the bins used
-                                      by the obj:`dpnp.histogram` function.
+                                      by the :obj:`dpnp.histogram` function.
 
     Examples
     --------
