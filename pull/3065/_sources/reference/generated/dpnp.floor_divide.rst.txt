@@ -1,0 +1,10 @@
+﻿
+
+dpnp.floor\_divide
+==================
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: floor_divide
