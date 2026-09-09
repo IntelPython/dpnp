@@ -1221,6 +1221,19 @@ class TestPutMask:
         assert_array_equal(ia, a)
 
     @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    def test_large_strided(self, dt):
+        a = generate_random_numpy_array((64, 64), dtype=dt)
+        ia = dpnp.array(a)
+        a, ia = a[:, ::2], ia[:, ::2]
+        mask = generate_random_numpy_array(a.shape, dtype=dpnp.bool)
+        vals = generate_random_numpy_array((7,), dtype=dt)
+        imask, ivals = dpnp.array(mask), dpnp.array(vals)
+
+        numpy.putmask(a, mask, vals)
+        dpnp.putmask(ia, imask, ivals)
+        assert_array_equal(ia, a)
+
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "slice_spec",
         [
@@ -1359,6 +1372,13 @@ class TestPutMask:
         # values cannot be safely cast to the array data type
         vals = dpnp.arange(2, dtype="i8")
         assert_raises(TypeError, dpnp.putmask, ia, ia > 2, vals)
+
+        # a 0-d float values array cannot be safely cast to an integer array
+        assert_raises(TypeError, dpnp.putmask, ia, ia > 2, dpnp.array(3.7))
+
+        # an out-of-range scalar cannot be cast to the array data type
+        a_i1 = dpnp.zeros(6, dtype="i1")
+        assert_raises(OverflowError, dpnp.putmask, a_i1, a_i1 == 0, 300)
 
 
 @pytest.mark.parametrize("m", [None, 0, 1, 2, 3, 4])
