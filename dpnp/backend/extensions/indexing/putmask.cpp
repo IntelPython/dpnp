@@ -28,8 +28,6 @@
 
 #include <algorithm>
 #include <cstddef>
-#include <stdexcept>
-#include <string>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -47,6 +45,7 @@
 #include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"
+#include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
 
 // utils extension headers
@@ -58,7 +57,6 @@ namespace td_ns = dpnp::tensor::type_dispatch;
 
 using dpnp::tensor::usm_ndarray;
 
-using ext::common::dtype_from_typenum;
 using ext::validation::array_names;
 using ext::validation::check_c_contig;
 using ext::validation::check_has_dtype;
@@ -195,14 +193,6 @@ std::pair<sycl::event, sycl::event>
     if (all_c_contig) {
         auto contig_fn = putmask_contig_dispatch_vector[dst_values_typeid];
 
-        if (contig_fn == nullptr) {
-            py::dtype dst_values_dtype_py =
-                dtype_from_typenum(dst_values_typeid);
-            throw std::runtime_error(
-                "Contiguous implementation is missing for " +
-                std::string(py::str(dst_values_dtype_py)) + " data type");
-        }
-
         auto comp_ev = contig_fn(exec_q, nelems, dst_p, mask_p, values_p,
                                  values_size, depends);
         sycl::event ht_ev = dpnp::utils::keep_args_alive(
@@ -228,11 +218,6 @@ std::pair<sycl::event, sycl::event>
     constexpr py::ssize_t mask_off = 0;
 
     auto strided_fn = putmask_strided_dispatch_vector[dst_values_typeid];
-    if (strided_fn == nullptr) {
-        py::dtype dt = dtype_from_typenum(dst_values_typeid);
-        throw std::runtime_error("Strided implementation is missing for " +
-                                 std::string(py::str(dt)) + " data type");
-    }
 
     using dpnp::tensor::offset_utils::device_allocate_and_pack;
 
