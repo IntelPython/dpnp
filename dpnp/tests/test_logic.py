@@ -996,7 +996,14 @@ class TestNonstandardBoolBytes:
 
         for res in (
             dpnp.equal(ia, ib),
+            dpnp.not_equal(ia, ib),
             dpnp.logical_not(ia),
+            dpnp.logical_and(ia, ib),
+            dpnp.logical_or(ia, ib),
+            dpnp.logical_xor(ia, ib),
+            dpnp.bitwise_and(ia, ib),
+            dpnp.bitwise_or(ia, ib),
+            dpnp.bitwise_xor(ia, ib),
             dpnp.maximum(ia, ib),
             dpnp.isin(ia, ib),
             dpnp.max(ia),
