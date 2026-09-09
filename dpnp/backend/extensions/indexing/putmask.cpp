@@ -138,6 +138,8 @@ std::pair<sycl::event, sycl::event>
     check_same_dtype(&dst, &values, names);
     check_has_dtype(&mask, td_ns::typenum_t::BOOL, names);
 
+    // TODO: redundant with the shape check below;
+    // use `check_same_shape` later
     check_same_size({&dst, &mask}, names);
     const int nd = dst.get_ndim();
     check_num_dims({&mask}, nd, names);
