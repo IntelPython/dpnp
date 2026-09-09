@@ -191,23 +191,37 @@ def dpnp_linspace(
     step_num = (num - 1) if endpoint else num
 
     if dpnp.isscalar(start) and dpnp.isscalar(stop):
-        # Call linspace() function for scalars.
-        usm_res = dpt.linspace(
-            start,
-            stop,
-            num,
-            dtype=dt,
-            usm_type=_usm_type,
-            sycl_queue=sycl_queue_normalized,
-            endpoint=endpoint,
-        )
+        if start == stop:
+            # equal endpoints => constant array + zero step
+            usm_res = dpt.full(
+                num,
+                start,
+                dtype=dt,
+                usm_type=_usm_type,
+                sycl_queue=sycl_queue_normalized,
+            )
 
-        # calculate the used step to return
-        if retstep is True:
-            if step_num > 0:
-                step = (stop - start) / step_num
-            else:
-                step = dpnp.nan
+            # calculate the used step to return
+            if retstep is True:
+                step = dt.type(0) if step_num > 0 else dpnp.nan
+        else:
+            # Call linspace() function for scalars.
+            usm_res = dpt.linspace(
+                start,
+                stop,
+                num,
+                dtype=dt,
+                usm_type=_usm_type,
+                sycl_queue=sycl_queue_normalized,
+                endpoint=endpoint,
+            )
+
+            # calculate the used step to return
+            if retstep is True:
+                if step_num > 0:
+                    step = (stop - start) / step_num
+                else:
+                    step = dpnp.nan
     else:
         usm_start = dpt.asarray(
             start,
@@ -219,7 +233,9 @@ def dpnp_linspace(
             stop, dtype=dt, usm_type=_usm_type, sycl_queue=sycl_queue_normalized
         )
 
-        delta = usm_stop - usm_start
+        # zero the delta where endpoints coincide, else `inf - inf = NaN`
+        # propagates (NaN != NaN untouched)
+        delta = dpt.where((usm_stop == usm_start), 0, (usm_stop - usm_start))
 
         usm_res = dpt.arange(
             0,
