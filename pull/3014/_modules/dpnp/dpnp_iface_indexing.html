@@ -2973,6 +2973,7 @@
 
     <span class="n">usm_values</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">as_usm_ndarray</span><span class="p">(</span>
         <span class="n">values</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">usm_a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
         <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_a</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
         <span class="n">sycl_queue</span><span class="o">=</span><span class="n">usm_a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
     <span class="p">)</span>
@@ -2995,6 +2996,12 @@
         <span class="n">usm_values_1d</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
             <span class="n">usm_values_1d</span><span class="p">,</span> <span class="n">usm_a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">"safe"</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
+
+    <span class="c1"># copy read operands overlapping in-place `a` to allow overlap like NumPy</span>
+    <span class="k">if</span> <span class="n">ti</span><span class="o">.</span><span class="n">_array_overlap</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">usm_values_1d</span><span class="p">):</span>
+        <span class="n">usm_values_1d</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">usm_values_1d</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">"C"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ti</span><span class="o">.</span><span class="n">_array_overlap</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">usm_mask</span><span class="p">):</span>
+        <span class="n">usm_mask</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">usm_mask</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">"C"</span><span class="p">)</span>
 
     <span class="n">_</span><span class="p">,</span> <span class="n">exec_q</span> <span class="o">=</span> <span class="n">get_usm_allocations</span><span class="p">([</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">usm_mask</span><span class="p">,</span> <span class="n">usm_values_1d</span><span class="p">])</span>
     <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpu</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">exec_q</span><span class="p">]</span>
