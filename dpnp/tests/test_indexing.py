@@ -1265,14 +1265,14 @@ class TestPutMask:
         assert_array_equal(ia, a)
 
     @pytest.mark.parametrize("dt", get_integer_dtypes())
-    @pytest.mark.parametrize("value", [3.7, 2.5])
-    def test_scalar_values_unsafe_cast(self, dt, value):
+    @pytest.mark.parametrize("values", [3.7, 2.5, [2.0, 1.5]])
+    def test_values_unsafe_cast(self, dt, values):
         a = generate_random_numpy_array((2, 3), dtype=dt)
         mask = generate_random_numpy_array((2, 3), dtype=dpnp.bool)
         ia, imask = dpnp.array(a), dpnp.array(mask)
 
-        numpy.putmask(a, mask, value)
-        dpnp.putmask(ia, imask, value)
+        numpy.putmask(a, mask, values)
+        dpnp.putmask(ia, imask, values)
         assert_array_equal(ia, a)
 
     @pytest.mark.parametrize("mask_dt", get_integer_dtypes())

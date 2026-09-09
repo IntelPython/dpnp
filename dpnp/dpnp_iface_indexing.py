@@ -1873,6 +1873,7 @@ def putmask(a, /, mask, values):
 
     usm_values = dpnp.as_usm_ndarray(
         values,
+        dtype=usm_a.dtype,
         usm_type=usm_a.usm_type,
         sycl_queue=usm_a.sycl_queue,
     )
