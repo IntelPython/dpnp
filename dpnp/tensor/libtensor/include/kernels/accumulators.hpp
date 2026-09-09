@@ -76,8 +76,8 @@ struct NonZeroIndicator
         static constexpr outputT out_zero(0);
 
         if constexpr (std::is_same_v<inputT, bool>) {
-            // NumPy treats any non-zero byte as True, while a plain
-            // comparison may fold into a raw byte load, see gh-2121
+            // NumPy treats any non-zero byte as True; read the raw byte
+            // rather than the bool value, see gh-2121
             const std::uint8_t u = sycl::bit_cast<std::uint8_t>(val);
             return (u == std::uint8_t{0}) ? out_zero : out_one;
         }
