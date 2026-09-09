@@ -1162,8 +1162,8 @@ def _norm_int_axis(x, ord, axis, keepdims):
         return dpnp.abs(x).sum(axis=axis, keepdims=keepdims)
     if ord is None or ord == 2:
         # special case for speedup
-        s = (dpnp.conj(x) * x).real
-        return dpnp.sqrt(dpnp.sum(s, axis=axis, keepdims=keepdims))
+        s = dpnp.sum((dpnp.conj(x) * x).real, axis=axis, keepdims=keepdims)
+        return dpnp.sqrt(s, out=s)
     if isinstance(ord, (int, float)):
         absx = dpnp.abs(x)
         absx **= ord
@@ -1215,7 +1215,8 @@ def _norm_tuple_axis(x, ord, row_axis, col_axis, keepdims):
             row_axis -= 1
         ret = dpnp.abs(x).sum(axis=col_axis).min(axis=row_axis)
     elif ord in [None, "fro", "f"]:
-        ret = dpnp.sqrt(dpnp.sum((dpnp.conj(x) * x).real, axis=axis))
+        ret = dpnp.sum((dpnp.conj(x) * x).real, axis=axis)
+        ret = dpnp.sqrt(ret, out=ret)
     elif ord == "nuc":
         ret = _multi_svd_norm(x, row_axis, col_axis, dpnp.sum)
     else:
@@ -2360,7 +2361,7 @@ def dpnp_norm(x, ord=None, axis=None, keepdims=False):
                 sqnorm = dpnp.dot(x_real, x_real) + dpnp.dot(x_imag, x_imag)
             else:
                 sqnorm = dpnp.dot(x, x)
-            ret = dpnp.sqrt(sqnorm)
+            ret = dpnp.sqrt(sqnorm, out=sqnorm)
             if keepdims:
                 ret = ret.reshape((1,) * ndim)
             return ret
