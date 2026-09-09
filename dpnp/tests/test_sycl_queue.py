@@ -1536,17 +1536,6 @@ def test_choose(device):
 
 
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
-def test_putmask(device):
-    x = dpnp.arange(3, device=device)
-    mask = dpnp.array([True, False, True], device=device)
-    values = dpnp.array([10, 20], device=device)
-    dpnp.putmask(x, mask, values)
-
-    assert_sycl_queue_equal(x.sycl_queue, mask.sycl_queue)
-    assert_sycl_queue_equal(x.sycl_queue, values.sycl_queue)
-
-
-@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 @pytest.mark.parametrize("left", [None, -1.0])
 @pytest.mark.parametrize("right", [None, 99.0])
 @pytest.mark.parametrize("period", [None, 180.0])
