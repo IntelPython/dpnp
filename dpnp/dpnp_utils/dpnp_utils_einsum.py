@@ -1124,8 +1124,7 @@ def dpnp_einsum(
     # no more raises
     if len(operands) >= 2:
         if any(arr.size == 0 for arr in operands):
-            # every term of the sum is empty, so the result is all zeros;
-            # "K" has no layout to keep here, and NumPy falls back to "C"
+            # NumPy falls back to "C" for "K" here
             arr_out = dpnp.zeros(
                 tuple(dimension_dict[label] for label in output_subscript),
                 dtype=result_dtype,
@@ -1244,13 +1243,11 @@ def dpnp_einsum(
         [dimension_dict[label] for label in output_subscript]
     )
 
-    # a unary einsum without summation returns a view, as NumPy does for every
-    # `order`
+    # a view is returned for any `order`, the same way NumPy does
     if not returns_view:
-        if order == "K" and not all_f_contiguous:
-            # NumPy copies the result into a new c-contiguous array, while
-            # the matmul above leaves a permuted one; for all-f-contiguous
-            # operands it keeps a layout chosen per contraction, so "K" stays
+        if order == "K" and optimize is False and not all_f_contiguous:
+            # only the unoptimized path of NumPy copies into a c-contiguous
+            # array, the optimized one is matmul-based, as dpnp always is
             order = "C"
         arr_out = dpnp.asarray(arr_out, order=order)
     assert returns_view or arr_out.dtype == result_dtype

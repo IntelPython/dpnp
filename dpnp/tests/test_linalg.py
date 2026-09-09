@@ -1714,16 +1714,54 @@ class TestEinsum:
         assert result.flags.c_contiguous
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.parametrize("optimize", [False, True, "greedy", "optimal"])
     @pytest.mark.parametrize("order", ["C", "F", "A", "K", None])
     @pytest.mark.parametrize("order1", ["C", "F"])
     @pytest.mark.parametrize("order2", ["C", "F"])
-    def test_contraction_order(self, order, order1, order2):
+    def test_contraction_order(self, optimize, order, order1, order2):
+        if order is None and optimize is not False:
+            pytest.skip("numpy raises AttributeError for order=None here")
         a = generate_random_numpy_array((4, 5), order=order1)
         b = generate_random_numpy_array((5, 6), order=order2)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
-        result = dpnp.einsum("ij,jk->ik", ia, ib, order=order)
-        expected = numpy.einsum("ij,jk->ik", a, b, order=order)
+        result = dpnp.einsum(
+            "ij,jk->ik", ia, ib, order=order, optimize=optimize
+        )
+        expected = numpy.einsum(
+            "ij,jk->ik", a, b, order=order, optimize=optimize
+        )
+        assert result.flags.c_contiguous == expected.flags.c_contiguous
+        assert result.flags.f_contiguous == expected.flags.f_contiguous
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("optimize", [True, "greedy", "optimal"])
+    @pytest.mark.parametrize(
+        "subscripts, shapes",
+        [
+            ("...ft,mf->...mt", [(2, 3, 5), (4, 3)]),
+            ("lk,lpq->kpq", [(3, 4), (3, 5, 6)]),
+            ("ijk,jkl->il", [(2, 3, 4), (3, 4, 5)]),
+            ("ij,jk,kl->il", [(4, 5), (5, 6), (6, 7)]),
+        ],
+    )
+    @pytest.mark.parametrize("order1", ["C", "F"])
+    @pytest.mark.parametrize("order2", ["C", "F"])
+    def test_contraction_order_k_optimize(
+        self, optimize, subscripts, shapes, order1, order2
+    ):
+        # NumPy only copies the result into a c-contiguous array on its
+        # unoptimized path; an optimized one is matmul-based, as dpnp always
+        # is, and keeps the permuted layout that the contraction produces
+        orders = [order1, order2] + ["C"] * (len(shapes) - 2)
+        arrays = [
+            generate_random_numpy_array(shape, order=o)
+            for shape, o in zip(shapes, orders)
+        ]
+        iarrays = [dpnp.array(a, order=o) for a, o in zip(arrays, orders)]
+
+        result = dpnp.einsum(subscripts, *iarrays, optimize=optimize)
+        expected = numpy.einsum(subscripts, *arrays, optimize=optimize)
         assert result.flags.c_contiguous == expected.flags.c_contiguous
         assert result.flags.f_contiguous == expected.flags.f_contiguous
         assert_dtype_allclose(result, expected)
