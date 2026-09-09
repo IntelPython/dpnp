@@ -1897,6 +1897,12 @@ def putmask(a, /, mask, values):
             usm_values_1d, usm_a.dtype, casting="safe", copy=False
         )
 
+    # copy read operands overlapping in-place `a` to allow overlap like NumPy
+    if ti._array_overlap(usm_a, usm_values_1d):
+        usm_values_1d = dpt.copy(usm_values_1d, order="C")
+    if ti._array_overlap(usm_a, usm_mask):
+        usm_mask = dpt.copy(usm_mask, order="C")
+
     _, exec_q = get_usm_allocations([usm_a, usm_mask, usm_values_1d])
     _manager = dpu.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events

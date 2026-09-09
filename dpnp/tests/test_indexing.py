@@ -1358,6 +1358,14 @@ class TestPutMask:
         dpnp.putmask(ia, [1, 0, 1, 0, 1, 0], [7, 8])
         assert_array_equal(ia, a)
 
+    def test_overlapping_values(self):
+        a = numpy.arange(10, dtype="i4")
+        ia = dpnp.array(a)
+
+        numpy.putmask(a[:6], a[:6] > 1, a[4:7])
+        dpnp.putmask(ia[:6], ia[:6] > 1, ia[4:7])
+        assert_array_equal(ia, a)
+
     def test_errors(self):
         ia = dpnp.arange(6, dtype="i4")
 
