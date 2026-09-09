@@ -1041,10 +1041,15 @@ class TestNonstandardBoolBytes:
         assert_array_equal(dpnp.isin(ia, ib), numpy.isin(a, b))
 
     def test_searchsorted(self):
+        # dpnp normalizes, so the needles compare as True; NumPy orders bool
+        # by raw byte, so only the normalized comparison matches
         a, ia = self._views([0, 0, 1, 1])
         v, iv = self._views([2, 255, 0])
 
-        assert_array_equal(dpnp.searchsorted(ia, iv), numpy.searchsorted(a, v))
+        expected = numpy.searchsorted(
+            a.view(numpy.uint8) != 0, v.view(numpy.uint8) != 0
+        )
+        assert_array_equal(dpnp.searchsorted(ia, iv), expected)
 
     def test_argsort_is_logically_ordered(self):
         raw = numpy.array([0, 1, 2, 255, 3, 0], dtype=numpy.uint8)
