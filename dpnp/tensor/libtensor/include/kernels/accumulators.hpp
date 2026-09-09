@@ -933,10 +933,12 @@ sycl::event update_local_chunks(sycl::queue &exec_q,
                                 sycl::event dependent_event)
 {
     static constexpr NoOpIndexer out_indexer{};
-    static constexpr NoOpIndexer iter_out_indexer{};
+    // src rows stride by src_size; NoOp iter offset only ok for iter_nelems==1
+    const Strided1DIndexer iter_out_indexer{/* size */ iter_nelems,
+                                            /* step */ src_size};
 
     return final_update_local_chunks<UpdateKernelName, outputT, n_wi,
-                                     NoOpIndexer, NoOpIndexer, ScanOpT>(
+                                     Strided1DIndexer, NoOpIndexer, ScanOpT>(
         exec_q, iter_nelems, src, src_size, local_scans, chunk_size,
         local_stride, iter_out_indexer, out_indexer, dependent_event);
 }
