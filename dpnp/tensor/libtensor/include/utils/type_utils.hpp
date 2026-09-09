@@ -60,8 +60,8 @@ struct is_complex<
 template <typename T>
 inline constexpr bool is_complex_v = is_complex<T>::value;
 
-// NumPy reads any non-zero byte of a bool as True, while a plain comparison
-// may fold into a raw byte load, see gh-2121
+// NumPy reads any non-zero bool byte as True; a non-canonical byte
+// (not 0x00/0x01) used as a value would disagree, see gh-2121
 template <typename T>
 T normalize_bool(const T &v)
 {
