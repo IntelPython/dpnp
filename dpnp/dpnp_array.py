@@ -127,9 +127,26 @@ class dpnp_array:
             # or as USM memory allocation
             if isinstance(buffer, dpnp_array):
                 buffer = buffer.get_array()
-                offset += buffer._element_offset
 
-            if dtype is None and hasattr(buffer, "dtype"):
+            if isinstance(buffer, dpt.usm_ndarray):
+                if dtype is None:
+                    dtype = buffer.dtype
+
+                # `buffer._element_offset` is expressed in units of the
+                # buffer's own dtype, while `offset` is interpreted in units
+                # of `dtype`, so the displacement has to be rescaled through
+                # bytes whenever the two itemsizes differ
+                byte_offset = buffer._element_offset * buffer.itemsize
+                new_itemsize = dpnp.dtype(dtype).itemsize
+                add_offset, rem = divmod(byte_offset, new_itemsize)
+                if rem != 0:
+                    raise ValueError(
+                        "The offset of the buffer's data in memory is not "
+                        "a multiple of the requested dtype size and so the "
+                        "requested view is not possible"
+                    )
+                offset += add_offset
+            elif dtype is None and hasattr(buffer, "dtype"):
                 dtype = buffer.dtype
         else:
             buffer = usm_type

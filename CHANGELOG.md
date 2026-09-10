@@ -99,6 +99,7 @@ This release is compatible with NumPy 2.5.
 * Fixed `dpnp.cumsum`, `dpnp.cumprod`, and their `nan`/`cumulative_*` variants (including `dpnp.tensor.cumulative_sum`/`cumulative_prod`) silently returning incorrect results when accumulating along an axis of an array with more than one row [#3063](https://github.com/IntelPython/dpnp/pull/3063)
 * Fixed `dpnp.einsum` returning a result whose memory layout differs from NumPy for the default `order="K"`, and ignoring `out` and `order` for a contraction over a size-0 dimension [#3058](https://github.com/IntelPython/dpnp/pull/3058)
 * Fixed operations on a boolean array whose bytes are not `0x00`/`0x01` [#3055](https://github.com/IntelPython/dpnp/pull/3055)
+* Fixed the `dpnp.ndarray` constructor returning a view at the wrong address when `buffer=` has a non-zero USM element offset and either the requested `dtype` differs in itemsize or the buffer is a bare `dpnp.tensor.usm_ndarray` [#3066](https://github.com/IntelPython/dpnp/pull/3066)
 
 ### Security
 
