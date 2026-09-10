@@ -73,7 +73,9 @@ def sort(x, /, *, axis=-1, descending=False, stable=True, kind=None):
         descending (Optional[bool]):
             sort order. If `True`, the array must be sorted in descending
             order (by value). If `False`, the array must be sorted in
-            ascending order (by value). Default: `False`.
+            ascending order (by value). NaN values (and complex values with
+            a NaN component) are ordered to the end regardless of
+            `descending`. Default: `False`.
         stable (Optional[bool]):
             sort stability. If `True`, the returned array must maintain the
             relative order of `x` values which compare as equal. If `False`,
@@ -185,7 +187,9 @@ def argsort(x, axis=-1, descending=False, stable=True, kind=None):
         descending (Optional[bool]):
             sort order. If `True`, the array must be sorted in descending
             order (by value). If `False`, the array must be sorted in
-            ascending order (by value). Default: `False`.
+            ascending order (by value). NaN values (and complex values with
+            a NaN component) are ordered to the end regardless of
+            `descending`. Default: `False`.
         stable (Optional[bool]):
             sort stability. If `True`, the returned array must maintain the
             relative order of `x` values which compare as equal. If `False`,
