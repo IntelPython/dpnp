@@ -59,28 +59,26 @@ class TestArgsort:
         expected = numpy.argsort(a, kind="stable")
         assert_array_equal(result, expected)
 
+    @testing.with_requires("numpy>=2.5")
     @pytest.mark.parametrize("descending", [False, True])
-    def test_descending(self, descending):
-        a = numpy.repeat(numpy.arange(10), 10)
+    @pytest.mark.parametrize(
+        "dtype", get_integer_dtypes(all_int_types=True) + [dpnp.bool]
+    )
+    def test_descending_duplicates(self, dtype, descending):
+        # a stable argsort keeps the original relative order of equal
+        # elements in both ascending and descending order
+        if dtype == dpnp.bool:
+            values = [False, True]
+        else:
+            info = numpy.iinfo(dtype)
+            values = [info.min, 1, info.max]
+        a = numpy.array(values * 2, dtype=dtype)
         ia = dpnp.array(a)
 
         result = dpnp.argsort(ia, descending=descending)
-        if not descending:
-            expected = numpy.argsort(a, kind="stable")
-        else:
-            expected = numpy.flip(numpy.argsort(numpy.flip(a), kind="stable"))
-            expected = (a.shape[0] - 1) - expected
+        expected = numpy.argsort(a, stable=True, descending=descending)
         assert_array_equal(result, expected)
-
-        # test ndarray method
-        result = ia.argsort(descending=descending)
-        if not descending:
-            expected = a.argsort(kind="stable")
-        else:
-            a = numpy.flip(a)
-            expected = numpy.flip(a.argsort(kind="stable"))
-            expected = (a.shape[0] - 1) - expected
-        assert_array_equal(result, expected)
+        assert_array_equal(dpnp.sort(ia, descending=descending), a[expected])
 
     # `stable` keyword is supported in numpy 2.0 and above
     @testing.with_requires("numpy>=2.0")
@@ -545,23 +543,56 @@ class TestSort:
         expected = numpy.sort(a, kind="stable")
         assert_array_equal(result, expected)
 
+    @testing.with_requires("numpy>=2.5")
     @pytest.mark.parametrize("descending", [False, True])
     def test_descending(self, descending):
         a = numpy.repeat(numpy.arange(10), 10)
         ia = dpnp.array(a)
 
         result = dpnp.sort(ia, descending=descending)
-        expected = numpy.sort(a, kind="stable")
-        if descending:
-            expected = numpy.flip(expected)
+        expected = numpy.sort(a, stable=True, descending=descending)
         assert_array_equal(result, expected)
 
         # test ndarray method
         ia.sort(descending=descending)
-        a.sort(kind="stable")
-        if descending:
-            a = numpy.flip(a)
+        a.sort(stable=True, descending=descending)
         assert_array_equal(ia, a)
+
+    @testing.with_requires("numpy>=2.5")
+    @pytest.mark.parametrize("descending", [False, True])
+    @pytest.mark.parametrize("dtype", get_float_dtypes(no_float16=False))
+    def test_descending_nan(self, dtype, descending):
+        # NaNs are sorted to the end for both ascending and descending order
+        a = numpy.linspace(-50, 50, 101).astype(dtype)
+        a[::10] = numpy.nan
+        ia = dpnp.array(a)
+
+        result = dpnp.sort(ia, descending=descending)
+        expected = numpy.sort(a, stable=True, descending=descending)
+        assert_array_equal(result, expected)
+
+    @testing.with_requires("numpy>=2.5")
+    @pytest.mark.parametrize("descending", [False, True])
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    def test_descending_complex_nan(self, dtype, descending):
+        # NaN-containing complex values sort to the end in groups
+        # (no nan) -> (imag nan) -> (real nan) -> (all nan) for both orders;
+        # finite values keep lexicographic order (real part more significant)
+        arange = numpy.tile(numpy.arange(25), 4)
+        no_nans = arange + 1j * arange
+        im_nans = arange + complex(0, numpy.nan)
+        re_nans = complex(numpy.nan, 0) + 1j * arange
+        all_nans = numpy.full(100, complex(numpy.nan, numpy.nan))
+        a = numpy.concatenate((no_nans, im_nans, re_nans, all_nans))
+        a = a.astype(dtype)
+
+        rng = numpy.random.default_rng(0)
+        rng.shuffle(a)
+        ia = dpnp.array(a)
+
+        result = dpnp.sort(ia, descending=descending)
+        expected = numpy.sort(a, stable=True, descending=descending)
+        assert_array_equal(result, expected)
 
     # `stable` keyword is supported in numpy 2.0 and above
     @testing.with_requires("numpy>=2.0")
