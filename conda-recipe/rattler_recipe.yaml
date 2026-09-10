@@ -1,0 +1,121 @@
+schema_version: 1
+
+context:
+  max_compiler_and_mkl_version: ${{ env.get("MAX_BUILD_CMPL_MKL_VERSION", default="2027.0a0") }}
+  required_compiler_version: ${{ env.get("MIN_BUILD_CMPL_VERSION", default="2026.1.1") }}
+  required_mkl_version: "2026.0"
+  required_dpctl_version: 0.23.0dev0
+
+package:
+  name: dpnp
+  version: ${{ env.get("GIT_DESCRIBE_TAG") }}
+
+source:
+  path: ..
+
+build:
+  number: ${{ env.get("GIT_DESCRIBE_NUMBER") }}
+  script:
+    env:
+      WHEELS_OUTPUT_FOLDER: ${{ env.get("WHEELS_OUTPUT_FOLDER", default="") }}
+      OVERRIDE_INTEL_IPO: ${{ env.get("OVERRIDE_INTEL_IPO", default="") }}
+      # conda-build used to forward GIT_DESCRIBE_NUMBER into the build script
+      # automatically; rattler-build does not, so bld.bat's
+      # `wheel tags --remove --build %GIT_DESCRIBE_NUMBER%` was silently
+      # getting an empty value on Windows, which made that command fail and
+      # broke the wheel install step further down the script.
+      GIT_DESCRIBE_NUMBER: ${{ env.get("GIT_DESCRIBE_NUMBER") }}
+  dynamic_linking:
+    missing_dso_allowlist:
+      - "*DPCTLSyclInterface*"
+      - "*/dpnp_backend_c.dll"
+
+requirements:
+  host:
+    - python
+    - pip >=25.0
+    - pybind11 >=3.0.2
+    - python-build>=1.2.2
+    - cmake>=3.31.6
+    - cython>=3.1.0
+    - dpctl >=${{ required_dpctl_version }}
+    - if: not win
+      then: ninja>=1.11.1
+    - numpy
+    - scikit-build>=0.18.1
+    - setuptools>=79.0.1
+    - wheel>=0.45.1
+    - versioneer ==0.29
+    # versioneer dependency
+    - if: match(python, "<3.11")
+      then: tomli
+    # Do not use pyproject.toml for setting dependencies on OneAPI packages
+    - mkl-devel-dpcpp >=${{ required_mkl_version }},<${{ max_compiler_and_mkl_version }}
+    - onedpl-devel
+    - tbb-devel
+    - if: win
+      then: opencl-headers >=2025.06.13
+  build:
+    - ${{ compiler('cxx') }}
+    - ${{ stdlib('c') }}
+    - ${{ compiler('dpcpp') }} >=${{ required_compiler_version }},<${{ max_compiler_and_mkl_version }}
+  run:
+    - python
+    - ${{ pin_compatible('dpctl', lower_bound='x.x.x', upper_bound=None) }}
+    - ${{ pin_compatible('dpcpp-cpp-rt', lower_bound='x.x', upper_bound='x') }}
+    - ${{ pin_compatible('intel-sycl-rt', lower_bound='x.x', upper_bound='x') }}
+    - ${{ pin_compatible('intel-cmplr-lib-rt', lower_bound='x.x', upper_bound='x') }}
+    - ${{ pin_compatible('mkl', lower_bound='x.x', upper_bound='x') }}
+    - ${{ pin_compatible('onemkl-sycl-blas', lower_bound='x.x', upper_bound='x') }}
+    - ${{ pin_compatible('onemkl-sycl-dft', lower_bound='x.x', upper_bound='x') }}
+    - ${{ pin_compatible('onemkl-sycl-lapack', lower_bound='x.x', upper_bound='x') }}
+    - ${{ pin_compatible('onemkl-sycl-rng', lower_bound='x.x', upper_bound='x') }}
+    - ${{ pin_compatible('onemkl-sycl-vm', lower_bound='x.x', upper_bound='x') }}
+    - numpy
+    - if: linux
+      then: ocl-icd-system
+    - if: win
+      then: khronos-opencl-icd-loader
+  ignore_run_exports:
+    by_name:
+      - dpctl
+      - numpy
+      - python
+      # building with Intel DPC++ and do not import the MSVC runtime DLLs
+      - if: win
+        then: vc14_runtime
+      - if: win
+        then: ucrt
+
+tests:
+  - script:
+      - python -c "import dpnp; print(dpnp.__version__)"
+    requirements:
+      run:
+        - pytest
+        - setuptools
+        - if: match(python, "<3.14")
+          then: scipy
+
+about:
+  license: BSD-3-Clause
+  license_file: LICENSE.txt
+  summary: Data Parallel Extension for NumPy
+  description: |
+    <strong>LEGAL NOTICE: Use of this software package is subject to the
+    software license agreement (as set forth above, in the license section of
+    the installed Conda package and/or the README file) and all notices,
+    disclaimers or license terms for third party or open source software
+    included in or with the software.</strong>
+    <br/><br/>
+    EULA: <a href="https://opensource.org/licenses/BSD-3-Clause" target="_blank">BSD-3-Clause</a>
+    <br/><br/>
+
+
+  homepage: https://github.com/IntelPython/dpnp
+
+extra:
+  recipe-maintainers:
+    - antonwolfy
+    - vlad-perevezentsev
+    - ndgrigorian
