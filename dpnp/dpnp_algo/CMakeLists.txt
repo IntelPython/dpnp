@@ -27,10 +27,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-set(dpnp_algo_pyx_deps
-    ${CMAKE_CURRENT_SOURCE_DIR}/dpnp_algo_sorting.pxi
-    ${CMAKE_CURRENT_SOURCE_DIR}/dpnp_algo_indexing.pxi
-)
+set(dpnp_algo_pyx_deps ${CMAKE_CURRENT_SOURCE_DIR}/dpnp_algo_sorting.pxi)
 
 build_dpnp_cython_ext_with_backend(
   dpnp_algo
