@@ -33,6 +33,7 @@ import pytest
 from numpy.testing import assert_array_equal
 
 import dpnp.tensor as dpt
+from dpnp.tests.helper import numpy_version
 
 from .helper import (
     get_queue_or_skip,
@@ -356,6 +357,21 @@ def test_sort_complex_fp_nan(dtype):
         assert np.array_equal(
             r1.view(np.int64), r2.view(np.int64)
         ), f"Failed for {i} and {j}"
+
+    # complex values with a NaN component sort to the end for descending
+    # order too, matching NumPy (`descending` requires numpy>=2.5)
+    if numpy_version() >= "2.5.0":
+        s = dpt.sort(inp, descending=True)
+        expected = np.sort(dpt.asnumpy(inp), descending=True)
+        assert np.allclose(dpt.asnumpy(s), expected, equal_nan=True)
+
+        m1 = dpt.asnumpy(dpt.sort(sub_arrs, axis=1, descending=True))
+        m2 = np.sort(dpt.asnumpy(sub_arrs), axis=1, descending=True)
+        for k in range(len(pairs)):
+            i, j = pairs[k]
+            assert np.array_equal(
+                m1[k].view(np.int64), m2[k].view(np.int64)
+            ), f"Failed for {i} and {j}"
 
 
 def test_radix_sort_size_1_axis():
