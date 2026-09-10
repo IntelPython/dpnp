@@ -319,6 +319,10 @@ def top_k(x, k, /, *, axis=None, mode="largest"):
             - `"largest"`: return the `k` largest elements.
             - `"smallest"`: return the `k` smallest elements.
 
+            NaN values (and complex values with a NaN component) are treated
+            as the smallest, so `"largest"` does not return them ahead of
+            finite values.
+
             Default: `"largest"`.
 
     Returns:
