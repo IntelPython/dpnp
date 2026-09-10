@@ -309,8 +309,9 @@ def test_sort_real_fp_nan(dtype, kind):
 
     s = dpt.sort(x, descending=True, kind=kind)
 
+    # NaNs sort to the end for descending order too matching NumPy
     expected = dpt.asarray(
-        [dpt.nan, dpt.nan, 0.2, 0.1, -0.0, 0.0, -0.1, -0.3], dtype=dtype
+        [0.2, 0.1, -0.0, 0.0, -0.1, -0.3, dpt.nan, dpt.nan], dtype=dtype
     )
 
     assert dpt.allclose(s, expected, equal_nan=True)
