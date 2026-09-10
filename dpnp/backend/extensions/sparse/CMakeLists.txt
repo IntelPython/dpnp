@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2024, Intel Corporation
+# Copyright (c) 2026, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -27,13 +27,10 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-set(python_module_name _blas_impl)
+set(python_module_name _sparse_impl)
 set(_module_src
-    ${CMAKE_CURRENT_SOURCE_DIR}/blas_py.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/gemm.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/gemm_batch.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sparse_py.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gemv.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/syrk.cpp
 )
 
 pybind11_add_module(${python_module_name} MODULE ${_module_src})
@@ -108,11 +105,8 @@ endif()
 if(_use_onemath)
     target_link_libraries(${python_module_name} PRIVATE ${ONEMATH_LIB})
     target_compile_options(${python_module_name} PRIVATE -DUSE_ONEMATH)
-    if(_use_onemath_cuda)
-        target_compile_options(${python_module_name} PRIVATE -DUSE_ONEMATH_CUBLAS)
-    endif()
 else()
-    target_link_libraries(${python_module_name} PUBLIC MKL::MKL_SYCL::BLAS)
+    target_link_libraries(${python_module_name} PUBLIC MKL::MKL_SYCL::SPARSE)
 endif()
 
 if(DPNP_WITH_REDIST)
@@ -122,4 +116,4 @@ if(DPNP_WITH_REDIST)
     )
 endif()
 
-install(TARGETS ${python_module_name} DESTINATION "dpnp/backend/extensions/blas")
+install(TARGETS ${python_module_name} DESTINATION "dpnp/backend/extensions/sparse")
