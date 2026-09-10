@@ -471,4 +471,77 @@ sycl::event binary_inplace_row_matrix_broadcast_impl(
     return comp_ev;
 }
 
+// In-place column-broadcast: C-contiguous matrix += column vector.
+// Scalar kernel: one work-item per element, mat[gid] += vec[gid / n1] (n1 = row
+// length so gid/n1 = row index). No sub-group collectives -> correct for any
+// n1.
+template <typename argT, typename resT, typename BinaryOperatorT>
+struct BinaryInplaceColMatrixBroadcastingFunctor
+{
+private:
+    const argT *vec; // (n0,) contiguous column vector, one scalar per row
+    resT *mat;       // (n0, n1) C-contiguous matrix
+    std::size_t n1;  // contiguous row length
+
+public:
+    BinaryInplaceColMatrixBroadcastingFunctor(const argT *col_tp,
+                                              resT *mat_tp,
+                                              std::size_t n_elems_in_row)
+        : vec(col_tp), mat(mat_tp), n1(n_elems_in_row)
+    {
+    }
+
+    void operator()(sycl::id<1> wid) const
+    {
+        BinaryOperatorT op{};
+        const std::size_t gid = wid.get(0);
+        op(mat[gid], vec[gid / n1]);
+    }
+};
+
+typedef sycl::event (*binary_inplace_col_matrix_broadcast_impl_fn_ptr_t)(
+    sycl::queue &,
+    std::vector<sycl::event> &,
+    std::size_t,
+    std::size_t,
+    const char *,
+    ssize_t,
+    char *,
+    ssize_t,
+    const std::vector<sycl::event> &);
+
+template <typename argT,
+          typename resT,
+          template <typename T1,
+                    typename T3> class BinaryInplaceColMatrixBroadcastFunctorT,
+          template <typename T1, typename T3> class kernel_name>
+sycl::event binary_inplace_col_matrix_broadcast_impl(
+    sycl::queue &exec_q,
+    std::vector<sycl::event> &host_tasks,
+    std::size_t n0,
+    std::size_t n1,
+    const char *vec_p,
+    ssize_t vec_offset,
+    char *mat_p,
+    ssize_t mat_offset,
+    const std::vector<sycl::event> &depends = {})
+{
+    const argT *vec = reinterpret_cast<const argT *>(vec_p) + vec_offset;
+    resT *mat = reinterpret_cast<resT *>(mat_p) + mat_offset;
+    (void)host_tasks; // no padding/temporary needed for column broadcast
+
+    const std::size_t n_elems = n0 * n1;
+
+    sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+
+        using Impl = BinaryInplaceColMatrixBroadcastFunctorT<argT, resT>;
+
+        cgh.parallel_for<class kernel_name<argT, resT>>(sycl::range<1>(n_elems),
+                                                        Impl(vec, mat, n1));
+    });
+
+    return comp_ev;
+}
+
 } // namespace dpnp::tensor::kernels::elementwise_common
