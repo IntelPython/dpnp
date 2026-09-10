@@ -44,6 +44,7 @@
 #include "utils/offset_utils.hpp"
 #include "utils/sycl_alloc_utils.hpp"
 #include "utils/sycl_utils.hpp"
+#include "utils/type_utils.hpp"
 
 #include "kernels/alignment.hpp"
 #include "kernels/dpnp_tensor_types.hpp"
@@ -59,6 +60,22 @@ using dpnp::tensor::kernels::alignment_utils::required_alignment;
 
 using dpnp::tensor::sycl_utils::sub_group_load;
 using dpnp::tensor::sycl_utils::sub_group_store;
+using dpnp::tensor::type_utils::normalize_bool;
+
+// a bool lhs is read as a value by the functors, so normalize it too and write
+// the result back as a canonical byte, see gh-2121
+template <typename OpT, typename resT, typename argT>
+void apply_inplace(OpT &op, resT &res, const argT &rhs)
+{
+    if constexpr (std::is_same_v<resT, bool>) {
+        resT tmp = normalize_bool(res);
+        op(tmp, normalize_bool(rhs));
+        res = tmp;
+    }
+    else {
+        op(res, normalize_bool(rhs));
+    }
+}
 
 template <typename argT,
           typename resT,
@@ -88,10 +105,12 @@ public:
         /* Each work-item processes vec_sz elements, contiguous in memory */
         /* NB: Workgroup size must be divisible by sub-group size */
 
+        // bool is excluded from the vector path: a byte other than 0x00/0x01
+        // cannot be normalized element-wise there, see gh-2121
         if constexpr (enable_sg_loadstore &&
                       BinaryInplaceOperatorT::supports_sg_loadstore::value &&
                       BinaryInplaceOperatorT::supports_vec::value &&
-                      (vec_sz > 1)) {
+                      !std::is_same_v<argT, bool> && (vec_sz > 1)) {
             auto sg = ndit.get_sub_group();
             std::uint16_t sgSize = sg.get_max_local_range()[0];
 
@@ -154,7 +173,7 @@ public:
                         sub_group_load<vec_sz>(sg, lhs_multi_ptr);
 #pragma unroll
                     for (std::uint8_t vec_id = 0; vec_id < vec_sz; ++vec_id) {
-                        op(res_vec[vec_id], arg_vec[vec_id]);
+                        apply_inplace(op, res_vec[vec_id], arg_vec[vec_id]);
                     }
                     sub_group_store<vec_sz>(sg, res_vec, lhs_multi_ptr);
                 }
@@ -162,7 +181,7 @@ public:
             else {
                 const std::size_t lane_id = sg.get_local_id()[0];
                 for (std::size_t k = base + lane_id; k < nelems_; k += sgSize) {
-                    op(lhs[k], rhs[k]);
+                    apply_inplace(op, lhs[k], rhs[k]);
                 }
             }
         }
@@ -176,7 +195,7 @@ public:
                 (gid / sgSize) * (elems_per_sg - sgSize) + gid;
             const std::size_t end = std::min(nelems_, start + elems_per_sg);
             for (std::size_t offset = start; offset < end; offset += sgSize) {
-                op(lhs[offset], rhs[offset]);
+                apply_inplace(op, lhs[offset], rhs[offset]);
             }
         }
     }
@@ -210,7 +229,7 @@ public:
         const auto &lhs_offset = two_offsets_.get_second_offset();
 
         BinaryInplaceOperatorT op{};
-        op(lhs[lhs_offset], rhs[inp_offset]);
+        apply_inplace(op, lhs[lhs_offset], rhs[inp_offset]);
     }
 };
 
@@ -257,14 +276,14 @@ public:
             const argT vec_el = sub_group_load(sg, in_multi_ptr);
             resT mat_el = sub_group_load(sg, out_multi_ptr);
 
-            op(mat_el, vec_el);
+            apply_inplace(op, mat_el, vec_el);
 
             sub_group_store(sg, mat_el, out_multi_ptr);
         }
         else {
             const std::size_t start = base + sg.get_local_id()[0];
             for (std::size_t k = start; k < n_elems; k += sgSize) {
-                op(mat[k], padded_vec[k % n1]);
+                apply_inplace(op, mat[k], padded_vec[k % n1]);
             }
         }
     }

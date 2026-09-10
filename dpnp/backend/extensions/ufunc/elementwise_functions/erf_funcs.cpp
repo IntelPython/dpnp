@@ -87,7 +87,7 @@ struct OutputType
 static int output_typeid_vector[td_ns::num_types];
 
 template <typename fnT, typename T>
-struct TypeMapFactory
+struct ErfTypeMapFactory
 {
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
@@ -223,7 +223,7 @@ MACRO_DEFINE_IMPL(erfcinv, Erfcinv);
 void init_erf_funcs(py::module_ m)
 {
     using impl::output_typeid_vector;
-    init_dispatch_vector<int, impl::TypeMapFactory>(output_typeid_vector);
+    init_dispatch_vector<int, impl::ErfTypeMapFactory>(output_typeid_vector);
 
     auto erf_result_type_pyapi = [&](const py::dtype &dtype) {
         return py_int::py_unary_ufunc_result_type(dtype, output_typeid_vector);

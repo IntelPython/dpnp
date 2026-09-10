@@ -69,7 +69,7 @@ repos:
     -   id: black
         exclude: "dpnp/_version.py"
 -   repo: https://github.com/pycqa/isort
-    rev: 9.0.0b5
+    rev: 9.0.1
     hooks:
     -   id: isort
         name: isort (python)
@@ -89,7 +89,7 @@ repos:
             - flake8-docstrings==1.7.0
             - flake8-bugbear==25.11.29
 -   repo: https://github.com/pre-commit/mirrors-clang-format
-    rev: v22.1.8
+    rev: v23.1.0
     hooks:
     -   id: clang-format
         args: ["-i"]
@@ -128,13 +128,13 @@ repos:
     hooks:
     -   id: actionlint
 -   repo: https://github.com/BlankSpruce/gersemi-pre-commit
-    rev: 0.28.0
+    rev: 0.28.1
     hooks:
     -   id: gersemi
         exclude: "dpnp/backend/cmake/Modules/"
         args: ["-i", "-l", "88", "--no-warn-about-unknown-commands"]
 -   repo: https://github.com/MarcoGorelli/cython-lint
-    rev: v0.21.0
+    rev: v0.21.1
     hooks:
     -   id: cython-lint
     -   id: double-quote-cython-strings

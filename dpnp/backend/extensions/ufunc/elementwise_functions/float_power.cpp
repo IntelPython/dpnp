@@ -85,7 +85,7 @@ struct OutputType
 static int float_power_output_typeid_table[td_ns::num_types][td_ns::num_types];
 
 template <typename fnT, typename T1, typename T2>
-struct TypeMapFactory
+struct FloatPowerTypeMapFactory
 {
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
@@ -96,7 +96,8 @@ struct TypeMapFactory
 
 static void populate_float_power_dispatch_tables(void)
 {
-    init_dispatch_table<int, TypeMapFactory>(float_power_output_typeid_table);
+    init_dispatch_table<int, FloatPowerTypeMapFactory>(
+        float_power_output_typeid_table);
 }
 } // namespace impl
 

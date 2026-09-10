@@ -466,7 +466,7 @@ def is_intel_numpy():
     Return True if Intel NumPy is used during testing.
 
     The check is based on MKL backend name stored in Build Dependencies, where
-    in case of Intel Numpy there "mkl" is expected at the beginning of the name
+    in case of Intel NumPy there "mkl" is expected at the beginning of the name
     for both BLAS and LAPACK (the full name is "mkl-dynamic-ilp64-iomp").
 
     """

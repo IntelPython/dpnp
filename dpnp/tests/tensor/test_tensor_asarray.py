@@ -187,7 +187,7 @@ def test_asarray_input_validation():
         # buffer to usm_ndarray requires a copy
         dpt.asarray(memoryview(np.arange(5)), copy=False)
     with pytest.raises(ValueError):
-        # Numpy array to usm_ndarray requires a copy
+        # NumPy array to usm_ndarray requires a copy
         dpt.asarray(np.arange(5), copy=False)
     with pytest.raises(ValueError):
         # Python sequence to usm_ndarray requires a copy

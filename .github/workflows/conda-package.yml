@@ -6,7 +6,8 @@ on:
       - master
   pull_request:
 
-permissions: read-all
+permissions:
+  contents: read
 
 env:
   package-name: dpnp
@@ -29,17 +30,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.10', '3.11', '3.12', '3.13']
-        os: [ubuntu-22.04, windows-2022]
+        python: ['3.12', '3.13']
+        os: [ubuntu-latest, windows-2022]
         include:
           - python: '3.14'
-            os: ubuntu-22.04
+            os: ubuntu-latest
             python_spec: '3.14.* *_cp314'
           - python: '3.14'
             os: windows-2022
             python_spec: '3.14.* *_cp314'
           - python: '3.14'
-            os: ubuntu-22.04
+            os: ubuntu-latest
             python_spec: '3.14.* *_cp314t'
           - python: '3.14'
             os: windows-2022
@@ -71,6 +72,7 @@ jobs:
       - name: Checkout DPNP repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           fetch-depth: 0
 
       - name: Setup miniconda
@@ -143,7 +145,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.10', '3.11', '3.12', '3.13']
+        python: ['3.12', '3.13']
         os: [ubuntu-latest]
         include:
           - python: '3.14'
@@ -171,6 +173,7 @@ jobs:
       - name: Checkout DPNP repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           fetch-depth: ${{ env.fetch-depth }}
           path: ${{ env.dpnp-repo-path }}
 
@@ -325,6 +328,7 @@ jobs:
       - name: Checkout DPNP repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           fetch-depth: ${{ env.fetch-depth }}
           path: ${{ env.dpnp-repo-path }}
 
@@ -419,7 +423,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.10', '3.11', '3.12', '3.13']
+        python: ['3.12', '3.13']
         os: [windows-2022]
         include:
           - python: '3.14'
@@ -442,6 +446,7 @@ jobs:
       - name: Checkout DPNP repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           fetch-depth: ${{ env.fetch-depth }}
           path: ${{ env.dpnp-repo-path }}
 
@@ -600,7 +605,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.10', '3.11', '3.12', '3.13']
+        python: ['3.12', '3.13']
         os: [ubuntu-latest, windows-2022]
         include:
           - python: '3.14'
@@ -636,6 +641,7 @@ jobs:
       - name: Checkout DPNP repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           fetch-depth: ${{ env.fetch-depth }}
 
       - name: Download artifact
@@ -720,6 +726,7 @@ jobs:
       - name: Checkout DPNP repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           fetch-depth: ${{ env.fetch-depth }}
           path: ${{ env.dpnp-repo-path }}
 
@@ -793,6 +800,7 @@ jobs:
       - name: Clone array API tests repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           repository: 'data-apis/array-api-tests'
           path: ${{ env.array-api-tests-path }}
           fetch-depth: ${{ env.fetch-depth }}
@@ -850,7 +858,7 @@ jobs:
 
       - name: Post result to PR
         if: ${{ github.event.pull_request && !github.event.pull_request.head.repo.fork }}
-        uses: mshick/add-pr-comment@ec328af66588ab8f77cdeb2c264f14aba45bbf59 # v3.12.0.8.3.12.0
+        uses: mshick/add-pr-comment@ec328af66588ab8f77cdeb2c264f14aba45bbf59 # v3.12.0
         with:
           message-id: array_api_results
           message: |
@@ -876,6 +884,7 @@ jobs:
       - name: Checkout DPNP repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           fetch-depth: ${{ env.fetch-depth }}
 
       - name: Setup miniconda
@@ -902,6 +911,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           repository: IntelPython/devops-tools
           fetch-depth: ${{ env.fetch-depth }}
 

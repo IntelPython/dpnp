@@ -172,6 +172,18 @@ function(parse_compiler_version compiler_name version_number)
         # Parse Intel Compiler Version
         string(REGEX REPLACE "Intel\\(R\\) (.*) Compiler ([0-9]+\\.[0-9]+\\.[0-9]+) (.*)" "\\2"
                SYCL_VERSION_STRING_MATCH ${INTEL_VERSION_STRING})
+    else()
+        # Open source DPC++/LLVM SYCL compiler reports e.g.
+        # "clang version 23.0.0git (https://github.com/intel/llvm ...)"
+        string(REGEX MATCH "clang version ([0-9]+\\.[0-9]+\\.[0-9]+)"
+               CLANG_VERSION_STRING ${COMPILER_VERSION_STRING})
+        if(CLANG_VERSION_STRING)
+            string(REGEX REPLACE "clang version ([0-9]+\\.[0-9]+\\.[0-9]+)" "\\1"
+                   SYCL_VERSION_STRING_MATCH ${CLANG_VERSION_STRING})
+        endif()
+    endif()
+
+    if(SYCL_VERSION_STRING_MATCH)
         string(REPLACE "." ";" SYCL_VERSION_LIST ${SYCL_VERSION_STRING_MATCH})
         list(GET SYCL_VERSION_LIST 0 VERSION_MAJOR)
         list(GET SYCL_VERSION_LIST 1 VERSION_MINOR)
