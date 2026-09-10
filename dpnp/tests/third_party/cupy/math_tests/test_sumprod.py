@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import math
 from itertools import product as iproduct
 
@@ -5,6 +7,10 @@ import numpy
 import pytest
 
 import dpnp as cupy
+
+# import cupy._core._accelerator as _acc
+# import cupy.cuda.cutensor
+# from cupy._core import _cub_reduction
 from dpnp.exceptions import AxisError
 from dpnp.tests.helper import (
     has_support_aspect16,
@@ -14,13 +20,12 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestSumprod:
-
     @pytest.fixture(autouse=True)
     def tearDown(self):
+        yield
         # Free huge memory for slow test
         # cupy.get_default_memory_pool().free_all_blocks()
         # cupy.get_default_pinned_memory_pool().free_all_blocks()
-        pass
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
@@ -41,7 +46,7 @@ class TestSumprod:
         return xp.sum(a)
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(rtol=1e-06)
+    @testing.numpy_cupy_allclose(rtol=1e-6)
     def test_sum_all2(self, xp, dtype):
         a = testing.shaped_arange((20, 30, 40), xp, dtype)
         return a.sum()
@@ -53,7 +58,7 @@ class TestSumprod:
         return a.sum()
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(rtol=1e-06)
+    @testing.numpy_cupy_allclose(rtol=1e-6)
     def test_sum_all_transposed2(self, xp, dtype):
         a = testing.shaped_arange((20, 30, 40), xp, dtype).transpose(2, 0, 1)
         return a.sum()
@@ -66,7 +71,6 @@ class TestSumprod:
 
     @testing.slow
     @testing.numpy_cupy_allclose()
-    # thread_unsafe marker requires pytest-run-parallel, not used by dpnp
     # @pytest.mark.thread_unsafe(reason="too large allocations")
     def test_sum_axis_huge(self, xp):
         a = testing.shaped_random((2048, 1, 1024), xp, "b")
@@ -208,12 +212,32 @@ class TestSumprod:
         return a.prod(dtype=dst_dtype)
 
 
-# This class compares CUB results against NumPy's
+# This class compares CUB results against NumPy's.
+# Use _min_cub to make sure that the CUB path is used on these files
+# _MIN_CUB = _cub_reduction._CUB_REDUCE_SIZE_THRESHOLD
+_MIN_CUB = 0
+
+
 @pytest.mark.parametrize(
-    "shape", [(10,), (10, 20), (10, 20, 30), (10, 20, 30, 40)]
+    "shape",
+    [
+        (_MIN_CUB,),
+        (_MIN_CUB, _MIN_CUB),
+        (_MIN_CUB, 2, _MIN_CUB),
+        (_MIN_CUB, 2, 2, _MIN_CUB),
+    ],
 )
-@pytest.mark.parametrize("order", ["C", "F"])
-@pytest.mark.parametrize("backend", ["device", "block"])
+@pytest.mark.parametrize(
+    "order",
+    ["C", "F"],
+)
+@pytest.mark.parametrize(
+    "backend",
+    ["device", "block"],
+)
+# @pytest.mark.skipif(
+#     not cupy.cuda.cub.available, reason="The CUB routine is not enabled"
+# )
 @pytest.mark.skip("_cub_reduction is not supported")
 class TestCubReduction:
 
@@ -231,12 +255,11 @@ class TestCubReduction:
         _acc.set_routine_accelerators(old_routine_accelerators)
         _acc.set_reduction_accelerators(old_reduction_accelerators)
 
-    # thread_unsafe marker requires pytest-run-parallel, not used by dpnp
-    # @pytest.mark.thread_unsafe(reason="unsafe AssertFunctionIsCalled.")
     @testing.for_contiguous_axes()
     # sum supports less dtypes; don't test float16 as it's not as accurate?
     @testing.for_dtypes("qQfdFD")
     @testing.numpy_cupy_allclose(rtol=1e-5)
+    # @pytest.mark.thread_unsafe(reason="unsafe AssertFunctionIsCalled.")
     def test_cub_sum(self, xp, dtype, axis, shape, order, backend):
         a = testing.shaped_random(shape, xp, dtype)
         if order in ("c", "C"):
@@ -284,7 +307,6 @@ class TestCubReduction:
             a = xp.asfortranarray(a)
         return a.sum(axis=())
 
-    # thread_unsafe marker requires pytest-run-parallel, not used by dpnp
     # @pytest.mark.thread_unsafe(reason="unsafe AssertFunctionIsCalled.")
     @testing.for_contiguous_axes()
     # prod supports less dtypes; don't test float16 as it's not as accurate?
@@ -328,7 +350,6 @@ class TestCubReduction:
 
     # TODO(leofang): test axis after support is added
     # don't test float16 as it's not as accurate?
-    # thread_unsafe marker requires pytest-run-parallel, not used by dpnp
     # @pytest.mark.thread_unsafe(reason="unsafe AssertFunctionIsCalled.")
     @testing.for_dtypes("bhilBHILfdFD")
     @testing.numpy_cupy_allclose(rtol=1e-4)
@@ -355,7 +376,6 @@ class TestCubReduction:
 
     # TODO(leofang): test axis after support is added
     # don't test float16 as it's not as accurate?
-    # thread_unsafe marker requires pytest-run-parallel, not used by dpnp
     # @pytest.mark.thread_unsafe(reason="unsafe AssertFunctionIsCalled.")
     @testing.for_dtypes("bhilBHILfdFD")
     @testing.numpy_cupy_allclose(rtol=1e-4)
@@ -383,7 +403,7 @@ class TestCubReduction:
         return self._mitigate_cumprod(xp, dtype, result)
 
     def _mitigate_cumprod(self, xp, dtype, result):
-        # for testing cumprod against complex arrays, the catch is CuPy may
+        # for testing cumprod against complex arrays, the got you is CuPy may
         # produce only Inf at the position where NumPy starts to give NaN. So,
         # an error would be raised during assert_allclose where the positions
         # of NaNs are examined. Since this is both algorithm and architecture
@@ -398,10 +418,9 @@ class TestCubReduction:
 INT32_MAX = numpy.iinfo(numpy.int32).max
 
 
-# CUB is not supported by dpnp; the original skipif on cupy.cuda.cub.available
-# cannot be evaluated (dpnp has no cupy.cuda), so skip unconditionally.
 # @pytest.mark.skipif(
-#     not cupy.cuda.cub.available, reason="The CUB routine is not enabled")
+#     not cupy.cuda.cub.available, reason="The CUB routine is not enabled"
+# )
 @pytest.mark.skip("CUB reduction is not supported")
 @testing.slow
 class TestReductionSizeOverInt32Max:
@@ -458,8 +477,7 @@ class TestReductionSizeOverInt32Max:
                         a.max(axis=axis), cupy.full(s.shape, 3, dtype=dtype)
                     )
                     testing.assert_array_equal(
-                        a.argmin(axis),
-                        cupy.full(s.shape, a.shape[axis] - 1),
+                        a.argmin(axis), cupy.full(s.shape, a.shape[axis] - 1)
                     )
             else:
                 if axis is None:
@@ -514,9 +532,17 @@ class TestReductionSizeOverInt32Max:
 
 # This class compares cuTENSOR results against NumPy's
 @pytest.mark.parametrize(
-    "shape", [(10,), (10, 20), (10, 20, 30), (10, 20, 30, 40)]
+    "shape",
+    [(10,), (10, 20), (10, 20, 30), (10, 20, 30, 40)],
 )
-@pytest.mark.parametrize("order", ["C", "F"])
+@pytest.mark.parametrize(
+    "order",
+    ["C", "F"],
+)
+# @pytest.mark.skipif(
+#     not cupy.cuda.cutensor.available,
+#     reason="The cuTENSOR routine is not enabled",
+# )
 @pytest.mark.skip("cutensor is not supported")
 class TestCuTensorReduction:
 
@@ -528,6 +554,7 @@ class TestCuTensorReduction:
         yield
         cupy._core.set_routine_accelerators(old_accelerators)
 
+    # @pytest.mark.thread_unsafe(reason="unsafe AssertFunctionIsCalled.")
     @testing.for_contiguous_axes()
     # sum supports less dtypes; don't test float16 as it's not as accurate?
     @testing.for_dtypes("qQfdFD")
@@ -694,6 +721,24 @@ class TestNansumNanprodHuge:
 
 axes = [0, 1, 2]
 
+# Our scan (cumsum/cumprod) has two branches, for axes longer or shorter
+# than 512.  Vary the length around that (and its multiples) and the axis.
+_BATCH_SCAN_AXIS_CASES = [
+    ((4, 1), 1),  # 1-wide: many rows per 512-thread block
+    ((3, 7), 1),  # non-power-of-two padding
+    ((17, 256), 1),  # power-of-two, leftover rows in last block
+    ((2, 511), 1),
+    ((2, 512), 1),
+    ((7, 5), 0),  # scan axis 0 (rolled to last)
+    ((2, 8, 3), 1),  # 3d, middle axis
+    ((1, 513), 1),  # remaining = 1
+    ((3, 513), 1),
+    ((2, 1000), 1),  # remaining = 488
+    ((1, 1024), 1),  # exact two blocks
+    ((1024, 2), 0),
+    ((2, 513, 2), 1),
+]
+
 
 class TestCumsum:
 
@@ -815,6 +860,12 @@ class TestCumsum:
         with pytest.raises(TypeError):
             return cupy.cumsum(a_numpy)
 
+    @pytest.mark.parametrize("shape, axis", _BATCH_SCAN_AXIS_CASES)
+    @testing.numpy_cupy_allclose(contiguous_check=False)
+    def test_cumsum_axis_batch_kernels(self, xp, shape, axis):
+        a = testing.shaped_arange(shape, xp, numpy.float64)
+        return self._cumsum(xp, a, axis=axis)
+
 
 class TestCumprod:
 
@@ -868,12 +919,15 @@ class TestCumprod:
     @testing.slow
     def test_cumprod_huge_array(self):
         size = 2**32
-        a = cupy.ones(size, dtype="b")
+        # Free huge memory for slow test
+        cupy.get_default_memory_pool().free_all_blocks()
+        a = cupy.ones(size, "b")
         result = cupy.cumprod(a, dtype="b")
         del a
         assert (result == 1).all()
         # Free huge memory for slow test
         del result
+        cupy.get_default_memory_pool().free_all_blocks()
 
     @testing.for_all_dtypes()
     def test_invalid_axis_lower1(self, dtype):
@@ -911,6 +965,70 @@ class TestCumprod:
         a_numpy = numpy.arange(1, 6, dtype=dtype)
         with pytest.raises(TypeError):
             return cupy.cumprod(a_numpy)
+
+    @pytest.mark.parametrize("shape, axis", _BATCH_SCAN_AXIS_CASES)
+    @testing.numpy_cupy_allclose(contiguous_check=False)
+    def test_cumprod_axis_batch_kernels(self, xp, shape, axis):
+        a = testing.shaped_arange(shape, xp, numpy.float64)
+        a *= 2 / a.size  # scale to (0, 2] to avoid overflow
+        return self._cumprod(xp, a, axis=axis)
+
+
+@testing.slow
+# @pytest.mark.thread_unsafe(reason="too large allocations")
+class TestBatchScanSizeOverInt32Max:
+    # Test both branches of _batch_scan_op for very large arrays.
+    # (1, n): large-batch kernel, axis longer than INT32_MAX
+    # (n, 2): small-batch kernel, more rows than INT32_MAX (its padded size
+    #         also exceeds UINT32_MAX)
+    # (2**23 + 1, 512): small-batch kernel with a single row per padded block
+    shapes = [
+        (1, INT32_MAX + 1024),
+        (INT32_MAX + 1024, 2),
+        ((1 << 23) + 1, 512),
+    ]
+
+    @pytest.fixture(autouse=True)
+    def _free_memory(self):
+        # cupy.get_default_memory_pool().free_all_blocks()
+        # cupy.get_default_pinned_memory_pool().free_all_blocks()
+        yield
+        # cupy.get_default_memory_pool().free_all_blocks()
+        # cupy.get_default_pinned_memory_pool().free_all_blocks()
+
+    def _spot_check(self, a, expected):
+        # Spot check result (to avoid the full cost).
+        n_rows, n_cols = a.shape
+        # col 512 lands in the second block, i.e. checks the add kernel
+        for row in [r for r in (0, INT32_MAX, n_rows - 1) if r < n_rows]:
+            for col in [
+                c for c in (0, 255, 512, INT32_MAX, n_cols - 1) if c < n_cols
+            ]:
+                assert int(a[row, col]) == expected(col)
+
+    @pytest.mark.parametrize("shape", shapes)
+    def test_cumsum_axis(self, shape):
+        try:
+            a = cupy.zeros(shape, dtype=numpy.uint8)
+            a[:, 0] = 1
+            a[:, -1] = 1
+            cupy.cumsum(a, axis=1, out=a)
+        except MemoryError:
+            pytest.skip("out of memory in test.")
+        # leading 1 plus trailing 1: 1 everywhere, last column is 2
+        n_cols = a.shape[1]
+        self._spot_check(a, lambda col: 2 if col == n_cols - 1 else 1)
+
+    @pytest.mark.parametrize("shape", shapes)
+    def test_cumprod_axis(self, shape):
+        try:
+            a = cupy.ones(shape, dtype=numpy.uint8)
+            a[:, 0] = 2
+            cupy.cumprod(a, axis=1, out=a)
+        except MemoryError:
+            pytest.skip("out of memory in test.")
+        # a leading 2 followed by ones gives 2 everywhere
+        self._spot_check(a, lambda col: 2)
 
 
 @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
@@ -1327,3 +1445,130 @@ class TestTrapezoid:
         a = testing.shaped_arange((5,), xp, dtype)
         x = testing.shaped_arange((5,), xp, dtype)
         return xp.trapezoid(a, x=x, dx=0.1)
+
+
+@testing.with_requires("numpy>=2.1")
+@pytest.mark.parametrize("func", ["cumulative_sum", "cumulative_prod"])
+class TestCumulativeSumProd:
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(rtol=1e-6)
+    def test_1d(self, xp, dtype, func):
+        a = testing.shaped_arange((5,), xp, dtype)
+        return getattr(xp, func)(a)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(rtol=1e-6, contiguous_check=False)
+    def test_axis(self, xp, dtype, func):
+        a = testing.shaped_arange((3, 4, 5), xp, dtype)
+        return getattr(xp, func)(a, axis=1)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(rtol=1e-6)
+    def test_negative_axis(self, xp, dtype, func):
+        a = testing.shaped_arange((3, 4, 5), xp, dtype)
+        return getattr(xp, func)(a, axis=-1)
+
+    @testing.for_all_dtypes(no_bool=True)
+    @testing.numpy_cupy_allclose(rtol=1e-6)
+    def test_dtype(self, xp, dtype, func):
+        a = testing.shaped_arange((5,), xp, numpy.int16)
+        return getattr(xp, func)(a, dtype=dtype)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(rtol=1e-6)
+    def test_1d_include_initial(self, xp, dtype, func):
+        a = testing.shaped_arange((5,), xp, dtype)
+        return getattr(xp, func)(a, include_initial=True)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(rtol=1e-6, contiguous_check=False)
+    def test_axis_include_initial(self, xp, dtype, func):
+        a = testing.shaped_arange((3, 4, 5), xp, dtype)
+        return getattr(xp, func)(a, axis=1, include_initial=True)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(rtol=1e-6)
+    def test_negative_axis_include_initial(self, xp, dtype, func):
+        a = testing.shaped_arange((3, 4, 5), xp, dtype)
+        return getattr(xp, func)(a, axis=-1, include_initial=True)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(rtol=1e-6)
+    def test_out(self, xp, dtype, func):
+        a = testing.shaped_arange((3, 4, 5), xp, dtype)
+        out = xp.zeros((3, 4, 5), dtype=dtype)
+        getattr(xp, func)(a, axis=1, out=out)
+        return out
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(rtol=1e-6)
+    def test_out_include_initial(self, xp, dtype, func):
+        a = testing.shaped_arange((3, 4, 5), xp, dtype)
+        out = xp.zeros((3, 5, 5), dtype=dtype)
+        getattr(xp, func)(a, axis=1, out=out, include_initial=True)
+        return out
+
+    @testing.for_all_dtypes()
+    def test_axis_none_requires_1d(self, dtype, func):
+        for xp in (numpy, cupy):
+            a = testing.shaped_arange((3, 4), xp, dtype)
+            with pytest.raises(ValueError):
+                getattr(xp, func)(a)
+
+    @testing.for_all_dtypes()
+    def test_invalid_axis(self, dtype, func):
+        for xp in (numpy, cupy):
+            a = testing.shaped_arange((3, 4), xp, dtype)
+            with pytest.raises(AxisError):
+                getattr(xp, func)(a, axis=3)
+
+    def test_out_shape_mismatch(self, func):
+        a = testing.shaped_arange((3, 4), cupy, numpy.float32)
+        out = cupy.zeros((3, 5), dtype=numpy.float32)
+        with pytest.raises(ValueError):
+            getattr(cupy, func)(a, axis=1, out=out)
+
+    @pytest.mark.skip("implementation-defined acc to Python array API")
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(rtol=1e-6)
+    def test_0d(self, xp, dtype, func):
+        # numpy accepts 0-D input; cupy matches via atleast_1d.
+        a = xp.asarray(3, dtype=dtype)
+        return getattr(xp, func)(a)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(rtol=1e-6)
+    def test_0d_include_initial(self, xp, dtype, func):
+        a = xp.asarray(3, dtype=dtype)
+        return getattr(xp, func)(a, include_initial=True)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(rtol=1e-6)
+    def test_empty_axis(self, xp, dtype, func):
+        a = xp.empty((3, 0, 4), dtype=dtype)
+        return getattr(xp, func)(a, axis=1)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(rtol=1e-6)
+    def test_empty_axis_include_initial(self, xp, dtype, func):
+        a = xp.empty((3, 0, 4), dtype=dtype)
+        return getattr(xp, func)(a, axis=1, include_initial=True)
+
+    @pytest.mark.parametrize("in_dtype", [numpy.int8, numpy.uint16])
+    @testing.numpy_cupy_array_equal()
+    def test_narrow_int_promotion_include_initial(self, xp, in_dtype, func):
+        # Narrow integer inputs must promote to int64 / uint64 (matches
+        # numpy's default-platform-integer rule) even when include_initial
+        # takes the internal-allocation path.
+        a = testing.shaped_arange((5,), xp, in_dtype)
+        return getattr(xp, func)(a, include_initial=True)
+
+    @testing.for_all_dtypes(no_bool=True)
+    @testing.numpy_cupy_allclose(rtol=1e-6)
+    def test_out_dtype_cast(self, xp, dtype, func):
+        # out has a different dtype than x -- result must be cast.
+        a = testing.shaped_arange((3, 4, 5), xp, numpy.int16)
+        out = xp.zeros((3, 4, 5), dtype=dtype)
+        getattr(xp, func)(a, axis=1, out=out)
+        return out

@@ -10,6 +10,7 @@ import pytest
 import dpnp as cupy
 from dpnp.tests.helper import has_support_aspect64
 from dpnp.tests.third_party.cupy import testing
+from dpnp.tests.third_party.cupy.testing._helper import skip_if_after_baseline
 
 
 @testing.parameterize(
@@ -132,10 +133,11 @@ class TestCrossProduct(unittest.TestCase):
         }
     )
 )
-@pytest.mark.skip("deprecation dropped in NumPy 2.5")
+@testing.with_requires("numpy>=2.5")
 class TestCrossProductDeprecated(unittest.TestCase):
     @testing.for_all_dtypes_combination(["dtype_a", "dtype_b"])
     @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
+    @skip_if_after_baseline(numpy="2.5", reason="deprecation finalized.")
     def test_cross(self, xp, dtype_a, dtype_b):
         if dtype_a == dtype_b == numpy.bool_:
             # cross does not support bool-bool inputs.
