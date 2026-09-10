@@ -1,0 +1,10 @@
+﻿
+
+dpnp.unique\_all
+================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: unique_all

@@ -1,0 +1,10 @@
+﻿
+
+dpnp.conjugate
+==============
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: conjugate

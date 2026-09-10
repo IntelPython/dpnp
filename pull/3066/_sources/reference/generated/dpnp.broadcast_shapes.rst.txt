@@ -1,0 +1,10 @@
+﻿
+
+dpnp.broadcast\_shapes
+======================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: broadcast_shapes

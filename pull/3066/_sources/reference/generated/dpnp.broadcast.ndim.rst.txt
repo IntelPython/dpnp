@@ -1,0 +1,14 @@
+
+:orphan:
+
+
+dpnp.broadcast.ndim
+===================
+
+.. currentmodule:: dpnp
+
+
+property
+
+
+.. autoproperty:: broadcast.ndim

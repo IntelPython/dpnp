@@ -1,0 +1,10 @@
+﻿
+
+dpnp.logical\_or
+================
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: logical_or
