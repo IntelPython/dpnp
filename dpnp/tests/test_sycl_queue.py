@@ -687,8 +687,9 @@ def test_flat(device):
     assert_sycl_queue_equal(x.flat[1:4].sycl_queue, x.sycl_queue)
     assert_sycl_queue_equal(x.flat[y].sycl_queue, x.sycl_queue)
 
-    # setitem keeps the array on its queue
+    # setitem keeps the array on its queue (array-index and slice paths)
     x.flat[y] = dpnp.arange(3, device=device)
+    x.flat[1:4] = dpnp.arange(3, device=device)
     assert_sycl_queue_equal(x.flat[y].sycl_queue, x.sycl_queue)
 
 

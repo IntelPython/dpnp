@@ -166,6 +166,22 @@ class TestFlatiter:
         ia.flat[0:1] = [10, 20, 30]
         assert_array_equal(ia, a)
 
+    def test_flat_setitem_cycles(self):
+        # a value shorter than the selection is cycled to fill it
+        a = np.arange(6)
+        ia = dpnp.array(a)
+        a.flat[0:6] = [1, 2, 3]
+        ia.flat[0:6] = [1, 2, 3]
+        assert_array_equal(ia, a)
+
+    def test_flat_setitem_empty_selection(self):
+        # an in-bounds empty selection with an empty value is a no-op
+        a = np.arange(6)
+        ia = dpnp.array(a)
+        a.flat[0:0] = []
+        ia.flat[0:0] = []
+        assert_array_equal(ia, a)
+
     def test_flat_index_array(self):
         a = np.arange(1, 7).reshape(2, 3)
         ia = dpnp.array(a)
@@ -204,6 +220,16 @@ class TestFlatiter:
         with pytest.raises(ValueError):
             _ = a.flat[[[1, 2], [3]]]
 
+    @pytest.mark.parametrize("xp", [dpnp, np])
+    def test_flat_float_array_index(self, xp):
+        # a non-integer, non-boolean array index is rejected
+        a = xp.arange(6)
+        key = xp.asarray([0.0, 1.0])
+        with pytest.raises(IndexError):
+            _ = a.flat[key]
+        with pytest.raises(IndexError):
+            a.flat[key] = 0
+
     def test_flat_single_element_tuple(self):
         a = np.arange(1, 7)
         ia = dpnp.array(a)
@@ -214,6 +240,13 @@ class TestFlatiter:
         assert_array_equal(
             ia.flat[(dpnp.array([0, 2]),)], a.flat[(np.array([0, 2]),)]
         )
+
+        # setitem unwraps the 1-element tuple too
+        a.flat[(slice(1, 4),)] = 0
+        ia.flat[(slice(1, 4),)] = 0
+        a.flat[(np.array([0, 2]),)] = 9
+        ia.flat[(dpnp.array([0, 2]),)] = 9
+        assert_array_equal(ia, a)
 
     @pytest.mark.parametrize("xp", [dpnp, np])
     @pytest.mark.parametrize(
