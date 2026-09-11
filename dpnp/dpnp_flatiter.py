@@ -252,8 +252,8 @@ class flatiter:
 
     def __next__(self):
         if self._i < self._size:
-            val = self.__getitem__(self._i)
-            self._i = self._i + 1
+            val = self[self._i]
+            self._i += 1
             return val
         else:
             raise StopIteration
