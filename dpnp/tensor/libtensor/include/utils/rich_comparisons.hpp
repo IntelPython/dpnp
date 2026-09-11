@@ -107,38 +107,11 @@ struct ExtendedComplexFPLess
 template <typename cT>
 struct ExtendedComplexFPGreater
 {
-    /* [(R, R), (R, nan), (nan, R), (nan, nan)] — NaN-containing values keep
-       the same trailing groups as ascending order; only the finite-component
-       comparison within a group is reversed */
+    /* Negating both operands reverses the finite comparison but preserves
+       NaN-ness, so NaN groups stay ordered to the end. */
     bool operator()(const cT &v1, const cT &v2) const
     {
-        using realT = typename cT::value_type;
-
-        const realT real1 = std::real(v1);
-        const realT real2 = std::real(v2);
-
-        const bool r1_nan = std::isnan(real1);
-        const bool r2_nan = std::isnan(real2);
-
-        const realT imag1 = std::imag(v1);
-        const realT imag2 = std::imag(v2);
-
-        const bool i1_nan = std::isnan(imag1);
-        const bool i2_nan = std::isnan(imag2);
-
-        const int idx1 = ((r1_nan) ? 2 : 0) + ((i1_nan) ? 1 : 0);
-        const int idx2 = ((r2_nan) ? 2 : 0) + ((i2_nan) ? 1 : 0);
-
-        const bool res =
-            !(r1_nan && i1_nan) &&
-            ((idx1 < idx2) ||
-             ((idx1 == idx2) &&
-              ((r1_nan && !i1_nan && (imag2 < imag1)) ||
-               (!r1_nan && i1_nan && (real2 < real1)) ||
-               (!r1_nan && !i1_nan &&
-                ((real2 < real1) || (!(real1 < real2) && (imag2 < imag1)))))));
-
-        return res;
+        return ExtendedComplexFPLess<cT>{}(-v1, -v2);
     }
 };
 
