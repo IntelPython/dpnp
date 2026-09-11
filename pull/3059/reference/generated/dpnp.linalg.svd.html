@@ -1078,8 +1078,6 @@ enabling a more efficient method for finding singular values.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt>When <cite>compute_uv</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, the result is a namedtuple with the</dt><dd></dd>
-<dt>following attribute names:</dt><dd></dd>
 <dt><strong>U</strong><span class="classifier">{ (…, M, M), (…, M, K) } dpnp.ndarray</span></dt><dd><p>Unitary matrix, where M is the number of rows of the input array <cite>a</cite>.
 The shape of the matrix <cite>U</cite> depends on the value of <cite>full_matrices</cite>.
 If <cite>full_matrices</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, <cite>U</cite> has the shape (…, M, M). If
@@ -1099,6 +1097,10 @@ If <cite>compute_uv</cite> is <code class="docutils literal notranslate"><span c
 </dl>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>When <cite>compute_uv</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, the result is a namedtuple with the
+attribute names <cite>U</cite>, <cite>S</cite>, and <cite>Vh</cite>. When <cite>compute_uv</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, only
+the singular values <cite>S</cite> are returned.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>

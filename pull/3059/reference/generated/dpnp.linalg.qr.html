@@ -1078,8 +1078,6 @@ upper-triangular.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt>When mode is &quot;reduced&quot; or &quot;complete&quot;, the result will be a namedtuple with</dt><dd></dd>
-<dt>the attributes <cite>Q</cite> and <cite>R</cite>:</dt><dd></dd>
 <dt><strong>Q</strong><span class="classifier">dpnp.ndarray of float or complex, optional</span></dt><dd><p>A matrix with orthonormal columns.
 When mode is <code class="docutils literal notranslate"><span class="pre">&quot;complete&quot;</span></code> the result is an orthogonal/unitary matrix
 depending on whether or not <cite>a</cite> is real/complex. The determinant may be
@@ -1097,6 +1095,10 @@ reflectors.</p>
 </dl>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>When <cite>mode</cite> is <code class="docutils literal notranslate"><span class="pre">&quot;reduced&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;complete&quot;</span></code>, the result is a namedtuple
+with the attributes <cite>Q</cite> and <cite>R</cite>. When <cite>mode</cite> is <code class="docutils literal notranslate"><span class="pre">&quot;raw&quot;</span></code>, it returns
+<code class="docutils literal notranslate"><span class="pre">(h,</span> <span class="pre">tau)</span></code>.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>

@@ -1090,8 +1090,6 @@ instead of a permutation matrix.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt>The tuple <code class="docutils literal notranslate"><span class="pre">(p,</span> <span class="pre">l,</span> <span class="pre">u)</span></code> is returned if <code class="docutils literal notranslate"><span class="pre">permute_l</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code></dt><dd></dd>
-<dt>(default), else the tuple <code class="docutils literal notranslate"><span class="pre">(pl,</span> <span class="pre">u)</span></code> is returned, where:</dt><dd></dd>
 <dt><strong>p</strong><span class="classifier">(..., M, M) dpnp.ndarray or (..., M) dpnp.ndarray</span></dt><dd><p>Permutation matrix or permutation indices.
 If <cite>p_indices</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code> (default), a permutation matrix.
 The permutation matrix always has a real-valued floating-point dtype
@@ -1126,6 +1124,8 @@ permutation from LAPACK pivot indices.</p>
 </dl>
 </div>
 <p class="rubric">Notes</p>
+<p>The tuple <code class="docutils literal notranslate"><span class="pre">(p,</span> <span class="pre">l,</span> <span class="pre">u)</span></code> is returned if <cite>permute_l</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code> (default),
+else the tuple <code class="docutils literal notranslate"><span class="pre">(pl,</span> <span class="pre">u)</span></code> is returned.</p>
 <p>Permutation matrices are costly since they are nothing but row reorder of
 <code class="docutils literal notranslate"><span class="pre">L</span></code> and hence indices are strongly recommended to be used instead if the
 permutation is required. The relation in the 2D case then becomes simply

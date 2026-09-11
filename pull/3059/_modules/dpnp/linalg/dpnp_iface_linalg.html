@@ -1532,8 +1532,6 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    A namedtuple with the following attributes:</span>
-
 <span class="sd">    eigenvalues : (..., M) dpnp.ndarray</span>
 <span class="sd">        The eigenvalues, each repeated according to its multiplicity.</span>
 <span class="sd">        The eigenvalues are not necessarily ordered. The resulting array is</span>
@@ -1651,8 +1649,6 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    A namedtuple with the following attributes:</span>
-
 <span class="sd">    eigenvalues : (..., M) dpnp.ndarray</span>
 <span class="sd">        The eigenvalues in ascending order, each repeated according to its</span>
 <span class="sd">        multiplicity.</span>
@@ -2700,9 +2696,6 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    When mode is "reduced" or "complete", the result will be a namedtuple with</span>
-<span class="sd">    the attributes `Q` and `R`:</span>
-
 <span class="sd">    Q : dpnp.ndarray of float or complex, optional</span>
 <span class="sd">        A matrix with orthonormal columns.</span>
 <span class="sd">        When mode is ``"complete"`` the result is an orthogonal/unitary matrix</span>
@@ -2717,6 +2710,12 @@
 <span class="sd">        The array `h` contains the Householder reflectors that generate `Q`</span>
 <span class="sd">        along with `R`. The `tau` array contains scaling factors for the</span>
 <span class="sd">        reflectors.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    When `mode` is ``"reduced"`` or ``"complete"``, the result is a namedtuple</span>
+<span class="sd">    with the attributes `Q` and `R`. When `mode` is ``"raw"``, it returns</span>
+<span class="sd">    ``(h, tau)``.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -2864,9 +2863,6 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    When `compute_uv` is ``True``, the result is a namedtuple with the</span>
-<span class="sd">    following attribute names:</span>
-
 <span class="sd">    U : { (…, M, M), (…, M, K) } dpnp.ndarray</span>
 <span class="sd">        Unitary matrix, where M is the number of rows of the input array `a`.</span>
 <span class="sd">        The shape of the matrix `U` depends on the value of `full_matrices`.</span>
@@ -2883,6 +2879,12 @@
 <span class="sd">        If `full_matrices` is ``True``, `Vh` has the shape (…, N, N).</span>
 <span class="sd">        If `full_matrices` is ``False``, `Vh` has the shape (…, K, N).</span>
 <span class="sd">        If `compute_uv` is ``False``, neither `U` or `Vh` are computed.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    When `compute_uv` is ``True``, the result is a namedtuple with the</span>
+<span class="sd">    attribute names `U`, `S`, and `Vh`. When `compute_uv` is ``False``, only</span>
+<span class="sd">    the singular values `S` are returned.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -3016,8 +3018,6 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    A namedtuple with the following attributes:</span>
-
 <span class="sd">    sign : (...) dpnp.ndarray</span>
 <span class="sd">        A number representing the sign of the determinant. For a real matrix,</span>
 <span class="sd">        this is 1, 0, or -1. For a complex matrix, this is a complex number</span>
