@@ -87,8 +87,7 @@ class flatiter:
         if key is Ellipsis or isinstance(key, (slice, tuple)):
             return
 
-        # a genuine scalar int (not bool, not an array): regular indexing
-        # checks it
+        # a genuine scalar int (not bool, not an array): bounds-checked later
         if (
             not isinstance(key, bool)
             and callable(getattr(key, "__index__", None))
