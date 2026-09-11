@@ -60,9 +60,10 @@ struct ExtendedRealFPLess
 template <typename fpT>
 struct ExtendedRealFPGreater
 {
+    /* [R, nan] — NaNs sort to the end, as in ascending order */
     bool operator()(const fpT v1, const fpT v2) const
     {
-        return (!std::isnan(v2) && (std::isnan(v1) || (v2 < v1)));
+        return (!std::isnan(v1) && (std::isnan(v2) || (v2 < v1)));
     }
 };
 
@@ -106,10 +107,11 @@ struct ExtendedComplexFPLess
 template <typename cT>
 struct ExtendedComplexFPGreater
 {
+    /* Negating both operands reverses the finite comparison but preserves
+       NaN-ness, so NaN groups stay ordered to the end. */
     bool operator()(const cT &v1, const cT &v2) const
     {
-        auto less_ = ExtendedComplexFPLess<cT>{};
-        return less_(v2, v1);
+        return ExtendedComplexFPLess<cT>{}(-v1, -v2);
     }
 };
 
