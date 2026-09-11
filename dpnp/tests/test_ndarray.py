@@ -541,6 +541,12 @@ class TestView:
         ],
     )
     def test_nonzero_offset_buffer_ctor_dtype_mismatch(self, src_dt, new_dt):
+        if not has_support_aspect64() and (
+            dpnp.dtype(src_dt) in [dpnp.float64, dpnp.complex128]
+            or dpnp.dtype(new_dt) in [dpnp.float64, dpnp.complex128]
+        ):
+            pytest.skip("requires fp64 support")
+
         # the element offset of the `buffer=` array is expressed in units of
         # the buffer's own dtype and has to be rescaled when the requested
         # dtype has a different itemsize
@@ -553,6 +559,12 @@ class TestView:
         ia = dpnp.ndarray((size,), dtype=new_dt, buffer=sl)
         assert ia.data.ptr == sl.data.ptr
         assert_array_equal(ia, dpnp.asnumpy(sl).view(new_dt))
+
+        # an explicit `offset` is expressed in units of the requested dtype
+        # and adds up with the rescaled offset of the buffer
+        ia = dpnp.ndarray((size - 1,), dtype=new_dt, buffer=sl, offset=1)
+        assert ia.data.ptr == sl.data.ptr + dpnp.dtype(new_dt).itemsize
+        assert_array_equal(ia, dpnp.asnumpy(sl).view(new_dt)[1:])
 
     def test_nonzero_offset_buffer_ctor_usm_ndarray(self):
         # the same rescaling applies when `buffer=` is a bare usm_ndarray
@@ -590,6 +602,10 @@ class TestView:
         # with an itemsize of 8
         with pytest.raises(ValueError, match="not a multiple"):
             dpnp.ndarray((3,), dtype=dpnp.int64, buffer=base[3:])
+
+        # and the same holds for a bare usm_ndarray buffer
+        with pytest.raises(ValueError, match="not a multiple"):
+            dpnp.ndarray((3,), dtype=dpnp.int64, buffer=base[3:].get_array())
 
     def test_misaligned_offset_error(self):
         ia = dpnp.arange(10, dtype=dpnp.int16)

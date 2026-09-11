@@ -128,26 +128,14 @@ class dpnp_array:
             if isinstance(buffer, dpnp_array):
                 buffer = buffer.get_array()
 
-            if isinstance(buffer, dpt.usm_ndarray):
-                if dtype is None:
-                    dtype = buffer.dtype
-
-                # `buffer._element_offset` is expressed in units of the
-                # buffer's own dtype, while `offset` is interpreted in units
-                # of `dtype`, so the displacement has to be rescaled through
-                # bytes whenever the two itemsizes differ
-                byte_offset = buffer._element_offset * buffer.itemsize
-                new_itemsize = dpnp.dtype(dtype).itemsize
-                add_offset, rem = divmod(byte_offset, new_itemsize)
-                if rem != 0:
-                    raise ValueError(
-                        "The offset of the buffer's data in memory is not "
-                        "a multiple of the requested dtype size and so the "
-                        "requested view is not possible"
-                    )
-                offset += add_offset
-            elif dtype is None and hasattr(buffer, "dtype"):
+            if dtype is None and hasattr(buffer, "dtype"):
                 dtype = buffer.dtype
+
+            if isinstance(buffer, dpt.usm_ndarray):
+                # `_element_offset` is in buffer-dtype units; the ctor's
+                # `offset` is in `dtype` units, so rescale via bytes when
+                # itemsizes differ
+                offset += dpnp_array._rescaled_element_offset(buffer, dtype)
         else:
             buffer = usm_type
 
@@ -690,6 +678,28 @@ class dpnp_array:
         res._array_obj._set_namespace(dpnp)
         return res
 
+    @staticmethod
+    def _rescaled_element_offset(usm_ary, new_dtype):
+        """
+        Return the element offset of `usm_ary` within its USM allocation,
+        expressed in units of `new_dtype`.
+
+        The offset carried by :attr:`usm_ndarray._element_offset` is in units
+        of the array's own dtype, so it has to be rescaled through bytes
+        whenever `new_dtype` has a different itemsize.
+
+        """
+
+        byte_offset = usm_ary._element_offset * usm_ary.itemsize
+        offset, rem = divmod(byte_offset, dpnp.dtype(new_dtype).itemsize)
+        if rem:
+            raise ValueError(
+                "The offset of the array data in memory is not a multiple "
+                "of the new data type size and so the requested view is "
+                "not possible"
+            )
+        return offset
+
     def _create_view(self, array_class, shape, dtype, strides):
         """
         Create a view of an array with the specified class.
@@ -722,15 +732,7 @@ class dpnp_array:
 
         # `buffer=self._array_obj` views the whole USM allocation, so `self`'s
         # element offset within it must be forwarded explicitly
-
-        byte_offset = self._array_obj._element_offset * self.itemsize
-        offset, rem = divmod(byte_offset, new_itemsize)
-        if rem:
-            raise ValueError(
-                "The offset of the array data in memory is not a multiple "
-                "of the new data type size and so the requested view is "
-                "not possible"
-            )
+        offset = dpnp_array._rescaled_element_offset(self._array_obj, dtype)
 
         # create the underlying usm_ndarray view
         usm_view = dpt.usm_ndarray(
