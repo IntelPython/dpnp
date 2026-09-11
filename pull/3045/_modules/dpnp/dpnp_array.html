@@ -14,7 +14,7 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>dpnp.dpnp_array - Data Parallel Extension for NumPy (dpnp) 0.21.0dev7 documentation</title>
+        <title>dpnp.dpnp_array - Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -172,7 +172,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev7 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev7 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -1209,15 +1209,15 @@
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__abs__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`|\text{self}|`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``|self|``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self + value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self + value``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__and__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self &amp; value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self &amp; value``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bitwise_and</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__array__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -1277,7 +1277,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="fm">__bool__</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__bytes__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{bytes(self)}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``bytes(self)``."""</span>
         <span class="k">return</span> <span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">())</span>
 
     <span class="c1"># '__class__',</span>
@@ -1288,7 +1288,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="fm">__complex__</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{value in self}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``value in self``."""</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span> <span class="o">==</span> <span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__copy__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1305,7 +1305,7 @@
     <span class="c1"># '__dir__',</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__divmod__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{divmod(self, value)}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``divmod(self, value)``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">divmod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__dlpack__</span><span class="p">(</span>
@@ -1389,7 +1389,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">__dlpack_device__</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self == value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self == value``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__float__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
@@ -1397,19 +1397,19 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="fm">__float__</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__floordiv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self // value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self // value``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">floor_divide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__format__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">format_spec</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{format(self, format_spec)}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``format(self, format_spec)``."""</span>
         <span class="k">return</span> <span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(),</span> <span class="n">format_spec</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__ge__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self &gt;= value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self &gt;= value``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">greater_equal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self[key]}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self[key]``."""</span>
         <span class="n">key</span> <span class="o">=</span> <span class="n">_get_unwrapped_index_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
         <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
@@ -1418,33 +1418,33 @@
     <span class="c1"># '__getstate__',</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__gt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self &gt; value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self &gt; value``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="c1"># '__hash__',</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__iadd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self += value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self += value``."""</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__iand__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self &amp;= value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self &amp;= value``."""</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">bitwise_and</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__ifloordiv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self //= value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self //= value``."""</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">floor_divide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__ilshift__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self &lt;&lt;= value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self &lt;&lt;= value``."""</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">left_shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__imatmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self @= value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self @= value``."""</span>
 
         <span class="c1"># Unlike `matmul(a, b, out=a)` we ensure that the result isn't broadcast</span>
         <span class="c1"># if the result without `out` would have less dimensions than `a`.</span>
@@ -1468,12 +1468,12 @@
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__imod__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self %= value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self %= value``."""</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">remainder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__imul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self *= value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self *= value``."""</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
@@ -1488,168 +1488,168 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="fm">__int__</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__invert__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{~self}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``~self``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">invert</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__ior__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self |= value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self |= value``."""</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">bitwise_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__ipow__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self **= value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self **= value``."""</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__irshift__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self &gt;&gt;= value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self &gt;&gt;= value``."""</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">right_shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__isub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self -= value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self -= value``."""</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{iter(self)}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``iter(self)``."""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"iteration over a 0-d array"</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__itruediv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self /= value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self /= value``."""</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">true_divide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__ixor__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self ^= value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self ^= value``."""</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">bitwise_xor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__le__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self &lt;= value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self &lt;= value``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">less_equal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{len(self)}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``len(self)``."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__lshift__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self &lt;&lt; value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self &lt;&lt; value``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">left_shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self &lt; value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self &lt; value``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__matmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self @ value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self @ value``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__mod__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self % value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self % value``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">remainder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self * value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self * value``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self != value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self != value``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">not_equal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__neg__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{-self}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``-self``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">negative</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="c1"># '__new__',</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__or__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self | value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self | value``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bitwise_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__pos__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{+self}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``+self``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">positive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__pow__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self ** value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self ** value``."""</span>
         <span class="k">if</span> <span class="n">mod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">NotImplemented</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__radd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{value + self}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``value + self``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__rand__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{value &amp; self}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``value &amp; self``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bitwise_and</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__rdivmod__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{divmod(value, self)}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``divmod(value, self)``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">divmod</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 
     <span class="c1"># '__reduce__',</span>
     <span class="c1"># '__reduce_ex__',</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{repr(self)}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``repr(self)``."""</span>
         <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray_repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">"array"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__rfloordiv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{value // self}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``value // self``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">floor_divide</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__rlshift__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{value &lt;&lt; self}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``value &lt;&lt; self``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">left_shift</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__rmatmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{value @ self}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``value @ self``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__rmod__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{value % self}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``value % self``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">remainder</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__rmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{value * self}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``value * self``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__ror__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{value | self}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``value | self``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bitwise_or</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__rpow__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{value ** self}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``value ** self``."""</span>
         <span class="k">if</span> <span class="n">mod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">NotImplemented</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__rrshift__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{value &gt;&gt; self}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``value &gt;&gt; self``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">right_shift</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__rshift__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self &gt;&gt; value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self &gt;&gt; value``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">right_shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__rsub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{value - self}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``value - self``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__rtruediv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{value / self}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``value / self``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">true_divide</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__rxor__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{value ^ self}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``value ^ self``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bitwise_xor</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Set :math:`\text{self[key]}` to a value."""</span>
+<span class="w">        </span><span class="sd">"""Set ``self[key]`` to a value."""</span>
         <span class="n">key</span> <span class="o">=</span> <span class="n">_get_unwrapped_index_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">):</span>
@@ -1663,11 +1663,11 @@
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_array_obj"</span><span class="p">,)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{str(self)}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``str(self)``."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self - value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self - value``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -1679,7 +1679,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">__sycl_usm_array_interface__</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__truediv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self / value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self / value``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">true_divide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -1702,7 +1702,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__xor__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\text{self ^ value}`."""</span>
+<span class="w">        </span><span class="sd">"""Return ``self ^ value``."""</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bitwise_xor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
@@ -3834,7 +3834,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=51652bb9"></script>
+</div><script src="../../_static/documentation_options.js?v=b97f887b"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
