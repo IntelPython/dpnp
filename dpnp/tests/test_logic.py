@@ -1,3 +1,5 @@
+import operator
+
 import dpctl
 import numpy
 import pytest
@@ -900,3 +902,158 @@ class TestIsin:
 
         with pytest.raises(ExecutionPlacementError):
             dpnp.isin(a, b)
+
+
+# NumPy treats any non-zero byte of a bool as True, see gh-2121
+class TestNonstandardBoolBytes:
+    def _views(self, values):
+        raw = numpy.array(values, dtype=numpy.uint8)
+        return raw.view(numpy.bool_), dpnp.asarray(raw).view(dpnp.bool)
+
+    @pytest.mark.parametrize(
+        "op",
+        [
+            "equal",
+            "not_equal",
+            "less",
+            "less_equal",
+            "greater",
+            "greater_equal",
+            "logical_and",
+            "logical_or",
+            "logical_xor",
+            "bitwise_and",
+            "bitwise_or",
+            "bitwise_xor",
+            "maximum",
+            "minimum",
+        ],
+    )
+    def test_binary(self, op):
+        a, ia = self._views([0, 1, 2, 255, 3, 0])
+        b, ib = self._views([1, 1, 0, 2, 0, 7])
+
+        result = getattr(dpnp, op)(ia, ib)
+        expected = getattr(numpy, op)(a, b)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("op", ["iand", "ior", "ixor", "iadd", "imul"])
+    @pytest.mark.parametrize("strided", [False, True])
+    def test_inplace(self, op, strided):
+        # the destination is read as a value too, so its byte must normalize
+        a, ia = self._views([0, 1, 2, 255, 3, 0, 128, 127])
+        b, ib = self._views([1, 1, 0, 2, 0, 7, 255, 1])
+        if strided:
+            a, ia, b, ib = a[::2], ia[::2], b[::2], ib[::2]
+
+        getattr(operator, op)(ia, ib)
+        getattr(operator, op)(a, b)
+        assert_array_equal(ia, a)
+
+        raw = dpnp.asnumpy(ia).view(numpy.uint8)
+        assert numpy.all((raw == 0) | (raw == 1))
+
+    @pytest.mark.parametrize("op", ["logical_not", "bitwise_invert"])
+    def test_unary(self, op):
+        a, ia = self._views([0, 1, 2, 255, 3, 0])
+
+        result = getattr(dpnp, op)(ia)
+        expected = getattr(numpy, op)(a)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize(
+        "op", ["sum", "prod", "max", "min", "all", "any", "argmax", "argmin"]
+    )
+    def test_reduction(self, op):
+        a, ia = self._views([0, 1, 2, 255, 3, 0])
+
+        result = getattr(dpnp, op)(ia)
+        expected = getattr(numpy, op)(a)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("op", ["cumulative_sum", "cumulative_prod"])
+    @pytest.mark.parametrize("include_initial", [False, True])
+    def test_cumulative_bool_out(self, op, include_initial):
+        # a bool accumulator must scan normalized values, not the raw bytes
+        a, ia = self._views([0, 1, 2, 255, 3, 0, 128, 127])
+
+        result = getattr(dpnp, op)(
+            ia, dtype=dpnp.bool, include_initial=include_initial
+        )
+        expected = getattr(numpy, op)(
+            a, dtype=numpy.bool_, include_initial=include_initial
+        )
+        assert_array_equal(result, expected)
+
+        raw = dpnp.asnumpy(result).view(numpy.uint8)
+        assert numpy.all((raw == 0) | (raw == 1))
+
+    def test_result_has_canonical_bytes(self):
+        # a computed bool result must only ever hold 0x00 or 0x01; `sort` and
+        # `unique` are excluded, they select elements and so carry the bytes
+        _, ia = self._views([0, 1, 2, 255, 3, 0])
+        _, ib = self._views([1, 1, 0, 2, 0, 7])
+
+        for res in (
+            dpnp.equal(ia, ib),
+            dpnp.not_equal(ia, ib),
+            dpnp.logical_not(ia),
+            dpnp.logical_and(ia, ib),
+            dpnp.logical_or(ia, ib),
+            dpnp.logical_xor(ia, ib),
+            dpnp.bitwise_and(ia, ib),
+            dpnp.bitwise_or(ia, ib),
+            dpnp.bitwise_xor(ia, ib),
+            dpnp.maximum(ia, ib),
+            dpnp.isin(ia, ib),
+            dpnp.max(ia),
+            dpnp.min(ia),
+            dpnp.all(ia),
+            dpnp.any(ia),
+        ):
+            raw = dpnp.asnumpy(res).view(numpy.uint8)
+            assert numpy.all((raw == 0) | (raw == 1))
+
+    @pytest.mark.parametrize(
+        "values",
+        [[0, 1, 2, 255, 3, 0], [2] * 6, [255] * 6, [0, 128, 0, 127, 254, 1]],
+    )
+    @pytest.mark.parametrize("kind", [None, "mergesort", "radixsort"])
+    def test_sort_kinds_logically_ordered(self, values, kind):
+        # dpnp normalizes, so False elements sort before True ones; NumPy
+        # leaves the raw bytes in place, so only the logical order matches
+        a, ia = self._views(values)
+        kwargs = {} if kind is None else {"kind": kind}
+
+        result = dpnp.asnumpy(dpnp.sort(ia, **kwargs)).view(numpy.uint8) != 0
+        expected = numpy.sort(a).view(numpy.uint8) != 0
+        assert_array_equal(result, expected)
+
+    def test_unique(self):
+        a, ia = self._views([0, 1, 2, 255, 3, 0])
+
+        assert_array_equal(dpnp.unique(ia), numpy.unique(a))
+
+    def test_isin(self):
+        a, ia = self._views([0, 1, 2, 255, 3, 0])
+        b, ib = self._views([1, 1, 0, 2, 0, 7])
+
+        assert_array_equal(dpnp.isin(ia, ib), numpy.isin(a, b))
+
+    def test_searchsorted(self):
+        # dpnp normalizes, so the needles compare as True; NumPy orders bool
+        # by raw byte, so only the normalized comparison matches
+        a, ia = self._views([0, 0, 1, 1])
+        v, iv = self._views([2, 255, 0])
+
+        expected = numpy.searchsorted(
+            a.view(numpy.uint8) != 0, v.view(numpy.uint8) != 0
+        )
+        assert_array_equal(dpnp.searchsorted(ia, iv), expected)
+
+    def test_argsort_is_logically_ordered(self):
+        raw = numpy.array([0, 1, 2, 255, 3, 0], dtype=numpy.uint8)
+        ia = dpnp.asarray(raw).view(dpnp.bool)
+
+        gathered = raw[dpnp.asnumpy(dpnp.argsort(ia))] != 0
+        assert_array_equal(gathered, numpy.sort(gathered))
