@@ -214,7 +214,7 @@ class flatiter:
             idx = dpnp.asarray(pos, sycl_queue=exec_q, usm_type=usm_type)
         elif isinstance(key, slice):
             # slice fast path: build only the selected positions
-            start, stop, step = key.indices(a.size)
+            start, stop, step = key.indices(self._size)
             idx = dpnp.arange(
                 start, stop, step, sycl_queue=exec_q, usm_type=usm_type
             )
@@ -226,7 +226,7 @@ class flatiter:
             # ellipsis, empty tuple or an unrecognized key: let regular
             # indexing resolve the positions and raise on an invalid key
             flat_index = dpnp.arange(
-                a.size, sycl_queue=exec_q, usm_type=usm_type
+                self._size, sycl_queue=exec_q, usm_type=usm_type
             )
             idx = flat_index[key]
 
