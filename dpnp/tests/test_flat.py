@@ -331,3 +331,10 @@ class TestFlatiter:
             _ = a.flat[key]
         with pytest.raises(IndexError, match="out of bounds for size"):
             a.flat[key] = 0
+
+    @pytest.mark.parametrize("key", [[1, 9], [-9, 0]], ids=["oob", "neg_oob"])
+    def test_flat_setitem_out_of_bounds_empty_value(self, key):
+        # dpnp validates the index even for an empty value (NumPy no-ops here)
+        ia = dpnp.arange(6)
+        with pytest.raises(IndexError, match="out of bounds for size"):
+            ia.flat[key] = []
