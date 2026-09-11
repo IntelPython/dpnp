@@ -3,6 +3,7 @@ import pytest
 from numpy.testing import assert_array_equal
 
 import dpnp
+import dpnp.tensor as dpt
 
 from .third_party.cupy import testing
 
@@ -14,8 +15,10 @@ class TestFlatiter:
             (np.array([1, 0, 2, -3, -1, 2, 21, -9]), 0),
             (np.arange(1, 7).reshape(2, 3), 3),
             (np.arange(1, 7).reshape(2, 3).T, 3),
+            (np.arange(1, 7), -1),
+            (np.arange(1, 7).reshape(2, 3).T, -2),
         ],
-        ids=["1D array", "2D array", "2D.T array"],
+        ids=["1D array", "2D array", "2D.T array", "1D neg", "2D.T neg"],
     )
     def test_flat_getitem(self, a, index):
         ia = dpnp.array(a)
@@ -216,18 +219,34 @@ class TestFlatiter:
         with pytest.raises(IndexError, match="out of bounds"):
             a.flat[idx] = 0
 
-    def test_flat_bool_mask(self):
+    @pytest.mark.parametrize("mask_type", ["dpnp", "numpy", "usm"])
+    def test_flat_bool_mask(self, mask_type):
         a = np.arange(1, 7).reshape(2, 3)
         ia = dpnp.array(a)
         mask = np.array([True, False] * 3)
+        if mask_type == "dpnp":
+            key = dpnp.array(mask)
+        elif mask_type == "numpy":
+            key = mask
+        else:
+            key = dpt.asarray(mask)
 
-        # getitem via bool array
-        assert_array_equal(ia.flat[dpnp.array(mask)], a.flat[mask])
+        # getitem via bool mask
+        assert_array_equal(ia.flat[key], a.flat[mask])
 
-        # setitem via bool array
+        # setitem via bool mask
         a.flat[mask] = -1
-        ia.flat[dpnp.array(mask)] = -1
+        ia.flat[key] = -1
         assert_array_equal(ia, a)
+
+    @pytest.mark.parametrize("xp", [dpnp, np])
+    def test_flat_bool_mask_wrong_size(self, xp):
+        a = xp.arange(6)
+        mask = xp.array([True, False, True])
+        with pytest.raises(IndexError):
+            _ = a.flat[mask]
+        with pytest.raises(IndexError):
+            a.flat[mask] = 0
 
     @testing.with_requires("numpy>=2.4")
     @pytest.mark.parametrize("xp", [dpnp, np])

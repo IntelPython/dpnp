@@ -87,13 +87,12 @@ class flatiter:
         if key is Ellipsis or isinstance(key, (slice, tuple)):
             return
 
-        # a genuine scalar int (not bool): regular indexing checks it
-        if not isinstance(key, bool) and (
-            isinstance(key, int)
-            or (
-                callable(getattr(key, "__index__", None))
-                and not hasattr(key, "ndim")
-            )
+        # a genuine scalar int (not bool, not an array): regular indexing
+        # checks it
+        if (
+            not isinstance(key, bool)
+            and callable(getattr(key, "__index__", None))
+            and not hasattr(key, "ndim")
         ):
             return
 
@@ -109,7 +108,13 @@ class flatiter:
 
         if dpnp.issubdtype(idx.dtype, dpnp.bool):
             # only a boolean ndarray mask is valid; reject bool scalars/lists
-            if idx.ndim > 0 and not isinstance(key, (bool, list, tuple)):
+            if idx.ndim > 0 and not isinstance(key, list):
+                if idx.size != self._size:
+                    raise IndexError(
+                        "boolean index did not match indexed array along "
+                        f"axis 0; size of axis is {self._size} but size of "
+                        f"corresponding boolean axis is {idx.size}"
+                    )
                 return
             raise IndexError("boolean indices for iterators are not supported")
 
@@ -138,6 +143,15 @@ class flatiter:
 
     def __getitem__(self, key):
         key = self._normalize_key(key)
+
+        if isinstance(key, int) and not isinstance(key, bool):
+            # scalar fast path: index directly instead of flattening the array
+            pos = key + self._size if key < 0 else key
+            if not 0 <= pos < self._size:
+                raise IndexError(
+                    f"index {key} is out of bounds for size {self._size}"
+                )
+            return self._arr[numpy.unravel_index(pos, self._arr.shape)].copy()
 
         # flat always yields a copy, never a view
         return dpnp.reshape(self._arr, -1)[key].copy()
@@ -171,6 +185,10 @@ class flatiter:
             idx = dpnp.arange(
                 start, stop, step, sycl_queue=exec_q, usm_type=usm_type
             )
+        elif hasattr(key, "dtype") and dpnp.issubdtype(key.dtype, dpnp.bool):
+            # use a fast path for boolean mask
+            pos = dpnp.asarray(key, sycl_queue=exec_q, usm_type=usm_type)
+            idx = dpnp.nonzero(pos)[0]
         else:
             flat_index = dpnp.arange(
                 a.size, sycl_queue=exec_q, usm_type=usm_type
