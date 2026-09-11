@@ -1075,7 +1075,8 @@ data type.</p>
 </p></li>
 <li><p><strong>descending</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>Sort order. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the array must be sorted in descending
 order (by value). If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the array must be sorted in
-ascending order (by value).</p>
+ascending order (by value). NaN values (and complex values with a
+NaN component) are ordered to the end regardless of <cite>descending</cite>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 </p></li>
 <li><p><strong>stable</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- <p>Sort stability. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the returned array will maintain the
