@@ -48,7 +48,7 @@ This release is compatible with NumPy 2.5.
 * `dpnp` uses pybind11 3.1.0 [#3015](https://github.com/IntelPython/dpnp/pull/3015)
 * Reworked the ASV benchmarks and added end-to-end workload benchmarks derived from dpBench [#2996](https://github.com/IntelPython/dpnp/pull/2996)
 * Reduced allocations in `dpnp.linalg.norm` by reusing the reduction result as the `sqrt` output buffer in the 2-norm and Frobenius-norm branches [#3062](https://github.com/IntelPython/dpnp/pull/3062)
-* Changed `dpnp.sort`, `dpnp.argsort`, and their `dpnp.ndarray`/`dpnp.tensor` counterparts placing `NaN` values first instead of last when sorting in descending order [#3066](https://github.com/IntelPython/dpnp/pull/3066)
+* Changed `dpnp.sort`, `dpnp.argsort`, and their `dpnp.ndarray`/`dpnp.tensor` counterparts to place `NaN` values last instead of first when sorting in descending order [#3066](https://github.com/IntelPython/dpnp/pull/3066)
 * `dpnp.tensor.top_k` now treats `NaN` values (and complex values with a `NaN` component) as the smallest, consistent with `dpnp.tensor.sort`, so `mode="largest"` no longer returns them ahead of finite values [#3066](https://github.com/IntelPython/dpnp/pull/3066)
 
 ### Deprecated
