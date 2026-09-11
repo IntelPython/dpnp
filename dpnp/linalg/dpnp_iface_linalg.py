@@ -468,8 +468,6 @@ def eig(a):
 
     Returns
     -------
-    A namedtuple with the following attributes:
-
     eigenvalues : (..., M) dpnp.ndarray
         The eigenvalues, each repeated according to its multiplicity.
         The eigenvalues are not necessarily ordered. The resulting array is
@@ -584,8 +582,6 @@ def eigh(a, UPLO="L"):
 
     Returns
     -------
-    A namedtuple with the following attributes:
-
     eigenvalues : (..., M) dpnp.ndarray
         The eigenvalues in ascending order, each repeated according to its
         multiplicity.
@@ -1591,9 +1587,6 @@ def qr(a, mode="reduced"):
 
     Returns
     -------
-    When mode is "reduced" or "complete", the result will be a namedtuple with
-    the attributes `Q` and `R`:
-
     Q : dpnp.ndarray of float or complex, optional
         A matrix with orthonormal columns.
         When mode is ``"complete"`` the result is an orthogonal/unitary matrix
@@ -1608,6 +1601,12 @@ def qr(a, mode="reduced"):
         The array `h` contains the Householder reflectors that generate `Q`
         along with `R`. The `tau` array contains scaling factors for the
         reflectors.
+
+    Notes
+    -----
+    When `mode` is ``"reduced"`` or ``"complete"``, the result is a namedtuple
+    with the attributes `Q` and `R`. When `mode` is ``"raw"``, it returns
+    ``(h, tau)``.
 
     Examples
     --------
@@ -1749,9 +1748,6 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
 
     Returns
     -------
-    When `compute_uv` is ``True``, the result is a namedtuple with the
-    following attribute names:
-
     U : { (…, M, M), (…, M, K) } dpnp.ndarray
         Unitary matrix, where M is the number of rows of the input array `a`.
         The shape of the matrix `U` depends on the value of `full_matrices`.
@@ -1768,6 +1764,12 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
         If `full_matrices` is ``True``, `Vh` has the shape (…, N, N).
         If `full_matrices` is ``False``, `Vh` has the shape (…, K, N).
         If `compute_uv` is ``False``, neither `U` or `Vh` are computed.
+
+    Notes
+    -----
+    When `compute_uv` is ``True``, the result is a namedtuple with the
+    attribute names `U`, `S`, and `Vh`. When `compute_uv` is ``False``, only
+    the singular values `S` are returned.
 
     Examples
     --------
@@ -1895,8 +1897,6 @@ def slogdet(a):
 
     Returns
     -------
-    A namedtuple with the following attributes:
-
     sign : (...) dpnp.ndarray
         A number representing the sign of the determinant. For a real matrix,
         this is 1, 0, or -1. For a complex matrix, this is a complex number
