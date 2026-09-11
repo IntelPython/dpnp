@@ -129,8 +129,6 @@ def nanargmax(a, axis=None, out=None, *, keepdims=False):
     the user is recommended to filter NaNs themselves and use `dpnp.argmax`
     on the filtered array.
 
-    Warnings
-    --------
     The results cannot be trusted if a slice contains only NaNs
     and -Infs.
 
@@ -213,8 +211,6 @@ def nanargmin(a, axis=None, out=None, *, keepdims=False):
     the user is recommended to filter NaNs themselves and use `dpnp.argmax`
     on the filtered array.
 
-    Warnings
-    --------
     The results cannot be trusted if a slice contains only NaNs
     and -Infs.
 

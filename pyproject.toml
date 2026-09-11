@@ -89,6 +89,7 @@ docs = [
   "Cython",
   "cupy",
   "furo",
+  "numpydoc",
   "sphinx",
   "sphinx-copybutton",
   "sphinx-design",

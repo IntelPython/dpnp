@@ -736,7 +736,7 @@ def _calculate_determinant_sign(ipiv, diag, res_type, n):
     values.
 
     Parameters
-    -----------
+    ----------
     ipiv : {dpnp.ndarray, usm_ndarray}
         The pivot indices from LU decomposition.
     diag : {dpnp.ndarray, usm_ndarray}

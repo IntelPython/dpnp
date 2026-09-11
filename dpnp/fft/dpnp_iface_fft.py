@@ -559,7 +559,7 @@ def hfft(a, n=None, axis=-1, norm=None, out=None):
     --------
     :obj:`dpnp.fft` : For definition of the DFT and conventions used.
     :obj:`dpnp.fft.rfft` : The one-dimensional FFT of real input.
-    :obj:`dpnp.fft.ihfft` :The inverse of :obj:`dpnp.fft.hfft`.
+    :obj:`dpnp.fft.ihfft` : The inverse of :obj:`dpnp.fft.hfft`.
 
 
     Notes
@@ -1101,7 +1101,7 @@ def irfft(a, n=None, axis=-1, norm=None, out=None):
     :obj:`dpnp.fft.rfft` : The one-dimensional FFT of real input, of which
                         :obj:`dpnp.fft.irfft` is inverse.
     :obj:`dpnp.fft.fft` : The one-dimensional FFT of general (complex) input.
-    :obj:`dpnp.fft.irfft2` :The inverse of the two-dimensional FFT of
+    :obj:`dpnp.fft.irfft2` : The inverse of the two-dimensional FFT of
                         real input.
     :obj:`dpnp.fft.irfftn` : The inverse of the *N*-dimensional FFT of
                         real input.
