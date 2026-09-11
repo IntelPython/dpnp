@@ -559,15 +559,16 @@ class TestSort:
         assert_array_equal(ia, a)
 
     @testing.with_requires("numpy>=2.5")
+    @pytest.mark.parametrize("kind", [None, "stable", "mergesort", "radixsort"])
     @pytest.mark.parametrize("descending", [False, True])
     @pytest.mark.parametrize("dtype", get_float_dtypes(no_float16=False))
-    def test_descending_nan(self, dtype, descending):
+    def test_descending_nan(self, dtype, descending, kind):
         # NaNs are sorted to the end for both ascending and descending order
         a = numpy.linspace(-50, 50, 101).astype(dtype)
         a[::10] = numpy.nan
         ia = dpnp.array(a)
 
-        result = dpnp.sort(ia, descending=descending)
+        result = dpnp.sort(ia, descending=descending, kind=kind)
         expected = numpy.sort(a, stable=True, descending=descending)
         assert_array_equal(result, expected)
 
