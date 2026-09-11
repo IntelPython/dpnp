@@ -239,6 +239,7 @@ class TestFlatiter:
         ia.flat[key] = -1
         assert_array_equal(ia, a)
 
+    @testing.with_requires("numpy>=2.4")
     @pytest.mark.parametrize("xp", [dpnp, np])
     def test_flat_bool_mask_wrong_size(self, xp):
         a = xp.arange(6)
