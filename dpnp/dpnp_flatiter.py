@@ -169,8 +169,9 @@ class flatiter:
     def __getitem__(self, key):
         key = self._normalize_key(key)
 
-        if isinstance(key, int) and not isinstance(key, bool):
+        if isinstance(key, int):
             # scalar fast path: index directly instead of flattening the array
+            # (a bool key was already rejected in _normalize_key)
             pos = self._scalar_pos(key)
             return self._arr[numpy.unravel_index(pos, self._arr.shape)].copy()
 
@@ -197,8 +198,9 @@ class flatiter:
         usm_type = a.usm_type
 
         # resolve key to flat positions
-        if isinstance(key, int) and not isinstance(key, bool):
+        if isinstance(key, int):
             # scalar fast path: avoid building a full index array
+            # (a bool key was already rejected in _normalize_key)
             pos = self._scalar_pos(key)
             idx = dpnp.asarray(pos, sycl_queue=exec_q, usm_type=usm_type)
         elif isinstance(key, slice):
