@@ -150,6 +150,14 @@ class TestFlatiter:
         ia.flat[dpnp.array(1)] = dpnp.asarray(8)
         assert_array_equal(ia, a)
 
+    @pytest.mark.parametrize("value", [[8], np.array(8)], ids=["size1", "0d"])
+    def test_flat_setitem_single_value_broadcasts(self, value):
+        a = np.arange(6)
+        ia = dpnp.array(a)
+        a.flat[1:5] = value
+        ia.flat[1:5] = value
+        assert_array_equal(ia, a)
+
     def test_flat_setitem_length_one_slice_cycles(self):
         a = np.arange(1, 7)
         ia = dpnp.array(a)

@@ -225,8 +225,8 @@ class flatiter:
 
             val = val.ravel()
             n = idx.size
-            if val.size and val.size != n:
-                # cycles the values over the selection
+            if val.size not in (0, 1, n):
+                # put broadcasts size-0/1 values; otherwise cycle over selection
                 val = val[
                     dpnp.arange(n, sycl_queue=exec_q, usm_type=usm_type)
                     % val.size
