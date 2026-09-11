@@ -239,6 +239,17 @@ class TestFlatiter:
         ia.flat[key] = -1
         assert_array_equal(ia, a)
 
+    def test_flat_bool_mask_empty(self):
+        a = np.arange(6)
+        ia = dpnp.array(a)
+        mask = np.array([], dtype=bool)
+
+        assert_array_equal(ia.flat[dpnp.array(mask)], a.flat[mask])
+
+        a.flat[mask] = 9
+        ia.flat[dpnp.array(mask)] = 9
+        assert_array_equal(ia, a)
+
     @testing.with_requires("numpy>=2.4")
     @pytest.mark.parametrize("xp", [dpnp, np])
     def test_flat_bool_mask_wrong_size(self, xp):

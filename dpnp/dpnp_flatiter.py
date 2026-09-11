@@ -109,7 +109,8 @@ class flatiter:
         if dpnp.issubdtype(idx.dtype, dpnp.bool):
             # only a boolean ndarray mask is valid; reject bool scalars/lists
             if idx.ndim > 0 and not isinstance(key, list):
-                if idx.size != self._size:
+                # an empty mask selects nothing; otherwise sizes must match
+                if idx.size not in (0, self._size):
                     raise IndexError(
                         "boolean index did not match indexed array along "
                         f"axis 0; size of axis is {self._size} but size of "
