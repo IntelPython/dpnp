@@ -156,6 +156,16 @@ class flatiter:
             )
         return pos
 
+    def _asarray_cfd(self, x):
+        # compute-follows-data: keep a device array on its own queue so a
+        # downstream op raises on a queue mismatch, and only place a host
+        # input on the iterator's queue
+        if dpnp.is_supported_array_type(x):
+            return dpnp.asarray(x)
+        return dpnp.asarray(
+            x, sycl_queue=self._arr.sycl_queue, usm_type=self._arr.usm_type
+        )
+
     def __getitem__(self, key):
         key = self._normalize_key(key)
 
@@ -202,7 +212,7 @@ class flatiter:
             )
         elif hasattr(key, "dtype") and dpnp.issubdtype(key.dtype, dpnp.bool):
             # boolean mask fast path
-            mask = dpnp.asarray(key, sycl_queue=exec_q, usm_type=usm_type)
+            mask = self._asarray_cfd(key)
             idx = dpnp.nonzero(mask)[0]
         else:
             flat_index = dpnp.arange(
@@ -211,7 +221,7 @@ class flatiter:
             idx = flat_index[key]
 
         if not dpnp.isscalar(val):
-            val = dpnp.asarray(val, sycl_queue=exec_q, usm_type=usm_type)
+            val = self._asarray_cfd(val)
             if idx.ndim == 0 and val.ndim != 0:
                 # a scalar index targets a single item, reject an array value
                 raise ValueError("Error setting single item of array.")
