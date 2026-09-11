@@ -262,6 +262,16 @@ class TestFlatiter:
 
     @testing.with_requires("numpy>=2.4")
     @pytest.mark.parametrize("xp", [dpnp, np])
+    def test_flat_bool_mask_ndim(self, xp):
+        a = xp.arange(6).reshape(2, 3)
+        mask = xp.array([[True, False, True], [False, True, False]])
+        with pytest.raises(IndexError):
+            _ = a.flat[mask]
+        with pytest.raises(IndexError):
+            a.flat[mask] = -1
+
+    @testing.with_requires("numpy>=2.4")
+    @pytest.mark.parametrize("xp", [dpnp, np])
     def test_flat_boolean_list_index(self, xp):
         a = xp.arange(6)
         mask = [True, False, True, False, True, False]

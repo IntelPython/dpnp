@@ -106,8 +106,14 @@ class flatiter:
                 return  # let regular indexing raise
 
         if dpnp.issubdtype(idx.dtype, dpnp.bool):
-            # only a boolean ndarray mask is valid; reject bool scalars/lists
-            if idx.ndim > 0 and not isinstance(key, list):
+            if idx.ndim > 1:
+                raise IndexError(
+                    "too many indices for flat iterator: flat iterator is "
+                    f"1-dimensional, but {idx.ndim} were indexed"
+                )
+
+            # only a 1-D boolean ndarray mask is valid; reject scalars/lists
+            if idx.ndim == 1 and not isinstance(key, list):
                 # an empty mask selects nothing; otherwise sizes must match
                 if idx.size not in (0, self._size):
                     raise IndexError(
