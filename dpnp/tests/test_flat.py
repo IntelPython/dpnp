@@ -273,9 +273,9 @@ class TestFlatiter:
     def test_flat_bool_mask_wrong_size(self, xp):
         a = xp.arange(6)
         mask = xp.array([True, False, True])
-        with pytest.raises(IndexError):
+        with pytest.raises(IndexError, match="indexed flat iterator"):
             _ = a.flat[mask]
-        with pytest.raises(IndexError):
+        with pytest.raises(IndexError, match="indexed flat iterator"):
             a.flat[mask] = 0
 
     @testing.with_requires("numpy>=2.4")

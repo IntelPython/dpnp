@@ -124,9 +124,9 @@ class flatiter:
                 # an empty mask selects nothing; otherwise sizes must match
                 if idx.size not in (0, self._size):
                     raise IndexError(
-                        "boolean index did not match indexed array along "
-                        f"axis 0; size of axis is {self._size} but size of "
-                        f"corresponding boolean axis is {idx.size}"
+                        "boolean index did not match indexed flat iterator "
+                        f"along axis 0; size of axis is {self._size} but size "
+                        f"of corresponding boolean axis is {idx.size}"
                     )
                 return None
             raise IndexError("boolean indices for iterators are not supported")
