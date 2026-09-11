@@ -142,16 +142,21 @@ class flatiter:
         self._validate_key(key)
         return key
 
+    def _scalar_pos(self, key):
+        # normalize a scalar flat index (wrap negatives) and bounds-check it
+        pos = key + self._size if key < 0 else key
+        if not 0 <= pos < self._size:
+            raise IndexError(
+                f"index {key} is out of bounds for size {self._size}"
+            )
+        return pos
+
     def __getitem__(self, key):
         key = self._normalize_key(key)
 
         if isinstance(key, int) and not isinstance(key, bool):
             # scalar fast path: index directly instead of flattening the array
-            pos = key + self._size if key < 0 else key
-            if not 0 <= pos < self._size:
-                raise IndexError(
-                    f"index {key} is out of bounds for size {self._size}"
-                )
+            pos = self._scalar_pos(key)
             return self._arr[numpy.unravel_index(pos, self._arr.shape)].copy()
 
         # flat always yields a copy, never a view
@@ -173,12 +178,8 @@ class flatiter:
 
         # resolve key to flat positions
         if isinstance(key, int) and not isinstance(key, bool):
-            # fast path for a scalar index: avoid building a full index array
-            pos = key + a.size if key < 0 else key
-            if not 0 <= pos < a.size:
-                raise IndexError(
-                    f"index {key} is out of bounds for size {a.size}"
-                )
+            # scalar fast path: avoid building a full index array
+            pos = self._scalar_pos(key)
             idx = dpnp.asarray(pos, sycl_queue=exec_q, usm_type=usm_type)
         elif isinstance(key, slice):
             # slice fast path: build only the selected positions
@@ -187,9 +188,9 @@ class flatiter:
                 start, stop, step, sycl_queue=exec_q, usm_type=usm_type
             )
         elif hasattr(key, "dtype") and dpnp.issubdtype(key.dtype, dpnp.bool):
-            # use a fast path for boolean mask
-            pos = dpnp.asarray(key, sycl_queue=exec_q, usm_type=usm_type)
-            idx = dpnp.nonzero(pos)[0]
+            # boolean mask fast path
+            mask = dpnp.asarray(key, sycl_queue=exec_q, usm_type=usm_type)
+            idx = dpnp.nonzero(mask)[0]
         else:
             flat_index = dpnp.arange(
                 a.size, sycl_queue=exec_q, usm_type=usm_type
@@ -204,7 +205,7 @@ class flatiter:
 
             val = val.ravel()
             n = idx.size
-            if 0 < val.size != n:
+            if val.size and val.size != n:
                 # cycles the values over the selection
                 val = val[
                     dpnp.arange(n, sycl_queue=exec_q, usm_type=usm_type)
