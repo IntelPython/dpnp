@@ -164,8 +164,12 @@ class flatiter:
             pos = self._scalar_pos(key)
             return self._arr[numpy.unravel_index(pos, self._arr.shape)].copy()
 
-        # flat always yields a copy, never a view
-        return dpnp.reshape(self._arr, -1)[key].copy()
+        res = dpnp.reshape(self._arr, -1)[key]
+        # copy only a basic-index view, when shares the source allocation
+        # pylint: disable=protected-access
+        if res.get_array()._pointer == self._arr.get_array()._pointer:
+            res = res.copy()
+        return res
 
     def __setitem__(self, key, val):
         key = self._normalize_key(key)

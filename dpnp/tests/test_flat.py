@@ -300,12 +300,14 @@ class TestFlatiter:
         assert_array_equal(ia, a)
 
     @pytest.mark.parametrize("xp", [dpnp, np])
-    def test_flat_getitem_returns_copy(self, xp):
-        # flat yields copies, not views
-        a = xp.arange(10)
+    @pytest.mark.parametrize("contiguous", [True, False], ids=["C", "non-C"])
+    def test_flat_getitem_returns_copy(self, xp, contiguous):
+        # flat yields copies, not view
+        a = xp.arange(10) if contiguous else xp.arange(20)[::2]
+        orig = a[1].copy()
         s = a.flat[1:4]
         s[0] = 999
-        assert a[1] != 999
+        assert a[1] == orig
 
     def test_flat_scalar_getitem_returns_copy(self):
         # dpnp returns a 0-d array copy (NumPy returns an immutable scalar)
