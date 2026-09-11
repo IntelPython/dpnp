@@ -173,6 +173,16 @@ class TestFlatiter:
         # int array index
         assert_array_equal(ia.flat[dpnp.array([0, 3, 5])], a.flat[[0, 3, 5]])
 
+    @pytest.mark.parametrize(
+        "key", [[0, 3, 5], [-1, -2, 3]], ids=["pos", "neg"]
+    )
+    def test_flat_setitem_int_array_value(self, key):
+        a = np.arange(1, 7)
+        ia = dpnp.array(a)
+        a.flat[key] = [10, 20, 30]
+        ia.flat[dpnp.array(key)] = dpnp.array([10, 20, 30])
+        assert_array_equal(ia, a)
+
     def test_flat_usm_ndarray_index(self):
         a = np.arange(1, 7)
         ia = dpnp.array(a)

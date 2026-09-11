@@ -83,9 +83,16 @@ class flatiter:
         self._i = 0
 
     def _validate_key(self, key):
+        """
+        Validate `key` as a flat iterator index.
+
+        Return the array of flat positions for an integer-array key, or
+        ``None`` when the caller has to resolve the positions itself.
+
+        """
         # Ellipsis/slice/tuple need no validation here
         if key is Ellipsis or isinstance(key, (slice, tuple)):
-            return
+            return None
 
         # a genuine scalar int (not bool, not an array): bounds-checked later
         if (
@@ -93,7 +100,7 @@ class flatiter:
             and callable(getattr(key, "__index__", None))
             and not hasattr(key, "ndim")
         ):
-            return
+            return None
 
         if isinstance(key, dpnp_array):
             idx = key
@@ -103,7 +110,7 @@ class flatiter:
             try:
                 idx = numpy.asarray(key)
             except (TypeError, ValueError):
-                return  # let regular indexing raise
+                return None  # let regular indexing raise
 
         if dpnp.issubdtype(idx.dtype, dpnp.bool):
             if idx.ndim > 1:
@@ -121,11 +128,11 @@ class flatiter:
                         f"axis 0; size of axis is {self._size} but size of "
                         f"corresponding boolean axis is {idx.size}"
                     )
-                return
+                return None
             raise IndexError("boolean indices for iterators are not supported")
 
         if not dpnp.issubdtype(idx.dtype, dpnp.integer) or idx.size == 0:
-            return
+            return None
 
         # fancy int indices wrap instead of raising, so bounds-check
         size = self._size
@@ -134,9 +141,11 @@ class flatiter:
             raise IndexError(f"index {hi} is out of bounds for size {size}")
         if lo < -size:
             raise IndexError(f"index {lo} is out of bounds for size {size}")
+        return idx
 
-    def _normalize_key(self, key):
-        # 1-D iterator: unwrap a 1-elem tuple; reject None and longer tuples
+    def _prepare_key(self, key):
+        # normalize a 1-D iterator index (unwrap a 1-elem tuple; reject None
+        # and longer tuples) and return it with the validated positions or None
         if isinstance(key, tuple) and len(key) == 1:
             key = key[0]
         if key is None or (isinstance(key, tuple) and len(key) > 1):
@@ -144,8 +153,7 @@ class flatiter:
                 "only integers, slices (`:`), ellipsis (`...`) and integer "
                 "or boolean arrays are valid indices"
             )
-        self._validate_key(key)
-        return key
+        return key, self._validate_key(key)
 
     def _scalar_pos(self, key):
         # normalize a scalar flat index (wrap negatives) and bounds-check it
@@ -167,11 +175,11 @@ class flatiter:
         )
 
     def __getitem__(self, key):
-        key = self._normalize_key(key)
+        key, _ = self._prepare_key(key)
 
         if isinstance(key, int):
             # scalar fast path: index directly instead of flattening the array
-            # (a bool key was already rejected in _normalize_key)
+            # (a bool key was already rejected in _prepare_key)
             pos = self._scalar_pos(key)
             return self._arr[numpy.unravel_index(pos, self._arr.shape)].copy()
 
@@ -184,7 +192,7 @@ class flatiter:
         return res
 
     def __setitem__(self, key, val):
-        key = self._normalize_key(key)
+        key, idx = self._prepare_key(key)
 
         if isinstance(key, tuple) and len(key) == 0:
             # NumPy rejects arr.flat[()] = val
@@ -197,10 +205,11 @@ class flatiter:
         exec_q = a.sycl_queue
         usm_type = a.usm_type
 
-        # resolve key to flat positions
+        # resolve key to flat positions; an integer-array key is already
+        # validated (idx), and dpnp.put resolves its negative positions
         if isinstance(key, int):
             # scalar fast path: avoid building a full index array
-            # (a bool key was already rejected in _normalize_key)
+            # (a bool key was already rejected in _prepare_key)
             pos = self._scalar_pos(key)
             idx = dpnp.asarray(pos, sycl_queue=exec_q, usm_type=usm_type)
         elif isinstance(key, slice):
@@ -213,7 +222,9 @@ class flatiter:
             # boolean mask fast path
             mask = self._as_dpnp_array(key)
             idx = dpnp.nonzero(mask)[0]
-        else:
+        elif idx is None:
+            # ellipsis, empty tuple or an unrecognized key: let regular
+            # indexing resolve the positions and raise on an invalid key
             flat_index = dpnp.arange(
                 a.size, sycl_queue=exec_q, usm_type=usm_type
             )
