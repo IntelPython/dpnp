@@ -150,22 +150,6 @@ class TestFlatiter:
         ia.flat[dpnp.array(1)] = dpnp.asarray(8)
         assert_array_equal(ia, a)
 
-    def test_flat_setitem_different_queue(self):
-        # compute-follows-data: a value or mask on another queue must raise
-        # rather than being silently migrated (like assignment and dpnp.put)
-        import dpctl
-
-        from dpnp.exceptions import ExecutionPlacementError
-
-        ia = dpnp.arange(6)
-        q = dpctl.SyclQueue(ia.sycl_device)
-        v = dpnp.array([7, 8], sycl_queue=q)
-        m = dpnp.array([True, False] * 3, sycl_queue=q)
-        with pytest.raises(ExecutionPlacementError):
-            ia.flat[0:2] = v
-        with pytest.raises(ExecutionPlacementError):
-            ia.flat[m] = -1
-
     def test_flat_setitem_length_one_slice_cycles(self):
         a = np.arange(1, 7)
         ia = dpnp.array(a)

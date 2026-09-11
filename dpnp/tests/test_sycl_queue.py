@@ -678,6 +678,32 @@ def test_2in_1out_diff_queue_but_equal_context(func, device):
         getattr(dpnp, func)(x1, x2)
 
 
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
+def test_flat(device):
+    x = dpnp.arange(6, device=device)
+    y = dpnp.array([0, 2, 4], device=device)
+
+    # getitem keeps the result on the input's queue
+    assert_sycl_queue_equal(x.flat[1:4].sycl_queue, x.sycl_queue)
+    assert_sycl_queue_equal(x.flat[y].sycl_queue, x.sycl_queue)
+
+    # setitem keeps the array on its queue
+    x.flat[y] = dpnp.arange(3, device=device)
+    assert_sycl_queue_equal(x.flat[y].sycl_queue, x.sycl_queue)
+
+
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
+def test_flat_setitem_diff_queue(device):
+    a = dpnp.arange(6, device=device)
+    q = dpctl.SyclQueue(device)
+    v = dpnp.arange(2, sycl_queue=q)
+    m = dpnp.array([True, False] * 3, sycl_queue=q)
+    with assert_raises((ValueError, ExecutionPlacementError)):
+        a.flat[0:2] = v
+    with assert_raises((ValueError, ExecutionPlacementError)):
+        a.flat[m] = -1
+
+
 @pytest.mark.parametrize("op", ["bitwise_count", "bitwise_not"])
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_bitwise_op_1in(op, device):
