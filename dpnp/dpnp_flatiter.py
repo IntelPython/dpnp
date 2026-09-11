@@ -175,10 +175,7 @@ class flatiter:
             return self._arr[numpy.unravel_index(pos, self._arr.shape)].copy()
 
         res = dpnp.reshape(self._arr, -1)[key]
-        # advanced indexing is already fresh; copy only a basic-index view,
-        # i.e. when res shares the source allocation. Compare the allocation
-        # base `usm_data._pointer` (offset-independent), not the array-level
-        # `_pointer` which is adjusted to the first element.
+        # basic indexing may alias the source, copy if shares the source buffer
         # pylint: disable=protected-access
         src = self._arr.get_array().usm_data._pointer
         if res.get_array().usm_data._pointer == src:
