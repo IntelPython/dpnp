@@ -1986,8 +1986,8 @@ class dpnp_array:
         :obj:`dpnp.searchsorted` : Find elements in a sorted array.
         :obj:`dpnp.partition` : Partial sort.
 
-        Note
-        ----
+        Notes
+        -----
         `axis` in :obj:`dpnp.sort` could be integer or ``None``. If ``None``,
         the array is flattened before sorting. However, `axis` in
         :obj:`dpnp.ndarray.sort` can only be integer since it sorts an array
