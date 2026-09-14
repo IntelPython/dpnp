@@ -1,0 +1,10 @@
+﻿
+
+dpnp.lcm
+========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: lcm

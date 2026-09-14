@@ -1,0 +1,10 @@
+﻿
+
+dpnp.iscomplexobj
+=================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: iscomplexobj
