@@ -880,7 +880,7 @@ def _parse_possible_contraction(
     return [sort, positions, new_input_sets]
 
 
-def _reduced_binary_einsum(arr0, sub0, arr1, sub1, sub_others):
+def _reduced_binary_einsum(arr0, sub0, arr1, sub1, sub_others, prefer_c=False):
     """Copied from _reduced_binary_einsum in cupy/core/_einsum.py"""
 
     set0 = set(sub0)
@@ -915,6 +915,27 @@ def _reduced_binary_einsum(arr0, sub0, arr1, sub1, sub_others):
         arr0 = _expand_dims_transpose(arr0, sub0, sub_out)
         arr1 = _expand_dims_transpose(arr1, sub1, sub_out)
         return arr0 * arr1, sub_out
+
+    if (
+        prefer_c
+        and sub_l
+        and sub_r
+        and sub_others.index(sub_l[0]) > sub_others.index(sub_r[0])
+    ):
+        # Swap the operand roles so the free axes of the product already come
+        # out in `sub_others` order. Otherwise the caller transposes the
+        # result, which makes it f-contiguous and costs a copy into c-order.
+        sub_out = sub_b + sub_r + sub_l
+        arr0, bs0, cs0, ts0, arr1, bs1, cs1, ts1 = (
+            arr1,
+            bs1,
+            cs1,
+            ts1,
+            arr0,
+            bs0,
+            cs0,
+            ts0,
+        )
 
     tmp0, shapes0 = _flatten_transpose(arr0, [bs0, ts0, cs0])
     tmp1, shapes1 = _flatten_transpose(arr1, [bs1, cs1, ts1])
@@ -1211,7 +1232,15 @@ def dpnp_einsum(
                 stacklevel=2,
             )
 
-    for idx0, idx1 in _iter_path_pairs(path):
+    # Resolved above the loop because `prefer_c` below needs the final order:
+    # only a "C" target gains from a product laid out in output order.
+    if order == "K" and optimize is False and not all_f_contiguous:
+        # only the unoptimized path of NumPy copies into a c-contiguous
+        # array, the optimized one is matmul-based, as dpnp always is
+        order = "C"
+
+    pairs = list(_iter_path_pairs(path))
+    for pair_idx, (idx0, idx1) in enumerate(pairs):
         # "reduced" binary einsum
         arr0 = operands.pop(idx0)
         sub0 = input_subscripts.pop(idx0)
@@ -1224,7 +1253,13 @@ def dpnp_einsum(
             )
         )
         arr_out, sub_out = _reduced_binary_einsum(
-            arr0, sub0, arr1, sub1, sub_others
+            arr0,
+            sub0,
+            arr1,
+            sub1,
+            sub_others,
+            # only "C" and the last contraction
+            prefer_c=order == "C" and pair_idx == len(pairs) - 1,
         )
         operands.append(arr_out)
         input_subscripts.append(sub_out)
@@ -1245,10 +1280,6 @@ def dpnp_einsum(
 
     # a view is returned for any `order`, the same way NumPy does
     if not returns_view:
-        if order == "K" and optimize is False and not all_f_contiguous:
-            # only the unoptimized path of NumPy copies into a c-contiguous
-            # array, the optimized one is matmul-based, as dpnp always is
-            order = "C"
         arr_out = dpnp.asarray(arr_out, order=order)
     assert returns_view or arr_out.dtype == result_dtype
     return dpnp.get_result_array(arr_out, out, casting=casting)
