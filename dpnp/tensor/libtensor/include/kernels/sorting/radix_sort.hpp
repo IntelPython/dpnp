@@ -50,6 +50,7 @@
 #include "kernels/dpnp_tensor_types.hpp"
 #include "kernels/sorting/sort_utils.hpp"
 #include "utils/sycl_alloc_utils.hpp"
+#include "utils/type_utils.hpp"
 
 namespace dpnp::tensor::kernels
 {
@@ -116,12 +117,15 @@ std::uint32_t ceil_log2(SizeT n)
 //----------------------------------------------------------
 
 template <bool is_ascending>
-bool order_preserving_cast(bool val)
+bool order_preserving_cast(const bool &val)
 {
+    // by reference: a bool copy lets the compiler assume a 0/1 byte, and the
+    // bucket index below reads only the low radix bits, see gh-2121
+    const bool v = dpnp::tensor::type_utils::normalize_bool(val);
     if constexpr (is_ascending)
-        return val;
+        return v;
     else
-        return !val;
+        return !v;
 }
 
 template <bool is_ascending,
@@ -1785,7 +1789,13 @@ struct IndexedProj
     {
     }
 
-    auto operator()(IndexT i) const { return value_projector(ptr[i]); }
+    auto operator()(IndexT i) const
+    {
+        // normalize the value read from memory: for bool a byte other than
+        // 0x00/0x01 would otherwise order by its raw value, see gh-2121
+        return value_projector(
+            dpnp::tensor::type_utils::normalize_bool(ptr[i]));
+    }
 
 private:
     const ValueT *ptr;
