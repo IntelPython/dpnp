@@ -16,9 +16,10 @@ source:
 build:
   number: ${{ env.get("GIT_DESCRIBE_NUMBER") }}
   script:
+    file: ${{ "bld.bat" if win else "build.sh" }}
     env:
       WHEELS_OUTPUT_FOLDER: ${{ env.get("WHEELS_OUTPUT_FOLDER", default="") }}
-      OVERRIDE_INTEL_IPO: ${{ env.get("OVERRIDE_INTEL_IPO", default="") }}
+      OVERRIDE_INTEL_IPO: ${{ env.get("OVERRIDE_INTEL_IPO", default="") if win else "" }}
       # conda-build used to forward GIT_DESCRIBE_NUMBER into the build script
       # automatically; rattler-build does not, so bld.bat's
       # `wheel tags --remove --build %GIT_DESCRIBE_NUMBER%` was silently
@@ -28,7 +29,8 @@ build:
   dynamic_linking:
     missing_dso_allowlist:
       - "*DPCTLSyclInterface*"
-      - "*/dpnp_backend_c.dll"
+      - if: win
+        then: "*/dpnp_backend_c.dll"
 
 requirements:
   host:
@@ -89,7 +91,13 @@ requirements:
 
 tests:
   - script:
+      - pip check
       - python -c "import dpnp; print(dpnp.__version__)"
+      - python -m dpctl -f
+    requirements:
+      run:
+        - pip
+  - script: ${{ "run_test.bat" if win else "run_test.sh" }}
     requirements:
       run:
         - pytest

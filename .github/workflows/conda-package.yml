@@ -98,49 +98,30 @@ jobs:
           echo "GIT_DESCRIBE_TAG=$(echo "$DESCRIBE" | sed -E 's/-[0-9]+-g[0-9a-f]+$//')" >> "$GITHUB_ENV"
           echo "GIT_DESCRIBE_NUMBER=$(echo "$DESCRIBE" | sed -E 's/^.*-([0-9]+)-g[0-9a-f]+$/\1/')" >> "$GITHUB_ENV"
 
-      # rattler-build looks for build.bat on Windows (build.sh/build.bat is the
-      # symmetric naming it expects), while conda-build is still used for this
-      # recipe in non-GitHub CI and required bld.bat.
-      # Keep bld.bat as the single real source file and
-      # just copy it under the name rattler-build needs, so both build systems
-      # keep working off the same script without maintaining two duplicates
-      - name: Prepare build.bat for rattler-build
-        if: runner.os == 'Windows'
+      - name: Compute rattler-build arguments
         shell: bash -el {0}
-        run: cp conda-recipe/bld.bat conda-recipe/build.bat
+        run: |
+          read -ra RATTLER_CHANNELS <<< "$(echo "${{ env.channels-list }}" | sed 's/--override-channels//')"
+          echo "RATTLER_BUILD_ARGS=--no-include-recipe --test skip --channel-priority disabled --target-platform ${{ runner.os == 'Linux' && 'linux-64' || 'win-64' }} --variant-config conda-recipe/conda_build_config.yaml --variant \"python=${{ env.python-conda-spec }}\" --variant numpy=2 ${RATTLER_CHANNELS[*]}" >> "$GITHUB_ENV"
 
       - name: Build conda package
         id: build_conda_pkg
         continue-on-error: true
-        shell: bash -el {0}
-        run: |
-          read -ra RATTLER_CHANNELS <<< "$(echo "${{ env.channels-list }}" | sed 's/--override-channels//')"
-          rattler-build build \
-            --recipe conda-recipe/rattler_recipe.yaml \
-            --no-include-recipe \
-            --channel-priority disabled \
-            --target-platform ${{ runner.os == 'Linux' && 'linux-64' || 'win-64' }} \
-            --variant-config conda-recipe/conda_build_config.yaml \
-            --variant "python=${{ env.python-conda-spec }}" \
-            --variant numpy=2 \
-            "${RATTLER_CHANNELS[@]}"
+        uses: prefix-dev/rattler-build-action@1ca5f45832f419a46d1326ccc5861d7e14d67c44 # v0.2.39
+        with:
+          recipe-path: conda-recipe/rattler_recipe.yaml
+          build-args: ${{ env.RATTLER_BUILD_ARGS }}
+          upload-artifact: false
         env:
           MAX_BUILD_CMPL_MKL_VERSION: '2027.0a0'
 
       - name: ReBuild conda package
         if: steps.build_conda_pkg.outcome == 'failure'
-        shell: bash -el {0}
-        run: |
-          read -ra RATTLER_CHANNELS <<< "$(echo "${{ env.channels-list }}" | sed 's/--override-channels//')"
-          rattler-build build \
-            --recipe conda-recipe/rattler_recipe.yaml \
-            --no-include-recipe \
-            --channel-priority disabled \
-            --target-platform ${{ runner.os == 'Linux' && 'linux-64' || 'win-64' }} \
-            --variant-config conda-recipe/conda_build_config.yaml \
-            --variant "python=${{ env.python-conda-spec }}" \
-            --variant numpy=2 \
-            "${RATTLER_CHANNELS[@]}"
+        uses: prefix-dev/rattler-build-action@1ca5f45832f419a46d1326ccc5861d7e14d67c44 # v0.2.39
+        with:
+          recipe-path: conda-recipe/rattler_recipe.yaml
+          build-args: ${{ env.RATTLER_BUILD_ARGS }}
+          upload-artifact: false
         env:
           MAX_BUILD_CMPL_MKL_VERSION: '2027.0a0'
 
