@@ -1,0 +1,10 @@
+﻿
+
+dpnp.less
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: less
