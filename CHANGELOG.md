@@ -48,7 +48,7 @@ This release is compatible with NumPy 2.5.
 * `dpnp` uses pybind11 3.1.0 [#3015](https://github.com/IntelPython/dpnp/pull/3015)
 * Reworked the ASV benchmarks and added end-to-end workload benchmarks derived from dpBench [#2996](https://github.com/IntelPython/dpnp/pull/2996)
 * Reduced allocations in `dpnp.linalg.norm` by reusing the reduction result as the `sqrt` output buffer in the 2-norm and Frobenius-norm branches [#3062](https://github.com/IntelPython/dpnp/pull/3062)
-* Avoided a copy of the `dpnp.einsum` result into C-order by building the product in the requested layout directly [#3069](https://github.com/IntelPython/dpnp/pull/3069)
+* Avoided a copy of `dpnp.einsum` result into C-order by building the product in the requested layout directly [#3069](https://github.com/IntelPython/dpnp/pull/3069)
 
 ### Deprecated
 
