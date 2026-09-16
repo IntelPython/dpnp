@@ -5,7 +5,7 @@ set "TBB_ROOT_HINT=%PREFIX%/Library"
 set "DPL_ROOT_HINT=%PREFIX%/Library"
 
 REM Overriding IPO is useful for building in resources constrained VMs (public CI)
-if DEFINED OVERRIDE_INTEL_IPO (
+if not "%OVERRIDE_INTEL_IPO%"=="" (
   set "CMAKE_ARGS=%CMAKE_ARGS% -DCMAKE_INTERPROCEDURAL_OPTIMIZATION:BOOL=FALSE"
 )
 
