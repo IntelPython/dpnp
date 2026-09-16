@@ -709,9 +709,7 @@ cdef dict _numpy_array_interface_from_dl_tensor(DLTensor *dlt, bint ro_flag):
         ary_dt = "b" + str(itemsize)
     else:
         raise BufferError(
-            "Can not import DLPack tensor with type code {}.".format(
-                <object>dlt.dtype.code
-            )
+            f"Can not import DLPack tensor with type code {dlt.dtype.code}."
         )
     typestr = "|" + ary_dt
     return dict(
@@ -937,9 +935,8 @@ cpdef object from_dlpack_capsule(object py_caps):
             ary_dt = np.dtype("?")
         else:
             raise BufferError(
-                "Can not import DLPack tensor with type code {}.".format(
-                    <object>dl_tensor.dtype.code
-                )
+                "Can not import DLPack tensor with type code "
+                f"{dl_tensor.dtype.code}."
             )
         res_ary = usm_ndarray(
             py_shape,
