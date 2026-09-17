@@ -1332,9 +1332,37 @@ class dpnp_array:
     @property
     def flat(self):
         """
-        Return a flat iterator, or set a flattened version of self to value.
+        A 1-D iterator over the array.
 
-        """  # noqa: D200
+        This is a :obj:`dpnp.flatiter` instance, which acts similarly to, but
+        is not a subclass of, Python's built-in iterator object.
+
+        For full documentation refer to :obj:`numpy.ndarray.flat`.
+
+        See Also
+        --------
+        :obj:`dpnp.flatiter` : Flat iterator object to iterate over arrays.
+        :obj:`dpnp.ndarray.flatten` : Return a flattened copy of the array.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> x = np.arange(1, 7).reshape(2, 3)
+        >>> x
+        array([[1, 2, 3],
+               [4, 5, 6]])
+        >>> x.flat[3]
+        array(4)
+        >>> x.T.flat[3]
+        array(5)
+
+        An assignment example:
+
+        >>> x.flat[[1, 4]] = 1; x
+        array([[1, 1, 3],
+               [4, 1, 6]])
+
+        """
 
         return dpnp.flatiter(self)
 
@@ -1367,7 +1395,7 @@ class dpnp_array:
         See Also
         --------
         :obj:`dpnp.ravel` : Return a flattened array.
-        :obj:`dpnp.flat` : A 1-D flat iterator over the array.
+        :obj:`dpnp.ndarray.flat` : A 1-D flat iterator over the array.
 
         Examples
         --------
