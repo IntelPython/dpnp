@@ -1,0 +1,10 @@
+﻿
+
+dpnp.linalg.lstsq
+=================
+
+.. currentmodule:: dpnp.linalg
+
+
+
+.. autofunction:: lstsq
