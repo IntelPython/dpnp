@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.dtype.byteorder
+====================
+
+.. currentmodule:: dpnp
+
+attribute
+
+.. autoattribute:: dtype.byteorder
