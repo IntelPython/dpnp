@@ -749,7 +749,7 @@ def asarray_chkfinite(
         already an ndarray.
 
     Raises
-    -------
+    ------
     ValueError
         Raises ``ValueError`` if `a` contains NaN (Not a Number) or
         Inf (Infinity).
@@ -4537,8 +4537,6 @@ def unique_all(x, /):
 
     Returns
     -------
-    A namedtuple with the following attributes:
-
     values : dpnp.ndarray
         The unique elements of an input array.
     indices : dpnp.ndarray
@@ -4591,8 +4589,6 @@ def unique_counts(x, /):
 
     Returns
     -------
-    A namedtuple with the following attributes:
-
     values : dpnp.ndarray
         The unique elements of an input array.
     counts : dpnp.ndarray
@@ -4637,8 +4633,6 @@ def unique_inverse(x, /):
 
     Returns
     -------
-    A namedtuple with the following attributes:
-
     values : dpnp.ndarray
         The unique elements of an input array.
     inverse_indices : dpnp.ndarray
