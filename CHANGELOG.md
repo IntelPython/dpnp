@@ -100,6 +100,9 @@ This release is compatible with NumPy 2.5.
 * Fixed `dpnp.cumsum`, `dpnp.cumprod`, and their `nan`/`cumulative_*` variants (including `dpnp.tensor.cumulative_sum`/`cumulative_prod`) silently returning incorrect results when accumulating along an axis of an array with more than one row [#3063](https://github.com/IntelPython/dpnp/pull/3063)
 * Fixed `dpnp.einsum` returning a result whose memory layout differs from NumPy for the default `order="K"`, and ignoring `out` and `order` for a contraction over a size-0 dimension [#3058](https://github.com/IntelPython/dpnp/pull/3058)
 * Fixed operations on a boolean array whose bytes are not `0x00`/`0x01` [#3055](https://github.com/IntelPython/dpnp/pull/3055)
+* Fixed the strided kernel of `dpnp.full` and `dpnp.tensor.full` not waiting on the events passed to the binding [#3073](https://github.com/IntelPython/dpnp/pull/3073)
+* Fixed the list of events the copy kernel of `dpnp.reshape` and `dpnp.tensor.reshape` waits on being padded with default-constructed events [#3073](https://github.com/IntelPython/dpnp/pull/3073)
+* Fixed `simplify_iteration_three_strides` and `simplify_iteration_four_strides` accumulating into their third and fourth output displacements without zeroing them first, which required the caller to initialize them [#3073](https://github.com/IntelPython/dpnp/pull/3073)
 
 ### Security
 
