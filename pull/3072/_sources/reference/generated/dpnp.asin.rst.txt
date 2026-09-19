@@ -1,0 +1,10 @@
+﻿
+
+dpnp.asin
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: asin
