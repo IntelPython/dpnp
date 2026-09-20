@@ -910,10 +910,16 @@ class dpnp_array:
             axis.
 
             Default: ``-1``.
-        kind : {None, "stable", "mergesort", "radixsort"}, optional
-            Sorting algorithm. The default is ``None``, which uses parallel
-            merge-sort or parallel radix-sort algorithms depending on the array
-            data type.
+        kind : {None, "stable", "mergesort", "radixsort", "bitonicsort"}, \
+                optional
+            Sorting algorithm. The default is ``None``, which uses a parallel
+            merge-sort, a parallel radix-sort, or a bitonic sorting network,
+            whichever is expected to be the fastest for the array data type,
+            the length of the sorted rows, and the device. ``"bitonicsort"``
+            always uses the bitonic sorting network, which tends to be faster
+            when many short rows are sorted at once, and slower than the
+            alternatives for rows too long to be held in the local memory of
+            the device.
 
             Default: ``None``.
         descending : bool, optional
@@ -2013,10 +2019,16 @@ class dpnp_array:
             the last axis.
 
             Default: ``-1``.
-        kind : {None, "stable", "mergesort", "radixsort"}, optional
-            Sorting algorithm. The default is ``None``, which uses parallel
-            merge-sort or parallel radix-sort algorithms depending on the array
-            data type.
+        kind : {None, "stable", "mergesort", "radixsort", "bitonicsort"}, \
+                optional
+            Sorting algorithm. The default is ``None``, which uses a parallel
+            merge-sort, a parallel radix-sort, or a bitonic sorting network,
+            whichever is expected to be the fastest for the array data type,
+            the length of the sorted rows, and the device. ``"bitonicsort"``
+            always uses the bitonic sorting network, which tends to be faster
+            when many short rows are sorted at once, and slower than the
+            alternatives for rows too long to be held in the local memory of
+            the device.
 
             Default: ``None``.
         descending : bool, optional

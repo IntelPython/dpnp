@@ -207,6 +207,8 @@ set(_reduction_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/reductions/sum.cpp
 )
 set(_sorting_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/sorting/bitonic_sort.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sorting/bitonic_argsort.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sorting/isin.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sorting/merge_sort.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sorting/merge_argsort.cpp

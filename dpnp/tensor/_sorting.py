@@ -26,6 +26,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+import math
 import operator
 from typing import NamedTuple
 
@@ -36,6 +37,12 @@ import dpnp.tensor as dpt
 from dpnp.libtensor._tensor_sorting_impl import (
     _argsort_ascending,
     _argsort_descending,
+    _bitonic_argsort_ascending,
+    _bitonic_argsort_descending,
+    _bitonic_argsort_local_memory_nelems,
+    _bitonic_sort_ascending,
+    _bitonic_sort_descending,
+    _bitonic_sort_local_memory_nelems,
     _radix_argsort_ascending,
     _radix_argsort_descending,
     _radix_sort_ascending,
@@ -50,6 +57,82 @@ from ._numpy_helper import normalize_axis_index
 
 __all__ = ["sort", "argsort", "top_k"]
 
+# data types for which the default `kind` sorts with the radix sort, rather
+# than with the merge sort
+_radixsort_by_default_dtypes = [
+    dpt.bool,
+    dpt.uint8,
+    dpt.int8,
+    dpt.int16,
+    dpt.uint16,
+]
+
+# Parameters of the heuristic that lets the default `kind` reach for the
+# bitonic network. They were tuned on a sweep of row lengths, row counts and
+# data types on Intel(R) Graphics [0x7d41], and are a starting point for other
+# devices rather than a portable optimum.
+
+# The radix sort makes a pass over the row per four bits of the key, so the
+# wider the key, the longer the row over which the network still competes
+_bitonic_max_padded_nelems_per_key_byte = 128
+
+# the merge sort keeps the whole row in flight, and loses to the network over a
+# much wider range of row lengths, up to where the network runs out of parallel
+# work to hide its comparisons behind
+_bitonic_max_padded_nelems_vs_mergesort = 4096
+_bitonic_max_padded_nelems_vs_mergeargsort = 1024
+
+# comparators the network may spend per element-comparison of the merge sort it
+# replaces, before sorting in a single pass over local memory stops paying for
+# them. Because the comparator count is that of the padded row, this is also
+# what turns down rows sitting just above a power of two, where the padding
+# nearly doubles the work while the merge sort sees no extra elements at all.
+_bitonic_work_ratio_vs_mergesort = 10
+
+
+def _bitonic_padded_nelems(sort_nelems):
+    """Row length the bitonic network pads `sort_nelems` up to"""
+    return 1 << (sort_nelems - 1).bit_length()
+
+
+def _bitonic_comparator_count(padded_nelems):
+    """Comparators of a bitonic network sorting `padded_nelems` elements"""
+    n_stages = padded_nelems.bit_length() - 1
+    return (padded_nelems * n_stages * (n_stages + 1)) // 2
+
+
+def _use_bitonicsort_by_default(
+    dt, sort_nelems, local_memory_nelems, sorting_values
+):
+    """Whether the bitonic network is expected to be faster than the algorithm
+    the default `kind` would otherwise use for this data type and row length"""
+    if sort_nelems < 2:
+        return False
+
+    padded_nelems = _bitonic_padded_nelems(sort_nelems)
+    # a row too long to be held in local memory takes a pass over global memory
+    # per step of the network, which does not compete with either alternative
+    if padded_nelems > local_memory_nelems:
+        return False
+
+    if dt in _radixsort_by_default_dtypes:
+        return (
+            padded_nelems
+            <= _bitonic_max_padded_nelems_per_key_byte * dt.itemsize
+        )
+
+    max_padded_nelems = (
+        _bitonic_max_padded_nelems_vs_mergesort
+        if sorting_values
+        else _bitonic_max_padded_nelems_vs_mergeargsort
+    )
+    if padded_nelems > max_padded_nelems:
+        return False
+
+    return _bitonic_comparator_count(
+        padded_nelems
+    ) <= _bitonic_work_ratio_vs_mergesort * sort_nelems * math.log2(sort_nelems)
+
 
 def _get_mergesort_impl_fn(descending):
     return _sort_descending if descending else _sort_ascending
@@ -57,6 +140,10 @@ def _get_mergesort_impl_fn(descending):
 
 def _get_radixsort_impl_fn(descending):
     return _radix_sort_descending if descending else _radix_sort_ascending
+
+
+def _get_bitonicsort_impl_fn(descending):
+    return _bitonic_sort_descending if descending else _bitonic_sort_ascending
 
 
 def sort(x, /, *, axis=-1, descending=False, stable=True, kind=None):
@@ -81,10 +168,16 @@ def sort(x, /, *, axis=-1, descending=False, stable=True, kind=None):
             relative order of `x` values which compare as equal. If `False`,
             the returned array may or may not maintain the relative order of
             `x` values which compare as equal. Default: `True`.
-        kind (Optional[Literal["stable", "mergesort", "radixsort"]]):
-            Sorting algorithm. The default is `"stable"`, which uses parallel
-            merge-sort or parallel radix-sort algorithms depending on the
-            array data type.
+        kind (Optional[Literal["stable", "mergesort", "radixsort",
+            "bitonicsort"]]):
+            Sorting algorithm. The default is `"stable"`, which uses a
+            parallel merge-sort, a parallel radix-sort, or a bitonic sorting
+            network, whichever is expected to be the fastest for the array
+            data type, the length of the sorted rows, and the device.
+            `"bitonicsort"` always uses the bitonic sorting network, which
+            tends to be faster when many short rows are sorted at once, and
+            slower than the alternatives for rows too long to be held in the
+            local memory of the device.
     Returns:
         usm_ndarray:
             a sorted array. The returned array has the same data type and
@@ -113,13 +206,16 @@ def sort(x, /, *, axis=-1, descending=False, stable=True, kind=None):
         "stable",
         "radixsort",
         "mergesort",
+        "bitonicsort",
     ]:
         raise ValueError(
             "Unsupported kind value. Expected 'stable', 'mergesort', "
-            f"or 'radixsort', but got '{kind}'"
+            f"'radixsort', or 'bitonicsort', but got '{kind}'"
         )
     if kind == "mergesort":
         impl_fn = _get_mergesort_impl_fn(descending)
+    elif kind == "bitonicsort":
+        impl_fn = _get_bitonicsort_impl_fn(descending)
     elif kind == "radixsort":
         if _radix_sort_dtype_supported(x.dtype.num):
             impl_fn = _get_radixsort_impl_fn(descending)
@@ -127,7 +223,16 @@ def sort(x, /, *, axis=-1, descending=False, stable=True, kind=None):
             raise ValueError(f"Radix sort is not supported for {x.dtype}")
     else:
         dt = x.dtype
-        if dt in [dpt.bool, dpt.uint8, dpt.int8, dpt.int16, dpt.uint16]:
+        if _use_bitonicsort_by_default(
+            dt,
+            arr.shape[-1],
+            _bitonic_sort_local_memory_nelems(
+                typenum=dt.num, sycl_queue=x.sycl_queue
+            ),
+            sorting_values=True,
+        ):
+            impl_fn = _get_bitonicsort_impl_fn(descending)
+        elif dt in _radixsort_by_default_dtypes:
             impl_fn = _get_radixsort_impl_fn(descending)
         else:
             impl_fn = _get_mergesort_impl_fn(descending)
@@ -173,6 +278,14 @@ def _get_radixargsort_impl_fn(descending):
     return _radix_argsort_descending if descending else _radix_argsort_ascending
 
 
+def _get_bitonicargsort_impl_fn(descending):
+    return (
+        _bitonic_argsort_descending
+        if descending
+        else _bitonic_argsort_ascending
+    )
+
+
 def argsort(x, axis=-1, descending=False, stable=True, kind=None):
     """argsort(x, axis=-1, descending=False, stable=True)
 
@@ -195,10 +308,16 @@ def argsort(x, axis=-1, descending=False, stable=True, kind=None):
             relative order of `x` values which compare as equal. If `False`,
             the returned array may or may not maintain the relative order of
             `x` values which compare as equal. Default: `True`.
-        kind (Optional[Literal["stable", "mergesort", "radixsort"]]):
-            Sorting algorithm. The default is `"stable"`, which uses parallel
-            merge-sort or parallel radix-sort algorithms depending on the
-            array data type.
+        kind (Optional[Literal["stable", "mergesort", "radixsort",
+            "bitonicsort"]]):
+            Sorting algorithm. The default is `"stable"`, which uses a
+            parallel merge-sort, a parallel radix-sort, or a bitonic sorting
+            network, whichever is expected to be the fastest for the array
+            data type, the length of the sorted rows, and the device.
+            `"bitonicsort"` always uses the bitonic sorting network, which
+            tends to be faster when many short rows are sorted at once, and
+            slower than the alternatives for rows too long to be held in the
+            local memory of the device.
 
     Returns:
         usm_ndarray:
@@ -231,13 +350,18 @@ def argsort(x, axis=-1, descending=False, stable=True, kind=None):
         "stable",
         "radixsort",
         "mergesort",
+        "bitonicsort",
     ]:
         raise ValueError(
             "Unsupported kind value. Expected 'stable', 'mergesort', "
-            f"or 'radixsort', but got '{kind}'"
+            f"'radixsort', or 'bitonicsort', but got '{kind}'"
         )
+    exec_q = x.sycl_queue
+    index_dt = ti.default_device_index_type(exec_q)
     if kind == "mergesort":
         impl_fn = _get_mergeargsort_impl_fn(descending)
+    elif kind == "bitonicsort":
+        impl_fn = _get_bitonicargsort_impl_fn(descending)
     elif kind == "radixsort":
         if _radix_sort_dtype_supported(x.dtype.num):
             impl_fn = _get_radixargsort_impl_fn(descending)
@@ -245,14 +369,23 @@ def argsort(x, axis=-1, descending=False, stable=True, kind=None):
             raise ValueError(f"Radix sort is not supported for {x.dtype}")
     else:
         dt = x.dtype
-        if dt in [dpt.bool, dpt.uint8, dpt.int8, dpt.int16, dpt.uint16]:
+        if _use_bitonicsort_by_default(
+            dt,
+            arr.shape[-1],
+            _bitonic_argsort_local_memory_nelems(
+                typenum=dt.num,
+                index_typenum=dpt.dtype(index_dt).num,
+                sycl_queue=exec_q,
+            ),
+            sorting_values=False,
+        ):
+            impl_fn = _get_bitonicargsort_impl_fn(descending)
+        elif dt in _radixsort_by_default_dtypes:
             impl_fn = _get_radixargsort_impl_fn(descending)
         else:
             impl_fn = _get_mergeargsort_impl_fn(descending)
-    exec_q = x.sycl_queue
     _manager = du.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
-    index_dt = ti.default_device_index_type(exec_q)
     if arr.flags.c_contiguous:
         res = dpt.empty_like(arr, dtype=index_dt, order="C")
         ht_ev, impl_ev = impl_fn(
