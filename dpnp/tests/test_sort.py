@@ -17,7 +17,9 @@ from .third_party.cupy import testing
 
 
 class TestArgsort:
-    @pytest.mark.parametrize("kind", [None, "stable", "mergesort", "radixsort"])
+    @pytest.mark.parametrize(
+        "kind", [None, "stable", "mergesort", "radixsort", "bitonicsort"]
+    )
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_basic(self, kind, dtype):
         a = generate_random_numpy_array(10, dtype)
@@ -50,7 +52,9 @@ class TestArgsort:
         assert_dtype_allclose(result, expected)
 
     # this test validates that all different options of kind in dpnp are stable
-    @pytest.mark.parametrize("kind", [None, "stable", "mergesort", "radixsort"])
+    @pytest.mark.parametrize(
+        "kind", [None, "stable", "mergesort", "radixsort", "bitonicsort"]
+    )
     def test_kind(self, kind):
         a = numpy.repeat(numpy.arange(10), 10)
         ia = dpnp.array(a)
@@ -501,7 +505,9 @@ class TestPartition:
 
 
 class TestSort:
-    @pytest.mark.parametrize("kind", [None, "stable", "mergesort", "radixsort"])
+    @pytest.mark.parametrize(
+        "kind", [None, "stable", "mergesort", "radixsort", "bitonicsort"]
+    )
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_basic(self, kind, dtype):
         a = generate_random_numpy_array(10, dtype)
@@ -534,7 +540,9 @@ class TestSort:
         assert_dtype_allclose(ia, a)
 
     # this test validates that all different options of kind in dpnp are stable
-    @pytest.mark.parametrize("kind", [None, "stable", "mergesort", "radixsort"])
+    @pytest.mark.parametrize(
+        "kind", [None, "stable", "mergesort", "radixsort", "bitonicsort"]
+    )
     def test_kind(self, kind):
         a = numpy.repeat(numpy.arange(10), 10)
         ia = dpnp.array(a)

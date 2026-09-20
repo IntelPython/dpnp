@@ -200,7 +200,7 @@ def test_argsort_validation_kind():
         dpt.argsort(x, kind="invalid")
 
 
-_all_kinds = ["stable", "mergesort", "radixsort"]
+_all_kinds = ["stable", "mergesort", "radixsort", "bitonicsort"]
 
 
 @pytest.mark.parametrize("kind", _all_kinds)
@@ -412,3 +412,51 @@ def test_radix_argsort_size_1_axis():
     x4 = dpt.reshape(dpt.arange(10, dtype="i1"), (1, 10))
     r4 = dpt.argsort(x4, axis=0, kind="radixsort")
     assert dpt.asnumpy(r4 == 0).all()
+
+
+def test_bitonic_sort_long_rows():
+    get_queue_or_skip()
+
+    # a row too long to be held in the local memory of the device exercises
+    # the global memory path of the bitonic network, and a length which is not
+    # a power of two exercises the padding of the network
+    n = 70001
+    x = dpt.asarray(np.random.default_rng(42).random((2, n), dtype=np.float32))
+
+    s = dpt.sort(x, kind="bitonicsort")
+    assert_array_equal(dpt.asnumpy(s), np.sort(dpt.asnumpy(x), axis=-1))
+
+    idx = dpt.argsort(x, kind="bitonicsort")
+    assert_array_equal(
+        dpt.asnumpy(dpt.take_along_axis(x, idx, axis=-1)),
+        np.sort(dpt.asnumpy(x), axis=-1),
+    )
+
+
+@pytest.mark.parametrize("dtype", ["i1", "u2", "i4", "f4", "f8"])
+@pytest.mark.parametrize("descending", [False, True])
+def test_bitonic_sort_extremal_values(dtype, descending):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    # rows are padded up to a power of two length with a value the comparator
+    # of the network orders last, so inputs which contain that value must be
+    # sorted correctly all the same
+    dt = dpt.dtype(dtype)
+    if dt.kind == "f":
+        vals = [np.nan, np.inf, -np.inf, 0.0, 1.0, np.nan, np.inf]
+    else:
+        info = dpt.iinfo(dt)
+        vals = [info.max, info.min, 0, 1, info.max, info.min, 3]
+    x = dpt.asarray(np.asarray(vals, dtype=dt), sycl_queue=q)
+
+    s = dpt.sort(x, descending=descending, kind="bitonicsort")
+    expected = np.sort(dpt.asnumpy(x))
+    if descending:
+        expected = np.flip(expected)
+    assert np.array_equal(dpt.asnumpy(s), expected, equal_nan=True)
+
+    idx = dpt.argsort(x, descending=descending, kind="bitonicsort")
+    assert np.array_equal(
+        dpt.asnumpy(dpt.take(x, idx)), expected, equal_nan=True
+    )

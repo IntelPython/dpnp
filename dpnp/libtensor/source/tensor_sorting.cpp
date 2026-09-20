@@ -35,6 +35,8 @@
 
 #include <pybind11/pybind11.h>
 
+#include "sorting/bitonic_argsort.hpp"
+#include "sorting/bitonic_sort.hpp"
 #include "sorting/isin.hpp"
 #include "sorting/merge_argsort.hpp"
 #include "sorting/merge_sort.hpp"
@@ -51,5 +53,7 @@ PYBIND11_MODULE(_tensor_sorting_impl, m, py::mod_gil_not_used())
     dpnp::tensor::py_internal::init_searchsorted_functions(m);
     dpnp::tensor::py_internal::init_radix_sort_functions(m);
     dpnp::tensor::py_internal::init_radix_argsort_functions(m);
+    dpnp::tensor::py_internal::init_bitonic_sort_functions(m);
+    dpnp::tensor::py_internal::init_bitonic_argsort_functions(m);
     dpnp::tensor::py_internal::init_topk_functions(m);
 }
