@@ -76,18 +76,39 @@ _radixsort_by_default_dtypes = [
 # wider the key, the longer the row over which the network still competes
 _bitonic_max_padded_nelems_per_key_byte = 128
 
-# the merge sort keeps the whole row in flight, and loses to the network over a
-# much wider range of row lengths, up to where the network runs out of parallel
-# work to hide its comparisons behind
-_bitonic_max_padded_nelems_vs_mergesort = 4096
-_bitonic_max_padded_nelems_vs_mergeargsort = 1024
+# A row of a handful of elements leaves the network too little work per row to
+# pay for the comparators its padding adds, unless there are enough rows of it
+# to keep the device busy on their own
+_bitonic_min_padded_nelems = 16
+_bitonic_min_nelems_for_short_rows = 1 << 20
 
-# comparators the network may spend per element-comparison of the merge sort it
-# replaces, before sorting in a single pass over local memory stops paying for
-# them. Because the comparator count is that of the padded row, this is also
-# what turns down rows sitting just above a power of two, where the padding
-# nearly doubles the work while the merge sort sees no extra elements at all.
-_bitonic_work_ratio_vs_mergesort = 10
+# A row too long for local memory is sorted through global memory, one pass per
+# few steps of the network, and the number of those passes grows with the square
+# of how many blocks of local memory the padded row spans. The network keeps its
+# edge while there are only a few passes, and only for a row of a power of two
+# length, which needs no padding and is therefore sorted in the destination
+# itself rather than in a temporary, and only when sorting values, since the
+# `{key, index}` pair an argsort carries widens everything a pass moves.
+_bitonic_max_local_memory_blocks = 32
+
+# comparators the network may spend per element-comparison of the merge argsort
+# it replaces. Sorting a padded row of 2**L elements spends L * (L + 1) / 2
+# comparators per element against about log2 of the row length of them, and an
+# argsort has a thinner margin to spend them out of than a sort of values, since
+# the `{key, index}` pair it carries through local memory is wider than the key
+# the merge sort moves. Because the comparator count is that of the padded row,
+# this is also what turns down rows sitting just above a power of two, where the
+# padding nearly doubles the work while the merge sort sees no extra elements at
+# all.
+_bitonic_max_work_ratio_vs_mergeargsort = 6.5
+_bitonic_max_work_ratio_slow_compare = 4.4
+
+# data types this device compares several times more slowly than the rest, here
+# because it has no native double precision and because ordering a pair of
+# complex numbers compares the real parts and then the imaginary ones. The
+# network does far more comparisons than the merge sort, so it has less of a
+# margin to spend on a row long enough for their number to matter.
+_bitonic_slow_compare_dtypes = [dpt.complex128]
 
 
 def _bitonic_padded_nelems(sort_nelems):
@@ -102,18 +123,15 @@ def _bitonic_comparator_count(padded_nelems):
 
 
 def _use_bitonicsort_by_default(
-    dt, sort_nelems, local_memory_nelems, sorting_values
+    dt, sort_nelems, nelems, local_memory_nelems, sorting_values
 ):
     """Whether the bitonic network is expected to be faster than the algorithm
-    the default `kind` would otherwise use for this data type and row length"""
+    the default `kind` would otherwise use for this data type, row length, and
+    number of elements to sort in total"""
     if sort_nelems < 2:
         return False
 
     padded_nelems = _bitonic_padded_nelems(sort_nelems)
-    # a row too long to be held in local memory takes a pass over global memory
-    # per step of the network, which does not compete with either alternative
-    if padded_nelems > local_memory_nelems:
-        return False
 
     if dt in _radixsort_by_default_dtypes:
         return (
@@ -121,17 +139,32 @@ def _use_bitonicsort_by_default(
             <= _bitonic_max_padded_nelems_per_key_byte * dt.itemsize
         )
 
-    max_padded_nelems = (
-        _bitonic_max_padded_nelems_vs_mergesort
-        if sorting_values
-        else _bitonic_max_padded_nelems_vs_mergeargsort
-    )
-    if padded_nelems > max_padded_nelems:
-        return False
+    slow_compare = dt in _bitonic_slow_compare_dtypes
 
-    return _bitonic_comparator_count(
-        padded_nelems
-    ) <= _bitonic_work_ratio_vs_mergesort * sort_nelems * math.log2(sort_nelems)
+    if padded_nelems > local_memory_nelems:
+        # the network runs through global memory
+        return (
+            sorting_values
+            and padded_nelems == sort_nelems
+            and padded_nelems
+            <= _bitonic_max_local_memory_blocks * local_memory_nelems
+        )
+
+    # the padded row is held in local memory, where a single kernel sorts it
+    if sorting_values:
+        return padded_nelems >= _bitonic_min_padded_nelems or (
+            not slow_compare and nelems >= _bitonic_min_nelems_for_short_rows
+        )
+
+    max_work_ratio = (
+        _bitonic_max_work_ratio_slow_compare
+        if slow_compare
+        else _bitonic_max_work_ratio_vs_mergeargsort
+    )
+
+    return _bitonic_comparator_count(padded_nelems) <= (
+        max_work_ratio * sort_nelems * math.log2(sort_nelems)
+    )
 
 
 def _get_mergesort_impl_fn(descending):
@@ -226,6 +259,7 @@ def sort(x, /, *, axis=-1, descending=False, stable=True, kind=None):
         if _use_bitonicsort_by_default(
             dt,
             arr.shape[-1],
+            arr.size,
             _bitonic_sort_local_memory_nelems(
                 typenum=dt.num, sycl_queue=x.sycl_queue
             ),
@@ -372,6 +406,7 @@ def argsort(x, axis=-1, descending=False, stable=True, kind=None):
         if _use_bitonicsort_by_default(
             dt,
             arr.shape[-1],
+            arr.size,
             _bitonic_argsort_local_memory_nelems(
                 typenum=dt.num,
                 index_typenum=dpt.dtype(index_dt).num,

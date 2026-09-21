@@ -297,6 +297,23 @@ struct LocalNetworkParams
     std::size_t rows_per_wg; //!< rows a work-group is responsible for
 };
 
+/*! @brief Number of work-items a kernel wants to have to keep the device busy
+ *
+ *  Enough of them to fill every compute unit several times over, so that the
+ *  memory latency of one work-item is hidden behind the work of another.
+ */
+inline std::size_t work_items_target(const sycl::device &dev)
+{
+    static constexpr std::size_t work_items_per_compute_unit = 4;
+
+    const auto sg_sizes = dev.get_info<sycl::info::device::sub_group_sizes>();
+    const std::size_t max_sg_size =
+        *std::max_element(sg_sizes.begin(), sg_sizes.end());
+
+    return work_items_per_compute_unit *
+           dev.get_info<sycl::info::device::max_compute_units>() * max_sg_size;
+}
+
 /*! @brief Number of elements of type `ElemT` local memory has room for */
 template <typename ElemT>
 std::size_t local_memory_nelems(const sycl::device &dev)
@@ -316,6 +333,12 @@ std::size_t local_memory_nelems(const sycl::device &dev)
  *  keep its work-items busy. Otherwise the block is the largest power-of-two
  *  number of elements which fits, and the network stages with a stride no
  *  smaller than the block size have to be run through global memory.
+ *
+ *  A work-item is given several elements of the block to work on, rather than
+ *  the single pair a compare-exchange step needs, because the group barrier
+ *  which separates the steps costs about as much as a handful of them. The
+ *  work-items are given fewer elements each when a large share of them would
+ *  otherwise sit idle for the want of work-groups to run.
  */
 template <typename ElemT>
 LocalNetworkParams get_local_network_params(const sycl::device &dev,
@@ -335,33 +358,39 @@ LocalNetworkParams get_local_network_params(const sycl::device &dev,
     const std::size_t max_sg_size =
         *std::max_element(sg_sizes.begin(), sg_sizes.end());
 
-    // number of sub-groups per work-group, chosen experimentally to make the
-    // barrier-separated compare-exchange steps as fast as possible
-    static constexpr std::size_t sub_groups_per_work_group = 8;
-    const std::size_t lws_target =
-        std::min(max_lws, sub_groups_per_work_group * max_sg_size);
+    // elements of a block a work-item is responsible for, chosen experimentally
+    // over a sweep of row lengths, row counts and data types
+    static constexpr std::size_t nelems_per_work_item = 8;
+    const std::size_t items_target = work_items_target(dev);
 
     LocalNetworkParams params{};
     params.block_size = std::min(padded_nelems, floor_pow2(nelems_per_slm));
 
-    const std::size_t half_block = params.block_size / 2;
-    if (half_block >= lws_target || params.block_size < padded_nelems) {
-        // a block has enough pairs on its own, and a block which is only a
-        // part of a row can not be batched with another row anyway
-        params.rows_per_wg = 1;
-        params.lws = std::min(lws_target, half_block);
-    }
-    else {
-        std::size_t rows_per_wg =
-            std::min(iter_nelems, lws_target / half_block);
-        // stay within the local memory budget
-        while (rows_per_wg > 1 &&
-               rows_per_wg * params.block_size > nelems_per_slm) {
-            rows_per_wg /= 2;
+    // batch rows until a work-group has a sub-group's worth of work, which a
+    // block covering only a part of a row has on its own
+    const std::size_t min_slm_nelems = nelems_per_work_item * max_sg_size;
+    std::size_t rows_per_wg = 1;
+    if (params.block_size == padded_nelems) {
+        while (rows_per_wg * params.block_size < min_slm_nelems &&
+               2 * rows_per_wg <= iter_nelems &&
+               2 * rows_per_wg * params.block_size <= nelems_per_slm) {
+            rows_per_wg *= 2;
         }
-        params.rows_per_wg = rows_per_wg;
-        params.lws = rows_per_wg * half_block;
     }
+    params.rows_per_wg = rows_per_wg;
+
+    // hand the work-items fewer elements each when there would not be enough of
+    // them to keep the device busy otherwise
+    std::size_t nelems_per_item = nelems_per_work_item;
+    while (nelems_per_item > 1 &&
+           iter_nelems * padded_nelems < nelems_per_item * items_target) {
+        nelems_per_item /= 2;
+    }
+
+    const std::size_t slm_nelems = rows_per_wg * params.block_size;
+    params.lws =
+        std::min({max_lws, std::max(std::size_t(1), slm_nelems / 2),
+                  std::max(std::size_t(1), slm_nelems / nelems_per_item)});
 
     return params;
 }
@@ -583,44 +612,176 @@ sycl::event merge_blocks_in_slm(sycl::queue &exec_q,
     });
 }
 
-template <typename ElemT, typename Compare>
+template <typename ElemT, typename Compare, std::uint32_t n_strides>
 class bitonic_merge_global_krn;
 
-/*! @brief Compare-exchange step of stage `k` for a stride `j` which pairs up
- *  elements of different local memory blocks */
-template <typename ElemT, typename Compare>
-sycl::event global_merge_step(sycl::queue &exec_q,
-                              const std::size_t iter_nelems,
-                              const std::size_t padded_nelems,
-                              ElemT *work_tp,
-                              const Compare &comp,
-                              const std::size_t k,
-                              const std::size_t j,
-                              const std::vector<sycl::event> &depends)
+/*! @brief Compare-exchange steps of stage `k` for the `n_strides` strides
+ *  `j_low * 2^(n_strides - 1), ..., 2 * j_low, j_low`, which pair up elements
+ *  of different local memory blocks
+ *
+ *  Those strides only ever pair up the `2^n_strides` elements
+ *  `i, i + j_low, ..., i + (2^n_strides - 1) * j_low` among themselves, for an
+ *  `i` whose bits `log2(j_low), ..., log2(j_low) + n_strides - 1` are unset. A
+ *  work-item takes all of them, so the whole run of strides costs one pass over
+ *  global memory rather than one pass each.
+ */
+template <typename ElemT, typename Compare, std::uint32_t n_strides>
+sycl::event global_merge_steps(sycl::queue &exec_q,
+                               const std::size_t iter_nelems,
+                               const std::size_t padded_nelems,
+                               ElemT *work_tp,
+                               const Compare &comp,
+                               const std::size_t k,
+                               const std::size_t j_low,
+                               const std::vector<sycl::event> &depends)
 {
-    using KernelName = bitonic_merge_global_krn<ElemT, Compare>;
+    using KernelName = bitonic_merge_global_krn<ElemT, Compare, n_strides>;
 
-    const std::size_t half_row = padded_nelems / 2;
-    const std::uint32_t half_row_log2 = log2_pow2(half_row);
+    static constexpr std::size_t nelems_per_item = std::size_t(1) << n_strides;
+
+    const std::size_t items_per_row = padded_nelems / nelems_per_item;
+    const std::uint32_t items_per_row_log2 = log2_pow2(items_per_row);
+    const std::uint32_t j_low_log2 = log2_pow2(j_low);
 
     return exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
         cgh.parallel_for<KernelName>(
-            sycl::range<1>{iter_nelems * half_row}, [=](sycl::id<1> id) {
+            sycl::range<1>{iter_nelems * items_per_row}, [=](sycl::id<1> id) {
                 const std::size_t p = id[0];
-                const std::size_t row = p >> half_row_log2;
-                const std::size_t pair_id = p & (half_row - 1);
+                const std::size_t row = p >> items_per_row_log2;
+                const std::size_t item_id = p & (items_per_row - 1);
 
-                const std::size_t low_bits = pair_id & (j - 1);
-                const std::size_t i = ((pair_id - low_bits) << 1) + low_bits;
+                // position of the first of the elements, obtained by inserting
+                // `n_strides` unset bits at position log2(j_low) into the
+                // work-item number
+                const std::size_t low_bits = item_id & (j_low - 1);
+                const std::size_t i =
+                    ((item_id - low_bits) << n_strides) + low_bits;
 
                 ElemT *row_tp = work_tp + row * padded_nelems;
-                const bool in_order = ((i & k) == 0);
 
-                compare_exchange(row_tp[i], row_tp[i + j], comp, in_order);
+                ElemT elems[nelems_per_item];
+                for (std::size_t u = 0; u < nelems_per_item; ++u) {
+                    elems[u] = row_tp[i + (u << j_low_log2)];
+                }
+
+                for (std::uint32_t s = n_strides; s-- > 0;) {
+                    const std::size_t stride_u = std::size_t(1) << s;
+                    for (std::size_t u = 0; u < nelems_per_item; ++u) {
+                        if ((u & stride_u) != 0) {
+                            continue;
+                        }
+                        const bool in_order =
+                            (((i + (u << j_low_log2)) & k) == 0);
+
+                        compare_exchange(elems[u], elems[u + stride_u], comp,
+                                         in_order);
+                    }
+                }
+
+                for (std::size_t u = 0; u < nelems_per_item; ++u) {
+                    row_tp[i + (u << j_low_log2)] = elems[u];
+                }
             });
     });
+}
+
+/*! @brief Number of strides of stage `k` which a single pass over global memory
+ *  runs, at most `max_strides_per_pass`
+ *
+ *  Taking more strides per pass saves passes, but leaves fewer work-items to
+ *  run, which is why it is not done when the device would be left short of
+ *  work.
+ */
+inline std::uint32_t strides_per_global_pass(const std::size_t items_target,
+                                             const std::size_t iter_nelems,
+                                             const std::size_t padded_nelems,
+                                             const std::size_t j,
+                                             const std::size_t block_size)
+{
+    static constexpr std::uint32_t max_strides_per_pass = 3;
+
+    std::uint32_t n_strides = 1;
+    while (n_strides < max_strides_per_pass && (j >> n_strides) >= block_size &&
+           ((iter_nelems * padded_nelems) >> (n_strides + 1)) >= items_target) {
+        ++n_strides;
+    }
+
+    return n_strides;
+}
+
+/*! @brief Run the network on padded rows held in `work_tp`, for a block size
+ *  which leaves some of the stages to global memory
+ *
+ *  `work_tp` holds `iter_nelems` rows of `padded_nelems` elements, and may be
+ *  `dst` itself when the two hold the same type and the rows need no padding.
+ */
+template <typename Network, typename Compare>
+sycl::event
+    sort_rows_through_global_memory(sycl::queue &exec_q,
+                                    const std::size_t iter_nelems,
+                                    const std::size_t sort_nelems,
+                                    const std::size_t padded_nelems,
+                                    const typename Network::input_type *src,
+                                    typename Network::element_type *work_tp,
+                                    typename Network::result_type *dst,
+                                    const Compare &comp,
+                                    const typename Network::input_type &pad,
+                                    const LocalNetworkParams &params,
+                                    const std::vector<sycl::event> &depends)
+{
+    using ElemT = typename Network::element_type;
+
+    const std::size_t block_size = params.block_size;
+    const std::size_t items_target = work_items_target(exec_q.get_device());
+
+    sycl::event dep_ev = sort_blocks_in_slm<Network, Compare>(
+        exec_q, iter_nelems, sort_nelems, padded_nelems, src, work_tp, comp,
+        pad, params, depends);
+
+    for (std::size_t k = 2 * block_size; k <= padded_nelems; k *= 2) {
+        std::size_t j = k / 2;
+        while (j >= block_size) {
+            const std::uint32_t n_strides = strides_per_global_pass(
+                items_target, iter_nelems, padded_nelems, j, block_size);
+            const std::size_t j_low = j >> (n_strides - 1);
+
+            switch (n_strides) {
+            case 3:
+                dep_ev = global_merge_steps<ElemT, Compare, 3>(
+                    exec_q, iter_nelems, padded_nelems, work_tp, comp, k, j_low,
+                    {dep_ev});
+                break;
+            case 2:
+                dep_ev = global_merge_steps<ElemT, Compare, 2>(
+                    exec_q, iter_nelems, padded_nelems, work_tp, comp, k, j_low,
+                    {dep_ev});
+                break;
+            default:
+                dep_ev = global_merge_steps<ElemT, Compare, 1>(
+                    exec_q, iter_nelems, padded_nelems, work_tp, comp, k, j_low,
+                    {dep_ev});
+                break;
+            }
+
+            j = j_low / 2;
+        }
+
+        if (k == padded_nelems) {
+            // the network is done, so the sorted blocks can go straight out
+            dep_ev = merge_blocks_in_slm<Network, Compare, /* store */ true>(
+                exec_q, iter_nelems, sort_nelems, padded_nelems, work_tp, dst,
+                comp, k, params, {dep_ev});
+        }
+        else {
+            dep_ev = merge_blocks_in_slm<Network, Compare, /* store */ false>(
+                exec_q, iter_nelems, sort_nelems, padded_nelems, work_tp, dst,
+                comp, k, params, {dep_ev});
+        }
+    }
+
+    return dep_ev;
 }
 
 /*! @brief Sort rows of a contiguous array with a bitonic sorting network
@@ -630,6 +791,9 @@ sycl::event global_merge_step(sycl::queue &exec_q,
  *  stages of the network are run in local memory as long as their strides let
  *  the pairs they compare-exchange stay within a block held there, and through
  *  global memory otherwise.
+ *
+ *  The source and the destination must not overlap, since the destination is
+ *  written to while the source is still being read.
  */
 template <typename Network, typename Compare>
 sycl::event bitonic_sort_impl(sycl::queue &exec_q,
@@ -654,36 +818,25 @@ sycl::event bitonic_sort_impl(sycl::queue &exec_q,
                                                   pad, params, depends);
     }
 
-    const std::size_t block_size = params.block_size;
+    // rows which are already of a power of two length need no padding, so when
+    // the destination holds the type the network sorts it can hold the network
+    // as it runs, sparing a temporary the size of the array
+    if constexpr (std::is_same_v<ElemT, typename Network::result_type>) {
+        if (padded_nelems == sort_nelems) {
+            return sort_rows_through_global_memory<Network, Compare>(
+                exec_q, iter_nelems, sort_nelems, padded_nelems, src, dst, dst,
+                comp, pad, params, depends);
+        }
+    }
 
     auto work_owner = dpnp::tensor::alloc_utils::smart_malloc_device<ElemT>(
         iter_nelems * padded_nelems, exec_q);
     // extract USM pointer
     ElemT *work_tp = work_owner.get();
 
-    sycl::event dep_ev = sort_blocks_in_slm<Network, Compare>(
-        exec_q, iter_nelems, sort_nelems, padded_nelems, src, work_tp, comp,
-        pad, params, depends);
-
-    for (std::size_t k = 2 * block_size; k <= padded_nelems; k *= 2) {
-        for (std::size_t j = k / 2; j >= block_size; j /= 2) {
-            dep_ev = global_merge_step<ElemT, Compare>(exec_q, iter_nelems,
-                                                       padded_nelems, work_tp,
-                                                       comp, k, j, {dep_ev});
-        }
-
-        if (k == padded_nelems) {
-            // the network is done, so the sorted blocks can go straight out
-            dep_ev = merge_blocks_in_slm<Network, Compare, /* store */ true>(
-                exec_q, iter_nelems, sort_nelems, padded_nelems, work_tp, dst,
-                comp, k, params, {dep_ev});
-        }
-        else {
-            dep_ev = merge_blocks_in_slm<Network, Compare, /* store */ false>(
-                exec_q, iter_nelems, sort_nelems, padded_nelems, work_tp, dst,
-                comp, k, params, {dep_ev});
-        }
-    }
+    sycl::event dep_ev = sort_rows_through_global_memory<Network, Compare>(
+        exec_q, iter_nelems, sort_nelems, padded_nelems, src, work_tp, dst,
+        comp, pad, params, depends);
 
     return dpnp::tensor::alloc_utils::async_smart_free(exec_q, {dep_ev},
                                                        work_owner);
