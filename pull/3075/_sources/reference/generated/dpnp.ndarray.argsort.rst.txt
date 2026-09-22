@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.ndarray.argsort
+====================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: ndarray.argsort

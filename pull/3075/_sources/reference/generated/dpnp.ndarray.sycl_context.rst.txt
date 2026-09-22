@@ -1,0 +1,14 @@
+
+:orphan:
+
+
+dpnp.ndarray.sycl\_context
+==========================
+
+.. currentmodule:: dpnp
+
+
+property
+
+
+.. autoproperty:: ndarray.sycl_context
