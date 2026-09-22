@@ -128,13 +128,15 @@ class dpnp_array:
             if isinstance(buffer, dpnp_array):
                 buffer = buffer.get_array()
 
-            if dtype is None and hasattr(buffer, "dtype"):
-                dtype = buffer.dtype
-
             if isinstance(buffer, dpt.usm_ndarray):
-                # `_element_offset` is in buffer-dtype units; the ctor's
-                # `offset` is in `dtype` units, so rescale via bytes when
-                # itemsizes differ
+                # a `usm_ndarray` is the only supported buffer carrying a
+                # dtype, USM memory allocations and `usm_type` strings do not
+                if dtype is None:
+                    dtype = buffer.dtype
+
+                # `_element_offset` is in buffer-dtype units, while the ctor's
+                # `offset` is in `dtype` units, so it has to be rescaled
+                # through bytes
                 offset += dpnp_array._rescaled_element_offset(buffer, dtype)
         else:
             buffer = usm_type
