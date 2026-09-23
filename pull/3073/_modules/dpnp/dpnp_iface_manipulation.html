@@ -5029,7 +5029,8 @@
         <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">"Axis exceeds ndim"</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="nb">len</span><span class="p">(</span><span class="n">indices_or_sections</span><span class="p">)</span>
+        <span class="c1"># check if `indices_or_sections` is a sequence of indices</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices_or_sections</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">ary</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">%</span> <span class="n">indices_or_sections</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
