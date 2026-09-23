@@ -269,25 +269,39 @@ def test_top_k_2d_smallest(dtype, n):
     assert dpt.all(dpt.sort(r.values, axis=1) == dpt.sort(x[:, :k], axis=1))
 
 
-def _reference_top_k(x_np, k, mode):
-    "top k along the last axis, equal elements ordered by index"
+def _reference_top_k_inds(x_np, k, mode):
+    "indices of the top k along the last axis, equal elements by lower index"
     if mode == "largest":
         n = x_np.shape[-1]
         inds = np.argsort(x_np[..., ::-1], axis=-1, kind="stable")[..., ::-1]
         inds = n - 1 - inds
     else:
         inds = np.argsort(x_np, axis=-1, kind="stable")
-    inds = inds[..., :k]
-    return np.take_along_axis(x_np, inds, axis=-1), inds
+    return inds[..., :k]
+
+
+def _check_top_k(r, x_np, k, mode):
+    "the result is exact, but its elements may come in any order"
+    inds = dpt.asnumpy(r.indices)
+    vals = dpt.asnumpy(r.values)
+    expected_inds = _reference_top_k_inds(x_np, k, mode)
+    assert_array_equal(np.sort(inds, axis=-1), np.sort(expected_inds, axis=-1))
+    expected_vals = np.take_along_axis(x_np, inds, axis=-1)
+    assert_array_equal(vals, expected_vals)
+    if vals.dtype.kind == "f":
+        # the sign of zeros is kept
+        assert_array_equal(np.signbit(vals), np.signbit(expected_vals))
 
 
 @pytest.mark.parametrize(
     "dtype",
     ["?", "i1", "u1", "i2", "u2", "i4", "u4", "i8", "u8", "f2", "f4", "f8"],
 )
-@pytest.mark.parametrize("shape", [(1000, 50), (4, 3001), (2, 100003)])
+@pytest.mark.parametrize(
+    "shape", [(3000, 5), (2000, 15), (1000, 50), (4, 3001), (2, 100003)]
+)
 @pytest.mark.parametrize("mode", ["largest", "smallest"])
-def test_top_k_ties_order(dtype, shape, mode):
+def test_top_k_ties(dtype, shape, mode):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
@@ -297,15 +311,13 @@ def test_top_k_ties_order(dtype, shape, mode):
     x = dpt.asarray(x_np, sycl_queue=q)
 
     n = shape[-1]
-    for k in sorted({1, 7, min(n, 300), n // 3, n}):
+    for k in sorted({1, min(n, 7), min(n, 300), max(1, n // 3), n}):
         r = dpt.top_k(x, k, axis=-1, mode=mode)
-        expected_vals, expected_inds = _reference_top_k(x_np, k, mode)
-        assert_array_equal(dpt.asnumpy(r.indices), expected_inds)
-        assert_array_equal(dpt.asnumpy(r.values), expected_vals)
+        _check_top_k(r, x_np, k, mode)
 
 
 @pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
-@pytest.mark.parametrize("n", [257, 100003])
+@pytest.mark.parametrize("n", [11, 257, 100003])
 @pytest.mark.parametrize("mode", ["largest", "smallest"])
 def test_top_k_nans_and_signed_zeros(dtype, n, mode):
     q = get_queue_or_skip()
@@ -319,15 +331,9 @@ def test_top_k_nans_and_signed_zeros(dtype, n, mode):
     x_np = rng.choice(special, size=n)
     x = dpt.asarray(x_np, sycl_queue=q)
 
-    for k in sorted({1, 5, 200, n // 2, n}):
+    for k in sorted({1, min(n, 5), min(n, 200), n // 2, n}):
         r = dpt.top_k(x, k, mode=mode)
-        expected_vals, expected_inds = _reference_top_k(x_np, k, mode)
-        assert_array_equal(dpt.asnumpy(r.indices), expected_inds)
-        # the sign of zeros is kept
-        assert_array_equal(
-            np.signbit(dpt.asnumpy(r.values)), np.signbit(expected_vals)
-        )
-        assert_array_equal(dpt.asnumpy(r.values), expected_vals)
+        _check_top_k(r, x_np, k, mode)
 
 
 def test_top_k_0d():
@@ -392,3 +398,26 @@ def test_top_k_validation():
     with pytest.raises(ValueError):
         # mode must be "largest", or "smallest"
         dpt.top_k(x, 2, mode="invalid")
+
+
+@pytest.mark.parametrize("dtype", ["i4", "u4", "i8", "f4", "f8"])
+@pytest.mark.parametrize("mode", ["largest", "smallest"])
+def test_top_k_long_rows(dtype, mode):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    # long rows of many distinct values, with repeats of some of them
+    rng = np.random.default_rng(3)
+    shape = (3, 300001)
+    if np.dtype(dtype).kind == "f":
+        x_np = rng.standard_normal(size=shape).astype(dtype)
+    else:
+        info = np.iinfo(dtype)
+        x_np = rng.integers(info.min, info.max, size=shape, dtype=dtype)
+    x_np[:, ::7] = x_np[:, 1:2]
+    x_np[:, 5::11] = x_np[:, 2:3]
+    x = dpt.asarray(x_np, sycl_queue=q)
+
+    for k in [1, 10, 2000, 60000]:
+        r = dpt.top_k(x, k, axis=-1, mode=mode)
+        _check_top_k(r, x_np, k, mode)

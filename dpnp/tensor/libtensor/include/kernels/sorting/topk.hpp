@@ -47,7 +47,6 @@
 #include "kernels/sorting/merge_sort.hpp"
 #include "kernels/sorting/radix_select.hpp"
 #include "kernels/sorting/radix_sort.hpp"
-#include "kernels/sorting/radix_utils.hpp"
 #include "kernels/sorting/search_sorted_detail.hpp"
 #include "kernels/sorting/sort_utils.hpp"
 #include "utils/sycl_alloc_utils.hpp"
@@ -507,53 +506,8 @@ sycl::event topk_radix_impl(sycl::queue &exec_q,
     return cleanup_ev;
 }
 
-template <typename T1, typename T2>
-class topk_radix_select_map_back_krn;
-
-namespace topk_detail
-{
-
-/*! @brief Compares flat indices by the radix keys of the values they refer
- * to, so that the order agrees with that of radix selection */
-template <typename IndexT, typename ValueT, bool is_ascending>
-struct RadixKeyIndexComp
-{
-    const ValueT *ptr;
-
-    bool operator()(const IndexT &i1, const IndexT &i2) const
-    {
-        return radix_utils::ordered_radix_key<is_ascending>(ptr[i1]) <
-               radix_utils::ordered_radix_key<is_ascending>(ptr[i2]);
-    }
-};
-
-template <bool is_ascending, typename argTy, typename IndexTy>
-sycl::event merge_sort_selected(sycl::queue &exec_q,
-                                std::size_t iter_nelems,
-                                std::size_t k,
-                                const argTy *arg_tp,
-                                const IndexTy *selected_tp,
-                                IndexTy *sorted_tp,
-                                const std::vector<sycl::event> &depends)
-{
-    using CompT = RadixKeyIndexComp<IndexTy, argTy, is_ascending>;
-    const CompT comp{arg_tp};
-
-    std::size_t sorted_block_size = 0;
-    sycl::event base_sort_ev =
-        merge_sort_detail::sort_over_work_group_contig_impl(
-            exec_q, iter_nelems, k, selected_tp, sorted_tp, comp,
-            sorted_block_size, depends);
-
-    return merge_sort_detail::merge_sorted_block_contig_impl(
-        exec_q, iter_nelems, k, sorted_tp, comp, sorted_block_size,
-        {base_sort_ev});
-}
-
-} // namespace topk_detail
-
-/*! @brief top k by radix selection of the k elements, followed by a stable
- * sort of just those */
+/*! @brief top k by radix selection, the k elements of each row are not
+ * sorted */
 template <typename argTy, typename IndexTy>
 sycl::event
     topk_radix_select_impl(sycl::queue &exec_q,
@@ -574,64 +528,9 @@ sycl::event
     argTy *vals_tp = reinterpret_cast<argTy *>(vals_cp);
     IndexTy *inds_tp = reinterpret_cast<IndexTy *>(inds_cp);
 
-    const std::size_t selected_nelems = iter_nelems * k;
-    const bool needs_sort = (k > 1);
-    auto workspace_owner =
-        dpnp::tensor::alloc_utils::smart_malloc_device<IndexTy>(
-            (needs_sort ? 2 : 1) * selected_nelems, exec_q);
-
-    // get raw USM pointer
-    IndexTy *selected_tp = workspace_owner.get();
-
-    sycl::event select_ev =
-        radix_select_details::radix_select_impl<argTy, IndexTy>(
-            exec_q, iter_nelems, axis_nelems, k, ascending, arg_tp, selected_tp,
-            depends);
-
-    // equal elements were selected in index order, so a stable sort orders
-    // them the way a stable sort of the whole array would
-    IndexTy *topk_index_tp = selected_tp;
-    if (needs_sort) {
-        topk_index_tp = selected_tp + selected_nelems;
-        // a radix sort costs a pass per key byte, a merge sort grows faster
-        // with k, the crossover was determined experimentally
-        const std::size_t merge_max_k_per_byte =
-            (exec_q.get_device().is_cpu()) ? 16 : 64;
-        if (k <= merge_max_k_per_byte * sizeof(argTy)) {
-            select_ev = (ascending)
-                            ? topk_detail::merge_sort_selected<true>(
-                                  exec_q, iter_nelems, k, arg_tp, selected_tp,
-                                  topk_index_tp, {select_ev})
-                            : topk_detail::merge_sort_selected<false>(
-                                  exec_q, iter_nelems, k, arg_tp, selected_tp,
-                                  topk_index_tp, {select_ev});
-        }
-        else {
-            using radix_utils::IndexedProj;
-            using radix_utils::SignedZeroNormalizingProj;
-            using IndexedProjT =
-                IndexedProj<IndexTy, argTy, SignedZeroNormalizingProj>;
-            const IndexedProjT proj_op{arg_tp};
-
-            select_ev =
-                radix_sort_details::parallel_radix_sort_impl<IndexTy,
-                                                             IndexedProjT>(
-                    exec_q, iter_nelems, k, selected_tp, topk_index_tp, proj_op,
-                    ascending, {select_ev});
-        }
-    }
-
-    using WriteOutKernelName = topk_radix_select_map_back_krn<argTy, IndexTy>;
-
-    sycl::event write_topk_ev =
-        topk_detail::write_out_impl<WriteOutKernelName, argTy, IndexTy>(
-            exec_q, iter_nelems, k, arg_tp, topk_index_tp, k, axis_nelems,
-            vals_tp, inds_tp, {select_ev});
-
-    sycl::event cleanup_ev = dpnp::tensor::alloc_utils::async_smart_free(
-        exec_q, {write_topk_ev}, workspace_owner);
-
-    return cleanup_ev;
+    return radix_select_details::radix_select_impl<argTy, IndexTy>(
+        exec_q, iter_nelems, axis_nelems, k, ascending, arg_tp, vals_tp,
+        inds_tp, depends);
 }
 
 } // namespace dpnp::tensor::kernels

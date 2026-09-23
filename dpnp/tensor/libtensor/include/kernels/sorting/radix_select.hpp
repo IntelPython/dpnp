@@ -50,6 +50,7 @@
 #include <limits>
 #include <stdexcept>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 #include <sycl/sycl.hpp>
@@ -177,14 +178,15 @@ bucket_info find_bucket(const sycl::nd_item<1> &ndit,
     return result[0];
 }
 
-/*! @brief Writes out the indices of the selected elements of `[begin, end)`.
+/*! @brief Passes the selected elements `i` of `[begin, end)` to
+ * `less_out(j, i)` and `tie_out(j, i)`.
  *
  * An element is selected when its prefix selected by `mask` is smaller than
  * `desired` ("less"), or equal to it ("tie") and fewer than `n_ties` ties
- * precede it in the row. Less elements go to `dst[less_offset + j]` and ties
- * to `dst[ties_dst_offset + j]`, where `j` is the element's rank in index
- * order among its kind, so ties are resolved the way a stable sort resolves
- * them.
+ * precede it in the row. `j` is `less_offset` plus the rank of a less element
+ * in index order among the less elements of `[begin, end)`, or the rank of a
+ * tie among the ties of the row, so ties are resolved the way a stable sort
+ * resolves them.
  *
  * @param n_less   number of less elements in `[begin, end)`
  * @param n_ties_before  number of ties in the row preceding `begin`
@@ -192,7 +194,8 @@ bucket_info find_bucket(const sycl::nd_item<1> &ndit,
 template <std::uint32_t elems_per_wi,
           typename KeyT,
           typename KeyFnT,
-          typename IndexT>
+          typename LessOutT,
+          typename TieOutT>
 void gather_selected(const sycl::nd_item<1> &ndit,
                      const KeyFnT &key_fn,
                      std::size_t begin,
@@ -203,9 +206,8 @@ void gather_selected(const sycl::nd_item<1> &ndit,
                      std::uint64_t n_less,
                      std::uint64_t n_ties_before,
                      std::uint64_t n_ties,
-                     std::uint64_t ties_dst_offset,
-                     IndexT index_offset,
-                     IndexT *dst)
+                     const LessOutT &less_out,
+                     const TieOutT &tie_out)
 {
     // an element's kind and its rank within a tile are counted in the low
     // (less) and high (tie) halves of one integer
@@ -272,15 +274,13 @@ void gather_selected(const sycl::nd_item<1> &ndit,
             const std::size_t i = sg_begin + j * sg_size + lane;
             const std::uint32_t r = sg_offset + ranks[j];
             if (flags[j] == less_flag) {
-                dst[less_offset + less_done + (r & half_mask)] =
-                    index_offset + static_cast<IndexT>(i);
+                less_out(less_offset + less_done + (r & half_mask), i);
             }
             else {
                 const std::uint64_t tie_rank =
                     n_ties_before + ties_done + (r >> 16);
                 if (tie_rank < n_ties) {
-                    dst[ties_dst_offset + tie_rank] =
-                        index_offset + static_cast<IndexT>(i);
+                    tie_out(tie_rank, i);
                 }
             }
         }
@@ -298,6 +298,65 @@ struct RowKey
     KeyT operator()(std::size_t i) const
     {
         return radix_utils::ordered_radix_key<is_ascending>(row[i]);
+    }
+};
+
+/*! @brief Key of the `i`-th of the candidates of a row, listed by their
+ * indices within the row */
+template <typename KeyT, typename ValueT, bool is_ascending>
+struct CandidateKey
+{
+    const ValueT *row;
+    const std::uint32_t *cand;
+
+    KeyT operator()(std::size_t i) const
+    {
+        return radix_utils::ordered_radix_key<is_ascending>(row[cand[i]]);
+    }
+};
+
+/*! @brief Stores the value and the index of element `i` of a row as the
+ * `j`-th selected element of the row */
+template <typename ValueT, typename IndexT>
+struct SelectedOut
+{
+    const ValueT *row;
+    ValueT *vals;
+    IndexT *inds;
+
+    void operator()(std::uint64_t j, std::size_t i) const
+    {
+        vals[j] = row[i];
+        inds[j] = static_cast<IndexT>(i);
+    }
+};
+
+/*! @brief Stores the value and the index of candidate `i` of a row as the
+ * `j`-th selected element of the row */
+template <typename ValueT, typename IndexT>
+struct CandidateSelectedOut
+{
+    const ValueT *row;
+    const std::uint32_t *cand;
+    ValueT *vals;
+    IndexT *inds;
+
+    void operator()(std::uint64_t j, std::size_t i) const
+    {
+        const std::uint32_t c = cand[i];
+        vals[j] = row[c];
+        inds[j] = static_cast<IndexT>(c);
+    }
+};
+
+/*! @brief Lists element `i` of a row as its `j`-th candidate */
+struct CandidateListOut
+{
+    std::uint32_t *cand;
+
+    void operator()(std::uint64_t j, std::size_t i) const
+    {
+        cand[j] = static_cast<std::uint32_t>(i);
     }
 };
 
@@ -324,7 +383,8 @@ sycl::event
                                   std::size_t n,
                                   std::size_t k,
                                   const ValueT *vals_ptr,
-                                  IndexT *dst_ptr,
+                                  ValueT *dst_vals_ptr,
+                                  IndexT *dst_inds_ptr,
                                   std::size_t wg_size,
                                   const std::vector<sycl::event> &depends)
 {
@@ -383,9 +443,14 @@ sycl::event
             }
 
             const std::uint64_t n_less = k - k_rem;
+            using OutT = SelectedOut<ValueT, IndexT>;
+            const ValueT *row_vals = vals_ptr + row * n;
+            ValueT *row_dst_vals = dst_vals_ptr + row * k;
+            IndexT *row_dst_inds = dst_inds_ptr + row * k;
             gather_selected<elems_per_wi>(
-                ndit, key_fn, 0, n, desired, mask, 0, n_less, 0, k_rem, n_less,
-                static_cast<IndexT>(row * n), dst_ptr + row * k);
+                ndit, key_fn, 0, n, desired, mask, 0, n_less, 0, k_rem,
+                OutT{row_vals, row_dst_vals, row_dst_inds},
+                OutT{row_vals, row_dst_vals + n_less, row_dst_inds + n_less});
         });
     });
 }
@@ -402,6 +467,11 @@ struct row_state
     KeyT mask;
     // rank of the sought element among the keys having the prefix
     std::uint64_t k_rem;
+    // when nonzero, the passes after the first one go over this many
+    // candidates, the elements which share the prefix of the first pass
+    std::uint64_t n_cand;
+    // number of elements selected by the first pass
+    std::uint64_t n_less_first;
     std::uint32_t done;
     // number of work-groups of the row which completed the current pass
     std::uint32_t n_arrived;
@@ -417,8 +487,34 @@ template <typename ValueT,
           typename IndexT,
           bool is_ascending,
           std::uint32_t elems_per_wi>
+class radix_select_filter_krn;
+
+template <typename ValueT,
+          typename IndexT,
+          bool is_ascending,
+          std::uint32_t elems_per_wi>
 class radix_select_gather_krn;
 
+/*! @brief Range `[begin, end)` of block `blk` of `n_blocks` covering `[0, n)`
+ */
+inline std::pair<std::size_t, std::size_t>
+    block_range(std::size_t blk, std::size_t n_blocks, std::size_t n)
+{
+    const std::size_t block_size = (n + n_blocks - 1) / n_blocks;
+    const std::size_t begin = std::min(blk * block_size, n);
+    return {begin, std::min(begin + block_size, n)};
+}
+
+/*! @brief Candidates are listed only when they are at most this fraction of
+ * their row, since a large buffer costs more to allocate than it saves */
+inline constexpr std::size_t filter_cap_divisor = 16;
+
+/*! @brief Radix select with `n_blocks` work-groups per row and a kernel per
+ * pass.
+ *
+ * When `filter`, the elements sharing the prefix of the first pass, if few,
+ * are listed so that the later passes only go over them.
+ */
 template <bool is_ascending,
           std::uint32_t elems_per_wi,
           typename ValueT,
@@ -429,13 +525,17 @@ sycl::event
                                   std::size_t n,
                                   std::size_t k,
                                   const ValueT *vals_ptr,
-                                  IndexT *dst_ptr,
+                                  ValueT *dst_vals_ptr,
+                                  IndexT *dst_inds_ptr,
                                   std::size_t n_blocks,
                                   std::size_t wg_size,
+                                  bool filter,
                                   const std::vector<sycl::event> &depends)
 {
     using KeyT = radix_utils::radix_key_t<ValueT>;
     using StateT = row_state<KeyT>;
+    using RowKeyT = RowKey<KeyT, ValueT, is_ascending>;
+    using CandKeyT = CandidateKey<KeyT, ValueT, is_ascending>;
 
     static constexpr std::uint32_t n_passes = n_radix_passes<KeyT>();
     static constexpr std::uint32_t key_bits =
@@ -447,6 +547,12 @@ sycl::event
         wg_size * elems_per_wi > max_tile_size) {
         throw std::runtime_error("Invalid parameters for radix select");
     }
+    // candidates are listed by 32-bit indices within their row
+    filter = filter && (n_passes > 1) &&
+             (n <= std::numeric_limits<std::uint32_t>::max());
+    // rows with more candidates than this are not filtered
+    const std::size_t cand_cap =
+        (n + filter_cap_divisor - 1) / filter_cap_divisor;
 
     const std::size_t n_row_blocks = n_iters * n_blocks;
 
@@ -470,13 +576,19 @@ sycl::event
     std::uint64_t *tie_count_ptr = less_offset_ptr + n_row_blocks;
     std::uint64_t *tie_offset_ptr = tie_count_ptr + n_row_blocks;
 
+    // candidates of each row, in index order
+    auto cand_owner =
+        dpnp::tensor::alloc_utils::smart_malloc_device<std::uint32_t>(
+            (filter) ? n_iters * cand_cap : 1, exec_q);
+    std::uint32_t *cand_ptr = cand_owner.get();
+
     sycl::event init_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
         using KernelName = radix_select_init_krn<ValueT, IndexT, is_ascending>;
         cgh.parallel_for<KernelName>(
             sycl::range<1>(n_iters), [=](sycl::id<1> id) {
-                state_ptr[id[0]] = StateT{KeyT{0}, KeyT{0}, k, 0, 0};
+                state_ptr[id[0]] = StateT{KeyT{0}, KeyT{0}, k, 0, 0, 0, 0};
             });
     });
 
@@ -486,6 +598,7 @@ sycl::event
     for (std::uint32_t pass = 0; pass < n_passes; ++pass) {
         const std::uint32_t shift = key_bits - (pass + 1) * radix_bits;
         const bool last_pass = (pass + 1 == n_passes);
+        const bool filter_after = filter && (pass == 0);
 
         pass_ev = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(pass_ev);
@@ -510,20 +623,26 @@ sycl::event
                 }
                 const KeyT desired = st.desired;
                 const KeyT mask = st.mask;
-
-                const std::size_t begin = std::min(blk * block_size, n);
-                const std::size_t end = std::min(begin + block_size, n);
-
-                const RowKey<KeyT, ValueT, is_ascending> key_fn{vals_ptr +
-                                                                row * n};
+                const std::uint64_t n_cand = st.n_cand;
 
                 for (std::size_t b = lid; b < radix_states; b += wg_size) {
                     hist[b] = 0;
                 }
                 sycl::group_barrier(wg);
 
-                count_digits(ndit, key_fn, begin, end, desired, mask, shift,
-                             hist);
+                const ValueT *row_vals = vals_ptr + row * n;
+                if (n_cand) {
+                    const auto [begin, end] =
+                        block_range(blk, n_blocks, n_cand);
+                    count_digits(ndit,
+                                 CandKeyT{row_vals, cand_ptr + row * cand_cap},
+                                 begin, end, desired, mask, shift, hist);
+                }
+                else {
+                    const auto [begin, end] = block_range(blk, n_blocks, n);
+                    count_digits(ndit, RowKeyT{row_vals}, begin, end, desired,
+                                 mask, shift, hist);
+                }
                 sycl::group_barrier(wg);
 
                 std::uint32_t *row_block_hist =
@@ -566,7 +685,12 @@ sycl::event
                     find_bucket(ndit, row_hist, k_rem, bucket);
                 const std::uint64_t new_k_rem = k_rem - info.before;
                 const bool done = last_pass || (info.count == new_k_rem);
+                // the elements of this pass' bucket become the candidates
+                const bool to_filter =
+                    filter_after && !done && (info.count <= cand_cap);
 
+                // the counts restart when the blocks switch to candidates
+                const bool restart = (pass == 0) || (n_cand && pass == 1);
                 std::uint64_t *row_less_count = less_count_ptr + row * n_blocks;
                 std::uint64_t *row_less_offset =
                     less_offset_ptr + row * n_blocks;
@@ -578,14 +702,13 @@ sycl::event
                     for (std::uint32_t b = 0; b < info.bin; ++b) {
                         s += h[b];
                     }
-                    row_less_count[j] =
-                        ((pass == 0) ? 0 : row_less_count[j]) + s;
-                    if (done) {
+                    row_less_count[j] = ((restart) ? 0 : row_less_count[j]) + s;
+                    if (done || to_filter) {
                         row_tie_count[j] = h[info.bin];
                     }
                 }
 
-                if (done) {
+                if (done || to_filter) {
                     sycl::group_barrier(wg);
                     sycl::joint_exclusive_scan(
                         wg, row_less_count, row_less_count + n_blocks,
@@ -605,9 +728,47 @@ sycl::event
                     st.k_rem = new_k_rem;
                     st.done = done;
                     st.n_arrived = 0;
+                    if (to_filter) {
+                        st.n_cand = info.count;
+                        st.n_less_first = info.before;
+                    }
                 }
             });
         });
+
+        if (filter_after) {
+            // writes out the less elements of the first pass and lists its
+            // candidates
+            pass_ev = exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(pass_ev);
+
+                using KernelName =
+                    radix_select_filter_krn<ValueT, IndexT, is_ascending,
+                                            elems_per_wi>;
+                cgh.parallel_for<KernelName>(
+                    ndRange, [=](sycl::nd_item<1> ndit) {
+                        const std::size_t group_id = ndit.get_group(0);
+                        const std::size_t row = group_id / n_blocks;
+                        const std::size_t blk = group_id - row * n_blocks;
+
+                        const StateT st = state_ptr[row];
+                        if (st.n_cand == 0) {
+                            return;
+                        }
+
+                        const auto [begin, end] = block_range(blk, n_blocks, n);
+                        gather_selected<elems_per_wi>(
+                            ndit, RowKeyT{vals_ptr + row * n}, begin, end,
+                            st.desired, st.mask, less_offset_ptr[group_id],
+                            less_count_ptr[group_id], tie_offset_ptr[group_id],
+                            st.n_cand,
+                            SelectedOut<ValueT, IndexT>{vals_ptr + row * n,
+                                                        dst_vals_ptr + row * k,
+                                                        dst_inds_ptr + row * k},
+                            CandidateListOut{cand_ptr + row * cand_cap});
+                    });
+            });
+        }
     }
 
     sycl::event gather_ev = exec_q.submit([&](sycl::handler &cgh) {
@@ -622,22 +783,41 @@ sycl::event
 
             const StateT st = state_ptr[row];
 
-            const std::size_t begin = std::min(blk * block_size, n);
-            const std::size_t end = std::min(begin + block_size, n);
+            const ValueT *row_vals = vals_ptr + row * n;
+            // the first pass wrote out its less elements already
+            ValueT *row_dst_vals = dst_vals_ptr + row * k + st.n_less_first;
+            IndexT *row_dst_inds = dst_inds_ptr + row * k + st.n_less_first;
+            const std::uint64_t n_less = k - st.n_less_first - st.k_rem;
 
-            const RowKey<KeyT, ValueT, is_ascending> key_fn{vals_ptr + row * n};
-
-            const std::uint64_t n_less = k - st.k_rem;
-            gather_selected<elems_per_wi>(
-                ndit, key_fn, begin, end, st.desired, st.mask,
-                less_offset_ptr[group_id], less_count_ptr[group_id],
-                tie_offset_ptr[group_id], st.k_rem, n_less,
-                static_cast<IndexT>(row * n), dst_ptr + row * k);
+            if (st.n_cand) {
+                using OutT = CandidateSelectedOut<ValueT, IndexT>;
+                const std::uint32_t *row_cand = cand_ptr + row * cand_cap;
+                const auto [begin, end] = block_range(blk, n_blocks, st.n_cand);
+                gather_selected<elems_per_wi>(
+                    ndit, CandKeyT{row_vals, row_cand}, begin, end, st.desired,
+                    st.mask, less_offset_ptr[group_id],
+                    less_count_ptr[group_id], tie_offset_ptr[group_id],
+                    st.k_rem,
+                    OutT{row_vals, row_cand, row_dst_vals, row_dst_inds},
+                    OutT{row_vals, row_cand, row_dst_vals + n_less,
+                         row_dst_inds + n_less});
+            }
+            else {
+                using OutT = SelectedOut<ValueT, IndexT>;
+                const auto [begin, end] = block_range(blk, n_blocks, n);
+                gather_selected<elems_per_wi>(
+                    ndit, RowKeyT{row_vals}, begin, end, st.desired, st.mask,
+                    less_offset_ptr[group_id], less_count_ptr[group_id],
+                    tie_offset_ptr[group_id], st.k_rem,
+                    OutT{row_vals, row_dst_vals, row_dst_inds},
+                    OutT{row_vals, row_dst_vals + n_less,
+                         row_dst_inds + n_less});
+            }
         });
     });
 
     return dpnp::tensor::alloc_utils::async_smart_free(
-        exec_q, {gather_ev}, state_owner, hist_owner, counts_owner);
+        exec_q, {gather_ev}, state_owner, hist_owner, counts_owner, cand_owner);
 }
 
 //-----------------------------------------------------------------------
@@ -652,7 +832,8 @@ sycl::event radix_select_dispatch(sycl::queue &exec_q,
                                   std::size_t n,
                                   std::size_t k,
                                   const ValueT *vals_ptr,
-                                  IndexT *dst_ptr,
+                                  ValueT *dst_vals_ptr,
+                                  IndexT *dst_inds_ptr,
                                   const std::vector<sycl::event> &depends)
 {
     const auto &dev = exec_q.get_device();
@@ -682,9 +863,13 @@ sycl::event radix_select_dispatch(sycl::queue &exec_q,
     n_blocks = std::max(n_blocks, (n + max_block_size - 1) / max_block_size);
 
     if (n_blocks > 1) {
+        using KeyT = radix_utils::radix_key_t<ValueT>;
+        // with fewer passes re-reading the rows costs less than listing the
+        // candidates
+        static constexpr bool filter = (sizeof(KeyT) >= 4);
         return radix_select_multi_group_impl<is_ascending, epw>(
-            exec_q, n_iters, n, k, vals_ptr, dst_ptr, n_blocks, wg_size,
-            depends);
+            exec_q, n_iters, n, k, vals_ptr, dst_vals_ptr, dst_inds_ptr,
+            n_blocks, wg_size, filter, depends);
     }
     // short rows leave most of a large work-group idle
     std::size_t row_wg_size = 64;
@@ -693,19 +878,18 @@ sycl::event radix_select_dispatch(sycl::queue &exec_q,
     }
     row_wg_size = std::min(row_wg_size, wg_size);
     return radix_select_one_group_submit<is_ascending, epw>(
-        exec_q, n_iters, n, k, vals_ptr, dst_ptr, row_wg_size, depends);
+        exec_q, n_iters, n, k, vals_ptr, dst_vals_ptr, dst_inds_ptr,
+        row_wg_size, depends);
 }
 
-/*! @brief Writes the flat indices of the `k` smallest (largest when
- * `is_ascending` is false) elements of each row of the C-contiguous
- * `(n_iters, n)` array `vals_ptr` into the rows of the `(n_iters, k)` array
- * `dst_ptr`.
+/*! @brief Writes the `k` smallest (largest when `is_ascending` is false)
+ * elements of each row of the C-contiguous `(n_iters, n)` array `vals_ptr`
+ * into the rows of the `(n_iters, k)` array `dst_vals_ptr`, and their indices
+ * within the row into those of `dst_inds_ptr`.
  *
  * Ties are resolved in favor of smaller indices, NaNs order after any other
- * value, and -0.0 and +0.0 compare equal. Elements whose keys are smaller
- * than that of the k-th element come first, in index order, followed by the
- * elements sharing its key, in index order; thus equal elements always appear
- * in index order and a stable sort of each row orders it fully.
+ * value, and -0.0 and +0.0 compare equal. The selection is not sorted and
+ * its order is unspecified.
  */
 template <typename ValueT, typename IndexT>
 sycl::event radix_select_impl(sycl::queue &exec_q,
@@ -714,7 +898,8 @@ sycl::event radix_select_impl(sycl::queue &exec_q,
                               std::size_t k,
                               bool is_ascending,
                               const ValueT *vals_ptr,
-                              IndexT *dst_ptr,
+                              ValueT *dst_vals_ptr,
+                              IndexT *dst_inds_ptr,
                               const std::vector<sycl::event> &depends)
 {
     if (k == 0 || k > n) {
@@ -723,10 +908,11 @@ sycl::event radix_select_impl(sycl::queue &exec_q,
 
     if (is_ascending) {
         return radix_select_dispatch</*is_ascending*/ true>(
-            exec_q, n_iters, n, k, vals_ptr, dst_ptr, depends);
+            exec_q, n_iters, n, k, vals_ptr, dst_vals_ptr, dst_inds_ptr,
+            depends);
     }
     return radix_select_dispatch</*is_ascending*/ false>(
-        exec_q, n_iters, n, k, vals_ptr, dst_ptr, depends);
+        exec_q, n_iters, n, k, vals_ptr, dst_vals_ptr, dst_inds_ptr, depends);
 }
 
 } // namespace dpnp::tensor::kernels::radix_select_details

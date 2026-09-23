@@ -329,19 +329,6 @@ radix_key_t<T> ordered_radix_key(const T &val)
 // projections
 //-----------
 
-/*! @brief Projection making the keys a radix sort computes from values
- * agree with `ordered_radix_key` */
-struct SignedZeroNormalizingProj
-{
-    constexpr SignedZeroNormalizingProj() {}
-
-    template <typename T>
-    T operator()(T val) const
-    {
-        return normalize_signed_zero(val);
-    }
-};
-
 struct IdentityProj
 {
     constexpr IdentityProj() {}
