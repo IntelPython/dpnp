@@ -1067,11 +1067,11 @@ otherwise.</p>
 <li><p><strong>element</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- Input array.</p></li>
 <li><p><strong>test_elements</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- The values against which to test each value of <cite>element</cite>.
 This argument is flattened if it is an array.</p></li>
-<li><p><strong>assume_unique</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>Ignored, as no performance benefit is gained by assuming the
+<li><p><strong>assume_unique</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>Ignored, as no performance benefit is gained by assuming the
 input arrays are unique. Included for compatibility with NumPy.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 </p></li>
-<li><p><strong>invert</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the values in the returned array are inverted, as if
+<li><p><strong>invert</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the values in the returned array are inverted, as if
 calculating <code class="docutils literal notranslate"><span class="pre">element</span> <span class="pre">not</span> <span class="pre">in</span> <span class="pre">test_elements</span></code>.
 <code class="docutils literal notranslate"><span class="pre">dpnp.isin(a,</span> <span class="pre">b,</span> <span class="pre">invert=True)</span></code> is equivalent to (but faster
 than) <code class="docutils literal notranslate"><span class="pre">dpnp.invert(dpnp.isin(a,</span> <span class="pre">b))</span></code>.</p>

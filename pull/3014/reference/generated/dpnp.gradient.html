@@ -1066,7 +1066,7 @@ The returned gradient hence has the same shape as the input array.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>f</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- An N-dimensional array containing samples of a scalar function.</p></li>
-<li><p><strong>varargs</strong> (<em>{scalar</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><em>scalars</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><em>arrays}</em><em>, </em><em>optional</em>) -- <p>Spacing between <cite>f</cite> values. Default unitary spacing for all dimensions.
+<li><p><strong>varargs</strong> (<em>{scalar</em><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><em>scalars</em><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><em>arrays}</em><em>, </em><em>optional</em>) -- <p>Spacing between <cite>f</cite> values. Default unitary spacing for all dimensions.
 Spacing can be specified using:</p>
 <ol class="arabic simple">
 <li><p>Single scalar to specify a sample distance for all dimensions.</p></li>
@@ -1081,7 +1081,7 @@ the corresponding dimension</p></li>
 axes specified in the <cite>axis</cite> parameter.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
 </p></li>
-<li><p><strong>axis</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><em>ints}</em><em>, </em><em>optional</em>) -- <p>Gradient is calculated only along the given axis or axes.
+<li><p><strong>axis</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><em>ints}</em><em>, </em><em>optional</em>) -- <p>Gradient is calculated only along the given axis or axes.
 The default is to calculate the gradient for all the axes of the input
 array. <cite>axis</cite> may be negative, in which case it counts from the last to
 the first axis.</p>
@@ -1100,7 +1100,7 @@ with respect to each dimension.
 Each derivative has the same shape as <cite>f</cite>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>{dpnp.ndarray, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a> of ndarray}</p>
+<dd class="field-odd"><p>{dpnp.ndarray, <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)">list</a> of ndarray}</p>
 </dd>
 </dl>
 <div class="admonition seealso">

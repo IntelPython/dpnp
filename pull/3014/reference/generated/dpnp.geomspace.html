@@ -1069,7 +1069,7 @@ an array. This includes scalars, lists, lists of tuples, tuples, tuples
 of tuples, tuples of lists, and ndarrays. If <cite>endpoint</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code>
 <code class="docutils literal notranslate"><span class="pre">num</span> <span class="pre">+</span> <span class="pre">1</span></code> values are spaced over the interval in log-space, of which
 all but the last (a sequence of length <cite>num</cite>) are returned.</p></li>
-<li><p><strong>num</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) -- <p>Number of samples to generate.</p>
+<li><p><strong>num</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) -- <p>Number of samples to generate.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">50</span></code>.</p>
 </p></li>
 <li><p><strong>dtype</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.dtype.str.html#dpnp.dtype.str" title="dpnp.dtype.str"><em>str</em></a><em>, </em><em>dtype object}</em><em>, </em><em>optional</em>) -- <p>The desired dtype for the array. If not given, a default dtype will be
@@ -1091,10 +1091,10 @@ device, an instance of <a class="reference external" href="https://intelpython.g
 <li><p><strong>sycl_queue</strong> (<em>{None</em><em>, </em><em>SyclQueue}</em><em>, </em><em>optional</em>) -- <p>A SYCL queue to use for output array allocation and copying.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
-<li><p><strong>endpoint</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, <cite>stop</cite> is the last sample. Otherwise, it is not included.</p>
+<li><p><strong>endpoint</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, <cite>stop</cite> is the last sample. Otherwise, it is not included.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 </p></li>
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) -- <p>The axis in the result to store the samples. Relevant only if start or
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) -- <p>The axis in the result to store the samples. Relevant only if start or
 stop are array-like. By default (0), the samples will be along a new
 axis inserted at the beginning. Use -1 to get an axis at the end.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>

@@ -1062,10 +1062,10 @@ conditions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>condlist</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><em>bool dpnp.ndarray</em><em> or </em><em>usm_ndarray</em>) -- The list of conditions which determine from which array in <cite>choicelist</cite>
+<li><p><strong>condlist</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><em>bool dpnp.ndarray</em><em> or </em><em>usm_ndarray</em>) -- The list of conditions which determine from which array in <cite>choicelist</cite>
 the output elements are taken. When multiple conditions are satisfied,
 the first one encountered in <cite>condlist</cite> is used.</p></li>
-<li><p><strong>choicelist</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em> or </em><em>usm_ndarray</em>) -- The list of arrays from which the output elements are taken. It has
+<li><p><strong>choicelist</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em> or </em><em>usm_ndarray</em>) -- The list of arrays from which the output elements are taken. It has
 to be of the same length as <cite>condlist</cite>.</p></li>
 <li><p><strong>default</strong> (<em>{scalar</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>The element inserted in <cite>output</cite> when all conditions evaluate to
 <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
