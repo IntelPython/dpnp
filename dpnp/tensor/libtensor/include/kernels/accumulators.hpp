@@ -74,9 +74,17 @@ struct NonZeroIndicator
     {
         static constexpr outputT out_one(1);
         static constexpr outputT out_zero(0);
-        static constexpr inputT val_zero(0);
 
-        return (val == val_zero) ? out_zero : out_one;
+        if constexpr (std::is_same_v<inputT, bool>) {
+            // NumPy treats any non-zero byte as True; read the raw byte
+            // rather than the bool value, see gh-2121
+            const std::uint8_t u = sycl::bit_cast<std::uint8_t>(val);
+            return (u == std::uint8_t{0}) ? out_zero : out_one;
+        }
+        else {
+            static constexpr inputT val_zero(0);
+            return (val == val_zero) ? out_zero : out_one;
+        }
     }
 };
 
@@ -85,7 +93,12 @@ struct NoOpTransformer
 {
     constexpr NoOpTransformer() {}
 
-    T operator()(const T &val) const { return val; }
+    // bool is normalized: a byte other than 0x00/0x01 would otherwise reach
+    // the scan operation and leak into the result, see gh-2121
+    T operator()(const T &val) const
+    {
+        return dpnp::tensor::type_utils::normalize_bool(val);
+    }
 };
 
 template <typename srcTy, typename dstTy>
@@ -1303,8 +1316,10 @@ struct Cumsum1DContigFactory
     {
         if constexpr (std::is_integral_v<T>) {
             using cumsumT = std::int64_t;
+            // CastTransformer, not NoOpTransformer: an implicit bool
+            // conversion would read the raw byte, see gh-2121
             fnT fn =
-                cumsum_val_contig_impl<T, cumsumT, NoOpTransformer<cumsumT>>;
+                cumsum_val_contig_impl<T, cumsumT, CastTransformer<T, cumsumT>>;
             return fn;
         }
         else {
@@ -1421,8 +1436,10 @@ struct Cumsum1DStridedFactory
     {
         if constexpr (std::is_integral_v<T>) {
             using cumsumT = std::int64_t;
-            fnT fn =
-                cumsum_val_strided_impl<T, cumsumT, NoOpTransformer<cumsumT>>;
+            // CastTransformer, not NoOpTransformer: an implicit bool
+            // conversion would read the raw byte, see gh-2121
+            fnT fn = cumsum_val_strided_impl<T, cumsumT,
+                                             CastTransformer<T, cumsumT>>;
             return fn;
         }
         else {

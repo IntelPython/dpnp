@@ -61,7 +61,7 @@ def _accumulate_common(
     if axis is None:
         if nd > 1:
             raise ValueError(
-                "`axis` cannot be `None` for array of dimension `{}`".format(nd)
+                f"`axis` cannot be `None` for array of dimension `{nd}`"
             )
         axis = 0
     else:

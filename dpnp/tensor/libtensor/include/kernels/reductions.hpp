@@ -56,6 +56,8 @@
 namespace dpnp::tensor::kernels
 {
 
+using dpnp::tensor::type_utils::normalize_bool;
+
 using dpnp::tensor::ssize_t;
 namespace su_ns = dpnp::tensor::sycl_utils;
 
@@ -1913,7 +1915,7 @@ public:
             const ssize_t inp_reduction_offset = inp_reduced_dims_indexer_(m);
             const ssize_t inp_offset = inp_iter_offset + inp_reduction_offset;
 
-            argT val = inp_[inp_offset];
+            argT val = normalize_bool(inp_[inp_offset]);
             if (val == red_val) {
                 idx_val = idx_reduction_op_(idx_val, static_cast<outT>(m));
             }
@@ -2058,7 +2060,7 @@ public:
                     inp_reduced_dims_indexer_(arg_reduce_gid);
                 auto inp_offset = inp_iter_offset + inp_reduction_offset;
 
-                argT val = inp_[inp_offset];
+                argT val = normalize_bool(inp_[inp_offset]);
                 if (val == local_red_val) {
                     if constexpr (!First) {
                         local_idx =
@@ -2216,7 +2218,7 @@ public:
                     inp_reduced_dims_indexer_(arg_reduce_gid);
                 auto inp_offset = inp_iter_offset + inp_reduction_offset;
 
-                argT val = inp_[inp_offset];
+                argT val = normalize_bool(inp_[inp_offset]);
                 if (val == local_red_val) {
                     if constexpr (!First) {
                         local_idx =
