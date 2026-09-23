@@ -71,8 +71,8 @@ public:
         const std::size_t lin = wid[0];
         auto offset = indexer_(static_cast<ssize_t>(lin));
 
-        const dpnp::tensor::ssize_t dst_off = offset.get_first_offset();
-        const dpnp::tensor::ssize_t mask_off = offset.get_second_offset();
+        const ssize_t dst_off = offset.get_first_offset();
+        const ssize_t mask_off = offset.get_second_offset();
 
         if (mask_u8_[mask_off]) {
             const std::size_t vlin = lin % values_size_;
@@ -173,7 +173,6 @@ public:
                 }
             }
             else {
-                const std::size_t lane_id = sg.get_local_id()[0];
                 for (std::size_t k = base + lane_id; k < nelems_; k += sgSize) {
                     if (mask_u8_[k]) {
                         const std::size_t v =
@@ -202,11 +201,11 @@ template <typename T>
 sycl::event putmask_strided_impl(sycl::queue &exec_q,
                                  const int nd,
                                  std::size_t nelems,
-                                 const dpnp::tensor::ssize_t *shape_strides,
+                                 const ssize_t *shape_strides,
                                  char *dst_cp,
-                                 const dpnp::tensor::ssize_t dst_offset,
+                                 const ssize_t dst_offset,
                                  const char *mask_cp,
-                                 const dpnp::tensor::ssize_t mask_offset,
+                                 const ssize_t mask_offset,
                                  const char *values_cp,
                                  std::size_t values_size,
                                  const std::vector<sycl::event> &depends = {})
