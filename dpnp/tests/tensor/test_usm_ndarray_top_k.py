@@ -26,7 +26,9 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+import numpy as np
 import pytest
+from numpy.testing import assert_array_equal
 
 import dpnp.tensor as dpt
 
@@ -265,6 +267,67 @@ def test_top_k_2d_smallest(dtype, n):
         dpt.sort(r.indices, axis=1) == dpt.sort(expected_inds, axis=1)
     )
     assert dpt.all(dpt.sort(r.values, axis=1) == dpt.sort(x[:, :k], axis=1))
+
+
+def _reference_top_k(x_np, k, mode):
+    "top k along the last axis, equal elements ordered by index"
+    if mode == "largest":
+        n = x_np.shape[-1]
+        inds = np.argsort(x_np[..., ::-1], axis=-1, kind="stable")[..., ::-1]
+        inds = n - 1 - inds
+    else:
+        inds = np.argsort(x_np, axis=-1, kind="stable")
+    inds = inds[..., :k]
+    return np.take_along_axis(x_np, inds, axis=-1), inds
+
+
+@pytest.mark.parametrize(
+    "dtype",
+    ["?", "i1", "u1", "i2", "u2", "i4", "u4", "i8", "u8", "f2", "f4", "f8"],
+)
+@pytest.mark.parametrize("shape", [(1000, 50), (4, 3001), (2, 100003)])
+@pytest.mark.parametrize("mode", ["largest", "smallest"])
+def test_top_k_ties_order(dtype, shape, mode):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    # few distinct values, so that the k-th value is repeated
+    rng = np.random.default_rng(42)
+    x_np = rng.integers(0, 4, size=shape).astype(dtype)
+    x = dpt.asarray(x_np, sycl_queue=q)
+
+    n = shape[-1]
+    for k in sorted({1, 7, min(n, 300), n // 3, n}):
+        r = dpt.top_k(x, k, axis=-1, mode=mode)
+        expected_vals, expected_inds = _reference_top_k(x_np, k, mode)
+        assert_array_equal(dpt.asnumpy(r.indices), expected_inds)
+        assert_array_equal(dpt.asnumpy(r.values), expected_vals)
+
+
+@pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
+@pytest.mark.parametrize("n", [257, 100003])
+@pytest.mark.parametrize("mode", ["largest", "smallest"])
+def test_top_k_nans_and_signed_zeros(dtype, n, mode):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    # NaNs compare equal and order after other values, -0.0 == 0.0
+    special = np.array(
+        [np.nan, -np.nan, 0.0, -0.0, np.inf, -np.inf, 1.0, -1.0], dtype=dtype
+    )
+    rng = np.random.default_rng(7)
+    x_np = rng.choice(special, size=n)
+    x = dpt.asarray(x_np, sycl_queue=q)
+
+    for k in sorted({1, 5, 200, n // 2, n}):
+        r = dpt.top_k(x, k, mode=mode)
+        expected_vals, expected_inds = _reference_top_k(x_np, k, mode)
+        assert_array_equal(dpt.asnumpy(r.indices), expected_inds)
+        # the sign of zeros is kept
+        assert_array_equal(
+            np.signbit(dpt.asnumpy(r.values)), np.signbit(expected_vals)
+        )
+        assert_array_equal(dpt.asnumpy(r.values), expected_vals)
 
 
 def test_top_k_0d():
