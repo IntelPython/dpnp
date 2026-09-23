@@ -1347,6 +1347,17 @@ class TestPutMask:
         dpnp.putmask(ia, imask, values)
         assert_array_equal(ia, a)
 
+    @pytest.mark.parametrize("vals_dt", [dpnp.bool, "i2", "i4"])
+    def test_numpy_values_safe_cast(self, vals_dt):
+        a = generate_random_numpy_array((2, 3), dtype="i4")
+        mask = generate_random_numpy_array((2, 3), dtype=dpnp.bool)
+        vals = generate_random_numpy_array((4,), dtype=vals_dt)
+        ia, imask = dpnp.array(a), dpnp.array(mask)
+
+        numpy.putmask(a, mask, vals)
+        dpnp.putmask(ia, imask, vals)
+        assert_array_equal(ia, a)
+
     @pytest.mark.parametrize("mask_dt", get_integer_dtypes())
     def test_integer_mask(self, mask_dt):
         a = numpy.array([1, 2, 3, 3])
@@ -1442,6 +1453,12 @@ class TestPutMask:
 
         # a 0-d float values array cannot be safely cast to an integer array
         assert_raises(TypeError, dpnp.putmask, ia, ia > 2, dpnp.array(3.7))
+
+        # the casting rule applies to a NumPy array of values as well
+        assert_raises(
+            TypeError, dpnp.putmask, ia, ia > 2, numpy.array([2.5, 3.5])
+        )
+        assert_raises(TypeError, dpnp.putmask, ia, ia > 2, numpy.array(3.7))
 
         # an out-of-range scalar cannot be cast to the array data type
         a_i1 = dpnp.zeros(6, dtype="i1")

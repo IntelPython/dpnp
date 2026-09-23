@@ -1871,9 +1871,16 @@ def putmask(a, /, mask, values):
         usm_a[usm_mask] = values
         return
 
+    # An array of values keeps its own data type and has to be
+    # safely castable, while any other array_like is created with the
+    # data type of `a` directly
+    values_is_array = dpnp.is_supported_array_type(values) or isinstance(
+        values, numpy.ndarray
+    )
+    values_dtype = None if values_is_array else usm_a.dtype
     usm_values = dpnp.as_usm_ndarray(
         values,
-        dtype=usm_a.dtype,
+        dtype=values_dtype,
         usm_type=usm_a.usm_type,
         sycl_queue=usm_a.sycl_queue,
     )
