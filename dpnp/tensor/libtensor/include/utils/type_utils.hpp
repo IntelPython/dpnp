@@ -60,11 +60,28 @@ struct is_complex<
 template <typename T>
 inline constexpr bool is_complex_v = is_complex<T>::value;
 
+// NumPy reads any non-zero bool byte as True; a non-canonical byte
+// (not 0x00/0x01) used as a value would disagree, see gh-2121
+template <typename T>
+T normalize_bool(const T &v)
+{
+    if constexpr (std::is_same_v<T, bool>) {
+        // read the raw storage byte and test non-zero; using a
+        // non-canonical bool as a value is unreliable (UB)
+        const std::uint8_t u = sycl::bit_cast<std::uint8_t>(v);
+        return u != std::uint8_t{0};
+    }
+    else {
+        return v;
+    }
+}
+
 template <typename dstTy, typename srcTy>
 dstTy convert_impl(const srcTy &v)
 {
     if constexpr (std::is_same_v<dstTy, srcTy>) {
-        return v;
+        // bool needs normalizing even here, the byte may not be 0x00/0x01
+        return normalize_bool(v);
     }
     else if constexpr (std::is_same_v<dstTy, bool>) {
         if constexpr (is_complex_v<srcTy>) {

@@ -550,6 +550,7 @@ order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
+
 Returns
 -------
 out : dpnp.ndarray
