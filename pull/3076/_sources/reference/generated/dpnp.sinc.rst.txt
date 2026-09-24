@@ -1,0 +1,10 @@
+﻿
+
+dpnp.sinc
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: sinc
