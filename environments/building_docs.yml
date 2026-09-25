@@ -6,5 +6,6 @@ dependencies:
   - cupy
   - sphinx
   - furo
+  - numpydoc
   - pip:
     - -r base_build_docs.txt
