@@ -1286,6 +1286,40 @@ class TestMatmul:
         result = dpnp.matmul(ia, ia.mT)
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.parametrize("dt", [dpnp.int64, dpnp.uint64])
+    def test_syrk_exact_int(self, dt):
+        # products exceed the precision of float64, and overflow wraps around
+        a = numpy.array(
+            [[2**62 // 3, 12345], [987654321, 2**62 // 7], [3, -1]],
+            dtype=numpy.int64,
+        ).astype(dt)
+        ia = dpnp.array(a)
+
+        expected = a.T @ a
+        result = ia.mT @ ia
+        assert_array_equal(result, expected)
+
+        expected = a @ a.T
+        result = ia @ ia.mT
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("dt", [dpnp.int8, dpnp.int32])
+    def test_syrk_exact_int_out_dtype(self, dt):
+        a = generate_random_numpy_array((40, 70), dtype=dt, low=-100, high=100)
+        ia = dpnp.array(a)
+
+        expected = numpy.matmul(a.T, a, dtype=numpy.int32)
+        result = dpnp.matmul(ia.mT, ia, dtype=numpy.int32)
+        assert_array_equal(result, expected)
+
+    def test_syrk_batch_int(self):
+        a = generate_random_numpy_array((3, 20, 30), dtype=dpnp.int64)
+        ia = dpnp.array(a)
+
+        expected = numpy.matmul(a.mT, a)
+        result = dpnp.matmul(ia.mT, ia)
+        assert_array_equal(result, expected)
+
     # added for coverage
     def test_not_syrk(self):
         a = generate_random_numpy_array((20, 20), low=-5, high=5)

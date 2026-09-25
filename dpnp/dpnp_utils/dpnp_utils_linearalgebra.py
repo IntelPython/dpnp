@@ -954,14 +954,12 @@ def dpnp_multiplication(
         x1 = dpnp.reshape(x1, x1_shape[-2:])
         x2 = dpnp.reshape(x2, x2_shape[-2:])
         res_shape = (x1_shape[-2], x2_shape[-1])
-        if _is_syrk_compatible(x1, x2):
+        # for exact dtypes, `dpt.matmul` detects the symmetric case itself,
+        # whereas computing it with floating-point `syrk` loses precision
+        if dpnp.issubdtype(res_dtype, dpnp.inexact) and _is_syrk_compatible(
+            x1, x2
+        ):
             call_flag = "syrk"
-            res_dtype_orig = res_dtype
-            # for exact dtypes, use syrk implementation unlike general approach
-            # where dpctl implementation is used for exact dtypes for better
-            # performance
-            if not dpnp.issubdtype(res_dtype, dpnp.inexact):
-                res_dtype = dpnp.default_float_type(x1.device)
     elif x1_base_is_1D:
         # TODO: implement gemv_batch to use it here with transpose
         call_flag = "gemm_batch"
@@ -1105,9 +1103,6 @@ def dpnp_multiplication(
         result = dpnp.tile(result, out.shape)
     elif res_shape != result_shape:
         result = dpnp.reshape(result, result_shape)
-
-    if call_flag == "syrk" and res_dtype_orig != res_dtype:
-        result = result.astype(res_dtype_orig)
 
     if out is None:
         if axes is not None:

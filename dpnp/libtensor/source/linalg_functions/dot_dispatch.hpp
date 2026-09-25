@@ -187,53 +187,17 @@ struct DotTypeMapFactory
 };
 
 template <typename fnT, typename T1, typename T2>
-struct GemmBatchAtomicFactory
+struct GemmFactory
 {
     fnT get()
     {
-        if constexpr (!DotAtomicOutputType<T1, T2>::is_defined) {
-            fnT fn = nullptr;
-            return fn;
-        }
-        else {
-            using dpnp::tensor::kernels::gemm_batch_impl;
-            using T3 = typename DotAtomicOutputType<T1, T2>::value_type;
-            fnT fn = gemm_batch_impl<T1, T2, T3>;
-            return fn;
-        }
-    }
-};
-
-template <typename fnT, typename T1, typename T2>
-struct GemmBatchContigAtomicFactory
-{
-    fnT get()
-    {
-        if constexpr (!DotAtomicOutputType<T1, T2>::is_defined) {
-            fnT fn = nullptr;
-            return fn;
-        }
-        else {
-            using dpnp::tensor::kernels::gemm_batch_contig_impl;
-            using T3 = typename DotAtomicOutputType<T1, T2>::value_type;
-            fnT fn = gemm_batch_contig_impl<T1, T2, T3>;
-            return fn;
-        }
-    }
-};
-
-template <typename fnT, typename T1, typename T2>
-struct GemmAtomicFactory
-{
-    fnT get()
-    {
-        if constexpr (!DotAtomicOutputType<T1, T2>::is_defined) {
+        if constexpr (!DotNoAtomicOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
         else {
             using dpnp::tensor::kernels::gemm_impl;
-            using T3 = typename DotAtomicOutputType<T1, T2>::value_type;
+            using T3 = typename DotNoAtomicOutputType<T1, T2>::value_type;
             fnT fn = gemm_impl<T1, T2, T3>;
             return fn;
         }
@@ -241,25 +205,7 @@ struct GemmAtomicFactory
 };
 
 template <typename fnT, typename T1, typename T2>
-struct GemmContigAtomicFactory
-{
-    fnT get()
-    {
-        if constexpr (!DotAtomicOutputType<T1, T2>::is_defined) {
-            fnT fn = nullptr;
-            return fn;
-        }
-        else {
-            using dpnp::tensor::kernels::gemm_contig_impl;
-            using T3 = typename DotAtomicOutputType<T1, T2>::value_type;
-            fnT fn = gemm_contig_impl<T1, T2, T3>;
-            return fn;
-        }
-    }
-};
-
-template <typename fnT, typename T1, typename T2>
-struct GemmTempsFactory
+struct GemmNdFactory
 {
     fnT get()
     {
@@ -268,63 +214,9 @@ struct GemmTempsFactory
             return fn;
         }
         else {
-            using dpnp::tensor::kernels::gemm_tree_impl;
+            using dpnp::tensor::kernels::gemm_nd_impl;
             using T3 = typename DotNoAtomicOutputType<T1, T2>::value_type;
-            fnT fn = gemm_tree_impl<T1, T2, T3>;
-            return fn;
-        }
-    }
-};
-
-template <typename fnT, typename T1, typename T2>
-struct GemmContigTempsFactory
-{
-    fnT get()
-    {
-        if constexpr (!DotNoAtomicOutputType<T1, T2>::is_defined) {
-            fnT fn = nullptr;
-            return fn;
-        }
-        else {
-            using dpnp::tensor::kernels::gemm_contig_tree_impl;
-            using T3 = typename DotNoAtomicOutputType<T1, T2>::value_type;
-            fnT fn = gemm_contig_tree_impl<T1, T2, T3>;
-            return fn;
-        }
-    }
-};
-
-template <typename fnT, typename T1, typename T2>
-struct GemmBatchTempsFactory
-{
-    fnT get()
-    {
-        if constexpr (!DotNoAtomicOutputType<T1, T2>::is_defined) {
-            fnT fn = nullptr;
-            return fn;
-        }
-        else {
-            using dpnp::tensor::kernels::gemm_batch_tree_impl;
-            using T3 = typename DotNoAtomicOutputType<T1, T2>::value_type;
-            fnT fn = gemm_batch_tree_impl<T1, T2, T3>;
-            return fn;
-        }
-    }
-};
-
-template <typename fnT, typename T1, typename T2>
-struct GemmBatchContigTempsFactory
-{
-    fnT get()
-    {
-        if constexpr (!DotNoAtomicOutputType<T1, T2>::is_defined) {
-            fnT fn = nullptr;
-            return fn;
-        }
-        else {
-            using dpnp::tensor::kernels::gemm_batch_contig_tree_impl;
-            using T3 = typename DotNoAtomicOutputType<T1, T2>::value_type;
-            fnT fn = gemm_batch_contig_tree_impl<T1, T2, T3>;
+            fnT fn = gemm_nd_impl<T1, T2, T3>;
             return fn;
         }
     }

@@ -1134,3 +1134,224 @@ def test_matmul_tree_broadcast_batch_x2():
     x2[1] = 2
     res = dpt.matmul(x1, x2)
     assert dpt.asnumpy(res).tolist() == [[[3, 3]], [[6, 6]]]
+
+
+def _binary_matrix(shape, dtype, seed=42):
+    # entries of 0 and 1 keep sums exact in every type for k <= 2048
+    rs = np.random.RandomState(seed=seed)
+    return rs.randint(0, 2, size=shape).astype(dtype)
+
+
+def _as_layout(x_np, layout):
+    """Copy `x_np` to the device with the given layout of the last two axes:
+    "C" and "F" contiguous, "T" a transposed C-contiguous array, "S" strided
+    along both axes with negative row strides."""
+    if layout == "C":
+        return dpt.asarray(x_np, order="C")
+    if layout == "F":
+        return dpt.asarray(x_np, order="F")
+    if layout == "T":
+        return dpt.matrix_transpose(
+            dpt.asarray(np.swapaxes(x_np, -1, -2), order="C")
+        )
+    assert layout == "S"
+    n, m = x_np.shape[-2:]
+    big = np.zeros(x_np.shape[:-2] + (2 * n, 3 * m), dtype=x_np.dtype)
+    big[..., ::2, ::3] = x_np[..., ::-1, :]
+    return dpt.asarray(big)[..., ::2, ::3][..., ::-1, :]
+
+
+@pytest.mark.parametrize("dtype", _numeric_types)
+@pytest.mark.parametrize(
+    "n, k, m",
+    [
+        (1, 300, 1),
+        (1, 257, 70),
+        (70, 257, 1),
+        (37, 1, 29),
+        (5, 7, 3),
+        (130, 70, 90),
+        (16, 2000, 16),
+        (2, 33, 700),
+    ],
+)
+def test_matmul_layouts(dtype, n, k, m):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    a_np = _binary_matrix((n, k), dtype, seed=1)
+    b_np = _binary_matrix((k, m), dtype, seed=2)
+    expected = np.matmul(a_np, b_np)
+
+    for la, lb in itertools.product("CFTS", repeat=2):
+        a = _as_layout(a_np, la)
+        b = _as_layout(b_np, lb)
+        res = dpt.matmul(a, b)
+        assert res.shape == expected.shape
+        assert np.array_equal(dpt.asnumpy(res), expected), (la, lb)
+
+
+@pytest.mark.parametrize("dtype", _numeric_types)
+@pytest.mark.parametrize("shape", [(2, 3), (33, 17), (300, 100), (64, 1000)])
+@pytest.mark.parametrize("layout", ["C", "F", "S"])
+def test_matmul_symmetric(dtype, shape, layout):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    x_np = _binary_matrix(shape, dtype)
+    x = _as_layout(x_np, layout)
+
+    res = dpt.matmul(dpt.matrix_transpose(x), x)
+    assert np.array_equal(dpt.asnumpy(res), np.matmul(x_np.T, x_np))
+
+    res = dpt.matmul(x, dpt.matrix_transpose(x))
+    assert np.array_equal(dpt.asnumpy(res), np.matmul(x_np, x_np.T))
+
+
+@pytest.mark.parametrize("dtype", ["i8", "u8"])
+def test_matmul_symmetric_exact_int(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    # products are not representable in float64, and overflow wraps around
+    x_np = np.array(
+        [[2**62 // 3, 12345], [987654321, 2**62 // 7], [3, -1]], dtype="i8"
+    ).astype(dtype)
+    x = dpt.asarray(x_np)
+
+    res = dpt.matmul(dpt.matrix_transpose(x), x)
+    assert np.array_equal(dpt.asnumpy(res), np.matmul(x_np.T, x_np))
+
+    res = dpt.matmul(x, dpt.matrix_transpose(x))
+    assert np.array_equal(dpt.asnumpy(res), np.matmul(x_np, x_np.T))
+
+
+@pytest.mark.parametrize("dtype", ["i4", "f4", "c16"])
+def test_matmul_batch_layouts(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    cases = [
+        ((4,), (4,), (3, 5, 7)),
+        ((2, 3), (2, 3), (33, 17, 65)),
+        ((5, 1), (1, 6), (8, 8, 8)),
+        ((1,), (7,), (40, 300, 40)),
+        ((3, 2), (3, 2), (1, 64, 50)),
+        ((2, 2), (2, 2), (50, 64, 1)),
+        ((600,), (600,), (4, 9, 4)),
+    ]
+    for batch1, batch2, (n, k, m) in cases:
+        a_np = _binary_matrix(batch1 + (n, k), dtype, seed=1)
+        b_np = _binary_matrix(batch2 + (k, m), dtype, seed=2)
+        expected = np.matmul(a_np, b_np)
+        for la, lb in [("C", "C"), ("F", "T"), ("S", "C"), ("T", "F")]:
+            res = dpt.matmul(_as_layout(a_np, la), _as_layout(b_np, lb))
+            assert np.array_equal(dpt.asnumpy(res), expected), (
+                batch1,
+                batch2,
+                la,
+                lb,
+            )
+
+    # batch dimensions which can not be collapsed into one
+    a_np = _binary_matrix((4, 3, 20, 30), dtype, seed=1)
+    b_np = _binary_matrix((3, 4, 30, 10), dtype, seed=2)
+    a = dpt.permute_dims(dpt.asarray(a_np), (1, 0, 2, 3))[::2]
+    b = dpt.asarray(b_np)[::2]
+    expected = np.matmul(np.transpose(a_np, (1, 0, 2, 3))[::2], b_np[::2])
+    assert np.array_equal(dpt.asnumpy(dpt.matmul(a, b)), expected)
+
+    # batch of symmetric products
+    x_np = _binary_matrix((3, 40, 20), dtype)
+    x = dpt.asarray(x_np)
+    res = dpt.matmul(dpt.matrix_transpose(x), x)
+    assert np.array_equal(
+        dpt.asnumpy(res), np.matmul(np.swapaxes(x_np, -1, -2), x_np)
+    )
+
+
+@pytest.mark.parametrize("dtype", _numeric_types)
+def test_matmul_empty_inner(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    a = dpt.ones((5, 0), dtype=dtype)
+    b = dpt.ones((0, 7), dtype=dtype)
+    res = dpt.matmul(a, b)
+    assert res.shape == (5, 7)
+    assert dpt.all(res == 0)
+
+    a = dpt.ones((3, 5, 0), dtype=dtype)
+    b = dpt.ones((3, 0, 7), dtype=dtype)
+    res = dpt.matmul(a, b)
+    assert res.shape == (3, 5, 7)
+    assert dpt.all(res == 0)
+
+
+@pytest.mark.parametrize("dtype", ["i4", "f4", "c8"])
+def test_tensordot_strided(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    a_np = _binary_matrix((4, 5, 6, 7), dtype, seed=1)
+    b_np = _binary_matrix((6, 7, 3, 2), dtype, seed=2)
+    expected = np.tensordot(a_np, b_np, axes=2)
+
+    # F-contiguous operands flatten into a single row and column stride
+    a = dpt.asarray(a_np, order="F")
+    b = dpt.asarray(b_np, order="F")
+    res = dpt.tensordot(a, b, axes=2)
+    assert np.array_equal(dpt.asnumpy(res), expected)
+
+    # strided operands whose dimensions can not be flattened
+    a_big = np.zeros((4, 5, 12, 7), dtype=dtype)
+    a_big[:, :, ::2] = a_np
+    b_big = np.zeros((6, 14, 3, 2), dtype=dtype)
+    b_big[:, ::2] = b_np
+    a = dpt.asarray(a_big)[:, :, ::2]
+    b = dpt.asarray(b_big)[:, ::2]
+    res = dpt.tensordot(a, b, axes=2)
+    assert np.array_equal(dpt.asnumpy(res), expected)
+
+
+# i4, u4, i8, u8, f4 and f8 results accumulate split k with atomics, the
+# others reduce a temporary
+@pytest.mark.parametrize(
+    "dtype", ["i2", "i4", "u4", "i8", "u8", "f4", "f8", "c8"]
+)
+@pytest.mark.parametrize(
+    "batch, n, k, m",
+    [
+        ((), 64, 2048, 64),
+        ((), 16, 2048, 16),
+        ((), 256, 2048, 1),
+        ((), 1, 2048, 256),
+        ((3,), 32, 2048, 32),
+    ],
+)
+def test_matmul_split_k_strided_out(dtype, batch, n, k, m):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    a_np = _binary_matrix(batch + (n, k), dtype, seed=1)
+    b_np = _binary_matrix(batch + (k, m), dtype, seed=2)
+    expected = np.matmul(a_np, b_np)
+
+    # the result is zeroed before the k-chunks are accumulated into it; this
+    # must leave elements of `big` outside of the view alone
+    big = dpt.full(batch + (2 * n, 3 * m), 7, dtype=dtype)
+    out = big[..., ::-2, ::3]
+    res = dpt.matmul(dpt.asarray(a_np), dpt.asarray(b_np), out=out)
+    assert np.array_equal(dpt.asnumpy(res), expected)
+
+    big_np = np.full(batch + (2 * n, 3 * m), 7, dtype=dtype)
+    big_np[..., ::-2, ::3] = expected
+    assert np.array_equal(dpt.asnumpy(big), big_np)
+
+    # symmetric products only compute the upper triangle
+    if not batch and m != 1 and n != 1:
+        x_np = _binary_matrix((k, n), dtype, seed=3)
+        x = dpt.asarray(x_np)
+        res = dpt.matmul(dpt.matrix_transpose(x), x)
+        assert np.array_equal(dpt.asnumpy(res), x_np.T @ x_np)
+

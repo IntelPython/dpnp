@@ -85,77 +85,27 @@ static dot_product_contig_impl_fn_ptr_t
     dot_product_contig_temps_dispatch_table[td_ns::num_types][td_ns::num_types];
 
 using dpnp::tensor::kernels::gemm_impl_fn_ptr_t;
-static gemm_impl_fn_ptr_t gemm_atomic_dispatch_table[td_ns::num_types]
-                                                    [td_ns::num_types];
+static gemm_impl_fn_ptr_t gemm_dispatch_table[td_ns::num_types]
+                                             [td_ns::num_types];
 
-static gemm_impl_fn_ptr_t gemm_temps_dispatch_table[td_ns::num_types]
+using dpnp::tensor::kernels::gemm_nd_impl_fn_ptr_t;
+static gemm_nd_impl_fn_ptr_t gemm_nd_dispatch_table[td_ns::num_types]
                                                    [td_ns::num_types];
-
-using dpnp::tensor::kernels::gemm_contig_impl_fn_ptr_t;
-static gemm_contig_impl_fn_ptr_t
-    gemm_contig_atomic_dispatch_table[td_ns::num_types][td_ns::num_types];
-
-static gemm_contig_impl_fn_ptr_t
-    gemm_contig_temps_dispatch_table[td_ns::num_types][td_ns::num_types];
-
-using dpnp::tensor::kernels::gemm_batch_impl_fn_ptr_t;
-static gemm_batch_impl_fn_ptr_t
-    gemm_batch_atomic_dispatch_table[td_ns::num_types][td_ns::num_types];
-
-static gemm_batch_impl_fn_ptr_t
-    gemm_batch_temps_dispatch_table[td_ns::num_types][td_ns::num_types];
-
-using dpnp::tensor::kernels::gemm_batch_contig_impl_fn_ptr_t;
-static gemm_batch_contig_impl_fn_ptr_t
-    gemm_batch_contig_atomic_dispatch_table[td_ns::num_types][td_ns::num_types];
-
-static gemm_batch_contig_impl_fn_ptr_t
-    gemm_batch_contig_temps_dispatch_table[td_ns::num_types][td_ns::num_types];
 
 void init_dot_dispatch_tables(void)
 {
     td_ns::DispatchTableBuilder<int, DotTypeMapFactory, td_ns::num_types> dtb1;
     dtb1.populate_dispatch_table(dot_output_id_table);
 
-    td_ns::DispatchTableBuilder<gemm_batch_impl_fn_ptr_t,
-                                GemmBatchAtomicFactory, td_ns::num_types>
+    td_ns::DispatchTableBuilder<gemm_impl_fn_ptr_t, GemmFactory,
+                                td_ns::num_types>
         dtb2;
-    dtb2.populate_dispatch_table(gemm_batch_atomic_dispatch_table);
+    dtb2.populate_dispatch_table(gemm_dispatch_table);
 
-    td_ns::DispatchTableBuilder<gemm_batch_contig_impl_fn_ptr_t,
-                                GemmBatchContigAtomicFactory, td_ns::num_types>
+    td_ns::DispatchTableBuilder<gemm_nd_impl_fn_ptr_t, GemmNdFactory,
+                                td_ns::num_types>
         dtb3;
-    dtb3.populate_dispatch_table(gemm_batch_contig_atomic_dispatch_table);
-
-    td_ns::DispatchTableBuilder<gemm_impl_fn_ptr_t, GemmAtomicFactory,
-                                td_ns::num_types>
-        dtb4;
-    dtb4.populate_dispatch_table(gemm_atomic_dispatch_table);
-
-    td_ns::DispatchTableBuilder<gemm_contig_impl_fn_ptr_t,
-                                GemmContigAtomicFactory, td_ns::num_types>
-        dtb5;
-    dtb5.populate_dispatch_table(gemm_contig_atomic_dispatch_table);
-
-    td_ns::DispatchTableBuilder<gemm_batch_impl_fn_ptr_t, GemmBatchTempsFactory,
-                                td_ns::num_types>
-        dtb6;
-    dtb6.populate_dispatch_table(gemm_batch_temps_dispatch_table);
-
-    td_ns::DispatchTableBuilder<gemm_batch_contig_impl_fn_ptr_t,
-                                GemmBatchContigTempsFactory, td_ns::num_types>
-        dtb7;
-    dtb7.populate_dispatch_table(gemm_batch_contig_temps_dispatch_table);
-
-    td_ns::DispatchTableBuilder<gemm_impl_fn_ptr_t, GemmTempsFactory,
-                                td_ns::num_types>
-        dtb8;
-    dtb8.populate_dispatch_table(gemm_temps_dispatch_table);
-
-    td_ns::DispatchTableBuilder<gemm_contig_impl_fn_ptr_t,
-                                GemmContigTempsFactory, td_ns::num_types>
-        dtb9;
-    dtb9.populate_dispatch_table(gemm_contig_temps_dispatch_table);
+    dtb3.populate_dispatch_table(gemm_nd_dispatch_table);
 
     td_ns::DispatchTableBuilder<dot_product_impl_fn_ptr_t,
                                 DotProductAtomicFactory, td_ns::num_types>
@@ -191,6 +141,48 @@ void init_dot_atomic_support_vector(void)
         dvb;
     dvb.populate_dispatch_vector(dot_atomic_support_vector);
 }
+
+namespace
+{
+
+/*! @brief Compute the stride of the C-order flattened index over dimensions
+ * [begin, end) of an array, if a single stride describes it.
+ *
+ * Dimensions of extent 1 are ignored, and the stride is 0 if all extents are
+ * 1 or if the dimensions have no elements.
+ *
+ * @return false if the dimensions can not be collapsed into one
+ */
+bool collapse_to_single_stride(const py::ssize_t *shape,
+                               const py::ssize_t *strides,
+                               int begin,
+                               int end,
+                               py::ssize_t &stride)
+{
+    stride = 0;
+    bool found = false;
+    py::ssize_t expected_stride = 0;
+    for (int d = end - 1; d >= begin; --d) {
+        if (shape[d] == 0) {
+            stride = 0;
+            return true;
+        }
+        if (shape[d] == 1) {
+            continue;
+        }
+        if (!found) {
+            stride = strides[d];
+            found = true;
+        }
+        else if (strides[d] != expected_stride) {
+            return false;
+        }
+        expected_stride = strides[d] * shape[d];
+    }
+    return true;
+}
+
+} // namespace
 
 std::pair<sycl::event, sycl::event>
     py_dot(const dpnp::tensor::usm_ndarray &x1,
@@ -506,40 +498,57 @@ std::pair<sycl::event, sycl::event>
         host_task_events.push_back(temp_cleanup_ev);
     }
     else { // if (!call_vecdot)
-        if (!call_batched) {
-            if ((is_x1_c_contig && is_x2_c_contig && is_dst_c_contig)) {
-                gemm_contig_impl_fn_ptr_t fn = nullptr;
-                if (supports_atomics) {
-                    fn =
-                        gemm_contig_atomic_dispatch_table[x1_typeid][x2_typeid];
-                }
-                else {
-                    fn = gemm_contig_temps_dispatch_table[x1_typeid][x2_typeid];
-                }
-                if (fn != nullptr) {
-                    dot_ev = fn(exec_q, x1_data, x2_data, dst_data,
-                                x1_outer_nelems, // n
-                                inner_nelems,    // k
-                                x2_outer_nelems, // m
-                                depends);
-                    return std::make_pair(dpnp::utils::keep_args_alive(
-                                              exec_q, {x1, x2, dst}, {dot_ev}),
-                                          dot_ev);
-                }
+        // Each batch element of x1 is an (n, k) matrix whose rows flatten
+        // the outer dimensions and columns flatten the inner dimensions,
+        // likewise x2 is (k, m) and dst is (n, m). Describe each by a single
+        // row and a single column stride if possible.
+        using dpnp::tensor::kernels::GemmMatrixStrides;
+        GemmMatrixStrides lhs_strides{0, 0};
+        GemmMatrixStrides rhs_strides{0, 0};
+        GemmMatrixStrides res_strides{0, 0};
+
+        const int x1_cols_begin = batch_dims + x1_outer_dims;
+        const int x2_cols_begin = batch_dims + inner_dims;
+        const int dst_cols_begin = batch_dims + x1_outer_dims;
+
+        const py::ssize_t *x1_strides_ptr = x1_strides_vec.data();
+        const py::ssize_t *x2_strides_ptr = x2_strides_vec.data();
+        const py::ssize_t *dst_strides_ptr = dst_strides_vec.data();
+
+        const bool collapsible =
+            collapse_to_single_stride(x1_shape_ptr, x1_strides_ptr, batch_dims,
+                                      x1_cols_begin, lhs_strides.row_stride) &&
+            collapse_to_single_stride(x1_shape_ptr, x1_strides_ptr,
+                                      x1_cols_begin, x1_nd,
+                                      lhs_strides.col_stride) &&
+            collapse_to_single_stride(x2_shape_ptr, x2_strides_ptr, batch_dims,
+                                      x2_cols_begin, rhs_strides.row_stride) &&
+            collapse_to_single_stride(x2_shape_ptr, x2_strides_ptr,
+                                      x2_cols_begin, x2_nd,
+                                      rhs_strides.col_stride) &&
+            collapse_to_single_stride(dst_shape_ptr, dst_strides_ptr,
+                                      batch_dims, dst_cols_begin,
+                                      res_strides.row_stride) &&
+            collapse_to_single_stride(dst_shape_ptr, dst_strides_ptr,
+                                      dst_cols_begin, dst_nd,
+                                      res_strides.col_stride);
+
+        if (!collapsible) {
+            if (call_batched) {
+                throw std::runtime_error(
+                    "Batched matrix product requires operands whose outer and "
+                    "inner dimensions can be flattened");
             }
-            gemm_impl_fn_ptr_t fn = nullptr;
-            if (supports_atomics) {
-                fn = gemm_atomic_dispatch_table[x1_typeid][x2_typeid];
-            }
+
+            gemm_nd_impl_fn_ptr_t fn =
+                gemm_nd_dispatch_table[x1_typeid][x2_typeid];
             if (fn == nullptr) {
-                fn = gemm_temps_dispatch_table[x1_typeid][x2_typeid];
-                if (fn == nullptr) {
-                    throw std::runtime_error(
-                        "Implementation is missing for x1_typeid=" +
-                        std::to_string(x1_typeid) +
-                        " and x2_typeid=" + std::to_string(x2_typeid));
-                }
+                throw std::runtime_error(
+                    "Implementation is missing for x1_typeid=" +
+                    std::to_string(x1_typeid) +
+                    " and x2_typeid=" + std::to_string(x2_typeid));
             }
+
             using dpnp::tensor::offset_utils::device_allocate_and_pack;
             auto ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
                 exec_q, host_task_events, x1_shape_vec, x1_strides_vec,
@@ -562,215 +571,116 @@ std::pair<sycl::event, sycl::event>
             all_deps.insert(all_deps.end(), depends.begin(), depends.end());
             all_deps.push_back(copy_shapes_strides_ev);
 
-            // change gemm calls to pass inner dims and outer dims separately
-            dot_ev =
-                fn(exec_q, x1_data, x2_data, dst_data, x1_outer_nelems,
-                   inner_nelems, x2_outer_nelems, inner_dims, x1_outer_dims,
-                   x1_shape_strides, x2_outer_dims, x2_shape_strides,
-                   x1_outer_dims + x2_outer_dims, dst_shape_strides, all_deps);
+            dot_ev = fn(exec_q, x1_data, x2_data, dst_data, x1_outer_nelems,
+                        inner_nelems, x2_outer_nelems, inner_dims,
+                        x1_outer_dims, x1_shape_strides, x2_outer_dims,
+                        x2_shape_strides, x1_outer_dims + x2_outer_dims,
+                        dst_shape_strides, supports_atomics, all_deps);
 
             sycl::event cleanup_tmp_allocations_ev =
                 dpnp::tensor::alloc_utils::async_smart_free(
                     exec_q, {dot_ev}, packed_shapes_strides_owner);
             host_task_events.push_back(cleanup_tmp_allocations_ev);
+
+            return std::make_pair(dpnp::utils::keep_args_alive(
+                                      exec_q, {x1, x2, dst}, host_task_events),
+                                  dot_ev);
         }
-        else { // if (call_batched)
-            using shT = std::vector<py::ssize_t>;
-            // temporary asserts for matmul
-            assert(x1_outer_dims == 1);
-            assert(x2_outer_dims == 1);
-            assert(inner_dims == 1);
 
-            if ((is_x1_c_contig && is_x2_c_contig && is_dst_c_contig)) {
-                gemm_batch_contig_impl_fn_ptr_t fn = nullptr;
-                if (supports_atomics) {
-                    fn = gemm_batch_contig_atomic_dispatch_table[x1_typeid]
-                                                                [x2_typeid];
-                }
-                else {
-                    fn = gemm_batch_contig_temps_dispatch_table[x1_typeid]
-                                                               [x2_typeid];
-                }
-                if (fn != nullptr) {
-                    static constexpr py::ssize_t zero_offset = 0;
-                    dot_ev = fn(exec_q, x1_data, x2_data, dst_data, batches,
-                                x1_outer_nelems, // n
-                                inner_nelems,    // k
-                                x2_outer_nelems, // m
-                                zero_offset, zero_offset, zero_offset, depends);
-                    return std::make_pair(dpnp::utils::keep_args_alive(
-                                              exec_q, {x1, x2, dst}, {dot_ev}),
-                                          dot_ev);
-                }
-            }
+        gemm_impl_fn_ptr_t fn = gemm_dispatch_table[x1_typeid][x2_typeid];
+        if (fn == nullptr) {
+            throw std::runtime_error(
+                "Implementation is missing for x1_typeid=" +
+                std::to_string(x1_typeid) +
+                " and x2_typeid=" + std::to_string(x2_typeid));
+        }
 
-            auto x1_outer_inner_dims = x1_nd - batch_dims;
-            auto x2_outer_inner_dims = x2_nd - batch_dims;
-            auto dst_outer_inner_dims = dst_nd - batch_dims;
+        // x1 @ x2 is symmetric if x1[b](i, s) and x2[b](s, i) are the same
+        // element, e.g. for x.T @ x and x @ x.T
+        const bool symmetric =
+            (x1_data == x2_data) && (x1_typeid == x2_typeid) &&
+            (x1_outer_nelems == x2_outer_nelems) &&
+            (lhs_strides.row_stride == rhs_strides.col_stride) &&
+            (lhs_strides.col_stride == rhs_strides.row_stride) &&
+            std::equal(x1_strides_vec.begin(),
+                       x1_strides_vec.begin() + batch_dims,
+                       x2_strides_vec.begin());
 
-            shT batch_x1_shape;
-            shT outer_inner_x1_shape;
-            shT batch_x1_strides;
-            shT outer_inner_x1_strides;
-            split_iteration_space(x1_shape_vec, x1_strides_vec, batch_dims,
-                                  batch_dims + x1_outer_inner_dims,
-                                  // 4 vectors modified
-                                  batch_x1_shape, outer_inner_x1_shape,
-                                  batch_x1_strides, outer_inner_x1_strides);
+        using dpnp::tensor::kernels::GemmBatchLayout;
+        GemmBatchLayout batch_layout{};
 
-            shT batch_x2_shape;
-            shT outer_inner_x2_shape;
-            shT batch_x2_strides;
-            shT outer_inner_x2_strides;
-            split_iteration_space(x2_shape_vec, x2_strides_vec, batch_dims,
-                                  batch_dims + x2_outer_inner_dims,
-                                  // 4 vectors modified
-                                  batch_x2_shape, outer_inner_x2_shape,
-                                  batch_x2_strides, outer_inner_x2_strides);
+        using shT = std::vector<py::ssize_t>;
+        shT simplified_batch_shape;
+        shT simplified_batch_x1_strides;
+        shT simplified_batch_x2_strides;
+        shT simplified_batch_dst_strides;
 
-            shT batch_dst_shape;
-            shT outer_inner_dst_shape;
-            shT batch_dst_strides;
-            shT outer_inner_dst_strides;
-            split_iteration_space(dst_shape_vec, dst_strides_vec, batch_dims,
-                                  batch_dims + dst_outer_inner_dims,
-                                  // 4 vectors modified
-                                  batch_dst_shape, outer_inner_dst_shape,
-                                  batch_dst_strides, outer_inner_dst_strides);
-
-            using shT = std::vector<py::ssize_t>;
-            shT simplified_batch_shape;
-            shT simplified_batch_x1_strides;
-            shT simplified_batch_x2_strides;
-            shT simplified_batch_dst_strides;
-            py::ssize_t x1_batch_offset(0);
-            py::ssize_t x2_batch_offset(0);
-            py::ssize_t dst_batch_offset(0);
-
-            const py::ssize_t *shape = x1_shape_ptr;
+        int batch_nd = batch_dims;
+        if (batch_nd > 0) {
+            const shT batch_x1_strides(x1_strides_vec.begin(),
+                                       x1_strides_vec.begin() + batch_dims);
+            const shT batch_x2_strides(x2_strides_vec.begin(),
+                                       x2_strides_vec.begin() + batch_dims);
+            const shT batch_dst_strides(dst_strides_vec.begin(),
+                                        dst_strides_vec.begin() + batch_dims);
 
             simplify_iteration_space_3(
-                batch_dims, shape, batch_x1_strides, batch_x2_strides,
+                batch_nd, x1_shape_ptr, batch_x1_strides, batch_x2_strides,
                 batch_dst_strides,
                 // outputs
                 simplified_batch_shape, simplified_batch_x1_strides,
                 simplified_batch_x2_strides, simplified_batch_dst_strides,
-                x1_batch_offset, x2_batch_offset, dst_batch_offset);
-
-            if (batch_dims == 1 && x1_outer_dims == 1 && x2_outer_dims == 1 &&
-                inner_dims == 1) {
-                bool gemm_batch_c_contig = false;
-
-                if ((static_cast<std::size_t>(outer_inner_x1_strides[0]) ==
-                         inner_nelems &&
-                     outer_inner_x1_strides[1] == 1) &&
-                    (static_cast<std::size_t>(outer_inner_x2_strides[0]) ==
-                         inner_nelems &&
-                     outer_inner_x2_strides[1] == 1) &&
-                    (static_cast<std::size_t>(outer_inner_dst_strides[0]) ==
-                         x2_outer_nelems &&
-                     outer_inner_dst_strides[1] == 1)) {
-                    gemm_batch_c_contig =
-                        (static_cast<std::size_t>(
-                             simplified_batch_x1_strides[0]) ==
-                         x1_outer_nelems * inner_nelems) &&
-                        (static_cast<std::size_t>(
-                             simplified_batch_x2_strides[0]) ==
-                         x2_outer_nelems * inner_nelems) &&
-                        (static_cast<std::size_t>(
-                             simplified_batch_dst_strides[0]) ==
-                         x1_outer_nelems * x2_outer_nelems);
-                }
-
-                if (gemm_batch_c_contig) {
-                    gemm_batch_contig_impl_fn_ptr_t fn = nullptr;
-                    if (supports_atomics) {
-                        fn = gemm_batch_contig_atomic_dispatch_table[x1_typeid]
-                                                                    [x2_typeid];
-                    }
-                    else {
-                        fn = gemm_batch_contig_temps_dispatch_table[x1_typeid]
-                                                                   [x2_typeid];
-                    }
-                    if (fn != nullptr) {
-                        dot_ev = fn(exec_q, x1_data, x2_data, dst_data, batches,
-                                    x1_outer_nelems, // n
-                                    inner_nelems,    // k
-                                    x2_outer_nelems, // m
-                                    x1_batch_offset, x2_batch_offset,
-                                    dst_batch_offset, depends);
-                        return std::make_pair(
-                            dpnp::utils::keep_args_alive(exec_q, {x1, x2, dst},
-                                                         {dot_ev}),
-                            dot_ev);
-                    }
-                }
-            }
-
-            gemm_batch_impl_fn_ptr_t fn = nullptr;
-            if (supports_atomics) {
-                fn = gemm_batch_atomic_dispatch_table[x1_typeid][x2_typeid];
-            }
-            if (fn == nullptr) {
-                fn = gemm_batch_temps_dispatch_table[x1_typeid][x2_typeid];
-                if (fn == nullptr) {
-                    throw std::runtime_error(
-                        "Implementation is missing for x1_typeid=" +
-                        std::to_string(x1_typeid) +
-                        " and x2_typeid=" + std::to_string(x2_typeid));
-                }
-            }
-            using dpnp::tensor::offset_utils::device_allocate_and_pack;
-            auto ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
-                exec_q, host_task_events, simplified_batch_shape,
-                simplified_batch_x1_strides, simplified_batch_x2_strides,
-                simplified_batch_dst_strides, outer_inner_x1_shape,
-                outer_inner_x1_strides, outer_inner_x2_shape,
-                outer_inner_x2_strides, outer_inner_dst_shape,
-                outer_inner_dst_strides,
-                // full shape and strides of the result array
-                // necessary for reduction and initialization
-                simplified_batch_shape, outer_inner_dst_shape,
-                simplified_batch_dst_strides, outer_inner_dst_strides);
-            auto packed_shapes_strides_owner =
-                std::move(std::get<0>(ptr_size_event_tuple1));
-            sycl::event copy_shapes_strides_ev =
-                std::get<2>(ptr_size_event_tuple1);
-            const py::ssize_t *packed_shapes_strides =
-                packed_shapes_strides_owner.get();
-
-            const auto batch_shape_strides = packed_shapes_strides;
-            const auto x1_outer_inner_shapes_strides =
-                packed_shapes_strides + 4 * batch_dims;
-            const auto x2_outer_inner_shapes_strides =
-                packed_shapes_strides + 4 * batch_dims +
-                2 * (x1_outer_inner_dims);
-            const auto dst_outer_shapes_strides =
-                packed_shapes_strides + 4 * batch_dims +
-                2 * (x1_outer_inner_dims) + 2 * (x2_outer_inner_dims);
-            const auto dst_full_shape_strides =
-                packed_shapes_strides + 4 * batch_dims +
-                2 * (x1_outer_inner_dims) + 2 * (x2_outer_inner_dims) +
-                2 * (dst_outer_inner_dims);
-
-            std::vector<sycl::event> all_deps;
-            all_deps.reserve(depends.size() + 1);
-            all_deps.insert(all_deps.end(), depends.begin(), depends.end());
-            all_deps.push_back(copy_shapes_strides_ev);
-
-            dot_ev = fn(
-                exec_q, x1_data, x2_data, dst_data, batches, x1_outer_nelems,
-                inner_nelems, x2_outer_nelems, batch_dims, batch_shape_strides,
-                x1_batch_offset, x2_batch_offset, dst_batch_offset, inner_dims,
-                x1_outer_dims, x1_outer_inner_shapes_strides, x2_outer_dims,
-                x2_outer_inner_shapes_strides, x1_outer_dims + x2_outer_dims,
-                dst_outer_shapes_strides, dst_full_shape_strides, all_deps);
-
-            sycl::event cleanup_tmp_allocations_ev =
-                dpnp::tensor::alloc_utils::async_smart_free(
-                    exec_q, {dot_ev}, packed_shapes_strides_owner);
-            host_task_events.push_back(cleanup_tmp_allocations_ev);
+                batch_layout.lhs_offset, batch_layout.rhs_offset,
+                batch_layout.res_offset);
         }
+
+        if (batch_nd == 1) {
+            batch_layout.nd = 1;
+            batch_layout.lhs_stride = simplified_batch_x1_strides[0];
+            batch_layout.rhs_stride = simplified_batch_x2_strides[0];
+            batch_layout.res_stride = simplified_batch_dst_strides[0];
+        }
+
+        if (batch_nd <= 1) {
+            dot_ev = fn(exec_q, x1_data, x2_data, dst_data, batches,
+                        x1_outer_nelems, // n
+                        inner_nelems,    // k
+                        x2_outer_nelems, // m
+                        batch_layout, lhs_strides, rhs_strides, res_strides,
+                        symmetric, supports_atomics, depends);
+            return std::make_pair(dpnp::utils::keep_args_alive(
+                                      exec_q, {x1, x2, dst}, {dot_ev}),
+                                  dot_ev);
+        }
+
+        using dpnp::tensor::offset_utils::device_allocate_and_pack;
+        auto ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
+            exec_q, host_task_events, simplified_batch_shape,
+            simplified_batch_x1_strides, simplified_batch_x2_strides,
+            simplified_batch_dst_strides);
+        auto packed_shapes_strides_owner =
+            std::move(std::get<0>(ptr_size_event_tuple1));
+        sycl::event copy_shapes_strides_ev = std::get<2>(ptr_size_event_tuple1);
+
+        batch_layout.nd = batch_nd;
+        batch_layout.packed_shape_strides = packed_shapes_strides_owner.get();
+
+        std::vector<sycl::event> all_deps;
+        all_deps.reserve(depends.size() + 1);
+        all_deps.insert(all_deps.end(), depends.begin(), depends.end());
+        all_deps.push_back(copy_shapes_strides_ev);
+
+        dot_ev = fn(exec_q, x1_data, x2_data, dst_data, batches,
+                    x1_outer_nelems, // n
+                    inner_nelems,    // k
+                    x2_outer_nelems, // m
+                    batch_layout, lhs_strides, rhs_strides, res_strides,
+                    symmetric, supports_atomics, all_deps);
+
+        sycl::event cleanup_tmp_allocations_ev =
+            dpnp::tensor::alloc_utils::async_smart_free(
+                exec_q, {dot_ev}, packed_shapes_strides_owner);
+        host_task_events.push_back(cleanup_tmp_allocations_ev);
     }
     return std::make_pair(
         dpnp::utils::keep_args_alive(exec_q, {x1, x2, dst}, host_task_events),
