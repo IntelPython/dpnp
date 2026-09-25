@@ -1176,10 +1176,17 @@
             <span class="c1"># or as USM memory allocation</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">):</span>
                 <span class="n">buffer</span> <span class="o">=</span> <span class="n">buffer</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span>
-                <span class="n">offset</span> <span class="o">+=</span> <span class="n">buffer</span><span class="o">.</span><span class="n">_element_offset</span>
 
-            <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="s2">"dtype"</span><span class="p">):</span>
-                <span class="n">dtype</span> <span class="o">=</span> <span class="n">buffer</span><span class="o">.</span><span class="n">dtype</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+                <span class="c1"># a `usm_ndarray` is the only supported buffer carrying a</span>
+                <span class="c1"># dtype, USM memory allocations and `usm_type` strings do not</span>
+                <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">dtype</span> <span class="o">=</span> <span class="n">buffer</span><span class="o">.</span><span class="n">dtype</span>
+
+                <span class="c1"># `_element_offset` is in buffer-dtype units, while the ctor's</span>
+                <span class="c1"># `offset` is in `dtype` units, so it has to be rescaled</span>
+                <span class="c1"># through bytes</span>
+                <span class="n">offset</span> <span class="o">+=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_rescaled_element_offset</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">buffer</span> <span class="o">=</span> <span class="n">usm_type</span>
 
@@ -1722,6 +1729,28 @@
         <span class="n">res</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">_set_namespace</span><span class="p">(</span><span class="n">dpnp</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">res</span>
 
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_rescaled_element_offset</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">,</span> <span class="n">new_dtype</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return the element offset of `usm_ary` within its USM allocation,</span>
+<span class="sd">        expressed in units of `new_dtype`.</span>
+
+<span class="sd">        The offset carried by :attr:`usm_ndarray._element_offset` is in units</span>
+<span class="sd">        of the array's own dtype, so it has to be rescaled through bytes</span>
+<span class="sd">        whenever `new_dtype` has a different itemsize.</span>
+
+<span class="sd">        """</span>
+
+        <span class="n">byte_offset</span> <span class="o">=</span> <span class="n">usm_ary</span><span class="o">.</span><span class="n">_element_offset</span> <span class="o">*</span> <span class="n">usm_ary</span><span class="o">.</span><span class="n">itemsize</span>
+        <span class="n">offset</span><span class="p">,</span> <span class="n">rem</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">byte_offset</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">new_dtype</span><span class="p">)</span><span class="o">.</span><span class="n">itemsize</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rem</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">"The offset of the array data in memory is not a multiple "</span>
+                <span class="s2">"of the new data type size and so the requested view is "</span>
+                <span class="s2">"not possible"</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">offset</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array_class</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">strides</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Create a view of an array with the specified class.</span>
@@ -1754,15 +1783,7 @@
 
         <span class="c1"># `buffer=self._array_obj` views the whole USM allocation, so `self`'s</span>
         <span class="c1"># element offset within it must be forwarded explicitly</span>
-
-        <span class="n">byte_offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">_element_offset</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">itemsize</span>
-        <span class="n">offset</span><span class="p">,</span> <span class="n">rem</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">byte_offset</span><span class="p">,</span> <span class="n">new_itemsize</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">rem</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">"The offset of the array data in memory is not a multiple "</span>
-                <span class="s2">"of the new data type size and so the requested view is "</span>
-                <span class="s2">"not possible"</span>
-            <span class="p">)</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_rescaled_element_offset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
 
         <span class="c1"># create the underlying usm_ndarray view</span>
         <span class="n">usm_view</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">(</span>
