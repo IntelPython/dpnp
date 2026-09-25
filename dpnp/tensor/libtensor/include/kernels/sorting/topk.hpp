@@ -506,8 +506,7 @@ sycl::event topk_radix_impl(sycl::queue &exec_q,
     return cleanup_ev;
 }
 
-/*! @brief top k by radix selection, the k elements of each row are not
- * sorted */
+// the order of the k elements of each row is unspecified
 template <typename argTy, typename IndexTy>
 sycl::event
     topk_radix_select_impl(sycl::queue &exec_q,

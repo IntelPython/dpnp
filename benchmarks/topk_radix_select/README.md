@@ -2,8 +2,9 @@
 
 These scripts measure `dpnp.tensor.top_k` with radix select and check its
 results. The measurements chose the design and the routing in
-`topk.cpp`, which uses merge sort for rows shorter than 16 elements and for
-complex types.
+`topk.cpp`, which uses radix select for every real type and merge sort for
+complex types. Merge sort used to take rows shorter than 16 elements as
+well, until the sub-group kernel (see `sgn`) beat it on those.
 
 | file | what it does |
 | --- | --- |
@@ -15,7 +16,7 @@ complex types.
 | `check_long.py` | long rows (up to 2**22) with NaNs and signed zeros |
 | `make_root.sh` | makes a build root, see below |
 | `build_so.sh` | builds only the sorting extension of another checkout |
-| `algo_switch.py` | adds the temporary `DPNP_TOPK_ALGO=select\|merge\|sort` switch for the `algo` suites |
+| `algo_switch.py` | adds the temporary `DPNP_TOPK_ALGO=select\|merge\|sort` and `DPNP_TOPK_SG_MAX_N` switches for the `algo`, `rowsn` and `sgn` suites |
 
 ## Suites
 
@@ -37,9 +38,10 @@ ROW_SCALE=64 ./run_all.sh kn    # 64 times the rows, see "Data size"
 | `kn` | new vs master, k close to n | n = 16 to 4096, k = n/2, 3n/4, 7n/8, n-1, n |
 | `small` | new vs master on very short rows | n = 8 to 48, k = 1 to n |
 | `long` | new vs master on a few very long rows with k near n | n = 2\*\*20 to 2\*\*28, 1 to 64 rows, k = n/2 to n |
-| `algo` | radix select vs merge sort, used to set the threshold of 16 | n = 4 to 32, many and few rows |
+| `algo` | radix select vs merge sort, set the former threshold of 16 | n = 4 to 32, many and few rows |
 | `algo3` | radix select vs merge sort vs radix sort, including bool, i1 and u1 | n = 4 to 48; n = 64 to 256 with k = 1 to n; k near n up to n = 4096 |
 | `rowsn` | the same three, varying rows and n independently | n fixed at 64/256 over 8192 to 2M rows, rows fixed at 64K/1M over n = 16 to 1024 |
+| `sgn` | the sub-group per row kernel vs the work-group per row one, radix sort and merge sort | n = 4 to 128, k = 1, n/2, n |
 
 `long` is the worst case for a selection algorithm: at k = n nothing can be
 discarded, so it does a full sort's work and pays for the digit passes on top.
@@ -49,6 +51,17 @@ fixed floor, so for 1-byte keys the winner should follow the row count rather
 than n — but every case in `algo3` holds 4M elements, where "rows above ~50000"
 and "n below ~96" are the same line. `long` and `rowsn` choose their sizes on
 purpose and ignore `ROW_SCALE`.
+
+Those 17 ns are the cost of a work-group per row, which is what every row
+under 2\*\*16 got: short rows were bound by scheduling work-groups, at 0.2 to
+10% of peak bandwidth, and a GPU with more compute units didn't make them
+faster. Rows of up to `sub_group_max_n` (64) elements now go to a kernel
+that ranks each row within one sub-group instead, many rows to a
+work-group. `sgn` finds where that bound belongs: its `sg` variant gives the
+sub-group kernel every row it can hold (`sub_group_max_chunks` times the
+device's smallest sub-group size, 128 on a device whose smallest is 16) and
+`wg` gives it none. `rowsn`, `algo` and `algo3` results from before this
+kernel measured the work-group kernel on those rows.
 
 How many calls each measurement times follows from how long a call takes:
 about `SWEEP_BUDGET` (3) seconds per variant, at most `SWEEP_NIT` (15) and at
@@ -195,7 +208,9 @@ development tree itself, the usual rebuild is enough:
 `ninja -C _skbuild/<platform>/cmake-build _tensor_sorting_impl`. After that,
 copy the new `.so` into `dpnp/tensor/`.
 
-`DPNP_TOPK_ALGO` is only read by a build with `algo_switch.py` applied.
+`DPNP_TOPK_ALGO` and `DPNP_TOPK_SG_MAX_N` (the longest rows given to the
+sub-group kernel, `0` for none) are only read by a build with
+`algo_switch.py` applied.
 `run_all.sh` refuses an `ALGO_ROOT` whose extension doesn't contain the
 switch. Without the switch, all the variants would run the same code.
 `algo_switch.py` edits `topk.cpp` in place by matching the two places it

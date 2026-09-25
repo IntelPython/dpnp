@@ -29,9 +29,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines utilities shared by radix-based algorithms: bitwise
-/// order-preserving conversions to unsigned integer keys, bucket helpers and
-/// value projections.
+/// This file defines utilities shared by radix sort and select kernels.
 //===----------------------------------------------------------------------===//
 
 #pragma once
@@ -304,13 +302,9 @@ T normalize_signed_zero(T val)
     }
 }
 
-/*! @brief Order-preserving unsigned key of `val`.
- *
- * Unlike `order_preserving_cast`, which gives -0.0 and +0.0 distinct keys,
- * keys are equal exactly when the values compare equal (all NaNs are equal
- * and order after any other value). Algorithms which must resolve ties the
- * way a stable comparison sort does, such as selection, need this.
- */
+/*! @brief Order-preserving unsigned key of `val`, unlike
+ * `order_preserving_cast` equal exactly when the values compare equal, so that
+ * -0.0 and +0.0 as well as all NaNs share a key */
 template <bool is_ascending, typename T>
 radix_key_t<T> ordered_radix_key(const T &val)
 {

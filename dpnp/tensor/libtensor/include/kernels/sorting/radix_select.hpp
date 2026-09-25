@@ -29,17 +29,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines kernels selecting the k smallest elements of each row of
-/// a C-contiguous array with an MSD radix select.
-///
-/// Each pass histograms one 8-bit digit of the keys which share the prefix
-/// resolved so far and picks the bucket holding the k-th smallest key. Once
-/// the prefix of the k-th key is known, the elements with a smaller prefix
-/// and the first elements (in index order) sharing it are gathered. Rows are
-/// processed either by a single work-group running all passes in one kernel,
-/// or, for few long rows, by several work-groups per row with one kernel per
-/// pass: the last work-group of a row to finish a pass reduces the
-/// work-groups' histograms and publishes the state for the next pass.
+/// This file defines MSD radix select kernels for tensor topk operation.
 //===----------------------------------------------------------------------===//
 
 #pragma once
@@ -75,23 +65,19 @@ constexpr std::uint32_t n_radix_passes()
 /*! @brief Bucket holding the element of a given rank */
 struct bucket_info
 {
-    std::uint32_t bin;
-    // number of elements in buckets preceding `bin`
+    std::uint32_t bucket_id;
+    // number of elements in buckets preceding `bucket_id`
     std::uint64_t before;
-    // number of elements in `bin`
+    // number of elements in `bucket_id`
     std::uint64_t count;
 };
 
 //-----------------------------------------------------------------------
-// work-group level building blocks
+// radix select: work-group level building blocks
 //-----------------------------------------------------------------------
 
-/*! @brief Adds to the local histogram `hist` the digits at `shift` of the
- * keys in `[begin, end)` whose prefix selected by `mask` is `desired`.
- *
- * `hist` must be zeroed by the caller; its work-group sees the complete counts
- * only after a barrier.
- */
+/*! @brief Adds to the zeroed local histogram `hist` the digits at `shift` of
+ * the keys in `[begin, end)` whose prefix under `mask` is `desired` */
 template <typename KeyT, typename KeyFnT, typename HistAccT>
 void count_digits(const sycl::nd_item<1> &ndit,
                   const KeyFnT &key_fn,
@@ -115,33 +101,30 @@ void count_digits(const sycl::nd_item<1> &ndit,
         const std::size_t i = i0 + lid;
 
         bool match = false;
-        std::uint32_t bin = 0;
+        std::uint32_t bucket_id = 0;
         if (i < end) {
             const KeyT key = key_fn(i);
             match = ((key & mask) == desired);
-            bin = radix_utils::get_bucket_id<radix_mask>(key, shift);
+            bucket_id = radix_utils::get_bucket_id<radix_mask>(key, shift);
         }
 
         // a sub-group whose keys all land in one bucket, as for runs of
         // equal values, makes one update instead of contending sg_size times
-        const std::uint32_t leader_bin = sycl::group_broadcast(sg, bin);
-        if (sycl::all_of_group(sg, match && (bin == leader_bin))) {
+        const std::uint32_t leader_bucket_id =
+            sycl::group_broadcast(sg, bucket_id);
+        if (sycl::all_of_group(sg, match && (bucket_id == leader_bucket_id))) {
             if (sg.leader()) {
-                AtomicT(hist[bin]).fetch_add(sg_size);
+                AtomicT(hist[bucket_id]).fetch_add(sg_size);
             }
         }
         else if (match) {
-            AtomicT(hist[bin]).fetch_add(std::uint32_t(1));
+            AtomicT(hist[bucket_id]).fetch_add(std::uint32_t(1));
         }
     }
 }
 
-/*! @brief Finds the bucket of the histogram `hist` which holds the element
- * of (1-based) rank `rank`.
- *
- * `hist` must be complete in all work-items. `result` is local scratch
- * memory for a single `bucket_info`.
- */
+/*! @brief Finds the bucket of the complete local histogram `hist` holding
+ * the element of 1-based rank `rank` */
 template <typename HistAccT, typename ResultAccT>
 bucket_info find_bucket(const sycl::nd_item<1> &ndit,
                         const HistAccT &hist,
@@ -151,13 +134,14 @@ bucket_info find_bucket(const sycl::nd_item<1> &ndit,
     const std::uint32_t lid = ndit.get_local_linear_id();
     const std::uint32_t wg_size = ndit.get_local_range(0);
 
-    const std::uint32_t bins_per_wi = (radix_states + wg_size - 1) / wg_size;
-    const std::uint32_t bin_begin = std::min(lid * bins_per_wi, radix_states);
-    const std::uint32_t bin_end =
-        std::min(bin_begin + bins_per_wi, radix_states);
+    const std::uint32_t buckets_per_wi = (radix_states + wg_size - 1) / wg_size;
+    const std::uint32_t bucket_begin =
+        std::min(lid * buckets_per_wi, radix_states);
+    const std::uint32_t bucket_end =
+        std::min(bucket_begin + buckets_per_wi, radix_states);
 
     std::uint64_t wi_count = 0;
-    for (std::uint32_t b = bin_begin; b < bin_end; ++b) {
+    for (std::uint32_t b = bucket_begin; b < bucket_end; ++b) {
         wi_count += hist[b];
     }
 
@@ -165,7 +149,7 @@ bucket_info find_bucket(const sycl::nd_item<1> &ndit,
         ndit.get_group(), wi_count, sycl::plus<std::uint64_t>());
 
     // exactly one work-item owns the bucket in which the prefix crosses rank
-    for (std::uint32_t b = bin_begin; b < bin_end; ++b) {
+    for (std::uint32_t b = bucket_begin; b < bucket_end; ++b) {
         const std::uint64_t c = hist[b];
         if (prefix < rank && rank <= prefix + c) {
             result[0] = bucket_info{b, prefix, c};
@@ -178,19 +162,9 @@ bucket_info find_bucket(const sycl::nd_item<1> &ndit,
     return result[0];
 }
 
-/*! @brief Passes the selected elements `i` of `[begin, end)` to
- * `less_out(j, i)` and `tie_out(j, i)`.
- *
- * An element is selected when its prefix selected by `mask` is smaller than
- * `desired` ("less"), or equal to it ("tie") and fewer than `n_ties` ties
- * precede it in the row. `j` is `less_offset` plus the rank of a less element
- * in index order among the less elements of `[begin, end)`, or the rank of a
- * tie among the ties of the row, so ties are resolved the way a stable sort
- * resolves them.
- *
- * @param n_less   number of less elements in `[begin, end)`
- * @param n_ties_before  number of ties in the row preceding `begin`
- */
+/*! @brief Passes the elements `i` of `[begin, end)` whose prefix under `mask`
+ * is less than `desired` to `less_out(j, i)`, and the first `n_ties` of the
+ * row equal to it to `tie_out(j, i)`, `j` being their rank in index order */
 template <std::uint32_t elems_per_wi,
           typename KeyT,
           typename KeyFnT,
@@ -202,9 +176,9 @@ void gather_selected(const sycl::nd_item<1> &ndit,
                      std::size_t end,
                      KeyT desired,
                      KeyT mask,
-                     std::uint64_t less_offset,
-                     std::uint64_t n_less,
-                     std::uint64_t n_ties_before,
+                     std::uint64_t less_offset,   // rank of first less
+                     std::uint64_t n_less,        // less in range
+                     std::uint64_t n_ties_before, // ties before begin
                      std::uint64_t n_ties,
                      const LessOutT &less_out,
                      const TieOutT &tie_out)
@@ -217,7 +191,7 @@ void gather_selected(const sycl::nd_item<1> &ndit,
 
     const auto &wg = ndit.get_group();
     const auto &sg = ndit.get_sub_group();
-    const std::uint32_t lane = sg.get_local_linear_id();
+    const std::uint32_t lane_id = sg.get_local_linear_id();
     const std::uint32_t sg_size = sg.get_local_linear_range();
     const std::size_t lid = ndit.get_local_linear_id();
     const std::size_t wg_size = ndit.get_local_range(0);
@@ -225,7 +199,7 @@ void gather_selected(const sycl::nd_item<1> &ndit,
     // each sub-group processes a contiguous piece of the tile, so that
     // elements are ranked in index order
     const std::size_t tile_size = wg_size * elems_per_wi;
-    const std::size_t sg_tile_offset = (lid - lane) * elems_per_wi;
+    const std::size_t sg_tile_offset = (lid - lane_id) * elems_per_wi;
 
     std::uint64_t less_done = 0;
     std::uint64_t ties_done = 0;
@@ -241,7 +215,7 @@ void gather_selected(const sycl::nd_item<1> &ndit,
         std::uint32_t sg_count = 0;
 #pragma unroll
         for (std::uint32_t j = 0; j < elems_per_wi; ++j) {
-            const std::size_t i = sg_begin + j * sg_size + lane;
+            const std::size_t i = sg_begin + j * sg_size + lane_id;
 
             std::uint32_t f = 0;
             if (i < end) {
@@ -259,7 +233,7 @@ void gather_selected(const sycl::nd_item<1> &ndit,
         }
 
         // offset of the sub-group's piece within the tile
-        const std::uint32_t contrib = (lane == 0) ? sg_count : 0;
+        const std::uint32_t contrib = (lane_id == 0) ? sg_count : 0;
         const std::uint32_t sg_offset = sycl::group_broadcast(
             sg, sycl::exclusive_scan_over_group(wg, contrib,
                                                 sycl::plus<std::uint32_t>()));
@@ -271,7 +245,7 @@ void gather_selected(const sycl::nd_item<1> &ndit,
             if (flags[j] == 0) {
                 continue;
             }
-            const std::size_t i = sg_begin + j * sg_size + lane;
+            const std::size_t i = sg_begin + j * sg_size + lane_id;
             const std::uint32_t r = sg_offset + ranks[j];
             if (flags[j] == less_flag) {
                 less_out(less_offset + less_done + (r & half_mask), i);
@@ -293,25 +267,24 @@ void gather_selected(const sycl::nd_item<1> &ndit,
 template <typename KeyT, typename ValueT, bool is_ascending>
 struct RowKey
 {
-    const ValueT *row;
+    const ValueT *arg;
 
     KeyT operator()(std::size_t i) const
     {
-        return radix_utils::ordered_radix_key<is_ascending>(row[i]);
+        return radix_utils::ordered_radix_key<is_ascending>(arg[i]);
     }
 };
 
-/*! @brief Key of the `i`-th of the candidates of a row, listed by their
- * indices within the row */
+/*! @brief Key of candidate `i` of a row, candidates listed by row index */
 template <typename KeyT, typename ValueT, bool is_ascending>
 struct CandidateKey
 {
-    const ValueT *row;
+    const ValueT *arg;
     const std::uint32_t *cand;
 
     KeyT operator()(std::size_t i) const
     {
-        return radix_utils::ordered_radix_key<is_ascending>(row[cand[i]]);
+        return radix_utils::ordered_radix_key<is_ascending>(arg[cand[i]]);
     }
 };
 
@@ -320,13 +293,13 @@ struct CandidateKey
 template <typename ValueT, typename IndexT>
 struct SelectedOut
 {
-    const ValueT *row;
+    const ValueT *arg;
     ValueT *vals;
     IndexT *inds;
 
     void operator()(std::uint64_t j, std::size_t i) const
     {
-        vals[j] = row[i];
+        vals[j] = arg[i];
         inds[j] = static_cast<IndexT>(i);
     }
 };
@@ -336,7 +309,7 @@ struct SelectedOut
 template <typename ValueT, typename IndexT>
 struct CandidateSelectedOut
 {
-    const ValueT *row;
+    const ValueT *arg;
     const std::uint32_t *cand;
     ValueT *vals;
     IndexT *inds;
@@ -344,7 +317,7 @@ struct CandidateSelectedOut
     void operator()(std::uint64_t j, std::size_t i) const
     {
         const std::uint32_t c = cand[i];
-        vals[j] = row[c];
+        vals[j] = arg[c];
         inds[j] = static_cast<IndexT>(c);
     }
 };
@@ -361,7 +334,7 @@ struct CandidateListOut
 };
 
 //-----------------------------------------------------------------------
-// one work-group per row
+// radix select: one work-group per row
 //-----------------------------------------------------------------------
 
 template <typename ValueT,
@@ -380,11 +353,11 @@ template <bool is_ascending,
 sycl::event
     radix_select_one_group_submit(sycl::queue &exec_q,
                                   std::size_t n_iters,
-                                  std::size_t n,
+                                  std::size_t n_values,
                                   std::size_t k,
-                                  const ValueT *vals_ptr,
-                                  ValueT *dst_vals_ptr,
-                                  IndexT *dst_inds_ptr,
+                                  const ValueT *arg_ptr,
+                                  ValueT *vals_ptr,
+                                  IndexT *inds_ptr,
                                   std::size_t wg_size,
                                   const std::vector<sycl::event> &depends)
 {
@@ -396,7 +369,7 @@ sycl::event
     static constexpr std::uint32_t key_bits =
         radix_utils::number_of_bits_in_type<KeyT>();
 
-    if (n > std::numeric_limits<std::uint32_t>::max() ||
+    if (n_values > std::numeric_limits<std::uint32_t>::max() ||
         wg_size * elems_per_wi > max_tile_size) {
         throw std::runtime_error("Invalid parameters for radix select");
     }
@@ -410,10 +383,11 @@ sycl::event
         sycl::nd_range<1> ndRange(n_iters * wg_size, wg_size);
 
         cgh.parallel_for<KernelName>(ndRange, [=](sycl::nd_item<1> ndit) {
-            const std::size_t row = ndit.get_group(0);
+            const std::size_t iter_id = ndit.get_group(0);
             const std::size_t lid = ndit.get_local_linear_id();
 
-            const RowKey<KeyT, ValueT, is_ascending> key_fn{vals_ptr + row * n};
+            const RowKey<KeyT, ValueT, is_ascending> key_fn{arg_ptr +
+                                                            iter_id * n_values};
 
             KeyT desired{0};
             KeyT mask{0};
@@ -426,12 +400,13 @@ sycl::event
                 }
                 sycl::group_barrier(ndit.get_group());
 
-                count_digits(ndit, key_fn, 0, n, desired, mask, shift, hist);
+                count_digits(ndit, key_fn, 0, n_values, desired, mask, shift,
+                             hist);
                 sycl::group_barrier(ndit.get_group());
 
                 const bucket_info info = find_bucket(ndit, hist, k_rem, bucket);
 
-                desired |= static_cast<KeyT>(KeyT(info.bin) << shift);
+                desired |= static_cast<KeyT>(KeyT(info.bucket_id) << shift);
                 mask |= static_cast<KeyT>(KeyT(radix_mask) << shift);
                 k_rem -= info.before;
 
@@ -444,19 +419,128 @@ sycl::event
 
             const std::uint64_t n_less = k - k_rem;
             using OutT = SelectedOut<ValueT, IndexT>;
-            const ValueT *row_vals = vals_ptr + row * n;
-            ValueT *row_dst_vals = dst_vals_ptr + row * k;
-            IndexT *row_dst_inds = dst_inds_ptr + row * k;
+            const ValueT *row_arg = arg_ptr + iter_id * n_values;
+            ValueT *row_vals = vals_ptr + iter_id * k;
+            IndexT *row_inds = inds_ptr + iter_id * k;
             gather_selected<elems_per_wi>(
-                ndit, key_fn, 0, n, desired, mask, 0, n_less, 0, k_rem,
-                OutT{row_vals, row_dst_vals, row_dst_inds},
-                OutT{row_vals, row_dst_vals + n_less, row_dst_inds + n_less});
+                ndit, key_fn, 0, n_values, desired, mask, 0, n_less, 0, k_rem,
+                OutT{row_arg, row_vals, row_inds},
+                OutT{row_arg, row_vals + n_less, row_inds + n_less});
         });
     });
 }
 
 //-----------------------------------------------------------------------
-// several work-groups per row
+// radix select: one sub-group per row
+//-----------------------------------------------------------------------
+
+template <typename ValueT,
+          typename IndexT,
+          bool is_ascending,
+          std::uint32_t max_chunks>
+class radix_select_sub_group_krn;
+
+/*! @brief Selection with a sub-group per row of at most `max_chunks` times the
+ * sub-group size, each element is ranked by counting the elements ordering
+ * before it and written at its rank, so the selection comes out sorted */
+template <bool is_ascending,
+          std::uint32_t max_chunks,
+          typename ValueT,
+          typename IndexT>
+sycl::event
+    radix_select_sub_group_submit(sycl::queue &exec_q,
+                                  std::size_t n_iters,
+                                  std::size_t n_values,
+                                  std::size_t k,
+                                  const ValueT *arg_ptr,
+                                  ValueT *vals_ptr,
+                                  IndexT *inds_ptr,
+                                  std::size_t n_groups,
+                                  std::size_t wg_size,
+                                  const std::vector<sycl::event> &depends)
+{
+    using KeyT = radix_utils::radix_key_t<ValueT>;
+    using KernelName =
+        radix_select_sub_group_krn<ValueT, IndexT, is_ascending, max_chunks>;
+
+    return exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+
+        sycl::nd_range<1> ndRange(n_groups * wg_size, wg_size);
+
+        cgh.parallel_for<KernelName>(ndRange, [=](sycl::nd_item<1> ndit) {
+            const auto &sg = ndit.get_sub_group();
+            const std::uint32_t lane_id = sg.get_local_linear_id();
+            const std::uint32_t sg_size = sg.get_local_linear_range();
+            const std::size_t sgs_per_group = sg.get_group_linear_range();
+            const std::size_t n_sub_groups =
+                ndit.get_group_range(0) * sgs_per_group;
+            const std::size_t sg_id =
+                ndit.get_group(0) * sgs_per_group + sg.get_group_linear_id();
+
+            const std::uint32_t n = static_cast<std::uint32_t>(n_values);
+            const std::uint32_t n_chunks = (n + sg_size - 1) / sg_size;
+
+            // rows are strided over sub-groups, so any sub-group size of at
+            // least n_values / max_chunks covers all of them
+            for (std::size_t iter_id = sg_id; iter_id < n_iters;
+                 iter_id += n_sub_groups) {
+                const ValueT *row_arg = arg_ptr + iter_id * n_values;
+
+                // element c * sg_size + lane_id of the row
+                KeyT keys[max_chunks];
+                std::uint32_t ranks[max_chunks];
+#pragma unroll
+                for (std::uint32_t c = 0; c < max_chunks; ++c) {
+                    const std::uint32_t i = c * sg_size + lane_id;
+                    keys[c] =
+                        (i < n) ? radix_utils::ordered_radix_key<is_ascending>(
+                                      row_arg[i])
+                                : KeyT{0};
+                    ranks[c] = 0;
+                }
+
+                // the chunks are unrolled so that the keys stay in registers,
+                // the loops over chunks past the row's end are skipped by the
+                // whole sub-group
+#pragma unroll
+                for (std::uint32_t cj = 0; cj < max_chunks; ++cj) {
+                    if (cj >= n_chunks) {
+                        break;
+                    }
+                    const std::uint32_t j0 = cj * sg_size;
+                    const std::uint32_t l_end = std::min(sg_size, n - j0);
+                    for (std::uint32_t l = 0; l < l_end; ++l) {
+                        const KeyT kj = sycl::group_broadcast(sg, keys[cj], l);
+                        const std::uint32_t j = j0 + l;
+#pragma unroll
+                        for (std::uint32_t c = 0; c < max_chunks; ++c) {
+                            if (c < n_chunks) {
+                                const std::uint32_t i = c * sg_size + lane_id;
+                                ranks[c] +=
+                                    (kj < keys[c]) || (kj == keys[c] && j < i);
+                            }
+                        }
+                    }
+                }
+
+                ValueT *row_vals = vals_ptr + iter_id * k;
+                IndexT *row_inds = inds_ptr + iter_id * k;
+#pragma unroll
+                for (std::uint32_t c = 0; c < max_chunks; ++c) {
+                    const std::uint32_t i = c * sg_size + lane_id;
+                    if (i < n && ranks[c] < k) {
+                        row_vals[ranks[c]] = row_arg[i];
+                        row_inds[ranks[c]] = static_cast<IndexT>(i);
+                    }
+                }
+            }
+        });
+    });
+}
+
+//-----------------------------------------------------------------------
+// radix select: several work-groups per row
 //-----------------------------------------------------------------------
 
 /*! @brief Selection state of a row, carried from pass to pass */
@@ -495,26 +579,24 @@ template <typename ValueT,
           std::uint32_t elems_per_wi>
 class radix_select_gather_krn;
 
-/*! @brief Range `[begin, end)` of block `blk` of `n_blocks` covering `[0, n)`
- */
-inline std::pair<std::size_t, std::size_t>
-    block_range(std::size_t blk, std::size_t n_blocks, std::size_t n)
+/*! @brief Range `[begin, end)` of segment `segment_id` of `n_segments`
+ * covering `[0, nelems)` */
+inline std::pair<std::size_t, std::size_t> segment_range(std::size_t segment_id,
+                                                         std::size_t n_segments,
+                                                         std::size_t nelems)
 {
-    const std::size_t block_size = (n + n_blocks - 1) / n_blocks;
-    const std::size_t begin = std::min(blk * block_size, n);
-    return {begin, std::min(begin + block_size, n)};
+    const std::size_t elems_per_segment =
+        (nelems + n_segments - 1) / n_segments;
+    const std::size_t begin = std::min(segment_id * elems_per_segment, nelems);
+    return {begin, std::min(begin + elems_per_segment, nelems)};
 }
 
-/*! @brief Candidates are listed only when they are at most this fraction of
- * their row, since a large buffer costs more to allocate than it saves */
+// candidates are listed only when they are at most this fraction of their
+// row, a larger buffer costs more to allocate than it saves
 inline constexpr std::size_t filter_cap_divisor = 16;
 
-/*! @brief Radix select with `n_blocks` work-groups per row and a kernel per
- * pass.
- *
- * When `filter`, the elements sharing the prefix of the first pass, if few,
- * are listed so that the later passes only go over them.
- */
+/*! @brief Radix select with `n_segments` work-groups per row and a kernel per
+ * pass, the last work-group of a row to finish a pass resolves its digit */
 template <bool is_ascending,
           std::uint32_t elems_per_wi,
           typename ValueT,
@@ -522,12 +604,12 @@ template <bool is_ascending,
 sycl::event
     radix_select_multi_group_impl(sycl::queue &exec_q,
                                   std::size_t n_iters,
-                                  std::size_t n,
+                                  std::size_t n_values,
                                   std::size_t k,
-                                  const ValueT *vals_ptr,
-                                  ValueT *dst_vals_ptr,
-                                  IndexT *dst_inds_ptr,
-                                  std::size_t n_blocks,
+                                  const ValueT *arg_ptr,
+                                  ValueT *vals_ptr,
+                                  IndexT *inds_ptr,
+                                  std::size_t n_segments,
                                   std::size_t wg_size,
                                   bool filter,
                                   const std::vector<sycl::event> &depends)
@@ -541,20 +623,23 @@ sycl::event
     static constexpr std::uint32_t key_bits =
         radix_utils::number_of_bits_in_type<KeyT>();
 
-    const std::size_t block_size = (n + n_blocks - 1) / n_blocks;
-    if (block_size > std::numeric_limits<std::uint32_t>::max() ||
-        n_blocks > std::numeric_limits<std::uint32_t>::max() ||
+    const std::size_t elems_per_segment =
+        (n_values + n_segments - 1) / n_segments;
+    if (elems_per_segment > std::numeric_limits<std::uint32_t>::max() ||
+        n_segments > std::numeric_limits<std::uint32_t>::max() ||
         wg_size * elems_per_wi > max_tile_size) {
         throw std::runtime_error("Invalid parameters for radix select");
     }
-    // candidates are listed by 32-bit indices within their row
+    // when filtering, the elements sharing the prefix of the first pass are
+    // listed, by 32-bit indices within their row, for the later passes to go
+    // over
     filter = filter && (n_passes > 1) &&
-             (n <= std::numeric_limits<std::uint32_t>::max());
+             (n_values <= std::numeric_limits<std::uint32_t>::max());
     // rows with more candidates than this are not filtered
     const std::size_t cand_cap =
-        (n + filter_cap_divisor - 1) / filter_cap_divisor;
+        (n_values + filter_cap_divisor - 1) / filter_cap_divisor;
 
-    const std::size_t n_row_blocks = n_iters * n_blocks;
+    const std::size_t n_all_segments = n_iters * n_segments;
 
     auto state_owner =
         dpnp::tensor::alloc_utils::smart_malloc_device<StateT>(n_iters, exec_q);
@@ -563,18 +648,18 @@ sycl::event
     // per work-group digit histograms of the current pass
     auto hist_owner =
         dpnp::tensor::alloc_utils::smart_malloc_device<std::uint32_t>(
-            n_row_blocks * radix_states, exec_q);
-    std::uint32_t *block_hist_ptr = hist_owner.get();
+            n_all_segments * radix_states, exec_q);
+    std::uint32_t *segment_hist_ptr = hist_owner.get();
 
     // per work-group counts of less and tie elements, and their exclusive
     // scans over the work-groups of a row
     auto counts_owner =
         dpnp::tensor::alloc_utils::smart_malloc_device<std::uint64_t>(
-            4 * n_row_blocks, exec_q);
+            4 * n_all_segments, exec_q);
     std::uint64_t *less_count_ptr = counts_owner.get();
-    std::uint64_t *less_offset_ptr = less_count_ptr + n_row_blocks;
-    std::uint64_t *tie_count_ptr = less_offset_ptr + n_row_blocks;
-    std::uint64_t *tie_offset_ptr = tie_count_ptr + n_row_blocks;
+    std::uint64_t *less_offset_ptr = less_count_ptr + n_all_segments;
+    std::uint64_t *tie_count_ptr = less_offset_ptr + n_all_segments;
+    std::uint64_t *tie_offset_ptr = tie_count_ptr + n_all_segments;
 
     // candidates of each row, in index order
     auto cand_owner =
@@ -592,7 +677,7 @@ sycl::event
             });
     });
 
-    const sycl::nd_range<1> ndRange(n_row_blocks * wg_size, wg_size);
+    const sycl::nd_range<1> ndRange(n_all_segments * wg_size, wg_size);
 
     sycl::event pass_ev = init_ev;
     for (std::uint32_t pass = 0; pass < n_passes; ++pass) {
@@ -613,42 +698,43 @@ sycl::event
             cgh.parallel_for<KernelName>(ndRange, [=](sycl::nd_item<1> ndit) {
                 const auto &wg = ndit.get_group();
                 const std::size_t group_id = ndit.get_group(0);
-                const std::size_t row = group_id / n_blocks;
-                const std::size_t blk = group_id - row * n_blocks;
+                const std::size_t iter_id = group_id / n_segments;
+                const std::size_t segment_id = group_id - iter_id * n_segments;
                 const std::size_t lid = ndit.get_local_linear_id();
 
-                StateT &st = state_ptr[row];
-                if (st.done) {
+                StateT &state = state_ptr[iter_id];
+                if (state.done) {
                     return;
                 }
-                const KeyT desired = st.desired;
-                const KeyT mask = st.mask;
-                const std::uint64_t n_cand = st.n_cand;
+                const KeyT desired = state.desired;
+                const KeyT mask = state.mask;
+                const std::uint64_t n_cand = state.n_cand;
 
                 for (std::size_t b = lid; b < radix_states; b += wg_size) {
                     hist[b] = 0;
                 }
                 sycl::group_barrier(wg);
 
-                const ValueT *row_vals = vals_ptr + row * n;
+                const ValueT *row_arg = arg_ptr + iter_id * n_values;
                 if (n_cand) {
                     const auto [begin, end] =
-                        block_range(blk, n_blocks, n_cand);
-                    count_digits(ndit,
-                                 CandKeyT{row_vals, cand_ptr + row * cand_cap},
-                                 begin, end, desired, mask, shift, hist);
+                        segment_range(segment_id, n_segments, n_cand);
+                    count_digits(
+                        ndit, CandKeyT{row_arg, cand_ptr + iter_id * cand_cap},
+                        begin, end, desired, mask, shift, hist);
                 }
                 else {
-                    const auto [begin, end] = block_range(blk, n_blocks, n);
-                    count_digits(ndit, RowKeyT{row_vals}, begin, end, desired,
+                    const auto [begin, end] =
+                        segment_range(segment_id, n_segments, n_values);
+                    count_digits(ndit, RowKeyT{row_arg}, begin, end, desired,
                                  mask, shift, hist);
                 }
                 sycl::group_barrier(wg);
 
-                std::uint32_t *row_block_hist =
-                    block_hist_ptr + row * n_blocks * radix_states;
+                std::uint32_t *row_segment_hist =
+                    segment_hist_ptr + iter_id * n_segments * radix_states;
                 for (std::size_t b = lid; b < radix_states; b += wg_size) {
-                    row_block_hist[blk * radix_states + b] = hist[b];
+                    row_segment_hist[segment_id * radix_states + b] = hist[b];
                 }
 
                 // publish the histogram, then count this work-group in
@@ -659,9 +745,9 @@ sycl::event
                     sycl::atomic_ref<std::uint32_t, sycl::memory_order::acq_rel,
                                      sycl::memory_scope::device,
                                      sycl::access::address_space::global_space>
-                        n_arrived(st.n_arrived);
-                    is_last[0] =
-                        (n_arrived.fetch_add(std::uint32_t(1)) + 1 == n_blocks);
+                        n_arrived(state.n_arrived);
+                    is_last[0] = (n_arrived.fetch_add(std::uint32_t(1)) + 1 ==
+                                  n_segments);
                 }
                 sycl::group_barrier(wg, sycl::memory_scope::device);
                 if (!is_last[0]) {
@@ -673,14 +759,14 @@ sycl::event
                 // the last work-group of the row resolves this pass' digit
                 for (std::size_t b = lid; b < radix_states; b += wg_size) {
                     std::uint64_t s = 0;
-                    for (std::size_t j = 0; j < n_blocks; ++j) {
-                        s += row_block_hist[j * radix_states + b];
+                    for (std::size_t j = 0; j < n_segments; ++j) {
+                        s += row_segment_hist[j * radix_states + b];
                     }
                     row_hist[b] = s;
                 }
                 sycl::group_barrier(wg);
 
-                const std::uint64_t k_rem = st.k_rem;
+                const std::uint64_t k_rem = state.k_rem;
                 const bucket_info info =
                     find_bucket(ndit, row_hist, k_rem, bucket);
                 const std::uint64_t new_k_rem = k_rem - info.before;
@@ -689,48 +775,53 @@ sycl::event
                 const bool to_filter =
                     filter_after && !done && (info.count <= cand_cap);
 
-                // the counts restart when the blocks switch to candidates
+                // the counts restart when the segments switch to candidates
                 const bool restart = (pass == 0) || (n_cand && pass == 1);
-                std::uint64_t *row_less_count = less_count_ptr + row * n_blocks;
+                std::uint64_t *row_less_count =
+                    less_count_ptr + iter_id * n_segments;
                 std::uint64_t *row_less_offset =
-                    less_offset_ptr + row * n_blocks;
-                std::uint64_t *row_tie_count = tie_count_ptr + row * n_blocks;
-                std::uint64_t *row_tie_offset = tie_offset_ptr + row * n_blocks;
-                for (std::size_t j = lid; j < n_blocks; j += wg_size) {
-                    const std::uint32_t *h = row_block_hist + j * radix_states;
+                    less_offset_ptr + iter_id * n_segments;
+                std::uint64_t *row_tie_count =
+                    tie_count_ptr + iter_id * n_segments;
+                std::uint64_t *row_tie_offset =
+                    tie_offset_ptr + iter_id * n_segments;
+                for (std::size_t j = lid; j < n_segments; j += wg_size) {
+                    const std::uint32_t *h =
+                        row_segment_hist + j * radix_states;
                     std::uint64_t s = 0;
-                    for (std::uint32_t b = 0; b < info.bin; ++b) {
+                    for (std::uint32_t b = 0; b < info.bucket_id; ++b) {
                         s += h[b];
                     }
                     row_less_count[j] = ((restart) ? 0 : row_less_count[j]) + s;
                     if (done || to_filter) {
-                        row_tie_count[j] = h[info.bin];
+                        row_tie_count[j] = h[info.bucket_id];
                     }
                 }
 
                 if (done || to_filter) {
                     sycl::group_barrier(wg);
                     sycl::joint_exclusive_scan(
-                        wg, row_less_count, row_less_count + n_blocks,
+                        wg, row_less_count, row_less_count + n_segments,
                         row_less_offset, std::uint64_t(0),
                         sycl::plus<std::uint64_t>());
                     sycl::joint_exclusive_scan(wg, row_tie_count,
-                                               row_tie_count + n_blocks,
+                                               row_tie_count + n_segments,
                                                row_tie_offset, std::uint64_t(0),
                                                sycl::plus<std::uint64_t>());
                 }
 
                 if (lid == 0) {
-                    st.desired =
-                        desired | static_cast<KeyT>(KeyT(info.bin) << shift);
-                    st.mask =
+                    state.desired =
+                        desired |
+                        static_cast<KeyT>(KeyT(info.bucket_id) << shift);
+                    state.mask =
                         mask | static_cast<KeyT>(KeyT(radix_mask) << shift);
-                    st.k_rem = new_k_rem;
-                    st.done = done;
-                    st.n_arrived = 0;
+                    state.k_rem = new_k_rem;
+                    state.done = done;
+                    state.n_arrived = 0;
                     if (to_filter) {
-                        st.n_cand = info.count;
-                        st.n_less_first = info.before;
+                        state.n_cand = info.count;
+                        state.n_less_first = info.before;
                     }
                 }
             });
@@ -748,24 +839,26 @@ sycl::event
                 cgh.parallel_for<KernelName>(
                     ndRange, [=](sycl::nd_item<1> ndit) {
                         const std::size_t group_id = ndit.get_group(0);
-                        const std::size_t row = group_id / n_blocks;
-                        const std::size_t blk = group_id - row * n_blocks;
+                        const std::size_t iter_id = group_id / n_segments;
+                        const std::size_t segment_id =
+                            group_id - iter_id * n_segments;
 
-                        const StateT st = state_ptr[row];
-                        if (st.n_cand == 0) {
+                        const StateT state = state_ptr[iter_id];
+                        if (state.n_cand == 0) {
                             return;
                         }
 
-                        const auto [begin, end] = block_range(blk, n_blocks, n);
+                        const auto [begin, end] =
+                            segment_range(segment_id, n_segments, n_values);
                         gather_selected<elems_per_wi>(
-                            ndit, RowKeyT{vals_ptr + row * n}, begin, end,
-                            st.desired, st.mask, less_offset_ptr[group_id],
-                            less_count_ptr[group_id], tie_offset_ptr[group_id],
-                            st.n_cand,
-                            SelectedOut<ValueT, IndexT>{vals_ptr + row * n,
-                                                        dst_vals_ptr + row * k,
-                                                        dst_inds_ptr + row * k},
-                            CandidateListOut{cand_ptr + row * cand_cap});
+                            ndit, RowKeyT{arg_ptr + iter_id * n_values}, begin,
+                            end, state.desired, state.mask,
+                            less_offset_ptr[group_id], less_count_ptr[group_id],
+                            tie_offset_ptr[group_id], state.n_cand,
+                            SelectedOut<ValueT, IndexT>{
+                                arg_ptr + iter_id * n_values,
+                                vals_ptr + iter_id * k, inds_ptr + iter_id * k},
+                            CandidateListOut{cand_ptr + iter_id * cand_cap});
                     });
             });
         }
@@ -778,40 +871,40 @@ sycl::event
             radix_select_gather_krn<ValueT, IndexT, is_ascending, elems_per_wi>;
         cgh.parallel_for<KernelName>(ndRange, [=](sycl::nd_item<1> ndit) {
             const std::size_t group_id = ndit.get_group(0);
-            const std::size_t row = group_id / n_blocks;
-            const std::size_t blk = group_id - row * n_blocks;
+            const std::size_t iter_id = group_id / n_segments;
+            const std::size_t segment_id = group_id - iter_id * n_segments;
 
-            const StateT st = state_ptr[row];
+            const StateT state = state_ptr[iter_id];
 
-            const ValueT *row_vals = vals_ptr + row * n;
+            const ValueT *row_arg = arg_ptr + iter_id * n_values;
             // the first pass wrote out its less elements already
-            ValueT *row_dst_vals = dst_vals_ptr + row * k + st.n_less_first;
-            IndexT *row_dst_inds = dst_inds_ptr + row * k + st.n_less_first;
-            const std::uint64_t n_less = k - st.n_less_first - st.k_rem;
+            ValueT *row_vals = vals_ptr + iter_id * k + state.n_less_first;
+            IndexT *row_inds = inds_ptr + iter_id * k + state.n_less_first;
+            const std::uint64_t n_less = k - state.n_less_first - state.k_rem;
 
-            if (st.n_cand) {
+            if (state.n_cand) {
                 using OutT = CandidateSelectedOut<ValueT, IndexT>;
-                const std::uint32_t *row_cand = cand_ptr + row * cand_cap;
-                const auto [begin, end] = block_range(blk, n_blocks, st.n_cand);
+                const std::uint32_t *row_cand = cand_ptr + iter_id * cand_cap;
+                const auto [begin, end] =
+                    segment_range(segment_id, n_segments, state.n_cand);
                 gather_selected<elems_per_wi>(
-                    ndit, CandKeyT{row_vals, row_cand}, begin, end, st.desired,
-                    st.mask, less_offset_ptr[group_id],
+                    ndit, CandKeyT{row_arg, row_cand}, begin, end,
+                    state.desired, state.mask, less_offset_ptr[group_id],
                     less_count_ptr[group_id], tie_offset_ptr[group_id],
-                    st.k_rem,
-                    OutT{row_vals, row_cand, row_dst_vals, row_dst_inds},
-                    OutT{row_vals, row_cand, row_dst_vals + n_less,
-                         row_dst_inds + n_less});
+                    state.k_rem, OutT{row_arg, row_cand, row_vals, row_inds},
+                    OutT{row_arg, row_cand, row_vals + n_less,
+                         row_inds + n_less});
             }
             else {
                 using OutT = SelectedOut<ValueT, IndexT>;
-                const auto [begin, end] = block_range(blk, n_blocks, n);
+                const auto [begin, end] =
+                    segment_range(segment_id, n_segments, n_values);
                 gather_selected<elems_per_wi>(
-                    ndit, RowKeyT{row_vals}, begin, end, st.desired, st.mask,
-                    less_offset_ptr[group_id], less_count_ptr[group_id],
-                    tie_offset_ptr[group_id], st.k_rem,
-                    OutT{row_vals, row_dst_vals, row_dst_inds},
-                    OutT{row_vals, row_dst_vals + n_less,
-                         row_dst_inds + n_less});
+                    ndit, RowKeyT{row_arg}, begin, end, state.desired,
+                    state.mask, less_offset_ptr[group_id],
+                    less_count_ptr[group_id], tie_offset_ptr[group_id],
+                    state.k_rem, OutT{row_arg, row_vals, row_inds},
+                    OutT{row_arg, row_vals + n_less, row_inds + n_less});
             }
         });
     });
@@ -826,14 +919,21 @@ sycl::event
 
 inline constexpr std::uint32_t gather_elems_per_wi = 4;
 
+// longest rows ranked by a sub-group each, and the most sub-group sizes they
+// may span; the keys are held in registers, so shorter rows get a kernel with
+// fewer of them for better occupancy
+inline constexpr std::size_t sub_group_max_n = 64;
+inline constexpr std::uint32_t sub_group_max_chunks = 8;
+inline constexpr std::uint32_t sub_group_few_chunks = 4;
+
 template <bool is_ascending, typename ValueT, typename IndexT>
 sycl::event radix_select_dispatch(sycl::queue &exec_q,
                                   std::size_t n_iters,
-                                  std::size_t n,
+                                  std::size_t n_values,
                                   std::size_t k,
-                                  const ValueT *vals_ptr,
-                                  ValueT *dst_vals_ptr,
-                                  IndexT *dst_inds_ptr,
+                                  const ValueT *arg_ptr,
+                                  ValueT *vals_ptr,
+                                  IndexT *inds_ptr,
                                   const std::vector<sycl::event> &depends)
 {
     const auto &dev = exec_q.get_device();
@@ -842,77 +942,97 @@ sycl::event radix_select_dispatch(sycl::queue &exec_q,
     const std::size_t n_cus =
         dev.get_info<sycl::info::device::max_compute_units>();
 
-    static constexpr std::uint32_t epw = gather_elems_per_wi;
-
     const std::size_t wg_size = std::min<std::size_t>(256, max_wg_size);
+
+    // short rows spend their time scheduling work-groups, so they are ranked
+    // by a sub-group each; the kernel may be compiled for any of the device's
+    // sub-group sizes, so the smallest one bounds the rows it takes
+    const auto sg_sizes = dev.get_info<sycl::info::device::sub_group_sizes>();
+    const std::size_t min_sg_size =
+        (sg_sizes.empty())
+            ? 1
+            : *std::min_element(sg_sizes.begin(), sg_sizes.end());
+    if (n_values <=
+            std::min(sub_group_max_n, sub_group_max_chunks * min_sg_size) &&
+        min_sg_size <= wg_size) {
+        const std::size_t rows_per_group = wg_size / min_sg_size;
+        const std::size_t n_groups =
+            (n_iters + rows_per_group - 1) / rows_per_group;
+        if (n_values <= sub_group_few_chunks * min_sg_size) {
+            return radix_select_sub_group_submit<is_ascending,
+                                                 sub_group_few_chunks>(
+                exec_q, n_iters, n_values, k, arg_ptr, vals_ptr, inds_ptr,
+                n_groups, wg_size, depends);
+        }
+        return radix_select_sub_group_submit<is_ascending,
+                                             sub_group_max_chunks>(
+            exec_q, n_iters, n_values, k, arg_ptr, vals_ptr, inds_ptr, n_groups,
+            wg_size, depends);
+    }
 
     // enough work-groups to occupy the device
     const std::size_t target_groups = 4 * n_cus;
-    const std::size_t min_block_size = 8 * wg_size * epw;
+    const std::size_t min_segment_size = 8 * wg_size * gather_elems_per_wi;
     // below this row size a kernel per pass costs more than it saves
     static constexpr std::size_t multi_group_min_n = std::size_t(1) << 16;
 
-    std::size_t n_blocks = 1;
-    if (n_iters < target_groups && n >= multi_group_min_n) {
-        n_blocks = std::min((target_groups + n_iters - 1) / n_iters,
-                            (n + min_block_size - 1) / min_block_size);
+    std::size_t n_segments = 1;
+    if (n_iters < target_groups && n_values >= multi_group_min_n) {
+        n_segments =
+            std::min((target_groups + n_iters - 1) / n_iters,
+                     (n_values + min_segment_size - 1) / min_segment_size);
     }
     // counts of a work-group's elements are 32-bit
-    static constexpr std::size_t max_block_size =
+    static constexpr std::size_t max_segment_size =
         std::numeric_limits<std::uint32_t>::max();
-    n_blocks = std::max(n_blocks, (n + max_block_size - 1) / max_block_size);
+    n_segments = std::max(n_segments,
+                          (n_values + max_segment_size - 1) / max_segment_size);
 
-    if (n_blocks > 1) {
+    if (n_segments > 1) {
         using KeyT = radix_utils::radix_key_t<ValueT>;
         // with fewer passes re-reading the rows costs less than listing the
         // candidates
         static constexpr bool filter = (sizeof(KeyT) >= 4);
-        return radix_select_multi_group_impl<is_ascending, epw>(
-            exec_q, n_iters, n, k, vals_ptr, dst_vals_ptr, dst_inds_ptr,
-            n_blocks, wg_size, filter, depends);
+        return radix_select_multi_group_impl<is_ascending, gather_elems_per_wi>(
+            exec_q, n_iters, n_values, k, arg_ptr, vals_ptr, inds_ptr,
+            n_segments, wg_size, filter, depends);
     }
     // short rows leave most of a large work-group idle
     std::size_t row_wg_size = 64;
-    while (row_wg_size < wg_size && row_wg_size * 8 < n) {
+    while (row_wg_size < wg_size && row_wg_size * 8 < n_values) {
         row_wg_size *= 2;
     }
     row_wg_size = std::min(row_wg_size, wg_size);
-    return radix_select_one_group_submit<is_ascending, epw>(
-        exec_q, n_iters, n, k, vals_ptr, dst_vals_ptr, dst_inds_ptr,
-        row_wg_size, depends);
+    return radix_select_one_group_submit<is_ascending, gather_elems_per_wi>(
+        exec_q, n_iters, n_values, k, arg_ptr, vals_ptr, inds_ptr, row_wg_size,
+        depends);
 }
 
-/*! @brief Writes the `k` smallest (largest when `is_ascending` is false)
- * elements of each row of the C-contiguous `(n_iters, n)` array `vals_ptr`
- * into the rows of the `(n_iters, k)` array `dst_vals_ptr`, and their indices
- * within the row into those of `dst_inds_ptr`.
- *
- * Ties are resolved in favor of smaller indices, NaNs order after any other
- * value, and -0.0 and +0.0 compare equal. The selection is not sorted and
- * its order is unspecified.
- */
+/*! @brief Writes the `k` smallest (largest if not `is_ascending`) elements of
+ * each row of C-contiguous `(n_iters, n_values)` array and their indices into
+ * `(n_iters, k)` arrays, in unspecified order; ties are resolved in favor of
+ * smaller indices, NaNs order last, and -0.0 and +0.0 compare equal */
 template <typename ValueT, typename IndexT>
 sycl::event radix_select_impl(sycl::queue &exec_q,
                               std::size_t n_iters,
-                              std::size_t n,
+                              std::size_t n_values,
                               std::size_t k,
                               bool is_ascending,
-                              const ValueT *vals_ptr,
-                              ValueT *dst_vals_ptr,
-                              IndexT *dst_inds_ptr,
+                              const ValueT *arg_ptr,
+                              ValueT *vals_ptr,
+                              IndexT *inds_ptr,
                               const std::vector<sycl::event> &depends)
 {
-    if (k == 0 || k > n) {
+    if (k == 0 || k > n_values) {
         throw std::runtime_error("Invalid value of k for radix select");
     }
 
     if (is_ascending) {
         return radix_select_dispatch</*is_ascending*/ true>(
-            exec_q, n_iters, n, k, vals_ptr, dst_vals_ptr, dst_inds_ptr,
-            depends);
+            exec_q, n_iters, n_values, k, arg_ptr, vals_ptr, inds_ptr, depends);
     }
     return radix_select_dispatch</*is_ascending*/ false>(
-        exec_q, n_iters, n, k, vals_ptr, dst_vals_ptr, dst_inds_ptr, depends);
+        exec_q, n_iters, n_values, k, arg_ptr, vals_ptr, inds_ptr, depends);
 }
 
 } // namespace dpnp::tensor::kernels::radix_select_details

@@ -94,19 +94,13 @@ sycl::event topk_caller(sycl::queue &exec_q,
                         const std::vector<sycl::event> &depends)
 {
     if constexpr (use_radix_select<argTy>::value) {
-        // radix select runs a work-group per row, which very short rows
-        // leave mostly idle, a merge sort is faster on those, the crossover
-        // was determined experimentally
-        static constexpr std::size_t radix_select_min_nelems = 16;
-        if (axis_nelems >= radix_select_min_nelems) {
-            using dpnp::tensor::kernels::topk_radix_select_impl;
-            const bool ascending = !largest;
-            return topk_radix_select_impl<argTy, IndexTy>(
-                exec_q, iter_nelems, axis_nelems, k, ascending, arg_cp, vals_cp,
-                inds_cp, depends);
-        }
+        using dpnp::tensor::kernels::topk_radix_select_impl;
+        const bool ascending = !largest;
+        return topk_radix_select_impl<argTy, IndexTy>(
+            exec_q, iter_nelems, axis_nelems, k, ascending, arg_cp, vals_cp,
+            inds_cp, depends);
     }
-    {
+    else {
         using dpnp::tensor::kernels::topk_merge_impl;
         if (largest) {
             using CompTy =

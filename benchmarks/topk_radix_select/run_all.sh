@@ -8,7 +8,7 @@ set -u
 here=$(cd "$(dirname "$0")" && pwd)
 source "$here/config.sh"
 
-suites_all="check builds kn small long algo algo3 rowsn"
+suites_all="check builds kn small long algo algo3 rowsn sgn"
 describe() {
   cat <<'EOF'
 check   correctness of NEW_ROOT: check_topk.py (set mode) and check_long.py
@@ -16,12 +16,14 @@ builds  NEW_ROOT against MASTER/BASE/SORTED/FEAT_ROOT, rows from 64 to 2**25
 kn      NEW_ROOT against MASTER_ROOT with k from n/2 to n
 small   NEW_ROOT against MASTER_ROOT on rows of 8 to 48 elements, k 1 to n
 long    NEW_ROOT against MASTER_ROOT on a few rows of up to 2**28, k near n
-algo    radix select vs merge sort on short rows, sets the merge threshold
+algo    radix select vs merge sort on short rows, set the former merge threshold
         (needs ALGO_ROOT)
 algo3   radix select vs merge sort vs radix sort, including 1 byte types
         and rows of 64 to 256 (needs ALGO_ROOT)
 rowsn   the same three, varying the row count and n independently, to tell
         which of them the 1 byte crossover follows (needs ALGO_ROOT)
+sgn     the sub-group per row kernel against the work-group per row one and
+        radix sort on rows of 4 to 128, sets its bound (needs ALGO_ROOT)
 EOF
 }
 if [[ ${1:-} == --list || ${1:-} == -h ]]; then describe; exit 0; fi
@@ -192,6 +194,20 @@ suite_algo3() {
   bench algo3 "$gdt" "$cdt" "$mid" "$mid" "auto:{1, n//4, n//2, 3*n//4, n}" "${v[@]}"
   bench algo3 "$gdt" "$cdt" "$near" "$near" \
     "auto:{n//2, 3*n//4, n-1, n}" "${v[@]}"
+}
+
+suite_sgn() {
+  [[ -n $ALGO_ROOT ]] || { echo "sgn: ALGO_ROOT not set" >&2; return; }
+  # rows up to sub_group_max_n go to a kernel ranking each row in one
+  # sub-group, "sg" lets it take all it can hold (128 for a smallest sub-group
+  # of 16) and "wg" none, so the two show where the bound belongs. Below 16
+  # both only run because select is forced, merge shows what they replace.
+  local v=("sg=$ALGO_ROOT:DPNP_TOPK_ALGO=select;DPNP_TOPK_SG_MAX_N=1024"
+           "wg=$ALGO_ROOT:DPNP_TOPK_ALGO=select;DPNP_TOPK_SG_MAX_N=0"
+           "sort=$ALGO_ROOT:DPNP_TOPK_ALGO=sort" "merge=$ALGO_ROOT:DPNP_TOPK_ALGO=merge")
+  local c="1048576x4,524288x8,349525x12,262144x16,174762x24,131072x32"
+  c+=",87381x48,65536x64,54613x80,43690x96,32768x128"
+  bench sgn "i1 f4 i4 f8" "i1 f4 f8" "$c" "$c" "auto:{1, n//2, n}" "${v[@]}"
 }
 
 for s in $suites; do
