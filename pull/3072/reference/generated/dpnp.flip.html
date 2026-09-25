@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -1059,24 +1059,25 @@
 <dd><p>Reverse the order of elements in an array along the given axis.</p>
 <p>The shape of the array is preserved, but the elements are reordered.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.flip.html#numpy.flip" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.flip</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>m</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array.</p></li>
-<li><p><strong>axis</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><em>ints}</em><em>, </em><em>optional</em>) -- <p>Axis or axes along which to flip over. The default,
+<dd class="field-odd"><dl>
+<dt><strong>m</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}</span></dt><dd><p>Input array.</p>
+</dd>
+<dt><strong>axis</strong><span class="classifier">{None, int, tuple of ints}, optional</span></dt><dd><p>Axis or axes along which to flip over. The default,
 <code class="docutils literal notranslate"><span class="pre">axis=None</span></code>, will flip over all of the axes of the input array.
 If <cite>axis</cite> is negative it counts from the last to the first axis.
 If <cite>axis</cite> is a tuple of integers, flipping is performed on all of
 the axes specified in the tuple.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-</ul>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> -- A view of <cite>m</cite> with the entries of axis reversed.</p>
+<dd class="field-even"><dl class="simple">
+<dt><strong>out</strong><span class="classifier">dpnp.ndarray</span></dt><dd><p>A view of <cite>m</cite> with the entries of axis reversed.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray">dpnp.ndarray</a></p>
+</dl>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1200,6 +1201,5 @@ the axes specified in the tuple.</p>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

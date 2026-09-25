@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -1060,32 +1060,33 @@
 <p>This function is Array API compatible, contrary to <a class="reference internal" href="dpnp.diagonal.html#dpnp.diagonal" title="dpnp.diagonal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.diagonal</span></code></a>
 the matrix is assumed to be defined by the last two dimensions.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.diagonal.html#numpy.linalg.diagonal" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linalg.diagonal</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>(</em><em>...</em><em>, </em><em>M</em><em>, </em><em>N</em><em>) </em><em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array having shape (..., M, N) and whose innermost two
-dimensions form <code class="docutils literal notranslate"><span class="pre">MxN</span></code> matrices.</p></li>
-<li><p><strong>offset</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) -- <p>Offset specifying the off-diagonal relative to the main diagonal,
+<dd class="field-odd"><dl>
+<dt><strong>x</strong><span class="classifier">(..., M, N) {dpnp.ndarray, usm_ndarray}</span></dt><dd><p>Input array having shape (..., M, N) and whose innermost two
+dimensions form <code class="docutils literal notranslate"><span class="pre">MxN</span></code> matrices.</p>
+</dd>
+<dt><strong>offset</strong><span class="classifier">int, optional</span></dt><dd><p>Offset specifying the off-diagonal relative to the main diagonal,
 where:</p>
 <blockquote>
-<div><ul>
+<div><ul class="simple">
 <li><p>offset = 0: the main diagonal.</p></li>
 <li><p>offset &gt; 0: off-diagonal above the main diagonal.</p></li>
 <li><p>offset &lt; 0: off-diagonal below the main diagonal.</p></li>
 </ul>
 </div></blockquote>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
-</p></li>
-</ul>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> -- An array containing the diagonals and whose shape is determined by
+<dd class="field-even"><dl class="simple">
+<dt><strong>out</strong><span class="classifier">(...,min(N, M)) dpnp.ndarray</span></dt><dd><p>An array containing the diagonals and whose shape is determined by
 removing the last two dimensions and appending a dimension equal to
 the size of the resulting diagonals. The returned array must have
 the same data type as <cite>x</cite>.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>(...,min(N, M)) <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray">dpnp.ndarray</a></p>
+</dl>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1226,6 +1227,5 @@ on the flip function.</p>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

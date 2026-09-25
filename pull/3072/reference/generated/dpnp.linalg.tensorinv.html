@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -1058,23 +1058,24 @@
 <span class="sig-prename descclassname"><span class="pre">dpnp.linalg.</span></span><span class="sig-name descname"><span class="pre">tensorinv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/linalg/dpnp_iface_linalg.html#tensorinv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.linalg.tensorinv" title="Link to this definition">¶</a></dt>
 <dd><p>Compute the 'inverse' of an N-dimensional array.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.tensorinv.html#numpy.linalg.tensorinv" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linalg.tensorinv</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Tensor to <cite>invert</cite>. Its shape must be 'square', i. e.,
-<code class="docutils literal notranslate"><span class="pre">prod(a.shape[:ind])</span> <span class="pre">==</span> <span class="pre">prod(a.shape[ind:])</span></code>.</p></li>
-<li><p><strong>ind</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) -- <p>Number of first indices that are involved in the inverse sum.
+<dd class="field-odd"><dl>
+<dt><strong>a</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}</span></dt><dd><p>Tensor to <cite>invert</cite>. Its shape must be 'square', i. e.,
+<code class="docutils literal notranslate"><span class="pre">prod(a.shape[:ind])</span> <span class="pre">==</span> <span class="pre">prod(a.shape[ind:])</span></code>.</p>
+</dd>
+<dt><strong>ind</strong><span class="classifier">int, optional</span></dt><dd><p>Number of first indices that are involved in the inverse sum.
 Must be a positive integer.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">2</span></code>.</p>
-</p></li>
-</ul>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> -- The inverse of a tensor whose shape is equivalent to
+<dd class="field-even"><dl class="simple">
+<dt><strong>out</strong><span class="classifier">dpnp.ndarray</span></dt><dd><p>The inverse of a tensor whose shape is equivalent to
 <code class="docutils literal notranslate"><span class="pre">a.shape[ind:]</span> <span class="pre">+</span> <span class="pre">a.shape[:ind]</span></code>.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray">dpnp.ndarray</a></p>
+</dl>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1185,6 +1186,5 @@ Must be a positive integer.</p>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

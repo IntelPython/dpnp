@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -1059,22 +1059,22 @@
 <span class="sig-prename descclassname"><span class="pre">dpnp_array.</span></span><span class="sig-name descname"><span class="pre">view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_array.html#dpnp_array.view"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.dpnp_array.dpnp_array.view" title="Link to this definition">¶</a></dt>
 <dd><p>New view of array with the same data.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.view.html#numpy.ndarray.view" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.view</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dtype</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.dtype.str.html#dpnp.dtype.str" title="dpnp.dtype.str"><em>str</em></a><em>, </em><em>dtype object</em><em>, </em><em>type}</em><em>, </em><em>optional</em>) -- <p>The desired data type of the returned view, e.g. <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float32</span></code>
+<dd class="field-odd"><dl>
+<dt><strong>dtype</strong><span class="classifier">{None, str, dtype object, type}, optional</span></dt><dd><p>The desired data type of the returned view, e.g. <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float32</span></code>
 or <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.int16</span></code>. Omitting it results in the view having the
 same data type. Can also be a subclass of <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> to
 create a view of that type (this is equivalent to setting the <cite>type</cite>
 parameter).</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>type</strong> (<em>{None</em><em>, </em><em>type}</em><em>, </em><em>optional</em>) -- <p>Type of the returned view, e.g. a subclass of <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
+</dd>
+<dt><strong>type</strong><span class="classifier">{None, type}, optional</span></dt><dd><p>Type of the returned view, e.g. a subclass of <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
 If specified, the returned array will be an instance of <cite>type</cite>.
 Omitting it results in type preservation.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-</ul>
+</dd>
+</dl>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -1177,6 +1177,5 @@ contiguous last axis, even if the rest of the axes are not C-contiguous:</p>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -1060,34 +1060,31 @@
 <p>When only <cite>condition</cite> is provided, this function is a shorthand for
 <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.nonzero(condition)</span></code>.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.where.html#numpy.where" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.where</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>condition</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- When <code class="docutils literal notranslate"><span class="pre">True</span></code>, yield <cite>x</cite>, otherwise yield <cite>y</cite>.</p></li>
-<li><p><strong>x</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em><em>, </em><em>optional</em>) -- <p>Values from which to choose. <cite>x</cite>, <cite>y</cite> and <cite>condition</cite> need to be
+<dd class="field-odd"><dl>
+<dt><strong>condition</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}</span></dt><dd><p>When <code class="docutils literal notranslate"><span class="pre">True</span></code>, yield <cite>x</cite>, otherwise yield <cite>y</cite>.</p>
+</dd>
+<dt><strong>x, y</strong><span class="classifier">{None, dpnp.ndarray, usm_ndarray, scalar}, optional</span></dt><dd><p>Values from which to choose. <cite>x</cite>, <cite>y</cite> and <cite>condition</cite> need to be
 broadcastable to some shape.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>y</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em><em>, </em><em>optional</em>) -- <p>Values from which to choose. <cite>x</cite>, <cite>y</cite> and <cite>condition</cite> need to be
-broadcastable to some shape.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>order</strong> (<em>{None</em><em>, </em><em>&quot;C&quot;</em><em>, </em><em>&quot;F&quot;</em><em>, </em><em>&quot;A&quot;</em><em>, </em><em>&quot;K&quot;}</em><em>, </em><em>optional</em>) -- <p>Memory layout of the new output array, if keyword <cite>out</cite> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt><strong>order</strong><span class="classifier">{None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span></dt><dd><p>Memory layout of the new output array, if keyword <cite>out</cite> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;K&quot;</span></code>.</p>
-</p></li>
-<li><p><strong>out</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>The array into which the result is written. The data type of <cite>out</cite> must
+</dd>
+<dt><strong>out</strong><span class="classifier">{None, dpnp.ndarray, usm_ndarray}, optional</span></dt><dd><p>The array into which the result is written. The data type of <cite>out</cite> must
 match the expected shape and the expected data type of the result.
 If <code class="docutils literal notranslate"><span class="pre">None</span></code> then a new array is returned.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-</ul>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>y</strong> -- An array with elements from <cite>x</cite> when <cite>condition</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, and
+<dd class="field-even"><dl class="simple">
+<dt><strong>y</strong><span class="classifier">dpnp.ndarray</span></dt><dd><p>An array with elements from <cite>x</cite> when <cite>condition</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, and
 elements from <cite>y</cite> elsewhere.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray">dpnp.ndarray</a></p>
+</dl>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1212,6 +1209,5 @@ elements from <cite>y</cite> elsewhere.</p>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

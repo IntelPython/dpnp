@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -1059,44 +1059,45 @@
 <dd><p>Function to calculate only the edges of the bins used by the
 <a class="reference internal" href="dpnp.histogram.html#dpnp.histogram" title="dpnp.histogram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.histogram</span></code></a> function.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.histogram_bin_edges.html#numpy.histogram_bin_edges" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.histogram_bin_edges</span></code></a>.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This function may synchronize in order to check a monotonically increasing
-array of bin edges. This may harm performance in some applications.</p>
-</div>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input data. The histogram is computed over the flattened array.</p></li>
-<li><p><strong>bins</strong> (<em>{int</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, </em><em>usm_ndarray</em><em>, </em><em>sequence</em><em> of </em><em>scalars}</em><em>, </em><em>optional</em>) -- <p>If <cite>bins</cite> is an int, it defines the number of equal-width bins in the
+<dd class="field-odd"><dl>
+<dt><strong>a</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}</span></dt><dd><p>Input data. The histogram is computed over the flattened array.</p>
+</dd>
+<dt><strong>bins</strong><span class="classifier">{int, dpnp.ndarray, usm_ndarray, sequence of scalars}, optional</span></dt><dd><p>If <cite>bins</cite> is an int, it defines the number of equal-width bins in the
 given range.
 If <cite>bins</cite> is a sequence, it defines the bin edges, including the
 rightmost edge, allowing for non-uniform bin widths.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">10</span></code>.</p>
-</p></li>
-<li><p><strong>range</strong> (<em>{None</em><em>, </em><em>2-tuple</em><em> of </em><em>float}</em><em>, </em><em>optional</em>) -- <p>The lower and upper range of the bins. If not provided, range is simply
+</dd>
+<dt><strong>range</strong><span class="classifier">{None, 2-tuple of float}, optional</span></dt><dd><p>The lower and upper range of the bins. If not provided, range is simply
 <code class="docutils literal notranslate"><span class="pre">(a.min(),</span> <span class="pre">a.max())</span></code>. Values outside the range are ignored. The first
 element of the range must be less than or equal to the second. <cite>range</cite>
 affects the automatic bin computation as well. While bin width is
 computed to be optimal based on the actual data within <cite>range</cite>, the bin
 count will fill the entire range including portions containing no data.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>weights</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>An array of weights, of the same shape as <cite>a</cite>. Each value in <cite>a</cite> only
+</dd>
+<dt><strong>weights</strong><span class="classifier">{None, dpnp.ndarray, usm_ndarray}, optional</span></dt><dd><p>An array of weights, of the same shape as <cite>a</cite>. Each value in <cite>a</cite> only
 contributes its associated weight towards the bin count (instead of 1).
 This is currently not used by any of the bin estimators, but may be in
 the future.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>bin_edges</strong> -- The edges to pass into <a class="reference internal" href="dpnp.histogram.html#dpnp.histogram" title="dpnp.histogram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.histogram</span></code></a>.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>{dpnp.ndarray of floating data type}</p>
 </dd>
 </dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>bin_edges</strong><span class="classifier">{dpnp.ndarray of floating data type}</span></dt><dd><p>The edges to pass into <a class="reference internal" href="dpnp.histogram.html#dpnp.histogram" title="dpnp.histogram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.histogram</span></code></a>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This function may synchronize in order to check a monotonically increasing
+array of bin edges. This may harm performance in some applications.</p>
+</div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
@@ -1222,6 +1223,5 @@ each histogram:</p>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -1064,23 +1064,25 @@ split along the second axis except for 1-D arrays, where it is split at
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.hsplit.html#numpy.hsplit" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.hsplit</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ary</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Array to be divided into sub-arrays.</p></li>
-<li><p><strong>indices_or_sections</strong> (<em>{int</em><em>, </em><em>sequence</em><em> of </em><em>ints}</em>) -- If <cite>indices_or_sections</cite> is an integer, N, the array will be divided
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ary</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}</span></dt><dd><p>Array to be divided into sub-arrays.</p>
+</dd>
+<dt><strong>indices_or_sections</strong><span class="classifier">{int, sequence of ints}</span></dt><dd><p>If <cite>indices_or_sections</cite> is an integer, N, the array will be divided
 into N equal arrays along the second axis except for 1-D arrays, where
 it is split at the first axis. If such a split is not possible,
 an error is raised.
 If <cite>indices_or_sections</cite> is a sequence of sorted integers, the entries
 indicate where along the second axis the array is split. For 1-D arrays,
-the entries indicate where along the first axis the array is split.</p></li>
-</ul>
+the entries indicate where along the first axis the array is split.</p>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>sub-arrays</strong> -- A list of sub arrays. Each array is a view of the corresponding input
+<dd class="field-even"><dl class="simple">
+<dt><strong>sub-arrays</strong><span class="classifier">list of dpnp.ndarray</span></dt><dd><p>A list of sub arrays. Each array is a view of the corresponding input
 array.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)">list</a> of <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray">dpnp.ndarray</a></p>
+</dl>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1218,6 +1220,5 @@ array.</p>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -1059,27 +1059,29 @@
 <dd><p>Return an array drawn from elements in <cite>choicelist</cite>, depending on
 conditions.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.select.html#numpy.select" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.select</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>condlist</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><em>bool dpnp.ndarray</em><em> or </em><em>usm_ndarray</em>) -- The list of conditions which determine from which array in <cite>choicelist</cite>
+<dd class="field-odd"><dl>
+<dt><strong>condlist</strong><span class="classifier">list of bool dpnp.ndarray or usm_ndarray</span></dt><dd><p>The list of conditions which determine from which array in <cite>choicelist</cite>
 the output elements are taken. When multiple conditions are satisfied,
-the first one encountered in <cite>condlist</cite> is used.</p></li>
-<li><p><strong>choicelist</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em> or </em><em>usm_ndarray</em>) -- The list of arrays from which the output elements are taken. It has
-to be of the same length as <cite>condlist</cite>.</p></li>
-<li><p><strong>default</strong> (<em>{scalar</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>The element inserted in <cite>output</cite> when all conditions evaluate to
+the first one encountered in <cite>condlist</cite> is used.</p>
+</dd>
+<dt><strong>choicelist</strong><span class="classifier">list of dpnp.ndarray or usm_ndarray</span></dt><dd><p>The list of arrays from which the output elements are taken. It has
+to be of the same length as <cite>condlist</cite>.</p>
+</dd>
+<dt><strong>default</strong><span class="classifier">{scalar, dpnp.ndarray, usm_ndarray}, optional</span></dt><dd><p>The element inserted in <cite>output</cite> when all conditions evaluate to
 <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
-</p></li>
-</ul>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> -- The output at position m is the m-th element of the array in
+<dd class="field-even"><dl class="simple">
+<dt><strong>out</strong><span class="classifier">dpnp.ndarray</span></dt><dd><p>The output at position m is the m-th element of the array in
 <cite>choicelist</cite> where the m-th element of the corresponding array in
 <cite>condlist</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray">dpnp.ndarray</a></p>
+</dl>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1201,6 +1203,5 @@ are squared, and elements not meeting either of these conditions
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

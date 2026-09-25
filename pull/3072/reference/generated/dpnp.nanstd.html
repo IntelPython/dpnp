@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -1059,77 +1059,64 @@
 <dd><p>Compute the standard deviation along the specified axis,
 while ignoring NaNs.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.nanstd.html#numpy.nanstd" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.nanstd</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array.</p></li>
-<li><p><strong>axis</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><em>ints}</em><em>, </em><em>optional</em>) -- <p>Axis or axes along which the standard deviations must be computed.
+<dd class="field-odd"><dl>
+<dt><strong>a</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}</span></dt><dd><p>Input array.</p>
+</dd>
+<dt><strong>axis</strong><span class="classifier">{None, int, tuple of ints}, optional</span></dt><dd><p>Axis or axes along which the standard deviations must be computed.
 If a tuple of unique integers is given, the standard deviations are
 computed over multiple axes. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the standard deviation is
 computed over the entire array.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>dtype</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.dtype.str.html#dpnp.dtype.str" title="dpnp.dtype.str"><em>str</em></a><em>, </em><em>dtype object}</em><em>, </em><em>optional</em>) -- <p>Type to use in computing the standard deviation. By default, if <cite>a</cite> has
+</dd>
+<dt><strong>dtype</strong><span class="classifier">{None, str, dtype object}, optional</span></dt><dd><p>Type to use in computing the standard deviation. By default, if <cite>a</cite> has
 a floating-point data type, the returned array will have the same data
 type as <cite>a</cite>. If <cite>a</cite> has a boolean or integral data type, the returned
 array will have the default floating point data type for the device
 where input array <cite>a</cite> is allocated.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>out</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>Alternative output array in which to place the result. It must have
+</dd>
+<dt><strong>out</strong><span class="classifier">{None, dpnp.ndarray, usm_ndarray}, optional</span></dt><dd><p>Alternative output array in which to place the result. It must have
 the same shape as the expected output but the type (of the calculated
 values) will be cast if necessary.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>ddof</strong> (<em>{int</em><em>, </em><em>float}</em><em>, </em><em>optional</em>) -- <p>Means Delta Degrees of Freedom. The divisor used in calculations is
+</dd>
+<dt><strong>ddof</strong><span class="classifier">{int, float}, optional</span></dt><dd><p>Means Delta Degrees of Freedom. The divisor used in calculations is
 <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">-</span> <span class="pre">ddof</span></code>, where <code class="docutils literal notranslate"><span class="pre">N</span></code> the number of non-NaN elements.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">0.0</span></code>.</p>
-</p></li>
-<li><p><strong>keepdims</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the reduced axes (dimensions) are included in the result
+</dd>
+<dt><strong>keepdims</strong><span class="classifier">{None, bool}, optional</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the reduced axes (dimensions) are included in the result
 as singleton dimensions, so that the returned array remains compatible
 with the input array according to Array Broadcasting rules. Otherwise,
 if <code class="docutils literal notranslate"><span class="pre">False</span></code>, the reduced axes are not included in the returned array.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
-</p></li>
-<li><p><strong>mean</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>Provide the mean to prevent its recalculation. The mean should have
+</dd>
+<dt><strong>mean</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}, optional</span></dt><dd><p>Provide the mean to prevent its recalculation. The mean should have
 a shape as if it was calculated with <code class="docutils literal notranslate"><span class="pre">keepdims=True</span></code>.
 The axis for the calculation of the mean should be the same as used in
 the call to this <cite>nanstd</cite> function.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>correction</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>float}</em><em>, </em><em>optional</em>) -- <p>Array API compatible name for the <cite>ddof</cite> parameter. Only one of them
+</dd>
+<dt><strong>correction</strong><span class="classifier">{None, int, float}, optional</span></dt><dd><p>Array API compatible name for the <cite>ddof</cite> parameter. Only one of them
 can be provided at the same time.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-</ul>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> -- An array containing the standard deviations. If the standard deviation
+<dd class="field-even"><dl class="simple">
+<dt><strong>out</strong><span class="classifier">dpnp.ndarray</span></dt><dd><p>An array containing the standard deviations. If the standard deviation
 was computed over the entire array, a zero-dimensional array is
 returned. If <cite>ddof</cite> is &gt;= the number of non-NaN elements in a slice or
 the slice contains only NaNs, then the result for that slice is NaN.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray">dpnp.ndarray</a></p>
+</dl>
 </dd>
 </dl>
 <p class="rubric">Limitations</p>
 <p>Parameters <cite>where</cite> is only supported with its default value.
 Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> exception will be raised.</p>
-<p class="rubric">Notes</p>
-<p>The standard deviation is the square root of the average of the squared
-deviations from the mean: <code class="docutils literal notranslate"><span class="pre">std</span> <span class="pre">=</span> <span class="pre">sqrt(mean(abs(x</span> <span class="pre">-</span> <span class="pre">x.mean())**2))</span></code>.</p>
-<p>The average squared deviation is normally calculated as <code class="docutils literal notranslate"><span class="pre">x.sum()</span> <span class="pre">/</span> <span class="pre">N</span></code>,
-where <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">=</span> <span class="pre">len(x)</span></code>. If, however, <cite>ddof</cite> is specified, the divisor
-<code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">-</span> <span class="pre">ddof</span></code> is used instead. In standard statistical practice, <code class="docutils literal notranslate"><span class="pre">ddof=1</span></code>
-provides an unbiased estimator of the variance of the infinite population.
-<code class="docutils literal notranslate"><span class="pre">ddof=0</span></code> provides a maximum likelihood estimate of the variance for
-normally distributed variables.
-The standard deviation computed in this function is the square root of
-the estimated variance, so even with <code class="docutils literal notranslate"><span class="pre">ddof=1</span></code>, it will not be an unbiased
-estimate of the standard deviation per se.</p>
-<p>Note that, for complex numbers, the absolute value is taken before
-squaring, so that the result is always real and non-negative.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
@@ -1145,6 +1132,20 @@ squaring, so that the result is always real and non-negative.</p>
 </dd>
 </dl>
 </div>
+<p class="rubric">Notes</p>
+<p>The standard deviation is the square root of the average of the squared
+deviations from the mean: <code class="docutils literal notranslate"><span class="pre">std</span> <span class="pre">=</span> <span class="pre">sqrt(mean(abs(x</span> <span class="pre">-</span> <span class="pre">x.mean())**2))</span></code>.</p>
+<p>The average squared deviation is normally calculated as <code class="docutils literal notranslate"><span class="pre">x.sum()</span> <span class="pre">/</span> <span class="pre">N</span></code>,
+where <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">=</span> <span class="pre">len(x)</span></code>. If, however, <cite>ddof</cite> is specified, the divisor
+<code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">-</span> <span class="pre">ddof</span></code> is used instead. In standard statistical practice, <code class="docutils literal notranslate"><span class="pre">ddof=1</span></code>
+provides an unbiased estimator of the variance of the infinite population.
+<code class="docutils literal notranslate"><span class="pre">ddof=0</span></code> provides a maximum likelihood estimate of the variance for
+normally distributed variables.
+The standard deviation computed in this function is the square root of
+the estimated variance, so even with <code class="docutils literal notranslate"><span class="pre">ddof=1</span></code>, it will not be an unbiased
+estimate of the standard deviation per se.</p>
+<p>Note that, for complex numbers, the absolute value is taken before
+squaring, so that the result is always real and non-negative.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
@@ -1242,6 +1243,5 @@ squaring, so that the result is always real and non-negative.</p>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -1061,19 +1061,21 @@
 <p>Return random integers from the “discrete uniform” distribution of the specified type
 in the “half-open” interval [low, high).</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.RandomState.randint.html#numpy.random.RandomState.randint" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState.randint</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>usm_type</strong> (<em>{&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;}</em><em>, </em><em>optional</em>) -- <p>The type of SYCL USM allocation for the output array.</p>
+<dd class="field-odd"><dl>
+<dt><strong>usm_type</strong><span class="classifier">{&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span></dt><dd><p>The type of SYCL USM allocation for the output array.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code>.</p>
-</p>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> -- <cite>size</cite>-shaped array of random integers from the appropriate distribution,
+<dd class="field-even"><dl class="simple">
+<dt><strong>out</strong><span class="classifier">dpnp.ndarray</span></dt><dd><p><cite>size</cite>-shaped array of random integers from the appropriate distribution,
 or a single such random int if <cite>size</cite> is not provided.
 Output array data type is the same as input <cite>dtype</cite>.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray">dpnp.ndarray</a></p>
+</dl>
 </dd>
 </dl>
 <p class="rubric">Limitations</p>
@@ -1081,18 +1083,18 @@ Output array data type is the same as input <cite>dtype</cite>.</p>
 Parameter <cite>dtype</cite> is supported only as <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.int32</span></code> or <code class="docutils literal notranslate"><span class="pre">int</span></code>,
 but <code class="docutils literal notranslate"><span class="pre">int</span></code> value is considered to be exactly equivalent to <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.int32</span></code>.
 Otherwise, <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState.randint(low,</span> <span class="pre">high,</span> <span class="pre">size,</span> <span class="pre">dtype)</span></code> samples are drawn.</p>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">()</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
-<span class="go">[0 1 1 1 1 0 0 0 0 1]</span>
-</pre></div>
-</div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
 <dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.random.RandomState.random_integers</span></code></dt><dd><p>similar to <cite>randint</cite>, only for the closed interval [<cite>low</cite>, <cite>high</cite>], and 1 is the lowest value if <cite>high</cite> is omitted.</p>
 </dd>
 </dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">()</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="go">[0 1 1 1 1 0 0 0 0 1]</span>
+</pre></div>
 </div>
 </dd></dl>
 
@@ -1155,6 +1157,5 @@ Otherwise, <code class="xref py py-obj docutils literal notranslate"><span class
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

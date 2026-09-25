@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -1058,23 +1058,25 @@
 <dt class="sig sig-object py" id="dpnp.ndarray.__array_namespace__">
 <span class="sig-prename descclassname"><span class="pre">ndarray.</span></span><span class="sig-name descname"><span class="pre">__array_namespace__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.ndarray.__array_namespace__" title="Link to this definition">¶</a></dt>
 <dd><p>Return array namespace, member functions of which implement data API.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>api_version</strong> (<em>{None</em><em>, </em><em>str}</em><em>, </em><em>optional</em>) -- <p>Request namespace compliant with given version of array API. If
+<dd class="field-odd"><dl>
+<dt><strong>api_version</strong><span class="classifier">{None, str}, optional</span></dt><dd><p>Request namespace compliant with given version of array API. If
 <code class="docutils literal notranslate"><span class="pre">None</span></code>, namespace for the most recent supported version is
 returned.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> -- An object representing the array API namespace. It should have
+<dd class="field-even"><dl class="simple">
+<dt><strong>out</strong><span class="classifier">any</span></dt><dd><p>An object representing the array API namespace. It should have
 every top-level function defined in the specification as
 an attribute. It may contain other public names as well, but it is
 recommended to only include those names that are part of the
 specification.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>any</p>
+</dl>
 </dd>
 </dl>
 </dd></dl>
@@ -1156,6 +1158,5 @@ specification.</p>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

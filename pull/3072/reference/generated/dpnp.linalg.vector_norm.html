@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -1059,33 +1059,34 @@
 <dd><p>Computes the vector norm of a vector (or batch of vectors) <cite>x</cite>.</p>
 <p>This function is Array API compatible.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.vector_norm.html#numpy.linalg.vector_norm" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linalg.vector_norm</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array.</p></li>
-<li><p><strong>axis</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>n-tuple</em><em> of </em><em>ints}</em><em>, </em><em>optional</em>) -- <p>If an integer, <cite>axis</cite> specifies the axis (dimension) along which
+<dd class="field-odd"><dl>
+<dt><strong>x</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}</span></dt><dd><p>Input array.</p>
+</dd>
+<dt><strong>axis</strong><span class="classifier">{None, int, n-tuple of ints}, optional</span></dt><dd><p>If an integer, <cite>axis</cite> specifies the axis (dimension) along which
 to compute vector norms. If an n-tuple, <cite>axis</cite> specifies the axes
 (dimensions) along which to compute batched vector norms. If <code class="docutils literal notranslate"><span class="pre">None</span></code>,
 the vector norm must be computed over all array values (i.e.,
 equivalent to computing the vector norm of a flattened array).</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>keepdims</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- <p>If this is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, the axes which are normed over are left in
+</dd>
+<dt><strong>keepdims</strong><span class="classifier">{None, bool}, optional</span></dt><dd><p>If this is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, the axes which are normed over are left in
 the result as dimensions with size one. With this option the result
 will broadcast correctly against the original <cite>x</cite>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
-</p></li>
-<li><p><strong>ord</strong> (<em>{int</em><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><a class="reference internal" href="../constants.html#dpnp.inf" title="dpnp.inf"><em>inf</em></a><em>, </em><em>-inf</em><em>, </em><em>'fro'</em><em>, </em><em>'nuc'}</em><em>, </em><em>optional</em>) -- <p>The order of the norm. For details see the table under <code class="docutils literal notranslate"><span class="pre">Notes</span></code>
+</dd>
+<dt><strong>ord</strong><span class="classifier">{int, float, inf, -inf, 'fro', 'nuc'}, optional</span></dt><dd><p>The order of the norm. For details see the table under <code class="docutils literal notranslate"><span class="pre">Notes</span></code>
 section in <a class="reference internal" href="dpnp.linalg.norm.html#dpnp.linalg.norm" title="dpnp.linalg.norm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.norm</span></code></a>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">2</span></code>.</p>
-</p></li>
-</ul>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> -- Norm of the vector.</p>
+<dd class="field-even"><dl class="simple">
+<dt><strong>out</strong><span class="classifier">dpnp.ndarray</span></dt><dd><p>Norm of the vector.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray">dpnp.ndarray</a></p>
+</dl>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1204,6 +1205,5 @@ section in <a class="reference internal" href="dpnp.linalg.norm.html#dpnp.linalg
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

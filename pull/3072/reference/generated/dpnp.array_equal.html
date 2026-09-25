@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -1059,23 +1059,25 @@
 <dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if two arrays have the same shape and elements, <code class="docutils literal notranslate"><span class="pre">False</span></code>
 otherwise.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.array_equal.html#numpy.array_equal" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.array_equal</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>a1</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- First input array.</p></li>
-<li><p><strong>a2</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- Second input array.</p></li>
-<li><p><strong>equal_nan</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>Whether to compare <code class="docutils literal notranslate"><span class="pre">NaNs</span></code> as equal. If the dtype of <cite>a1</cite> and <cite>a2</cite> is
+<dd class="field-odd"><dl>
+<dt><strong>a1</strong><span class="classifier">{dpnp.ndarray, usm_ndarray, scalar}</span></dt><dd><p>First input array.</p>
+</dd>
+<dt><strong>a2</strong><span class="classifier">{dpnp.ndarray, usm_ndarray, scalar}</span></dt><dd><p>Second input array.</p>
+</dd>
+<dt><strong>equal_nan</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to compare <code class="docutils literal notranslate"><span class="pre">NaNs</span></code> as equal. If the dtype of <cite>a1</cite> and <cite>a2</cite> is
 complex, values will be considered equal if either the real or the
 imaginary component of a given value is <code class="docutils literal notranslate"><span class="pre">NaN</span></code>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
-</p></li>
-</ul>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> -- A 0-d array with <code class="docutils literal notranslate"><span class="pre">True</span></code> value if the arrays are equal.</p>
+<dd class="field-even"><dl class="simple">
+<dt><strong>out</strong><span class="classifier">dpnp.ndarray of bool dtype</span></dt><dd><p>A 0-d array with <code class="docutils literal notranslate"><span class="pre">True</span></code> value if the arrays are equal.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray">dpnp.ndarray</a> of bool dtype</p>
+</dl>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1206,6 +1208,5 @@ considered equal if either the real <em>or</em> the imaginary components are
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

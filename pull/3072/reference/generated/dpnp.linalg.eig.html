@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -1060,31 +1060,27 @@
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.eig.html#numpy.linalg.eig" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linalg.eig</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>a</strong> (<em>(</em><em>...</em><em>, </em><em>M</em><em>, </em><em>M</em><em>) </em><em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Matrices for which the eigenvalues and right eigenvectors will
+<dd class="field-odd"><dl class="simple">
+<dt><strong>a</strong><span class="classifier">(..., M, M) {dpnp.ndarray, usm_ndarray}</span></dt><dd><p>Matrices for which the eigenvalues and right eigenvectors will
 be computed.</p>
 </dd>
+</dl>
+</dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>A namedtuple with the following attributes</dt><dd><ul class="simple">
-<li><p><strong>eigenvalues</strong> (<em>(..., M) dpnp.ndarray</em>) -- The eigenvalues, each repeated according to its multiplicity.
+<dd class="field-even"><dl class="simple">
+<dt><strong>eigenvalues</strong><span class="classifier">(..., M) dpnp.ndarray</span></dt><dd><p>The eigenvalues, each repeated according to its multiplicity.
 The eigenvalues are not necessarily ordered. The resulting array is
 always of complex type, even when <cite>a</cite> is real-valued. In that case the
 eigenvalues either have a zero imaginary part or occur in conjugate
-pairs.</p></li>
-<li><p><strong>eigenvectors</strong> (<em>(..., M, M) dpnp.ndarray</em>) -- The normalized (unit &quot;length&quot;) eigenvectors, such that the column
+pairs.</p>
+</dd>
+<dt><strong>eigenvectors</strong><span class="classifier">(..., M, M) dpnp.ndarray</span></dt><dd><p>The normalized (unit &quot;length&quot;) eigenvectors, such that the column
 <code class="docutils literal notranslate"><span class="pre">eigenvectors[:,i]</span></code> is the eigenvector corresponding to the
-eigenvalue <code class="docutils literal notranslate"><span class="pre">eigenvalues[i]</span></code>.</p></li>
-</ul>
+eigenvalue <code class="docutils literal notranslate"><span class="pre">eigenvalues[i]</span></code>.</p>
 </dd>
 </dl>
-</p>
 </dd>
 </dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Since there is no proper OneMKL LAPACK function, DPNP will calculate
-through a fallback on NumPy call.</p>
-</div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
@@ -1096,6 +1092,9 @@ through a fallback on NumPy call.</p>
 </dd>
 </dl>
 </div>
+<p class="rubric">Notes</p>
+<p>Since there is no proper OneMKL LAPACK function, DPNP will calculate
+through a fallback on NumPy call.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="kn">import</span> <span class="n">linalg</span> <span class="k">as</span> <span class="n">LA</span>
@@ -1218,6 +1217,5 @@ eigenvectors); note that <code class="docutils literal notranslate"><span class=
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

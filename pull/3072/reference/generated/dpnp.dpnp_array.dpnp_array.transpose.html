@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -1061,7 +1061,8 @@
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.transpose.html#numpy.ndarray.transpose" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.transpose</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>axes</strong> (<em>None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><em>ints</em><em>, </em><em>n ints</em><em>, </em><em>optional</em>) -- <ul class="simple">
+<dd class="field-odd"><dl class="simple">
+<dt><strong>axes</strong><span class="classifier">None, tuple or list of ints, n ints, optional</span></dt><dd><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">None</span></code> or no argument: reverses the order of the axes.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tuple</span> <span class="pre">or</span> <span class="pre">list</span> <span class="pre">of</span> <span class="pre">ints</span></code>: <cite>i</cite> in the <cite>j</cite>-th place in the
 tuple/list means that the array’s <cite>i</cite>-th axis becomes the
@@ -1071,13 +1072,14 @@ Negative indices can also be used to specify axes.</p></li>
 form is intended simply as a “convenience” alternative to the
 tuple form).</p></li>
 </ul>
-</p>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> -- View of the array with its axes suitably permuted.</p>
+<dd class="field-even"><dl class="simple">
+<dt><strong>out</strong><span class="classifier">dpnp.ndarray</span></dt><dd><p>View of the array with its axes suitably permuted.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray">dpnp.ndarray</a></p>
+</dl>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1173,6 +1175,5 @@ tuple form).</p></li>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

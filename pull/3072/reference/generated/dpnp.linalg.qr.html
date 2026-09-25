@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -1060,42 +1060,45 @@
 <p>Factor the matrix <cite>a</cite> as <em>qr</em>, where <cite>q</cite> is orthonormal and <cite>r</cite> is
 upper-triangular.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.qr.html#numpy.linalg.qr" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linalg.qr</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- The input array with the dimensionality of at least 2.</p></li>
-<li><p><strong>mode</strong> (<em>{&quot;reduced&quot;</em><em>, </em><em>&quot;complete&quot;</em><em>, </em><em>&quot;r&quot;</em><em>, </em><em>&quot;raw&quot;}</em><em>, </em><em>optional</em>) -- <p>If K = min(M, N), then</p>
-<ul>
+<dd class="field-odd"><dl>
+<dt><strong>a</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}</span></dt><dd><p>The input array with the dimensionality of at least 2.</p>
+</dd>
+<dt><strong>mode</strong><span class="classifier">{&quot;reduced&quot;, &quot;complete&quot;, &quot;r&quot;, &quot;raw&quot;}, optional</span></dt><dd><p>If K = min(M, N), then</p>
+<ul class="simple">
 <li><p>&quot;reduced&quot; : returns Q, R with dimensions (…, M, K), (…, K, N)</p></li>
 <li><p>&quot;complete&quot; : returns Q, R with dimensions (…, M, M), (…, M, N)</p></li>
 <li><p>&quot;r&quot; : returns R only with dimensions (…, K, N)</p></li>
 <li><p>&quot;raw&quot; : returns h, tau with dimensions (…, N, M), (…, K,)</p></li>
 </ul>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;reduced&quot;</span></code>.</p>
-</p></li>
-</ul>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><p>When mode is &quot;reduced&quot; or &quot;complete&quot;, the result will be a namedtuple with
-the attributes <cite>Q</cite> and <cite>R</cite></p>
-<blockquote>
-<div><ul class="simple">
-<li><p><strong>Q</strong> (<em>dpnp.ndarray of float or complex, optional</em>) -- A matrix with orthonormal columns.
+<dd class="field-even"><dl class="simple">
+<dt><strong>Q</strong><span class="classifier">dpnp.ndarray of float or complex, optional</span></dt><dd><p>A matrix with orthonormal columns.
 When mode is <code class="docutils literal notranslate"><span class="pre">&quot;complete&quot;</span></code> the result is an orthogonal/unitary matrix
 depending on whether or not <cite>a</cite> is real/complex. The determinant may be
 either <code class="docutils literal notranslate"><span class="pre">+/-</span> <span class="pre">1</span></code> in that case. In case the number of dimensions in the
 input array is greater than 2 then a stack of the matrices with above
-properties is returned.</p></li>
-<li><p><strong>R</strong> (<em>dpnp.ndarray of float or complex, optional</em>) -- The upper-triangular matrix or a stack of upper-triangular matrices if
-the number of dimensions in the input array is greater than 2.</p></li>
-<li><p><strong>(h, tau)</strong> (<em>tuple of dpnp.ndarray of float or complex, optional</em>) -- The array <cite>h</cite> contains the Householder reflectors that generate <cite>Q</cite>
+properties is returned.</p>
+</dd>
+<dt><strong>R</strong><span class="classifier">dpnp.ndarray of float or complex, optional</span></dt><dd><p>The upper-triangular matrix or a stack of upper-triangular matrices if
+the number of dimensions in the input array is greater than 2.</p>
+</dd>
+<dt><strong>(h, tau)</strong><span class="classifier">tuple of dpnp.ndarray of float or complex, optional</span></dt><dd><p>The array <cite>h</cite> contains the Householder reflectors that generate <cite>Q</cite>
 along with <cite>R</cite>. The <cite>tau</cite> array contains scaling factors for the
-reflectors.</p></li>
-</ul>
-</div></blockquote>
-</p>
+reflectors.</p>
 </dd>
 </dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>When <cite>mode</cite> is <code class="docutils literal notranslate"><span class="pre">&quot;reduced&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;complete&quot;</span></code>, the result is a namedtuple
+with the attributes <cite>Q</cite> and <cite>R</cite>. When <cite>mode</cite> is <code class="docutils literal notranslate"><span class="pre">&quot;raw&quot;</span></code>, it returns
+<code class="docutils literal notranslate"><span class="pre">(h,</span> <span class="pre">tau)</span></code>.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
@@ -1194,6 +1197,5 @@ reflectors.</p></li>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

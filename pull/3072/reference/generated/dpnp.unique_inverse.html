@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -1060,17 +1060,18 @@
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.unique_inverse.html#numpy.unique_inverse" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.unique_inverse</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array. It will be flattened if it is not already 1-D.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>A namedtuple with the following attributes</dt><dd><ul class="simple">
-<li><p><strong>values</strong> (<em>dpnp.ndarray</em>) -- The unique elements of an input array.</p></li>
-<li><p><strong>inverse_indices</strong> (<em>dpnp.ndarray</em>) -- The indices from the set of unique elements that reconstruct <cite>x</cite>.</p></li>
-</ul>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}</span></dt><dd><p>Input array. It will be flattened if it is not already 1-D.</p>
 </dd>
 </dl>
-</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>values</strong><span class="classifier">dpnp.ndarray</span></dt><dd><p>The unique elements of an input array.</p>
+</dd>
+<dt><strong>inverse_indices</strong><span class="classifier">dpnp.ndarray</span></dt><dd><p>The indices from the set of unique elements that reconstruct <cite>x</cite>.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1169,6 +1170,5 @@
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

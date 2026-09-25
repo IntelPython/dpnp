@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -1059,42 +1059,43 @@
 <dd><p>Return the sum of array elements over a given axis treating
 Not a Numbers (NaNs) as zero.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.nansum.html#numpy.nansum" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.nansum</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array.</p></li>
-<li><p><strong>axis</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><em>ints}</em><em>, </em><em>optional</em>) -- <p>Axis or axes along which the sum is computed. The default is to compute
+<dd class="field-odd"><dl>
+<dt><strong>a</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}</span></dt><dd><p>Input array.</p>
+</dd>
+<dt><strong>axis</strong><span class="classifier">{None, int or tuple of ints}, optional</span></dt><dd><p>Axis or axes along which the sum is computed. The default is to compute
 the sum of the flattened array.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>dtype</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.dtype.str.html#dpnp.dtype.str" title="dpnp.dtype.str"><em>str</em></a><em>, </em><em>dtype object}</em><em>, </em><em>optional</em>) -- <p>The type of the returned array and of the accumulator in which the
+</dd>
+<dt><strong>dtype</strong><span class="classifier">{None, str, dtype object}, optional</span></dt><dd><p>The type of the returned array and of the accumulator in which the
 elements are summed. By default, the dtype of <cite>a</cite> is used. An exception
 is when <cite>a</cite> has an integer type with less precision than the platform
 (u)intp. In that case, the default will be either (u)int32 or (u)int64
 depending on whether the platform is 32 or 64 bits. For inexact inputs,
 dtype must be inexact.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>out</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>Alternate output array in which to place the result. If provided, it
+</dd>
+<dt><strong>out</strong><span class="classifier">{None, dpnp.ndarray, usm_ndarray}, optional</span></dt><dd><p>Alternate output array in which to place the result. If provided, it
 must have the same shape as the expected output, but the type will be
 cast if necessary. The casting of NaN to integer can yield unexpected
 results.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>keepdims</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- <p>If this is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, the axes which are reduced are left in the
+</dd>
+<dt><strong>keepdims</strong><span class="classifier">{None, bool}, optional</span></dt><dd><p>If this is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, the axes which are reduced are left in the
 result as dimensions with size one. With this option, the result will
 broadcast correctly against the original <cite>a</cite>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
-</p></li>
-</ul>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> -- A new array holding the result is returned unless <cite>out</cite> is specified,
+<dd class="field-even"><dl class="simple">
+<dt><strong>out</strong><span class="classifier">dpnp.ndarray</span></dt><dd><p>A new array holding the result is returned unless <cite>out</cite> is specified,
 in which it is returned. The result has the same size as <cite>a</cite>, and the
 same shape as <cite>a</cite> if <cite>axis</cite> is not <code class="docutils literal notranslate"><span class="pre">None</span></code> or <cite>a</cite> is a 1-d array.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray">dpnp.ndarray</a></p>
+</dl>
 </dd>
 </dl>
 <p class="rubric">Limitations</p>
@@ -1213,6 +1214,5 @@ A Number (NaN).</p>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

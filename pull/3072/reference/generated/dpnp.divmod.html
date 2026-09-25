@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -1060,53 +1060,48 @@
 input array <cite>x1</cite> with the respective element <span class="math notranslate nohighlight">\(x2_i\)</span> of the input array
 <cite>x2</cite>.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.divmod.html#numpy.divmod" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.divmod</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x1</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Dividend input array, expected to have a real-valued floating-point data
-type.</p></li>
-<li><p><strong>x2</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Divisor input array, expected to have a real-valued floating-point data
-type.</p></li>
-<li><p><strong>out1</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>Output array for the quotient to populate. Array must have a shape that
+<dd class="field-odd"><dl>
+<dt><strong>x1</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}</span></dt><dd><p>Dividend input array, expected to have a real-valued floating-point data
+type.</p>
+</dd>
+<dt><strong>x2</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}</span></dt><dd><p>Divisor input array, expected to have a real-valued floating-point data
+type.</p>
+</dd>
+<dt><strong>out1</strong><span class="classifier">{None, dpnp.ndarray, usm_ndarray}, optional</span></dt><dd><p>Output array for the quotient to populate. Array must have a shape that
 the inputs broadcast to and the expected data type.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>out2</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>Output array for the remainder to populate. Array must have a shape that
+</dd>
+<dt><strong>out2</strong><span class="classifier">{None, dpnp.ndarray, usm_ndarray}, optional</span></dt><dd><p>Output array for the remainder to populate. Array must have a shape that
 the inputs broadcast to and the expected data type.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>out</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><em>None</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, or </em><em>usm_ndarray</em><em>, </em><em>optional</em>) -- <p>A location into which the result is stored. If provided, it must be a tuple
+</dd>
+<dt><strong>out</strong><span class="classifier">tuple of None, dpnp.ndarray, or usm_ndarray, optional</span></dt><dd><p>A location into which the result is stored. If provided, it must be a tuple
 and have length equal to the number of outputs. Each provided array must
 have a shape that the inputs broadcast to and the expected data type.
 It is prohibited to pass output arrays through <cite>out</cite> keyword when either
 <cite>out1</cite> or <cite>out2</cite> is passed.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">(None,</span> <span class="pre">None)</span></code>.</p>
-</p></li>
-<li><p><strong>order</strong> (<em>{None</em><em>, </em><em>&quot;C&quot;</em><em>, </em><em>&quot;F&quot;</em><em>, </em><em>&quot;A&quot;</em><em>, </em><em>&quot;K&quot;}</em><em>, </em><em>optional</em>) -- <p>Memory layout of the newly output array, if parameter <cite>out</cite> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt><strong>order</strong><span class="classifier">{None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span></dt><dd><p>Memory layout of the newly output array, if parameter <cite>out</cite> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;K&quot;</span></code>.</p>
-</p></li>
-</ul>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>quotient</strong> (<em>dpnp.ndarray</em>) -- Element-wise quotient resulting from floor division.</p></li>
-<li><p><strong>remainder</strong> (<em>dpnp.ndarray</em>) -- Element-wise remainder from floor division.</p></li>
-</ul>
-</p>
+<dd class="field-even"><dl class="simple">
+<dt><strong>quotient</strong><span class="classifier">dpnp.ndarray</span></dt><dd><p>Element-wise quotient resulting from floor division.</p>
+</dd>
+<dt><strong>remainder</strong><span class="classifier">dpnp.ndarray</span></dt><dd><p>Element-wise remainder from floor division.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 <p class="rubric">Limitations</p>
 <p>Parameters <cite>where</cite>, <cite>dtype</cite> and <cite>subok</cite> are supported with their default values.
 Keyword argument <cite>kwargs</cite> is currently unsupported.
 Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> exception will be raised.</p>
-<p class="rubric">Notes</p>
-<p>At least one of <cite>x1</cite> or <cite>x2</cite> must be an array.</p>
-<p>If <code class="docutils literal notranslate"><span class="pre">x1.shape</span> <span class="pre">!=</span> <span class="pre">x2.shape</span></code>, they must be broadcastable to a common shape
-(which becomes the shape of the output).</p>
-<p>Equivalent to <span class="math notranslate nohighlight">\((x1 // x2, x1 \% x2)\)</span>, but faster because it avoids
-redundant work. It is used to implement the Python built-in function
-<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#divmod" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">divmod()</span></code></a> on <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.</p>
-<p>Complex dtypes are not supported, they will raise a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
@@ -1118,6 +1113,14 @@ redundant work. It is used to implement the Python built-in function
 </dd>
 </dl>
 </div>
+<p class="rubric">Notes</p>
+<p>At least one of <cite>x1</cite> or <cite>x2</cite> must be an array.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">x1.shape</span> <span class="pre">!=</span> <span class="pre">x2.shape</span></code>, they must be broadcastable to a common shape
+(which becomes the shape of the output).</p>
+<p>Equivalent to <span class="math notranslate nohighlight">\((x1 // x2, x1 \% x2)\)</span>, but faster because it avoids
+redundant work. It is used to implement the Python built-in function
+<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#divmod" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">divmod()</span></code></a> on <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.</p>
+<p>Complex dtypes are not supported, they will raise a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">divmod</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>
@@ -1211,6 +1214,5 @@ for <code class="docutils literal notranslate"><span class="pre">np.divmod</span
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

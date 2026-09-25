@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -1066,57 +1066,48 @@ diagonal elements, and <cite>U</cite> is upper triangular. If <cite>permute_l</c
 <code class="docutils literal notranslate"><span class="pre">True</span></code> then <cite>L</cite> is returned already permuted and hence satisfying
 <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">=</span> <span class="pre">L</span> <span class="pre">&#64;</span> <span class="pre">U</span></code>.</p>
 <p>For full documentation refer to <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.lu.html#scipy.linalg.lu" title="(in SciPy v1.18.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.linalg.lu</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>(</em><em>...</em><em>, </em><em>M</em><em>, </em><em>N</em><em>) </em><em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array to decompose.</p></li>
-<li><p><strong>permute_l</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>Perform the multiplication <code class="docutils literal notranslate"><span class="pre">P</span> <span class="pre">&#64;</span> <span class="pre">L</span></code> (Default: do not permute).</p>
+<dd class="field-odd"><dl>
+<dt><strong>a</strong><span class="classifier">(..., M, N) {dpnp.ndarray, usm_ndarray}</span></dt><dd><p>Input array to decompose.</p>
+</dd>
+<dt><strong>permute_l</strong><span class="classifier">bool, optional</span></dt><dd><p>Perform the multiplication <code class="docutils literal notranslate"><span class="pre">P</span> <span class="pre">&#64;</span> <span class="pre">L</span></code> (Default: do not permute).</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
-</p></li>
-<li><p><strong>overwrite_a</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>Whether to overwrite data in <cite>a</cite> (may increase performance).</p>
+</dd>
+<dt><strong>overwrite_a</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to overwrite data in <cite>a</cite> (may increase performance).</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
-</p></li>
-<li><p><strong>check_finite</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>Whether to check that the input matrix contains only finite numbers.
+</dd>
+<dt><strong>check_finite</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to check that the input matrix contains only finite numbers.
 Disabling may give a performance gain, but may result in problems
 (crashes, non-termination) if the inputs do contain infinities or NaNs.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
-</p></li>
-<li><p><strong>p_indices</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code> the permutation information is returned as row indices
+</dd>
+<dt><strong>p_indices</strong><span class="classifier">bool, optional</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code> the permutation information is returned as row indices
 instead of a permutation matrix.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
-</p></li>
-</ul>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><p>The tuple <code class="docutils literal notranslate"><span class="pre">(p,</span> <span class="pre">l,</span> <span class="pre">u)</span></code> is returned if <code class="docutils literal notranslate"><span class="pre">permute_l</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>
-(default), else the tuple <code class="docutils literal notranslate"><span class="pre">(pl,</span> <span class="pre">u)</span></code> is returned, where</p>
-<blockquote>
-<div><ul class="simple">
-<li><p><strong>p</strong> (<em>(..., M, M) dpnp.ndarray or (..., M) dpnp.ndarray</em>) -- Permutation matrix or permutation indices.
+<dd class="field-even"><dl class="simple">
+<dt><strong>p</strong><span class="classifier">(..., M, M) dpnp.ndarray or (..., M) dpnp.ndarray</span></dt><dd><p>Permutation matrix or permutation indices.
 If <cite>p_indices</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code> (default), a permutation matrix.
 The permutation matrix always has a real-valued floating-point dtype
 even when <cite>a</cite> is complex, since it only contains 0s and 1s.
 If <cite>p_indices</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, a 1-D (or batched) array of row
-permutation indices such that <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">=</span> <span class="pre">L[p]</span> <span class="pre">&#64;</span> <span class="pre">U</span></code>.</p></li>
-<li><p><strong>l</strong> (<em>(..., M, K) dpnp.ndarray</em>) -- Lower triangular or trapezoidal matrix with unit diagonal.
-<code class="docutils literal notranslate"><span class="pre">K</span> <span class="pre">=</span> <span class="pre">min(M,</span> <span class="pre">N)</span></code>.</p></li>
-<li><p><strong>pl</strong> (<em>(..., M, K) dpnp.ndarray</em>) -- Permuted <code class="docutils literal notranslate"><span class="pre">L</span></code> matrix: <code class="docutils literal notranslate"><span class="pre">pl</span> <span class="pre">=</span> <span class="pre">P</span> <span class="pre">&#64;</span> <span class="pre">L</span></code>.
-<code class="docutils literal notranslate"><span class="pre">K</span> <span class="pre">=</span> <span class="pre">min(M,</span> <span class="pre">N)</span></code>.</p></li>
-<li><p><strong>u</strong> (<em>(..., K, N) dpnp.ndarray</em>) -- Upper triangular or trapezoidal matrix.</p></li>
-</ul>
-</div></blockquote>
-</p>
+permutation indices such that <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">=</span> <span class="pre">L[p]</span> <span class="pre">&#64;</span> <span class="pre">U</span></code>.</p>
+</dd>
+<dt><strong>l</strong><span class="classifier">(..., M, K) dpnp.ndarray</span></dt><dd><p>Lower triangular or trapezoidal matrix with unit diagonal.
+<code class="docutils literal notranslate"><span class="pre">K</span> <span class="pre">=</span> <span class="pre">min(M,</span> <span class="pre">N)</span></code>.</p>
+</dd>
+<dt><strong>pl</strong><span class="classifier">(..., M, K) dpnp.ndarray</span></dt><dd><p>Permuted <code class="docutils literal notranslate"><span class="pre">L</span></code> matrix: <code class="docutils literal notranslate"><span class="pre">pl</span> <span class="pre">=</span> <span class="pre">P</span> <span class="pre">&#64;</span> <span class="pre">L</span></code>.
+<code class="docutils literal notranslate"><span class="pre">K</span> <span class="pre">=</span> <span class="pre">min(M,</span> <span class="pre">N)</span></code>.</p>
+</dd>
+<dt><strong>u</strong><span class="classifier">(..., K, N) dpnp.ndarray</span></dt><dd><p>Upper triangular or trapezoidal matrix.</p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>Permutation matrices are costly since they are nothing but row reorder of
-<code class="docutils literal notranslate"><span class="pre">L</span></code> and hence indices are strongly recommended to be used instead if the
-permutation is required. The relation in the 2D case then becomes simply
-<code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">=</span> <span class="pre">L[P,</span> <span class="pre">:]</span> <span class="pre">&#64;</span> <span class="pre">U</span></code>. In higher dimensions, it is better to use <cite>permute_l</cite>
-to avoid complicated indexing tricks.</p>
-<p>In the 2D case, if one has the indices however, for some reason, the
-permutation matrix is still needed then it can be constructed by
-<code class="docutils literal notranslate"><span class="pre">dpnp.eye(M)[P,</span> <span class="pre">:]</span></code>.</p>
+</dd>
+</dl>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This function synchronizes in order to validate array elements
@@ -1132,6 +1123,17 @@ permutation from LAPACK pivot indices.</p>
 </dd>
 </dl>
 </div>
+<p class="rubric">Notes</p>
+<p>The tuple <code class="docutils literal notranslate"><span class="pre">(p,</span> <span class="pre">l,</span> <span class="pre">u)</span></code> is returned if <cite>permute_l</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code> (default),
+else the tuple <code class="docutils literal notranslate"><span class="pre">(pl,</span> <span class="pre">u)</span></code> is returned.</p>
+<p>Permutation matrices are costly since they are nothing but row reorder of
+<code class="docutils literal notranslate"><span class="pre">L</span></code> and hence indices are strongly recommended to be used instead if the
+permutation is required. The relation in the 2D case then becomes simply
+<code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">=</span> <span class="pre">L[P,</span> <span class="pre">:]</span> <span class="pre">&#64;</span> <span class="pre">U</span></code>. In higher dimensions, it is better to use <cite>permute_l</cite>
+to avoid complicated indexing tricks.</p>
+<p>In the 2D case, if one has the indices however, for some reason, the
+permutation matrix is still needed then it can be constructed by
+<code class="docutils literal notranslate"><span class="pre">dpnp.eye(M)[P,</span> <span class="pre">:]</span></code>.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span>
@@ -1248,6 +1250,5 @@ permutation from LAPACK pivot indices.</p>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

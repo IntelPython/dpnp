@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -1064,24 +1064,25 @@ with respect to that width.</p>
 complement of the absolute value. A N-bit two's-complement system can
 represent every integer in the range <span class="math notranslate nohighlight">\(-2^{N-1}\)</span> to <span class="math notranslate nohighlight">\(+2^{N-1}-1\)</span>.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.binary_repr.html#numpy.binary_repr" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.binary_repr</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>num</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) -- Only an integer decimal number can be used.</p></li>
-<li><p><strong>width</strong> (<em>{None</em><em>, </em><em>int}</em><em>, </em><em>optional</em>) -- <p>The length of the returned string if <cite>num</cite> is positive, or the length
+<dd class="field-odd"><dl>
+<dt><strong>num</strong><span class="classifier">int</span></dt><dd><p>Only an integer decimal number can be used.</p>
+</dd>
+<dt><strong>width</strong><span class="classifier">{None, int}, optional</span></dt><dd><p>The length of the returned string if <cite>num</cite> is positive, or the length
 of the two's complement if <cite>num</cite> is negative, provided that <cite>width</cite> is
 at least a sufficient number of bits for <cite>num</cite> to be represented in the
 designated form. If the <cite>width</cite> value is insufficient, an error is
 raised.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-</ul>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>bin</strong> -- Binary representation of <cite>num</cite> or two's complement of <cite>num</cite>.</p>
+<dd class="field-even"><dl class="simple">
+<dt><strong>bin</strong><span class="classifier">str</span></dt><dd><p>Binary representation of <cite>num</cite> or two's complement of <cite>num</cite>.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.dtype.str.html#dpnp.dtype.str" title="dpnp.dtype.str">str</a></p>
+</dl>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1194,6 +1195,5 @@ base 2, but significantly faster.</p>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

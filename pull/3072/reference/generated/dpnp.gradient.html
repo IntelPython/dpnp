@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -1062,11 +1062,12 @@ in the interior points and either first or second order accurate one-sides
 (forward or backwards) differences at the boundaries.
 The returned gradient hence has the same shape as the input array.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.gradient.html#numpy.gradient" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.gradient</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>f</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- An N-dimensional array containing samples of a scalar function.</p></li>
-<li><p><strong>varargs</strong> (<em>{scalar</em><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><em>scalars</em><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><em>arrays}</em><em>, </em><em>optional</em>) -- <p>Spacing between <cite>f</cite> values. Default unitary spacing for all dimensions.
+<dd class="field-odd"><dl>
+<dt><strong>f</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}</span></dt><dd><p>An N-dimensional array containing samples of a scalar function.</p>
+</dd>
+<dt><strong>varargs</strong><span class="classifier">{scalar, list of scalars, list of arrays}, optional</span></dt><dd><p>Spacing between <cite>f</cite> values. Default unitary spacing for all dimensions.
 Spacing can be specified using:</p>
 <ol class="arabic simple">
 <li><p>Single scalar to specify a sample distance for all dimensions.</p></li>
@@ -1080,27 +1081,27 @@ the corresponding dimension</p></li>
 <p>If <cite>axis</cite> is given, the number of <cite>varargs</cite> must equal the number of
 axes specified in the <cite>axis</cite> parameter.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
-</p></li>
-<li><p><strong>axis</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><em>ints}</em><em>, </em><em>optional</em>) -- <p>Gradient is calculated only along the given axis or axes.
+</dd>
+<dt><strong>axis</strong><span class="classifier">{None, int, tuple of ints}, optional</span></dt><dd><p>Gradient is calculated only along the given axis or axes.
 The default is to calculate the gradient for all the axes of the input
 array. <cite>axis</cite> may be negative, in which case it counts from the last to
 the first axis.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>edge_order</strong> (<em>{1</em><em>, </em><em>2}</em><em>, </em><em>optional</em>) -- <p>Gradient is calculated using N-th order accurate differences
+</dd>
+<dt><strong>edge_order</strong><span class="classifier">{1, 2}, optional</span></dt><dd><p>Gradient is calculated using N-th order accurate differences
 at the boundaries.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
-</p></li>
-</ul>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>gradient</strong> -- A list of <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> (or a single <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> if
+<dd class="field-even"><dl class="simple">
+<dt><strong>gradient</strong><span class="classifier">{dpnp.ndarray, list of ndarray}</span></dt><dd><p>A list of <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> (or a single <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> if
 there is only one dimension) corresponding to the derivatives of <cite>f</cite>
 with respect to each dimension.
 Each derivative has the same shape as <cite>f</cite>.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>{dpnp.ndarray, <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)">list</a> of ndarray}</p>
+</dl>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1251,6 +1252,5 @@ gradient is calculated</p>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

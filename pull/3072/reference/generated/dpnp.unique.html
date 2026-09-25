@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -1065,45 +1065,49 @@ outputs in addition to the unique elements:</p>
 <li><p>the number of times each unique value comes up in the input array</p></li>
 </ul>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.unique.html#numpy.unique" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.unique</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ar</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array. Unless <cite>axis</cite> is specified, this will be flattened if it
-is not already 1-D.</p></li>
-<li><p><strong>return_index</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, also return the indices of <cite>ar</cite> (along the specified axis,
+<dd class="field-odd"><dl>
+<dt><strong>ar</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}</span></dt><dd><p>Input array. Unless <cite>axis</cite> is specified, this will be flattened if it
+is not already 1-D.</p>
+</dd>
+<dt><strong>return_index</strong><span class="classifier">bool, optional</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, also return the indices of <cite>ar</cite> (along the specified axis,
 if provided, or in the flattened array) that result in the unique array.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
-</p></li>
-<li><p><strong>return_inverse</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, also return the indices of the unique array (for the
+</dd>
+<dt><strong>return_inverse</strong><span class="classifier">bool, optional</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, also return the indices of the unique array (for the
 specified axis, if provided) that can be used to reconstruct <cite>ar</cite>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
-</p></li>
-<li><p><strong>return_counts</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, also return the number of times each unique item appears
+</dd>
+<dt><strong>return_counts</strong><span class="classifier">bool, optional</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, also return the number of times each unique item appears
 in <cite>ar</cite>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
-</p></li>
-<li><p><strong>axis</strong> (<em>{int</em><em>, </em><em>None}</em><em>, </em><em>optional</em>) -- <p>The axis to operate on. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, <cite>ar</cite> will be flattened. If an
+</dd>
+<dt><strong>axis</strong><span class="classifier">{int, None}, optional</span></dt><dd><p>The axis to operate on. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, <cite>ar</cite> will be flattened. If an
 integer, the subarrays indexed by the given axis will be flattened and
 treated as the elements of a 1-D array with the dimension of the given
 axis, see the notes for more details.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>equal_nan</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, collapses multiple NaN values in the return array into one.</p>
+</dd>
+<dt><strong>equal_nan</strong><span class="classifier">bool, optional</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, collapses multiple NaN values in the return array into one.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
-</p></li>
-</ul>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>unique</strong> (<em>dpnp.ndarray</em>) -- The sorted unique values.</p></li>
-<li><p><strong>unique_indices</strong> (<em>dpnp.ndarray, optional</em>) -- The indices of the first occurrences of the unique values in the
-original array. Only provided if <cite>return_index</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
-<li><p><strong>unique_inverse</strong> (<em>dpnp.ndarray, optional</em>) -- The indices to reconstruct the original array from the unique array.
-Only provided if <cite>return_inverse</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
-<li><p><strong>unique_counts</strong> (<em>dpnp.ndarray, optional</em>) -- The number of times each of the unique values comes up in the original
-array. Only provided if <cite>return_counts</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
-</ul>
-</p>
+<dd class="field-even"><dl class="simple">
+<dt><strong>unique</strong><span class="classifier">dpnp.ndarray</span></dt><dd><p>The sorted unique values.</p>
+</dd>
+<dt><strong>unique_indices</strong><span class="classifier">dpnp.ndarray, optional</span></dt><dd><p>The indices of the first occurrences of the unique values in the
+original array. Only provided if <cite>return_index</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd>
+<dt><strong>unique_inverse</strong><span class="classifier">dpnp.ndarray, optional</span></dt><dd><p>The indices to reconstruct the original array from the unique array.
+Only provided if <cite>return_inverse</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd>
+<dt><strong>unique_counts</strong><span class="classifier">dpnp.ndarray, optional</span></dt><dd><p>The number of times each of the unique values comes up in the original
+array. Only provided if <cite>return_counts</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1242,6 +1246,5 @@ input can be reconstructed using
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -1058,32 +1058,33 @@
 <span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">corrcoef</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rowvar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_statistics.html#corrcoef"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.corrcoef" title="Link to this definition">¶</a></dt>
 <dd><p>Return Pearson product-moment correlation coefficients.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.corrcoef.html#numpy.corrcoef" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.corrcoef</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- A 1-D or 2-D array containing multiple variables and observations.
+<dd class="field-odd"><dl>
+<dt><strong>x</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}</span></dt><dd><p>A 1-D or 2-D array containing multiple variables and observations.
 Each row of <cite>x</cite> represents a variable, and each column a single
-observation of all those variables. Also see <cite>rowvar</cite> below.</p></li>
-<li><p><strong>y</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>An additional set of variables and observations. <cite>y</cite> has the same
+observation of all those variables. Also see <cite>rowvar</cite> below.</p>
+</dd>
+<dt><strong>y</strong><span class="classifier">{None, dpnp.ndarray, usm_ndarray}, optional</span></dt><dd><p>An additional set of variables and observations. <cite>y</cite> has the same
 shape as <cite>x</cite>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>rowvar</strong> (<em>{bool}</em><em>, </em><em>optional</em>) -- <p>If <cite>rowvar</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, then each row represents a variable,
+</dd>
+<dt><strong>rowvar</strong><span class="classifier">{bool}, optional</span></dt><dd><p>If <cite>rowvar</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, then each row represents a variable,
 with observations in the columns. Otherwise, the relationship
 is transposed: each column represents a variable, while the rows
 contain observations.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
-</p></li>
-<li><p><strong>dtype</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.dtype.str.html#dpnp.dtype.str" title="dpnp.dtype.str"><em>str</em></a><em>, </em><em>dtype object}</em><em>, </em><em>optional</em>) -- <p>Data-type of the result.</p>
+</dd>
+<dt><strong>dtype</strong><span class="classifier">{None, str, dtype object}, optional</span></dt><dd><p>Data-type of the result.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-</ul>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>R</strong> -- The correlation coefficient matrix of the variables.</p>
+<dd class="field-even"><dl class="simple">
+<dt><strong>R</strong><span class="classifier">{dpnp.ndarray}</span></dt><dd><p>The correlation coefficient matrix of the variables.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>{dpnp.ndarray}</p>
+</dl>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1234,6 +1235,5 @@ correlation coefficients between variables in <code class="docutils literal notr
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

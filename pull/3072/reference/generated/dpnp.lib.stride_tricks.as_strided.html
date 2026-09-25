@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -1058,38 +1058,39 @@
 <span class="sig-prename descclassname"><span class="pre">dpnp.lib.stride_tricks.</span></span><span class="sig-name descname"><span class="pre">as_strided</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strides</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subok</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">writeable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/lib/stride_tricks.html#as_strided"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.lib.stride_tricks.as_strided" title="Link to this definition">¶</a></dt>
 <dd><p>Create a view into the array with the given shape and strides.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.lib.stride_tricks.as_strided.html#numpy.lib.stride_tricks.as_strided" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.lib.stride_tricks.as_strided</span></code></a>.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>x</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}</span></dt><dd><p>Array to create a new view from.</p>
+</dd>
+<dt><strong>shape</strong><span class="classifier">{None, sequence of ints}, optional</span></dt><dd><p>The shape of the new array.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">x.shape</span></code>.</p>
+</dd>
+<dt><strong>strides</strong><span class="classifier">{None, sequence of ints}, optional</span></dt><dd><p>The strides of the new array, expressed in bytes.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">x.strides</span></code>.</p>
+</dd>
+<dt><strong>writeable</strong><span class="classifier">bool, optional</span></dt><dd><p>If set to <code class="docutils literal notranslate"><span class="pre">False</span></code>, the returned array will always be read-only.
+Otherwise it will be writable if the original array was.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd>
+<dt><strong>check_bounds</strong><span class="classifier">{None, bool}, optional</span></dt><dd><p>Ignored as no effect, the underlying USM array cannot be constructed
+over out-of-bounds memory.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>view</strong><span class="classifier">dpnp.ndarray</span></dt><dd><p>A view into the memory of <cite>x</cite> with the requested <cite>shape</cite> and <cite>strides</cite>,
+sharing the same data.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This function has to be used with extreme care, see notes.</p>
 </div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Array to create a new view from.</p></li>
-<li><p><strong>shape</strong> (<em>{None</em><em>, </em><em>sequence</em><em> of </em><em>ints}</em><em>, </em><em>optional</em>) -- <p>The shape of the new array.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">x.shape</span></code>.</p>
-</p></li>
-<li><p><strong>strides</strong> (<em>{None</em><em>, </em><em>sequence</em><em> of </em><em>ints}</em><em>, </em><em>optional</em>) -- <p>The strides of the new array, expressed in bytes.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">x.strides</span></code>.</p>
-</p></li>
-<li><p><strong>writeable</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>If set to <code class="docutils literal notranslate"><span class="pre">False</span></code>, the returned array will always be read-only.
-Otherwise it will be writable if the original array was.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
-</p></li>
-<li><p><strong>check_bounds</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- <p>Ignored as no effect, the underlying USM array cannot be constructed
-over out-of-bounds memory.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>view</strong> -- A view into the memory of <cite>x</cite> with the requested <cite>shape</cite> and <cite>strides</cite>,
-sharing the same data.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray">dpnp.ndarray</a></p>
-</dd>
-</dl>
 <p class="rubric">Limitations</p>
 <p>Parameter <cite>subok</cite> is supported with default value.
 Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> exception will be raised.</p>
@@ -1237,6 +1238,5 @@ which each value repeats along the anti-diagonals:</p>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

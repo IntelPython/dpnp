@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -1060,20 +1060,22 @@
 <p>Raises a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> if the <cite>casting</cite> rule is violated, and if
 <cite>where</cite> is provided, it selects which elements to copy.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.copyto.html#numpy.copyto" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.copyto</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dst</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- The array into which values are copied.</p></li>
-<li><p><strong>src</strong> (<em>array_like</em>) -- The array from which values are copied.</p></li>
-<li><p><strong>casting</strong> (<em>{'no'</em><em>, </em><em>'equiv'</em><em>, </em><em>'safe'</em><em>, </em><em>'same_kind'</em><em>, </em><em>'unsafe'}</em><em>, </em><em>optional</em>) -- <p>Controls what kind of data casting may occur when copying.</p>
+<dd class="field-odd"><dl>
+<dt><strong>dst</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}</span></dt><dd><p>The array into which values are copied.</p>
+</dd>
+<dt><strong>src</strong><span class="classifier">array_like</span></dt><dd><p>The array from which values are copied.</p>
+</dd>
+<dt><strong>casting</strong><span class="classifier">{'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional</span></dt><dd><p>Controls what kind of data casting may occur when copying.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;same_kind&quot;</span></code>.</p>
-</p></li>
-<li><p><strong>where</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em><em> of </em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>A boolean array or a scalar which is broadcasted to match
+</dd>
+<dt><strong>where</strong><span class="classifier">{dpnp.ndarray, usm_ndarray, scalar} of bool, optional</span></dt><dd><p>A boolean array or a scalar which is broadcasted to match
 the dimensions of <cite>dst</cite>, and selects elements to copy
 from <cite>src</cite> to <cite>dst</cite> wherever it contains the value <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
-</p></li>
-</ul>
+</dd>
+</dl>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -1172,6 +1174,5 @@ from <cite>src</cite> to <cite>dst</cite> wherever it contains the value <code c
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

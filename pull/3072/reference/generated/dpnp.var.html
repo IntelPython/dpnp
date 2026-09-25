@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -1058,61 +1058,79 @@
 <span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_statistics.html#var"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.var" title="Link to this definition">¶</a></dt>
 <dd><p>Compute the variance along the specified axis.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.var.html#numpy.var" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.var</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array.</p></li>
-<li><p><strong>axis</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><em>ints}</em><em>, </em><em>optional</em>) -- <p>Axis or axes along which the variances must be computed. If a tuple
+<dd class="field-odd"><dl>
+<dt><strong>a</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}</span></dt><dd><p>Input array.</p>
+</dd>
+<dt><strong>axis</strong><span class="classifier">{None, int, tuple of ints}, optional</span></dt><dd><p>Axis or axes along which the variances must be computed. If a tuple
 of unique integers is given, the variances are computed over multiple
 axes. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the variance is computed over the entire array.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>dtype</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.dtype.str.html#dpnp.dtype.str" title="dpnp.dtype.str"><em>str</em></a><em>, </em><em>dtype object}</em><em>, </em><em>optional</em>) -- <p>Type to use in computing the variance. By default, if <cite>a</cite> has a
+</dd>
+<dt><strong>dtype</strong><span class="classifier">{None, str, dtype object}, optional</span></dt><dd><p>Type to use in computing the variance. By default, if <cite>a</cite> has a
 floating-point data type, the returned array will have the same data
 type as <cite>a</cite>. If <cite>a</cite> has a boolean or integral data type, the returned
 array will have the default floating point data type for the device
 where input array <cite>a</cite> is allocated.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>out</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>Alternative output array in which to place the result. It must have
+</dd>
+<dt><strong>out</strong><span class="classifier">{None, dpnp.ndarray, usm_ndarray}, optional</span></dt><dd><p>Alternative output array in which to place the result. It must have
 the same shape as the expected output but the type (of the calculated
 values) will be cast if necessary.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>ddof</strong> (<em>{int</em><em>, </em><em>float}</em><em>, </em><em>optional</em>) -- <p>Means Delta Degrees of Freedom. The divisor used in calculations is
+</dd>
+<dt><strong>ddof</strong><span class="classifier">{int, float}, optional</span></dt><dd><p>Means Delta Degrees of Freedom. The divisor used in calculations is
 <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">-</span> <span class="pre">ddof</span></code>, where <code class="docutils literal notranslate"><span class="pre">N</span></code> corresponds to the total number of elements
 over which the variance is calculated.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">0.0</span></code>.</p>
-</p></li>
-<li><p><strong>keepdims</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the reduced axes (dimensions) are included in the result
+</dd>
+<dt><strong>keepdims</strong><span class="classifier">{None, bool}, optional</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the reduced axes (dimensions) are included in the result
 as singleton dimensions, so that the returned array remains compatible
 with the input array according to Array Broadcasting rules. Otherwise,
 if <code class="docutils literal notranslate"><span class="pre">False</span></code>, the reduced axes are not included in the returned array.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
-</p></li>
-<li><p><strong>mean</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>Provide the mean to prevent its recalculation. The mean should have
+</dd>
+<dt><strong>mean</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}, optional</span></dt><dd><p>Provide the mean to prevent its recalculation. The mean should have
 a shape as if it was calculated with <code class="docutils literal notranslate"><span class="pre">keepdims=True</span></code>.
 The axis for the calculation of the mean should be the same as used in
 the call to this <cite>var</cite> function.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>correction</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>float}</em><em>, </em><em>optional</em>) -- <p>Array API compatible name for the <cite>ddof</cite> parameter. Only one of them
+</dd>
+<dt><strong>correction</strong><span class="classifier">{None, int, float}, optional</span></dt><dd><p>Array API compatible name for the <cite>ddof</cite> parameter. Only one of them
 can be provided at the same time.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-</ul>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> -- An array containing the variances. If the variance was computed over
+<dd class="field-even"><dl class="simple">
+<dt><strong>out</strong><span class="classifier">dpnp.ndarray</span></dt><dd><p>An array containing the variances. If the variance was computed over
 the entire array, a zero-dimensional array is returned.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray">dpnp.ndarray</a></p>
+</dl>
 </dd>
 </dl>
 <p class="rubric">Limitations</p>
 <p>Parameters <cite>where</cite> is only supported with its default value.
 Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> exception will be raised.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.ndarray.var.html#dpnp.ndarray.var" title="dpnp.ndarray.var"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.var</span></code></a></dt><dd><p>corresponding function for ndarrays.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.std.html#dpnp.std" title="dpnp.std"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.std</span></code></a></dt><dd><p>Compute the standard deviation along the specified axis.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.mean.html#dpnp.mean" title="dpnp.mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.mean</span></code></a></dt><dd><p>Compute the arithmetic mean along the specified axis.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.nanmean.html#dpnp.nanmean" title="dpnp.nanmean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.nanmean</span></code></a></dt><dd><p>Compute the arithmetic mean along the specified axis, ignoring NaNs.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.nanstd.html#dpnp.nanstd" title="dpnp.nanstd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.nanstd</span></code></a></dt><dd><p>Compute the standard deviation along the specified axis, while ignoring NaNs.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.nanvar.html#dpnp.nanvar" title="dpnp.nanvar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.nanvar</span></code></a></dt><dd><p>Compute the variance along the specified axis, while ignoring NaNs.</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">Notes</p>
 <p>There are several common variants of the array variance calculation.
 Assuming the input <cite>a</cite> is a one-dimensional array and <cite>mean</cite> is either
@@ -1146,23 +1164,6 @@ variance estimate introduced when the sample mean of <cite>a</cite> is used in p
 of the true mean of the population. For this quantity, use <code class="docutils literal notranslate"><span class="pre">ddof=1</span></code>.</p>
 <p>Note that, for complex numbers, the absolute value is taken before squaring,
 so that the result is always real and non-negative.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><a class="reference internal" href="dpnp.ndarray.var.html#dpnp.ndarray.var" title="dpnp.ndarray.var"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.var</span></code></a></dt><dd><p>corresponding function for ndarrays.</p>
-</dd>
-<dt><a class="reference internal" href="dpnp.std.html#dpnp.std" title="dpnp.std"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.std</span></code></a></dt><dd><p>Compute the standard deviation along the specified axis.</p>
-</dd>
-<dt><a class="reference internal" href="dpnp.mean.html#dpnp.mean" title="dpnp.mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.mean</span></code></a></dt><dd><p>Compute the arithmetic mean along the specified axis.</p>
-</dd>
-<dt><a class="reference internal" href="dpnp.nanmean.html#dpnp.nanmean" title="dpnp.nanmean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.nanmean</span></code></a></dt><dd><p>Compute the arithmetic mean along the specified axis, ignoring NaNs.</p>
-</dd>
-<dt><a class="reference internal" href="dpnp.nanstd.html#dpnp.nanstd" title="dpnp.nanstd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.nanstd</span></code></a></dt><dd><p>Compute the standard deviation along the specified axis, while ignoring NaNs.</p>
-</dd>
-<dt><a class="reference internal" href="dpnp.nanvar.html#dpnp.nanvar" title="dpnp.nanvar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.nanvar</span></code></a></dt><dd><p>Compute the variance along the specified axis, while ignoring NaNs.</p>
-</dd>
-</dl>
-</div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
@@ -1261,6 +1262,5 @@ so that the result is always real and non-negative.</p>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

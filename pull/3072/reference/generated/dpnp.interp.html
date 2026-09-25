@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -1060,37 +1060,40 @@
 <p>Returns the one-dimensional piecewise linear interpolant to a function
 with given discrete data points (<cite>xp</cite>, <cite>fp</cite>), evaluated at <cite>x</cite>.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.interp.html#numpy.interp" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.interp</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input 1-D array, expected to have a real-valued
+<dd class="field-odd"><dl>
+<dt><strong>x</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}</span></dt><dd><p>Input 1-D array, expected to have a real-valued
 floating-point data type. The x-coordinates at which
-to evaluate the interpolated values.</p></li>
-<li><p><strong>xp</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input 1-D array, expected to have a real-valued floating-point data
+to evaluate the interpolated values.</p>
+</dd>
+<dt><strong>xp</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}</span></dt><dd><p>Input 1-D array, expected to have a real-valued floating-point data
 type. The x-coordinates of the data points, must be strictly increasing
 if argument <cite>period</cite> is not specified. Otherwise, <cite>xp</cite> is internally
 sorted after normalizing the periodic boundaries with
-<span class="math notranslate nohighlight">\(xp = xp \% period\)</span>.</p></li>
-<li><p><strong>fp</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input 1-D array. The y-coordinates of the data points,
-same length as <cite>xp</cite>.</p></li>
-<li><p><strong>left</strong> (<em>{None</em><em>, </em><em>scalar</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>Value to return for <cite>x &lt; xp[0]</cite>.</p>
+<span class="math notranslate nohighlight">\(xp = xp \% period\)</span>.</p>
+</dd>
+<dt><strong>fp</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}</span></dt><dd><p>Input 1-D array. The y-coordinates of the data points,
+same length as <cite>xp</cite>.</p>
+</dd>
+<dt><strong>left</strong><span class="classifier">{None, scalar, dpnp.ndarray, usm_ndarray}, optional</span></dt><dd><p>Value to return for <cite>x &lt; xp[0]</cite>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">fp[0]</span></code>.</p>
-</p></li>
-<li><p><strong>right</strong> (<em>{None</em><em>, </em><em>scalar</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>Value to return for <cite>x &gt; xp[-1]</cite>.</p>
+</dd>
+<dt><strong>right</strong><span class="classifier">{None, scalar, dpnp.ndarray, usm_ndarray}, optional</span></dt><dd><p>Value to return for <cite>x &gt; xp[-1]</cite>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">fp[-1]</span></code>.</p>
-</p></li>
-<li><p><strong>period</strong> (<em>{None</em><em>, </em><em>scalar}</em><em>, </em><em>optional</em>) -- <p>A period for the x-coordinates. This parameter allows the proper
+</dd>
+<dt><strong>period</strong><span class="classifier">{None, scalar}, optional</span></dt><dd><p>A period for the x-coordinates. This parameter allows the proper
 interpolation of angular x-coordinates. Parameters <cite>left</cite> and <cite>right</cite>
 are ignored if <cite>period</cite> is specified.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-</ul>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>y</strong> -- The interpolated values, same shape as <cite>x</cite>.</p>
+<dd class="field-even"><dl class="simple">
+<dt><strong>y</strong><span class="classifier">dpnp.ndarray</span></dt><dd><p>The interpolated values, same shape as <cite>x</cite>.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray">dpnp.ndarray</a></p>
+</dl>
 </dd>
 </dl>
 <div class="admonition warning">
@@ -1217,6 +1220,5 @@ interpolation results are meaningless.</p>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

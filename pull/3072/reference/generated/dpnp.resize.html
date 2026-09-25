@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -1062,20 +1062,32 @@ filled with repeated copies of <cite>a</cite>.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.resize.html#numpy.resize" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.resize</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Array to be resized.</p></li>
-<li><p><strong>new_shape</strong> (<em>{int</em><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><em>ints}</em>) -- Shape of resized array.</p></li>
-</ul>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>a</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}</span></dt><dd><p>Array to be resized.</p>
+</dd>
+<dt><strong>new_shape</strong><span class="classifier">{int, tuple or list of ints}</span></dt><dd><p>Shape of resized array.</p>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> -- The new array is formed from the data in the old array, repeated if
+<dd class="field-even"><dl class="simple">
+<dt><strong>out</strong><span class="classifier">dpnp.ndarray</span></dt><dd><p>The new array is formed from the data in the old array, repeated if
 necessary to fill out the required number of elements. The data are
 repeated iterating over the array in C-order.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray">dpnp.ndarray</a></p>
+</dl>
 </dd>
 </dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This functionality does <strong>not</strong> consider axes separately, i.e. it does not
+apply interpolation/extrapolation.
+It fills the return array with the required number of elements, iterating
+over <cite>a</cite> in C-order, disregarding axes (and cycling back from the start if
+the new shape is larger). This functionality is therefore not suitable to
+resize images, or data where each axis represents a separate and distinct
+entity.</p>
+</div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
@@ -1091,16 +1103,6 @@ repeated iterating over the array in C-order.</p>
 <p>When the total size of the array does not change <a class="reference internal" href="dpnp.reshape.html#dpnp.reshape" title="dpnp.reshape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.reshape</span></code></a> should
 be used. In most other cases either indexing (to reduce the size) or
 padding (to increase the size) may be a more appropriate solution.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This functionality does <strong>not</strong> consider axes separately, i.e. it does not
-apply interpolation/extrapolation.
-It fills the return array with the required number of elements, iterating
-over <cite>a</cite> in C-order, disregarding axes (and cycling back from the start if
-the new shape is larger). This functionality is therefore not suitable to
-resize images, or data where each axis represents a separate and distinct
-entity.</p>
-</div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]])</span>
@@ -1193,6 +1195,5 @@ entity.</p>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

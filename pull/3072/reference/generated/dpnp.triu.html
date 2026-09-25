@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -1060,21 +1060,22 @@
 <p>Return a copy of a matrix with the elements below the <cite>k</cite>-th diagonal
 zeroed.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.triu.html#numpy.triu" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.triu</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>m</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><a class="reference internal" href="dpnp.broadcast.shape.html#dpnp.broadcast.shape" title="dpnp.broadcast.shape"><em>shape</em></a><em> (</em><em>…</em><em>, </em><em>M</em><em>, </em><em>N</em><em>)</em>) -- Input array.</p></li>
-<li><p><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) -- <p>Diagonal below which to zero elements. k = 0 (the default) is
+<dd class="field-odd"><dl>
+<dt><strong>m</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}, shape (…, M, N)</span></dt><dd><p>Input array.</p>
+</dd>
+<dt><strong>k</strong><span class="classifier">int, optional</span></dt><dd><p>Diagonal below which to zero elements. k = 0 (the default) is
 the main diagonal, k &lt; 0 is below it and k &gt; 0 is above.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
-</p></li>
-</ul>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> -- Upper triangle of <cite>m</cite>, of same shape and dtype as <cite>m</cite>.</p>
+<dd class="field-even"><dl class="simple">
+<dt><strong>out</strong><span class="classifier">dpnp.ndarray of shape (N, M)</span></dt><dd><p>Upper triangle of <cite>m</cite>, of same shape and dtype as <cite>m</cite>.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray">dpnp.ndarray</a> of <a class="reference internal" href="dpnp.broadcast.shape.html#dpnp.broadcast.shape" title="dpnp.broadcast.shape">shape</a> (N, M)</p>
+</dl>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -1166,6 +1167,5 @@ the main diagonal, k &lt; 0 is below it and k &gt; 0 is above.</p>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>
