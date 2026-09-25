@@ -37,7 +37,7 @@ class flatiter:
     def __init__(self, X):
         if type(X) is not dpnp.ndarray:
             raise TypeError(
-                "Argument must be of type dpnp.ndarray, got {}".format(type(X))
+                f"Argument must be of type dpnp.ndarray, got {type(X)}"
             )
         self.arr_ = X
         self.size_ = X.size

@@ -3860,7 +3860,8 @@ def split(ary, indices_or_sections, axis=0):
         raise IndexError("Axis exceeds ndim")
 
     try:
-        len(indices_or_sections)
+        # check if `indices_or_sections` is a sequence of indices
+        _ = len(indices_or_sections)
     except TypeError:
         if ary.shape[axis] % indices_or_sections != 0:
             raise ValueError(
