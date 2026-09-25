@@ -1071,12 +1071,12 @@ fields over N-D grids, given one-dimensional coordinate arrays
 <li><p><strong>indexing</strong> (<em>{'xy'</em><em>, </em><em>'ij'}</em><em>, </em><em>optional</em>) -- <p>Cartesian (<code class="docutils literal notranslate"><span class="pre">'xy'</span></code>, default) or matrix (<code class="docutils literal notranslate"><span class="pre">'ij'</span></code>) indexing of output.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;xy&quot;</span></code>.</p>
 </p></li>
-<li><p><strong>sparse</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code> the shape of the returned coordinate array for dimension <cite>i</cite>
+<li><p><strong>sparse</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code> the shape of the returned coordinate array for dimension <cite>i</cite>
 is reduced from <code class="docutils literal notranslate"><span class="pre">(N1,</span> <span class="pre">...,</span> <span class="pre">Ni,</span> <span class="pre">...</span> <span class="pre">Nn)</span></code> to
 <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">...,</span> <span class="pre">1,</span> <span class="pre">Ni,</span> <span class="pre">1,</span> <span class="pre">...,</span> <span class="pre">1)</span></code>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 </p></li>
-<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">False</span></code>, a view into the original arrays are returned in order to
+<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">False</span></code>, a view into the original arrays are returned in order to
 conserve memory.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 </p></li>
@@ -1090,7 +1090,7 @@ the elements of <cite>xi</cite> repeated to fill the matrix along the first
 dimension for <cite>x1</cite>, the second for <cite>x2</cite> and so on.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)">tuple</a> of dpnp.ndarrays</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)">tuple</a> of dpnp.ndarrays</p>
 </dd>
 </dl>
 <div class="admonition seealso">
