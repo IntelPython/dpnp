@@ -15,13 +15,13 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="dpnp.squeeze" href="dpnp.squeeze.html"><link rel="prev" title="dpnp.broadcast_arrays" href="dpnp.broadcast_arrays.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>dpnp.expand_dims - Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</title>
+        <title>dpnp.expand_dims - Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -173,7 +173,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -194,7 +194,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -1062,29 +1062,21 @@ array shape.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.expand_dims.html#numpy.expand_dims" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.expand_dims</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array.</p></li>
-<li><p><strong>axis</strong> (<em>{int</em><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><em>ints}</em>) -- Position in the expanded axes where the new axis (or axes) is placed.</p></li>
-</ul>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>a</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}</span></dt><dd><p>Input array.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> -- An array with the number of dimensions increased.
-A view is returned whenever possible.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray">dpnp.ndarray</a></p>
+<dt><strong>axis</strong><span class="classifier">{int, tuple of ints}</span></dt><dd><p>Position in the expanded axes where the new axis (or axes) is placed.</p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>If <cite>a</cite> has rank (i.e, number of dimensions) <cite>N</cite>, a valid <cite>axis</cite> value must
-reside on the half-open interval <cite>[-M, M)</cite>, where <cite>M = N + len(axis)</cite> (with
-<cite>len(axis)</cite> equal to <code class="docutils literal notranslate"><span class="pre">1</span></code> when <cite>axis</cite> is an integer).
-If provided a negative <cite>axis</cite>, the position at which to insert a singleton
-dimension is computed as <code class="docutils literal notranslate"><span class="pre">M</span> <span class="pre">+</span> <span class="pre">axis</span></code>.
-Hence, if provided <code class="docutils literal notranslate"><span class="pre">-1</span></code>, the resolved axis position is <code class="docutils literal notranslate"><span class="pre">M</span> <span class="pre">-</span> <span class="pre">1</span></code> (i.e.,
-a singleton dimension is appended to the input array <cite>a</cite>).
-If provided <code class="docutils literal notranslate"><span class="pre">-M</span></code>, the resolved axis position is <code class="docutils literal notranslate"><span class="pre">0</span></code> (i.e., a singleton
-dimension is prepended to the input array <cite>a</cite>).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>out</strong><span class="classifier">dpnp.ndarray</span></dt><dd><p>An array with the number of dimensions increased.
+A view is returned whenever possible.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
@@ -1100,6 +1092,16 @@ dimension is prepended to the input array <cite>a</cite>).</p>
 </dd>
 </dl>
 </div>
+<p class="rubric">Notes</p>
+<p>If <cite>a</cite> has rank (i.e, number of dimensions) <cite>N</cite>, a valid <cite>axis</cite> value must
+reside on the half-open interval <cite>[-M, M)</cite>, where <cite>M = N + len(axis)</cite> (with
+<cite>len(axis)</cite> equal to <code class="docutils literal notranslate"><span class="pre">1</span></code> when <cite>axis</cite> is an integer).
+If provided a negative <cite>axis</cite>, the position at which to insert a singleton
+dimension is computed as <code class="docutils literal notranslate"><span class="pre">M</span> <span class="pre">+</span> <span class="pre">axis</span></code>.
+Hence, if provided <code class="docutils literal notranslate"><span class="pre">-1</span></code>, the resolved axis position is <code class="docutils literal notranslate"><span class="pre">M</span> <span class="pre">-</span> <span class="pre">1</span></code> (i.e.,
+a singleton dimension is appended to the input array <cite>a</cite>).
+If provided <code class="docutils literal notranslate"><span class="pre">-M</span></code>, the resolved axis position is <code class="docutils literal notranslate"><span class="pre">0</span></code> (i.e., a singleton
+dimension is prepended to the input array <cite>a</cite>).</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
@@ -1214,13 +1216,12 @@ are the same objects:</p>
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=b97f887b"></script>
+</div><script src="../../_static/documentation_options.js?v=ec7b459e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

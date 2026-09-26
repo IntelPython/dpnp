@@ -15,13 +15,13 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="Special functions (dpnp.scipy.special)" href="../scipy_special.html"><link rel="prev" title="dpnp.scipy.linalg.lu_factor" href="dpnp.scipy.linalg.lu_factor.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>dpnp.scipy.linalg.lu_solve - Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</title>
+        <title>dpnp.scipy.linalg.lu_solve - Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -173,7 +173,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -194,7 +194,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -1058,13 +1058,14 @@
 <span class="sig-prename descclassname"><span class="pre">dpnp.scipy.linalg.</span></span><span class="sig-name descname"><span class="pre">lu_solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lu_and_piv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trans</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite_b</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_finite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/scipy/linalg/_decomp_lu.html#lu_solve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.scipy.linalg.lu_solve" title="Link to this definition">¶</a></dt>
 <dd><p>Solve a linear system, <span class="math notranslate nohighlight">\(a x = b\)</span>, given the LU factorization of <cite>a</cite>.</p>
 <p>For full documentation refer to <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.lu_solve.html#scipy.linalg.lu_solve" title="(in SciPy v1.18.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.linalg.lu_solve</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>lu</strong> (<em>{tuple</em><em> of </em><em>dpnp.ndarrays</em><em> or </em><em>usm_ndarrays}</em>) -- LU factorization of matrix <cite>a</cite> (..., M, M) together with pivot indices.</p></li>
-<li><p><strong>piv</strong> (<em>{tuple</em><em> of </em><em>dpnp.ndarrays</em><em> or </em><em>usm_ndarrays}</em>) -- LU factorization of matrix <cite>a</cite> (..., M, M) together with pivot indices.</p></li>
-<li><p><strong>b</strong> (<em>{</em><em>(</em><em>M</em><em>,</em><em>)</em><em>, </em><em>(</em><em>...</em><em>, </em><em>M</em><em>, </em><em>K</em><em>)</em><em>} {dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Right-hand side.</p></li>
-<li><p><strong>trans</strong> (<em>{0</em><em>, </em><em>1</em><em>, </em><em>2}</em><em> , </em><em>optional</em>) -- <p>Type of system to solve:</p>
+<dd class="field-odd"><dl>
+<dt><strong>lu, piv</strong><span class="classifier">{tuple of dpnp.ndarrays or usm_ndarrays}</span></dt><dd><p>LU factorization of matrix <cite>a</cite> (..., M, M) together with pivot indices.</p>
+</dd>
+<dt><strong>b</strong><span class="classifier">{(M,), (..., M, K)} {dpnp.ndarray, usm_ndarray}</span></dt><dd><p>Right-hand side.</p>
+</dd>
+<dt><strong>trans</strong><span class="classifier">{0, 1, 2} , optional</span></dt><dd><p>Type of system to solve:</p>
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
 <thead>
@@ -1086,22 +1087,22 @@
 </table>
 </div>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
-</p></li>
-<li><p><strong>overwrite_b</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>Whether to overwrite data in <cite>b</cite> (may increase performance).</p>
+</dd>
+<dt><strong>overwrite_b</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to overwrite data in <cite>b</cite> (may increase performance).</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
-</p></li>
-<li><p><strong>check_finite</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>Whether to check that the input matrix contains only finite numbers.
+</dd>
+<dt><strong>check_finite</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to check that the input matrix contains only finite numbers.
 Disabling may give a performance gain, but may result in problems
 (crashes, non-termination) if the inputs do contain infinities or NaNs.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
-</p></li>
-</ul>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>x</strong> -- Solution to the system</p>
+<dd class="field-even"><dl class="simple">
+<dt><strong>x</strong><span class="classifier">{(M,), (..., M, K)} dpnp.ndarray</span></dt><dd><p>Solution to the system</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>{(M,), (..., M, K)} dpnp.ndarray</p>
+</dl>
 </dd>
 </dl>
 <div class="admonition warning">
@@ -1198,7 +1199,7 @@ when <code class="docutils literal notranslate"><span class="pre">check_finite=T
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=b97f887b"></script>
+</div><script src="../../_static/documentation_options.js?v=ec7b459e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
@@ -1206,6 +1207,5 @@ when <code class="docutils literal notranslate"><span class="pre">check_finite=T
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

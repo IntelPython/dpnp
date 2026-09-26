@@ -15,13 +15,13 @@
     <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="dpnp.fft.fft" href="generated/dpnp.fft.fft.html"><link rel="prev" title="Exceptions and Warnings" href="exceptions.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>Discrete Fourier Transform (dpnp.fft) - Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</title>
+        <title>Discrete Fourier Transform (dpnp.fft) - Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -173,7 +173,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</div></a>
+      <a href="../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -194,7 +194,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -1155,7 +1155,7 @@ counterparts, it is called the discrete Fourier transform (DFT). The DFT has
 become a mainstay of numerical computing in part because of a very fast
 algorithm for computing it, called the Fast Fourier Transform (FFT), which was
 known to Gauss (1805) and was brought to light in its current form by Cooley
-and Tukey <a class="reference internal" href="#ct" id="id1"><span>[CT]</span></a>. Press et al. <a class="reference internal" href="#nr" id="id2"><span>[NR]</span></a> provide an accessible introduction to
+and Tukey <a class="reference internal" href="#r67bb3c00485b-ct" id="id1">[CT]</a>. Press et al. <a class="reference internal" href="#r67bb3c00485b-nr" id="id2">[NR]</a> provide an accessible introduction to
 Fourier analysis and its applications.</p>
 <p>Because the discrete Fourier transform separates its input into components
 that contribute at discrete frequencies, it has a great number of applications
@@ -1253,15 +1253,17 @@ a_{mn}\exp\left\{-2\pi i \left({mk\over M}+{nl\over N}\right)\right\}
 </div>
 <p>which extends in the obvious way to higher dimensions, and the inverses
 in higher dimensions also extend in the same way.</p>
-<p class="rubric">References</p>
+</section>
+<section id="references">
+<h3>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h3>
 <div role="list" class="citation-list">
-<div class="citation" id="ct" role="doc-biblioentry">
+<div class="citation" id="r67bb3c00485b-ct" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">CT</a><span class="fn-bracket">]</span></span>
 <p>Cooley, James W., and John W. Tukey, 1965, &quot;An algorithm for the
 machine calculation of complex Fourier series,&quot; <em>Math. Comput.</em>
 19: 297-301.</p>
 </div>
-<div class="citation" id="nr" role="doc-biblioentry">
+<div class="citation" id="r67bb3c00485b-nr" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">NR</a><span class="fn-bracket">]</span></span>
 <p>Press, W., Teukolsky, S., Vetterline, W.T., and Flannery, B.P.,
 2007, <em>Numerical Recipes: The Art of Scientific Computing</em>, ch.
@@ -1337,6 +1339,7 @@ machine calculation of complex Fourier series,&quot; <em>Math. Comput.</em>
 <li><a class="reference internal" href="#normalization">Normalization</a></li>
 <li><a class="reference internal" href="#real-and-hermitian-transforms">Real and Hermitian transforms</a></li>
 <li><a class="reference internal" href="#higher-dimensions">Higher dimensions</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
 </ul>
@@ -1350,7 +1353,7 @@ machine calculation of complex Fourier series,&quot; <em>Math. Comput.</em>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=b97f887b"></script>
+</div><script src="../_static/documentation_options.js?v=ec7b459e"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
@@ -1358,6 +1361,5 @@ machine calculation of complex Fourier series,&quot; <em>Math. Comput.</em>
     <script src="../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
-    <script src="../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

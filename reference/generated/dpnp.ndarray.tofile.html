@@ -15,13 +15,13 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="dpnp.ndarray.astype" href="dpnp.ndarray.astype.html"><link rel="prev" title="dpnp.ndarray.tobytes" href="dpnp.ndarray.tobytes.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>dpnp.ndarray.tofile - Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</title>
+        <title>dpnp.ndarray.tofile - Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -173,7 +173,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -194,7 +194,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -1059,22 +1059,23 @@
 <span class="sig-prename descclassname"><span class="pre">ndarray.</span></span><span class="sig-name descname"><span class="pre">tofile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.ndarray.tofile" title="Link to this definition">¶</a></dt>
 <dd><p>Writes the array to a file as text or binary (default).</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.tofile.html#numpy.ndarray.tofile" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.tofile</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>fid</strong> (<em>{file. str</em><em>, </em><em>path}</em>) -- An open file object, or a string containing a filename.</p></li>
-<li><p><strong>sep</strong> (<a class="reference internal" href="dpnp.dtype.str.html#dpnp.dtype.str" title="dpnp.dtype.str"><em>str</em></a><em>, </em><em>optional</em>) -- <p>Separator between array items for text output. If <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> (empty),
+<dd class="field-odd"><dl>
+<dt><strong>fid</strong><span class="classifier">{file. str, path}</span></dt><dd><p>An open file object, or a string containing a filename.</p>
+</dd>
+<dt><strong>sep</strong><span class="classifier">str, optional</span></dt><dd><p>Separator between array items for text output. If <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> (empty),
 a binary file is written.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.</p>
-</p></li>
-<li><p><strong>format</strong> (<a class="reference internal" href="dpnp.dtype.str.html#dpnp.dtype.str" title="dpnp.dtype.str"><em>str</em></a><em>, </em><em>optional</em>) -- <p>Format string for text file output (when non-empty <cite>sep</cite> is passed).
+</dd>
+<dt><strong>format</strong><span class="classifier">str, optional</span></dt><dd><p>Format string for text file output (when non-empty <cite>sep</cite> is passed).
 Each entry in the array is formatted to text by first converting it
 to the closest Python type, and then using <code class="docutils literal notranslate"><span class="pre">format</span> <span class="pre">%</span> <span class="pre">item</span></code>. If
 <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> (empty), no formatting is used while converting to the
 string.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.</p>
-</p></li>
-</ul>
+</dd>
+</dl>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1156,13 +1157,12 @@ string.</p>
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=b97f887b"></script>
+</div><script src="../../_static/documentation_options.js?v=ec7b459e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>
