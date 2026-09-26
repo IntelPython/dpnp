@@ -1,0 +1,10 @@
+﻿
+
+dpnp.greater\_equal
+===================
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: greater_equal
