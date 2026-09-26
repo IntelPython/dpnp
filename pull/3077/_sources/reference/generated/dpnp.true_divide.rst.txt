@@ -1,0 +1,10 @@
+﻿
+
+dpnp.true\_divide
+=================
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: true_divide
