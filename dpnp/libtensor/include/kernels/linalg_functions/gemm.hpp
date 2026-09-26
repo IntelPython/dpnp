@@ -179,7 +179,11 @@ private:
     ssize_t partials_step;
 };
 
-template <typename T> constexpr T ceil_div(T a, T b) { return (a + b - 1) / b; }
+template <typename T>
+constexpr T ceil_div(T a, T b)
+{
+    return (a + b - 1) / b;
+}
 
 inline std::size_t round_up_pow2(std::size_t v)
 {
@@ -349,7 +353,8 @@ public:
     void operator()(sycl::nd_item<1> it) const
     {
         const std::size_t groups_per_batch = row_groups * k_split;
-        const std::size_t batch_id = it.get_group_linear_id() / groups_per_batch;
+        const std::size_t batch_id =
+            it.get_group_linear_id() / groups_per_batch;
         const std::size_t gr_id =
             it.get_group_linear_id() - batch_id * groups_per_batch;
         // block_r moves fastest, then block_s
@@ -396,7 +401,8 @@ public:
         for (std::uint32_t h = wg_lanes / 2; h > 0; h /= 2) {
             sycl::group_barrier(it.get_group(), sycl::memory_scope::work_group);
             if (s_l < h) {
-                workspace[lid] = workspace[lid] + workspace[lid + h * lane_step];
+                workspace[lid] =
+                    workspace[lid] + workspace[lid + h * lane_step];
             }
         }
 
@@ -610,7 +616,8 @@ public:
 
         const std::size_t tiles = n_groups * m_groups;
         const std::size_t groups_per_batch = tiles * k_split;
-        const std::size_t batch_id = it.get_group_linear_id() / groups_per_batch;
+        const std::size_t batch_id =
+            it.get_group_linear_id() / groups_per_batch;
         std::size_t gr_id =
             it.get_group_linear_id() - batch_id * groups_per_batch;
         // block_i moves fastest, then block_j, then block_s
@@ -713,11 +720,10 @@ public:
                     for (std::uint32_t lane_id = 0; lane_id < m_vec_size;
                          ++lane_id) {
                         const std::size_t g_j1 = g_j + lane_id;
-                        vec[lane_id] =
-                            (g_j1 < m && g_s < s_end)
-                                ? static_cast<resT>(
-                                      rhs_p[rhs_indexer(g_s, g_j1)])
-                                : zero_;
+                        vec[lane_id] = (g_j1 < m && g_s < s_end)
+                                           ? static_cast<resT>(
+                                                 rhs_p[rhs_indexer(g_s, g_j1)])
+                                           : zero_;
                     }
                     local_rhs_block[mapped_vid] = vec;
                 }
@@ -729,8 +735,8 @@ public:
                 std::array<slmA_t, wi_delta_n> pr_lhs{};
 #pragma unroll
                 for (std::uint32_t pr_i = 0; pr_i < wi_delta_n; ++pr_i) {
-                    pr_lhs[pr_i] = local_lhs_block[pr_k * lhs_pitch +
-                                                   local_i + pr_i * wg_delta_n];
+                    pr_lhs[pr_i] = local_lhs_block[pr_k * lhs_pitch + local_i +
+                                                   pr_i * wg_delta_n];
                 }
 
                 std::array<slmB_t, wi_delta_m_vecs> pr_rhs{};
@@ -748,6 +754,15 @@ public:
                         private_C[pr_i * wi_delta_m_vecs + pr_j] +=
                             pr_lhs[pr_i] * pr_rhs[pr_j];
                     }
+                }
+            }
+
+            if constexpr (std::is_same_v<resT, bool>) {
+                // bool tiles hold 0/1 bytes: saturate once per k-slab, which
+                // cannot overflow since wi_delta_k < 255
+#pragma unroll
+                for (std::uint32_t idx = 0; idx < C_size; ++idx) {
+                    private_C[idx] = sycl::min(private_C[idx], slmB_t(1));
                 }
             }
 
@@ -1017,15 +1032,14 @@ sycl::event gemm_with_k_split(sycl::queue &exec_q,
     }
 
     const std::size_t nelems = batch_nelems * n * m;
-    auto partials_owner =
-        dpnp::tensor::alloc_utils::smart_malloc_device<resTy>(
-            k_split * nelems, exec_q);
+    auto partials_owner = dpnp::tensor::alloc_utils::smart_malloc_device<resTy>(
+        k_split * nelems, exec_q);
     resTy *partials = partials_owner.get();
 
     const MatrixStridedIndexer partials_indexer(static_cast<ssize_t>(m), 1);
-    sycl::event partials_ev =
-        launch(partials, batch_indexer.for_partials(static_cast<ssize_t>(n * m)),
-               partials_indexer, nelems, false, depends);
+    sycl::event partials_ev = launch(
+        partials, batch_indexer.for_partials(static_cast<ssize_t>(n * m)),
+        partials_indexer, nelems, false, depends);
 
     sycl::event red_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(partials_ev);
@@ -1073,8 +1087,8 @@ sycl::event gemv_impl(sycl::queue &exec_q,
 
     const std::size_t max_wg =
         dev.get_info<sycl::info::device::max_work_group_size>();
-    const std::uint32_t lws = static_cast<std::uint32_t>(
-        std::min<std::size_t>(max_wg, 256));
+    const std::uint32_t lws =
+        static_cast<std::uint32_t>(std::min<std::size_t>(max_wg, 256));
 
     std::uint32_t wg_lanes, wg_rows;
     if (lanes_along_k) {
@@ -1111,7 +1125,8 @@ sycl::event gemv_impl(sycl::queue &exec_q,
                 sycl::range<1>(lws));
 
             auto submit_for = [&](auto transposed_tag) {
-                static constexpr bool transposed_v = decltype(transposed_tag)::value;
+                static constexpr bool transposed_v =
+                    decltype(transposed_tag)::value;
                 using KernelName =
                     class gemv_krn<lhsTy, rhsTy, resTy, OutBatchIndexerT,
                                    LhsIndexerT, RhsIndexerT, OutIndexerT,
@@ -1190,10 +1205,10 @@ sycl::event gemm_small_impl(sycl::queue &exec_q,
                 ceil_div(batch_nelems * k_split * n * m, lws) * lws;
             cgh.parallel_for<KernelName>(
                 sycl::nd_range<1>(sycl::range<1>(gws), sycl::range<1>(lws)),
-                FunctorT(lhs_tp, rhs_tp, out_tp, batch_nelems, n, k, m,
-                         k_split, k_chunk,
-                         out_split_stride, accumulate, symmetric, out_batch_indexer,
-                         lhs_indexer, rhs_indexer, out_indexer));
+                FunctorT(lhs_tp, rhs_tp, out_tp, batch_nelems, n, k, m, k_split,
+                         k_chunk, out_split_stride, accumulate, symmetric,
+                         out_batch_indexer, lhs_indexer, rhs_indexer,
+                         out_indexer));
         });
     };
 
@@ -1219,14 +1234,14 @@ std::tuple<std::uint32_t, std::uint32_t>
             ((wg_delta_n * wi_delta_n + 1 + wg_delta_m * wi_delta_m) *
              sizeof(T));
 
-        wi_delta_k = (slm_max_rows >= 64)
-                         ? 64
-                         : ((slm_max_rows >= 32)
-                                ? 32
-                                : (slm_max_rows >= 16
-                                       ? 16
-                                       : 8 * static_cast<std::uint32_t>(
-                                                 slm_max_rows / 8)));
+        wi_delta_k =
+            (slm_max_rows >= 64)
+                ? 64
+                : ((slm_max_rows >= 32)
+                       ? 32
+                       : (slm_max_rows >= 16 ? 16
+                                             : 8 * static_cast<std::uint32_t>(
+                                                       slm_max_rows / 8)));
         if (!wi_delta_k) {
             wg_delta_m = std::max<std::uint32_t>(wg_delta_m / 2, 1);
         }
@@ -1242,7 +1257,10 @@ std::tuple<std::uint32_t, std::uint32_t>
 template <typename lhsTy, typename rhsTy, typename resTy>
 struct GemmTileConfig
 {
-    using value_type = resTy;
+    // bool tiles are held as 0/1 bytes and accumulated as integers, which
+    // avoids the costly arithmetic on sycl::vec<bool>
+    using value_type =
+        std::conditional_t<std::is_same_v<resTy, bool>, std::uint8_t, resTy>;
 
     static constexpr GemmTileHyperParametersSelector<resTy> selector{};
     static constexpr auto hyper_params = selector.get();
@@ -1254,10 +1272,11 @@ struct GemmTileConfig
     static constexpr std::uint32_t wi_total_delta_m =
         wi_delta_m_vecs * m_vec_size;
 
-    using slmB_t = typename std::conditional<m_vec_size == 1,
-                                             resTy,
-                                             sycl::vec<resTy, m_vec_size>>::type;
-    using LocAccT1 = sycl::local_accessor<resTy, 1>;
+    using slmB_t =
+        typename std::conditional<m_vec_size == 1,
+                                  value_type,
+                                  sycl::vec<value_type, m_vec_size>>::type;
+    using LocAccT1 = sycl::local_accessor<value_type, 1>;
     using LocAccT2 = sycl::local_accessor<slmB_t, 1>;
 
     template <typename BatchIndexerT,
@@ -1429,9 +1448,12 @@ sycl::event gemm_tile_impl(sycl::queue &exec_q,
         // about half the tiles exit immediately
         tiles = std::max<std::size_t>(tiles / 2, 1);
     }
+    // A split costs a second kernel, and without atomics also a temporary
+    // and an asynchronous free; on Intel GPUs it did not pay off for chunks
+    // shorter than this
+    static constexpr std::size_t min_k_chunk = 256;
     const gemm_detail::KSplit split = gemm_detail::choose_k_split(
-        dev, batch_nelems * tiles * lws, k, 4 * geom.wi_delta_k,
-        geom.wi_delta_k);
+        dev, batch_nelems * tiles * lws, k, min_k_chunk, geom.wi_delta_k);
     const std::size_t k_split = split.k_split;
     const std::size_t k_chunk = split.k_chunk;
 
@@ -1466,10 +1488,10 @@ sycl::event gemm_tile_impl(sycl::queue &exec_q,
                 ndRange,
                 FunctorT(lhs_tp, rhs_tp, out_tp, local_A_block, local_B_block,
                          n, k, m, n_groups, m_groups, k_split, k_chunk,
-                         out_split_stride, accumulate, geom.wg_delta_n, geom.wg_delta_m,
-                         geom.wi_delta_k, lhs_row_major, rhs_row_major,
-                         symmetric, out_batch_indexer, lhs_indexer,
-                         rhs_indexer, out_indexer));
+                         out_split_stride, accumulate, geom.wg_delta_n,
+                         geom.wg_delta_m, geom.wi_delta_k, lhs_row_major,
+                         rhs_row_major, symmetric, out_batch_indexer,
+                         lhs_indexer, rhs_indexer, out_indexer));
         });
     };
 
@@ -1545,10 +1567,10 @@ sycl::event gemm_driver(sycl::queue &exec_q,
                                res_indexer, symmetric, use_atomics, depends);
     }
 
-    return gemm_tile_impl(exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k,
-                          m, batch_indexer, lhs_indexer, rhs_indexer,
-                          res_indexer, geom, lhs_indexer.row_major(),
-                          rhs_indexer.row_major(), symmetric, use_atomics, depends);
+    return gemm_tile_impl(
+        exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m, batch_indexer,
+        lhs_indexer, rhs_indexer, res_indexer, geom, lhs_indexer.row_major(),
+        rhs_indexer.row_major(), symmetric, use_atomics, depends);
 }
 
 } // namespace gemm_detail
@@ -1642,10 +1664,10 @@ sycl::event gemm_impl(sycl::queue &exec_q,
         const gemm_detail::GemmBatchIndexer<BaseIndexerT> batch_indexer(
             base_indexer);
 
-        return gemm_detail::gemm_driver(
-            exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
-            batch_indexer, lhs_indexer, rhs_indexer, res_indexer, symmetric, use_atomics,
-            depends);
+        return gemm_detail::gemm_driver(exec_q, lhs_tp, rhs_tp, res_tp,
+                                        batch_nelems, n, k, m, batch_indexer,
+                                        lhs_indexer, rhs_indexer, res_indexer,
+                                        symmetric, use_atomics, depends);
     }
     else {
         using BaseIndexerT = ThreeOffsets_StridedIndexer;
@@ -1655,10 +1677,10 @@ sycl::event gemm_impl(sycl::queue &exec_q,
         const gemm_detail::GemmBatchIndexer<BaseIndexerT> batch_indexer(
             base_indexer);
 
-        return gemm_detail::gemm_driver(
-            exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
-            batch_indexer, lhs_indexer, rhs_indexer, res_indexer, symmetric, use_atomics,
-            depends);
+        return gemm_detail::gemm_driver(exec_q, lhs_tp, rhs_tp, res_tp,
+                                        batch_nelems, n, k, m, batch_indexer,
+                                        lhs_indexer, rhs_indexer, res_indexer,
+                                        symmetric, use_atomics, depends);
     }
 }
 
@@ -1719,10 +1741,10 @@ sycl::event gemm_nd_impl(sycl::queue &exec_q,
     static constexpr std::size_t single_batch_nelems = 1;
     static constexpr bool symmetric = false;
 
-    return gemm_detail::gemm_driver(
-        exec_q, lhs_tp, rhs_tp, res_tp, single_batch_nelems, n, k, m,
-        batch_indexer, lhs_indexer, rhs_indexer, res_indexer, symmetric, use_atomics,
-        depends);
+    return gemm_detail::gemm_driver(exec_q, lhs_tp, rhs_tp, res_tp,
+                                    single_batch_nelems, n, k, m, batch_indexer,
+                                    lhs_indexer, rhs_indexer, res_indexer,
+                                    symmetric, use_atomics, depends);
 }
 
 } // namespace dpnp::tensor::kernels

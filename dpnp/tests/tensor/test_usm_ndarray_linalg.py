@@ -1355,3 +1355,27 @@ def test_matmul_split_k_strided_out(dtype, batch, n, k, m):
         res = dpt.matmul(dpt.matrix_transpose(x), x)
         assert np.array_equal(dpt.asnumpy(res), x_np.T @ x_np)
 
+
+@pytest.mark.parametrize(
+    "n, k, m", [(128, 256, 128), (70, 1024, 300), (16, 4096, 16)]
+)
+def test_matmul_bool_large_k(n, k, m):
+    get_queue_or_skip()
+
+    # the count of true products is a multiple of 256, so a byte-sized
+    # accumulator that does not saturate would wrap around to false
+    a = dpt.ones((n, k), dtype="?")
+    b = dpt.ones((k, m), dtype="?")
+    assert dpt.all(dpt.matmul(a, b))
+    assert dpt.all(dpt.matmul(dpt.matrix_transpose(b), dpt.matrix_transpose(a)))
+
+    x = dpt.ones((k, n), dtype="?")
+    assert dpt.all(dpt.matmul(dpt.matrix_transpose(x), x))
+
+    # a single true product per result element
+    a_np = np.zeros((n, k), dtype="?")
+    a_np[:, -1] = True
+    b_np = np.zeros((k, m), dtype="?")
+    b_np[-1, ::2] = True
+    res = dpt.matmul(dpt.asarray(a_np), dpt.asarray(b_np))
+    assert np.array_equal(dpt.asnumpy(res), np.matmul(a_np, b_np))

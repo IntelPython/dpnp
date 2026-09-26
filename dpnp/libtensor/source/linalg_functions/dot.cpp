@@ -648,9 +648,9 @@ std::pair<sycl::event, sycl::event>
                         x2_outer_nelems, // m
                         batch_layout, lhs_strides, rhs_strides, res_strides,
                         symmetric, supports_atomics, depends);
-            return std::make_pair(dpnp::utils::keep_args_alive(
-                                      exec_q, {x1, x2, dst}, {dot_ev}),
-                                  dot_ev);
+            return std::make_pair(
+                dpnp::utils::keep_args_alive(exec_q, {x1, x2, dst}, {dot_ev}),
+                dot_ev);
         }
 
         using dpnp::tensor::offset_utils::device_allocate_and_pack;
