@@ -15,13 +15,13 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="dpnp.unravel_index" href="dpnp.unravel_index.html"><link rel="prev" title="dpnp.ix_" href="dpnp.ix_.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>dpnp.ravel_multi_index - Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</title>
+        <title>dpnp.ravel_multi_index - Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -173,7 +173,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -194,7 +194,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -1059,14 +1059,16 @@
 <dd><p>Converts a tuple of index arrays into an array of flat indices, applying
 boundary modes to the multi-index.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ravel_multi_index.html#numpy.ravel_multi_index" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ravel_multi_index</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>multi_index</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- A tuple of integer arrays, one array for each dimension.</p></li>
-<li><p><strong>dims</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><em>ints</em>) -- The shape of array into which the indices from <cite>multi_index</cite> apply.</p></li>
-<li><p><strong>mode</strong> (<em>{&quot;raise&quot;</em><em>, </em><em>&quot;wrap&quot;</em><em> or </em><em>&quot;clip'}</em><em>, </em><em>optional</em>) -- <p>Specifies how out-of-bounds indices are handled. Can specify either
+<dd class="field-odd"><dl>
+<dt><strong>multi_index</strong><span class="classifier">tuple of {dpnp.ndarray, usm_ndarray}</span></dt><dd><p>A tuple of integer arrays, one array for each dimension.</p>
+</dd>
+<dt><strong>dims</strong><span class="classifier">tuple or list of ints</span></dt><dd><p>The shape of array into which the indices from <cite>multi_index</cite> apply.</p>
+</dd>
+<dt><strong>mode</strong><span class="classifier">{&quot;raise&quot;, &quot;wrap&quot; or &quot;clip'}, optional</span></dt><dd><p>Specifies how out-of-bounds indices are handled. Can specify either
 one mode or a tuple of modes, one mode per index:</p>
-<ul>
+<ul class="simple">
 <li><p>&quot;raise&quot; -- raise an error</p></li>
 <li><p>&quot;wrap&quot; -- wrap around</p></li>
 <li><p>&quot;clip&quot; -- clip to the range</p></li>
@@ -1074,19 +1076,19 @@ one mode or a tuple of modes, one mode per index:</p>
 <p>In <code class="docutils literal notranslate"><span class="pre">&quot;clip&quot;</span></code> mode, a negative index which would normally wrap will
 clip to 0 instead.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;raise&quot;</span></code>.</p>
-</p></li>
-<li><p><strong>order</strong> (<em>{None</em><em>, </em><em>&quot;C&quot;</em><em>, </em><em>&quot;F&quot;}</em><em>, </em><em>optional</em>) -- <p>Determines whether the multi-index should be viewed as indexing in
+</dd>
+<dt><strong>order</strong><span class="classifier">{None, &quot;C&quot;, &quot;F&quot;}, optional</span></dt><dd><p>Determines whether the multi-index should be viewed as indexing in
 row-major (C-style) or column-major (Fortran-style) order.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code>.</p>
-</p></li>
-</ul>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>raveled_indices</strong> -- An array of indices into the flattened version of an array of
+<dd class="field-even"><dl class="simple">
+<dt><strong>raveled_indices</strong><span class="classifier">dpnp.ndarray</span></dt><dd><p>An array of indices into the flattened version of an array of
 dimensions <cite>dims</cite>.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray">dpnp.ndarray</a></p>
+</dl>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1186,13 +1188,12 @@ dimensions <cite>dims</cite>.</p>
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=b97f887b"></script>
+</div><script src="../../_static/documentation_options.js?v=ec7b459e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

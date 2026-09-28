@@ -15,13 +15,13 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="dpnp.histogram" href="dpnp.histogram.html"><link rel="prev" title="dpnp.correlate" href="dpnp.correlate.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>dpnp.cov - Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</title>
+        <title>dpnp.cov - Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -173,7 +173,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -194,7 +194,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -1058,59 +1058,60 @@
 <span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">cov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rowvar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fweights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aweights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_statistics.html#cov"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.cov" title="Link to this definition">¶</a></dt>
 <dd><p>Estimate a covariance matrix, given data and weights.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.cov.html#numpy.cov" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.cov</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>m</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- A 1-D or 2-D array containing multiple variables and observations.
+<dd class="field-odd"><dl>
+<dt><strong>m</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}</span></dt><dd><p>A 1-D or 2-D array containing multiple variables and observations.
 Each row of <cite>m</cite> represents a variable, and each column a single
-observation of all those variables. Also see <cite>rowvar</cite> below.</p></li>
-<li><p><strong>y</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>An additional set of variables and observations. <cite>y</cite> has the same form
+observation of all those variables. Also see <cite>rowvar</cite> below.</p>
+</dd>
+<dt><strong>y</strong><span class="classifier">{None, dpnp.ndarray, usm_ndarray}, optional</span></dt><dd><p>An additional set of variables and observations. <cite>y</cite> has the same form
 as that of <cite>m</cite>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>rowvar</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>If <cite>rowvar</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, then each row represents a variable, with
+</dd>
+<dt><strong>rowvar</strong><span class="classifier">bool, optional</span></dt><dd><p>If <cite>rowvar</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, then each row represents a variable, with
 observations in the columns. Otherwise, the relationship is transposed:
 each column represents a variable, while the rows contain observations.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
-</p></li>
-<li><p><strong>bias</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>Default normalization is by <code class="docutils literal notranslate"><span class="pre">(N</span> <span class="pre">-</span> <span class="pre">1)</span></code>, where <code class="docutils literal notranslate"><span class="pre">N</span></code> is the number of
+</dd>
+<dt><strong>bias</strong><span class="classifier">bool, optional</span></dt><dd><p>Default normalization is by <code class="docutils literal notranslate"><span class="pre">(N</span> <span class="pre">-</span> <span class="pre">1)</span></code>, where <code class="docutils literal notranslate"><span class="pre">N</span></code> is the number of
 observations given (unbiased estimate). If <cite>bias</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, then
 normalization is by <code class="docutils literal notranslate"><span class="pre">N</span></code>. These values can be overridden by using the
 keyword <cite>ddof</cite>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
-</p></li>
-<li><p><strong>ddof</strong> (<em>{None</em><em>, </em><em>int}</em><em>, </em><em>optional</em>) -- <p>If not <code class="docutils literal notranslate"><span class="pre">None</span></code> the default value implied by <cite>bias</cite> is overridden. Note
+</dd>
+<dt><strong>ddof</strong><span class="classifier">{None, int}, optional</span></dt><dd><p>If not <code class="docutils literal notranslate"><span class="pre">None</span></code> the default value implied by <cite>bias</cite> is overridden. Note
 that <code class="docutils literal notranslate"><span class="pre">ddof=1</span></code> will return the unbiased estimate, even if both
 <cite>fweights</cite> and <cite>aweights</cite> are specified, and <code class="docutils literal notranslate"><span class="pre">ddof=0</span></code> will return the
 simple average. See the notes for the details.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>fweights</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>1-D array of integer frequency weights; the number of times each
+</dd>
+<dt><strong>fweights</strong><span class="classifier">{None, dpnp.ndarray, usm_ndarray}, optional</span></dt><dd><p>1-D array of integer frequency weights; the number of times each
 observation vector should be repeated.
 It is required that <code class="docutils literal notranslate"><span class="pre">fweights</span> <span class="pre">&gt;=</span> <span class="pre">0</span></code>. However, the function will not
 raise an error when <code class="docutils literal notranslate"><span class="pre">fweights</span> <span class="pre">&lt;</span> <span class="pre">0</span></code> for performance reasons.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>aweights</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>1-D array of observation vector weights. These relative weights are
+</dd>
+<dt><strong>aweights</strong><span class="classifier">{None, dpnp.ndarray, usm_ndarray}, optional</span></dt><dd><p>1-D array of observation vector weights. These relative weights are
 typically large for observations considered &quot;important&quot; and smaller for
 observations considered less &quot;important&quot;. If <code class="docutils literal notranslate"><span class="pre">ddof=0</span></code> the array of
 weights can be used to assign probabilities to observation vectors.
 It is required that <code class="docutils literal notranslate"><span class="pre">aweights</span> <span class="pre">&gt;=</span> <span class="pre">0</span></code>. However, the function will not
 error when <code class="docutils literal notranslate"><span class="pre">aweights</span> <span class="pre">&lt;</span> <span class="pre">0</span></code> for performance reasons.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>dtype</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.dtype.str.html#dpnp.dtype.str" title="dpnp.dtype.str"><em>str</em></a><em>, </em><em>dtype object}</em><em>, </em><em>optional</em>) -- <p>Data-type of the result. By default, the return data-type will have
+</dd>
+<dt><strong>dtype</strong><span class="classifier">{None, str, dtype object}, optional</span></dt><dd><p>Data-type of the result. By default, the return data-type will have
 the default floating point data-type of the device on which the input
 arrays reside.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-</ul>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> -- The covariance matrix of the variables.</p>
+<dd class="field-even"><dl class="simple">
+<dt><strong>out</strong><span class="classifier">dpnp.ndarray</span></dt><dd><p>The covariance matrix of the variables.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray">dpnp.ndarray</a></p>
+</dl>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1246,7 +1247,7 @@ matrix shows this clearly:</p>
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=b97f887b"></script>
+</div><script src="../../_static/documentation_options.js?v=ec7b459e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
@@ -1254,6 +1255,5 @@ matrix shows this clearly:</p>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

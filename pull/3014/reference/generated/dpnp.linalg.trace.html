@@ -15,13 +15,13 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="dpnp.linalg.solve" href="dpnp.linalg.solve.html"><link rel="prev" title="dpnp.trace" href="dpnp.trace.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>dpnp.linalg.trace - Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</title>
+        <title>dpnp.linalg.trace - Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -173,7 +173,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -194,7 +194,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -1060,33 +1060,35 @@
 (or a stack of matrices) <cite>x</cite>.</p>
 <p>This function is Array API compatible, contrary to <a class="reference internal" href="dpnp.trace.html#dpnp.trace" title="dpnp.trace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.trace</span></code></a>.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.trace.html#numpy.linalg.trace" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linalg.trace</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>(</em><em>...</em><em>, </em><em>M</em><em>, </em><em>N</em><em>) </em><em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array having shape (..., M, N) and whose innermost two
-dimensions form <code class="docutils literal notranslate"><span class="pre">MxN</span></code> matrices.</p></li>
-<li><p><strong>offset</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) -- <p>Offset specifying the off-diagonal relative to the main diagonal,
+<dd class="field-odd"><dl>
+<dt><strong>x</strong><span class="classifier">(..., M, N) {dpnp.ndarray, usm_ndarray}</span></dt><dd><p>Input array having shape (..., M, N) and whose innermost two
+dimensions form <code class="docutils literal notranslate"><span class="pre">MxN</span></code> matrices.</p>
+</dd>
+<dt><strong>offset</strong><span class="classifier">int, optional</span></dt><dd><p>Offset specifying the off-diagonal relative to the main diagonal,
 where:</p>
 <blockquote>
-<div><ul>
+<div><ul class="simple">
 <li><p>offset = 0: the main diagonal.</p></li>
 <li><p>offset &gt; 0: off-diagonal above the main diagonal.</p></li>
 <li><p>offset &lt; 0: off-diagonal below the main diagonal.</p></li>
 </ul>
 </div></blockquote>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
-</p></li>
-<li><p><strong>dtype</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.dtype.str.html#dpnp.dtype.str" title="dpnp.dtype.str"><em>str</em></a><em>, </em><em>dtype object}</em><em>, </em><em>optional</em>) -- <p>Determines the data-type of the returned array and of the accumulator
+</dd>
+<dt><strong>dtype</strong><span class="classifier">{None, str, dtype object}, optional</span></dt><dd><p>Determines the data-type of the returned array and of the accumulator
 where the elements are summed. If <cite>dtype</cite> has the value <code class="docutils literal notranslate"><span class="pre">None</span></code> and
 <cite>a</cite> is of integer type of precision less than the default integer
 precision, then the default integer precision is used. Otherwise, the
 precision is the same as that of <cite>a</cite>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-</ul>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><p><strong>out</strong> -- An array containing the traces and whose shape is determined by
+<dd class="field-even"><dl>
+<dt><strong>out</strong><span class="classifier">dpnp.ndarray</span></dt><dd><p>An array containing the traces and whose shape is determined by
 removing the last two dimensions and storing the traces in the last
 array dimension. For example, if x has rank k and shape:
 (I, J, K, ..., L, M, N), then an output array has rank k-2 and shape:
@@ -1094,10 +1096,8 @@ array dimension. For example, if x has rank k and shape:
 <code class="docutils literal notranslate"><span class="pre">out[i,</span> <span class="pre">j,</span> <span class="pre">k,</span> <span class="pre">...,</span> <span class="pre">l]</span> <span class="pre">=</span> <span class="pre">dpnp.linalg.trace(a[i,</span> <span class="pre">j,</span> <span class="pre">k,</span> <span class="pre">...,</span> <span class="pre">l,</span> <span class="pre">:,</span> <span class="pre">:])</span></code></p>
 <p>The returned array must have a data type as described by the dtype
 parameter above.</p>
-</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray">dpnp.ndarray</a></p>
+</dl>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1212,13 +1212,12 @@ axes by default.</p>
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=b97f887b"></script>
+</div><script src="../../_static/documentation_options.js?v=ec7b459e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

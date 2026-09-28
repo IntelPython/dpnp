@@ -15,13 +15,13 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="dpnp.linalg.inv" href="dpnp.linalg.inv.html"><link rel="prev" title="dpnp.linalg.tensorsolve" href="dpnp.linalg.tensorsolve.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>dpnp.linalg.lstsq - Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</title>
+        <title>dpnp.linalg.lstsq - Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -173,7 +173,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -194,7 +194,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -1058,36 +1058,41 @@
 <span class="sig-prename descclassname"><span class="pre">dpnp.linalg.</span></span><span class="sig-name descname"><span class="pre">lstsq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rcond</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/linalg/dpnp_iface_linalg.html#lstsq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.linalg.lstsq" title="Link to this definition">¶</a></dt>
 <dd><p>Return the least-squares solution to a linear matrix equation.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.lstsq.html#numpy.linalg.lstsq" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linalg.lstsq</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>(</em><em>M</em><em>, </em><em>N</em><em>) </em><em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- &quot;Coefficient&quot; matrix.</p></li>
-<li><p><strong>b</strong> (<em>{</em><em>(</em><em>M</em><em>,</em><em>)</em><em>, </em><em>(</em><em>M</em><em>, </em><em>K</em><em>)</em><em>} {dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Ordinate or &quot;dependent variable&quot; values.
+<dd class="field-odd"><dl>
+<dt><strong>a</strong><span class="classifier">(M, N) {dpnp.ndarray, usm_ndarray}</span></dt><dd><p>&quot;Coefficient&quot; matrix.</p>
+</dd>
+<dt><strong>b</strong><span class="classifier">{(M,), (M, K)} {dpnp.ndarray, usm_ndarray}</span></dt><dd><p>Ordinate or &quot;dependent variable&quot; values.
 If <cite>b</cite> is two-dimensional, the least-squares solution
-is calculated for each of the <cite>K</cite> columns of <cite>b</cite>.</p></li>
-<li><p><strong>rcond</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>float}</em><em>, </em><em>optional</em>) -- <p>Cut-off ratio for small singular values of <cite>a</cite>.
+is calculated for each of the <cite>K</cite> columns of <cite>b</cite>.</p>
+</dd>
+<dt><strong>rcond</strong><span class="classifier">{None, int, float}, optional</span></dt><dd><p>Cut-off ratio for small singular values of <cite>a</cite>.
 For the purposes of rank determination, singular values are treated as
 zero if they are smaller than <cite>rcond</cite> times the largest singular value
 of <cite>a</cite>.
 The default uses the machine precision times <code class="docutils literal notranslate"><span class="pre">max(M,</span> <span class="pre">N)</span></code>. Passing
 <code class="docutils literal notranslate"><span class="pre">-1</span></code> will use machine precision.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-</ul>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>x</strong> (<em>{(N,), (N, K)} dpnp.ndarray</em>) -- Least-squares solution. If <cite>b</cite> is two-dimensional,
-the solutions are in the <cite>K</cite> columns of <cite>x</cite>.</p></li>
-<li><p><strong>residuals</strong> (<em>{(1,), (K,), (0,)} dpnp.ndarray</em>) -- Sums of squared residuals: Squared Euclidean 2-norm for each column in
+<dd class="field-even"><dl class="simple">
+<dt><strong>x</strong><span class="classifier">{(N,), (N, K)} dpnp.ndarray</span></dt><dd><p>Least-squares solution. If <cite>b</cite> is two-dimensional,
+the solutions are in the <cite>K</cite> columns of <cite>x</cite>.</p>
+</dd>
+<dt><strong>residuals</strong><span class="classifier">{(1,), (K,), (0,)} dpnp.ndarray</span></dt><dd><p>Sums of squared residuals: Squared Euclidean 2-norm for each column in
 <code class="docutils literal notranslate"><span class="pre">b</span> <span class="pre">-</span> <span class="pre">a</span> <span class="pre">&#64;</span> <span class="pre">x</span></code>.
 If the rank of <cite>a</cite> is &lt; N or M &lt;= N, this is an empty array.
 If <cite>b</cite> is 1-dimensional, this is a (1,) shape array.
-Otherwise the shape is (K,).</p></li>
-<li><p><strong>rank</strong> (<em>int</em>) -- Rank of matrix <cite>a</cite>.</p></li>
-<li><p><strong>s</strong> (<em>(min(M, N),) dpnp.ndarray</em>) -- Singular values of <cite>a</cite>.</p></li>
-</ul>
-</p>
+Otherwise the shape is (K,).</p>
+</dd>
+<dt><strong>rank</strong><span class="classifier">int</span></dt><dd><p>Rank of matrix <cite>a</cite>.</p>
+</dd>
+<dt><strong>s</strong><span class="classifier">(min(M, N),) dpnp.ndarray</span></dt><dd><p>Singular values of <cite>a</cite>.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -1186,13 +1191,12 @@ and <code class="docutils literal notranslate"><span class="pre">p</span> <span 
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=b97f887b"></script>
+</div><script src="../../_static/documentation_options.js?v=ec7b459e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

@@ -15,13 +15,13 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="dpnp.mgrid" href="dpnp.mgrid.html"><link rel="prev" title="dpnp.geomspace" href="dpnp.geomspace.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>dpnp.meshgrid - Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</title>
+        <title>dpnp.meshgrid - Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -173,7 +173,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -194,7 +194,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -1061,36 +1061,34 @@
 fields over N-D grids, given one-dimensional coordinate arrays
 <code class="docutils literal notranslate"><span class="pre">x1,</span> <span class="pre">x2,...,</span> <span class="pre">xn</span></code>.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.meshgrid.html#numpy.meshgrid" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.meshgrid</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x1</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- 1-D arrays representing the coordinates of a grid.</p></li>
-<li><p><strong>x2</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- 1-D arrays representing the coordinates of a grid.</p></li>
-<li><p><strong>...</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- 1-D arrays representing the coordinates of a grid.</p></li>
-<li><p><strong>xn</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- 1-D arrays representing the coordinates of a grid.</p></li>
-<li><p><strong>indexing</strong> (<em>{'xy'</em><em>, </em><em>'ij'}</em><em>, </em><em>optional</em>) -- <p>Cartesian (<code class="docutils literal notranslate"><span class="pre">'xy'</span></code>, default) or matrix (<code class="docutils literal notranslate"><span class="pre">'ij'</span></code>) indexing of output.</p>
+<dd class="field-odd"><dl>
+<dt><strong>x1, x2,..., xn</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}</span></dt><dd><p>1-D arrays representing the coordinates of a grid.</p>
+</dd>
+<dt><strong>indexing</strong><span class="classifier">{'xy', 'ij'}, optional</span></dt><dd><p>Cartesian (<code class="docutils literal notranslate"><span class="pre">'xy'</span></code>, default) or matrix (<code class="docutils literal notranslate"><span class="pre">'ij'</span></code>) indexing of output.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;xy&quot;</span></code>.</p>
-</p></li>
-<li><p><strong>sparse</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code> the shape of the returned coordinate array for dimension <cite>i</cite>
+</dd>
+<dt><strong>sparse</strong><span class="classifier">bool, optional</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code> the shape of the returned coordinate array for dimension <cite>i</cite>
 is reduced from <code class="docutils literal notranslate"><span class="pre">(N1,</span> <span class="pre">...,</span> <span class="pre">Ni,</span> <span class="pre">...</span> <span class="pre">Nn)</span></code> to
 <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">...,</span> <span class="pre">1,</span> <span class="pre">Ni,</span> <span class="pre">1,</span> <span class="pre">...,</span> <span class="pre">1)</span></code>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
-</p></li>
-<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">False</span></code>, a view into the original arrays are returned in order to
+</dd>
+<dt><strong>copy</strong><span class="classifier">bool, optional</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">False</span></code>, a view into the original arrays are returned in order to
 conserve memory.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
-</p></li>
-</ul>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>X1, X2,..., XN</strong> -- For vectors <cite>x1</cite>, <cite>x2</cite>,..., <cite>xn</cite> with lengths <code class="docutils literal notranslate"><span class="pre">Ni=len(xi)</span></code>, returns
+<dd class="field-even"><dl class="simple">
+<dt><strong>X1, X2,..., XN</strong><span class="classifier">tuple of dpnp.ndarrays</span></dt><dd><p>For vectors <cite>x1</cite>, <cite>x2</cite>,..., <cite>xn</cite> with lengths <code class="docutils literal notranslate"><span class="pre">Ni=len(xi)</span></code>, returns
 <code class="docutils literal notranslate"><span class="pre">(N1,</span> <span class="pre">N2,</span> <span class="pre">N3,...,</span> <span class="pre">Nn)</span></code> shaped arrays if <code class="docutils literal notranslate"><span class="pre">indexing='ij'</span></code> or
 <code class="docutils literal notranslate"><span class="pre">(N2,</span> <span class="pre">N1,</span> <span class="pre">N3,...,</span> <span class="pre">Nn)</span></code> shaped arrays if <code class="docutils literal notranslate"><span class="pre">indexing='xy'</span></code> with
 the elements of <cite>xi</cite> repeated to fill the matrix along the first
 dimension for <cite>x1</cite>, the second for <cite>x2</cite> and so on.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)">tuple</a> of dpnp.ndarrays</p>
+</dl>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1204,13 +1202,12 @@ dimension for <cite>x1</cite>, the second for <cite>x2</cite> and so on.</p>
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=b97f887b"></script>
+</div><script src="../../_static/documentation_options.js?v=ec7b459e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>
