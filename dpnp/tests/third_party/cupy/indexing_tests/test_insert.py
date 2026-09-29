@@ -218,7 +218,7 @@ class TestPutmask(unittest.TestCase):
         for xp in (numpy, cupy):
             a = xp.array([1, 2, 3])
             mask = xp.array([True, False])
-            with pytest.raises((ValueError, IndexError)):
+            with pytest.raises(ValueError):
                 xp.putmask(a, mask, a**2)
 
     @testing.numpy_cupy_array_equal()
@@ -231,7 +231,6 @@ class TestPutmask(unittest.TestCase):
 
 class TestPutmaskDifferentDtypes(unittest.TestCase):
 
-    @pytest.mark.skip("putmask() is not fully supported")
     @testing.for_all_dtypes_combination(names=["a_dtype", "val_dtype"])
     def test_putmask_differnt_dtypes_raises(self, a_dtype, val_dtype):
         shape = (2, 3)

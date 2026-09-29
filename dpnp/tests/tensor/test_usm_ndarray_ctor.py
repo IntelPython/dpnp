@@ -416,7 +416,7 @@ def test_slice_constructor_1d():
     ]:
         assert np.array_equal(
             dpt.asnumpy(Xusm[ind]), Xh[ind]
-        ), "Failed for {}".format(ind)
+        ), f"Failed for {ind}"
 
 
 def test_slice_constructor_3d():
@@ -438,7 +438,7 @@ def test_slice_constructor_3d():
     ]:
         assert np.array_equal(
             dpt.to_numpy(Xusm[ind]), Xh[ind]
-        ), "Failed for {}".format(ind)
+        ), f"Failed for {ind}"
 
 
 @pytest.mark.parametrize("usm_type", ["device", "shared", "host"])
@@ -451,7 +451,7 @@ def test_slice_suai(usm_type):
     for ind in [slice(2, 3, None), slice(5, 7, None), slice(3, 9, None)]:
         assert np.array_equal(
             dpm.as_usm_memory(Xusm[ind]).copy_to_host(), Xh[ind]
-        ), "Failed for {}".format(ind)
+        ), f"Failed for {ind}"
 
 
 def test_slicing_basic():

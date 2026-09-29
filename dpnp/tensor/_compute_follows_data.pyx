@@ -80,7 +80,7 @@ def get_execution_queue(qs, /):
     """
     if not isinstance(qs, (list, tuple)):
         raise TypeError(
-            "Expected a list or a tuple, got {}".format(type(qs))
+            f"Expected a list or a tuple, got {type(qs)}"
         )
     if len(qs) == 0:
         return None
@@ -114,7 +114,7 @@ def get_coerced_usm_type(usm_types, /):
     """
     if not isinstance(usm_types, (list, tuple)):
         raise TypeError(
-            "Expected a list or a tuple, got {}".format(type(usm_types))
+            f"Expected a list or a tuple, got {type(usm_types)}"
         )
     if len(usm_types) == 0:
         return None
