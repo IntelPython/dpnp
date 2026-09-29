@@ -863,7 +863,7 @@ class TestCumsum:
     @pytest.mark.parametrize("shape, axis", _BATCH_SCAN_AXIS_CASES)
     @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_cumsum_axis_batch_kernels(self, xp, shape, axis):
-        a = testing.shaped_arange(shape, xp, numpy.float64)
+        a = testing.shaped_arange(shape, xp, cupy.default_float_type())
         return self._cumsum(xp, a, axis=axis)
 
 
@@ -967,9 +967,13 @@ class TestCumprod:
             return cupy.cumprod(a_numpy)
 
     @pytest.mark.parametrize("shape, axis", _BATCH_SCAN_AXIS_CASES)
-    @testing.numpy_cupy_allclose(contiguous_check=False)
+    @testing.numpy_cupy_allclose(
+        rtol=1e-5,
+        atol=1e-6,
+        contiguous_check=False,
+    )
     def test_cumprod_axis_batch_kernels(self, xp, shape, axis):
-        a = testing.shaped_arange(shape, xp, numpy.float64)
+        a = testing.shaped_arange(shape, xp, cupy.default_float_type())
         a *= 2 / a.size  # scale to (0, 2] to avoid overflow
         return self._cumprod(xp, a, axis=axis)
 
