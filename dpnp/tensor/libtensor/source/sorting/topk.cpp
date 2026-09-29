@@ -51,6 +51,7 @@
 #include "utils/output_validation.hpp"
 #include "utils/rich_comparisons.hpp"
 #include "utils/type_dispatch.hpp"
+#include "utils/type_utils.hpp"
 
 #include "topk.hpp"
 
@@ -74,20 +75,10 @@ static topk_impl_fn_ptr_t topk_dispatch_vector[td_ns::num_types];
 namespace
 {
 
-template <typename T, typename = void>
-struct use_radix_sort : public std::false_type
-{
-};
-
+// types with an order-preserving radix key
 template <typename T>
-struct use_radix_sort<
-    T,
-    std::enable_if_t<std::disjunction<std::is_same<T, bool>,
-                                      std::is_same<T, std::uint8_t>,
-                                      std::is_same<T, std::int8_t>,
-                                      std::is_same<T, std::uint16_t>,
-                                      std::is_same<T, std::int16_t>>::value>>
-    : public std::true_type
+struct use_radix_select
+    : public std::negation<dpnp::tensor::type_utils::is_complex<T>>
 {
 };
 
@@ -102,12 +93,12 @@ sycl::event topk_caller(sycl::queue &exec_q,
                         char *inds_cp,
                         const std::vector<sycl::event> &depends)
 {
-    if constexpr (use_radix_sort<argTy>::value) {
-        using dpnp::tensor::kernels::topk_radix_impl;
-        auto ascending = !largest;
-        return topk_radix_impl<argTy, IndexTy>(exec_q, iter_nelems, axis_nelems,
-                                               k, ascending, arg_cp, vals_cp,
-                                               inds_cp, depends);
+    if constexpr (use_radix_select<argTy>::value) {
+        using dpnp::tensor::kernels::topk_radix_select_impl;
+        const bool ascending = !largest;
+        return topk_radix_select_impl<argTy, IndexTy>(
+            exec_q, iter_nelems, axis_nelems, k, ascending, arg_cp, vals_cp,
+            inds_cp, depends);
     }
     else {
         using dpnp::tensor::kernels::topk_merge_impl;
