@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import unittest
 import warnings
 
@@ -58,17 +60,17 @@ class TestFlatiter(unittest.TestCase):
 
 
 @testing.parameterize(
-    # {"shape": (2, 3, 4), "index": Ellipsis},
+    {"shape": (2, 3, 4), "index": Ellipsis},
     {"shape": (2, 3, 4), "index": 0},
     {"shape": (2, 3, 4), "index": 10},
-    # {"shape": (2, 3, 4), "index": slice(None)},
-    # {"shape": (2, 3, 4), "index": slice(None, 10)},
-    # {"shape": (2, 3, 4), "index": slice(None, None, 2)},
-    # {"shape": (2, 3, 4), "index": slice(None, None, -1)},
-    # {"shape": (2, 3, 4), "index": slice(10, None, -1)},
-    # {"shape": (2, 3, 4), "index": slice(10, None, -2)},
-    # {"shape": (), "index": slice(None)},
-    # {"shape": (10,), "index": slice(None)},
+    {"shape": (2, 3, 4), "index": slice(None)},
+    {"shape": (2, 3, 4), "index": slice(None, 10)},
+    {"shape": (2, 3, 4), "index": slice(None, None, 2)},
+    {"shape": (2, 3, 4), "index": slice(None, None, -1)},
+    {"shape": (2, 3, 4), "index": slice(10, None, -1)},
+    {"shape": (2, 3, 4), "index": slice(10, None, -2)},
+    {"shape": (), "index": slice(None)},
+    {"shape": (10,), "index": slice(None)},
 )
 class TestFlatiterSubscript(unittest.TestCase):
 
@@ -125,12 +127,13 @@ class TestFlatiterSubscript(unittest.TestCase):
 
 @testing.parameterize(
     {"shape": (2, 3, 4), "index": None},
-    {"shape": (2, 3, 4), "index": (0,)},
+    # the indices below are valid for flat iterators since NumPy 2.4
+    # (numpy-gh-28590) and no longer raise an IndexError:
+    # {"shape": (2, 3, 4), "index": (0,)},
     {"shape": (2, 3, 4), "index": True},
-    {"shape": (2, 3, 4), "index": cupy.array([0])},
-    {"shape": (2, 3, 4), "index": [0]},
+    # {"shape": (2, 3, 4), "index": cupy.array([0])},
+    # {"shape": (2, 3, 4), "index": [0]},
 )
-@pytest.mark.skip("no exception raised")
 class TestFlatiterSubscriptIndexError(unittest.TestCase):
 
     @testing.for_all_dtypes()

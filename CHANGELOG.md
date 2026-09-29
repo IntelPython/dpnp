@@ -107,6 +107,7 @@ This release is compatible with NumPy 2.5.
 * Fixed the strided kernel of `dpnp.full` and `dpnp.tensor.full` not waiting on the events passed to the binding [#3072](https://github.com/IntelPython/dpnp/pull/3072)
 * Fixed the list of events the copy kernels of `dpnp.reshape`, `dpnp.tensor.reshape`, `dpnp.roll` and `dpnp.tensor.roll` wait on being padded with default-constructed events [#3072](https://github.com/IntelPython/dpnp/pull/3072)
 * Fixed `simplify_iteration_three_strides` and `simplify_iteration_four_strides` accumulating into their third and fourth output displacements without zeroing them first, which required the caller to initialize them [#3072](https://github.com/IntelPython/dpnp/pull/3072)
+* Fixed `dpnp.ndarray.flat` indexing and assignment edge cases, adding support for slices, ellipsis, and integer/boolean array indices [#3045](https://github.com/IntelPython/dpnp/pull/3045)
 
 ### Security
 
