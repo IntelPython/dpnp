@@ -20,6 +20,7 @@ This release is compatible with NumPy 2.5.
 * Added support for free-threaded Python builds [gh-3026](https://github.com/IntelPython/dpnp/pull/3026)
 * Added `dpnp.broadcast` class implementation [#2901](https://github.com/IntelPython/dpnp/pull/2901)
 * Added the `ndmax` keyword to `dpnp.array` for compatibility with NumPy [#3044](https://github.com/IntelPython/dpnp/pull/3044)
+* Added `UsmNDArray_RemoveQueueRef` C API function to release a queue reference obtained from `UsmNDArray_GetQueueRef` [#3042](https://github.com/IntelPython/dpnp/pull/3042)
 
 ### Changed
 
@@ -47,6 +48,9 @@ This release is compatible with NumPy 2.5.
 * Linked the `dpnp_backend_c` library against only the MKL SYCL domains it uses (`BLAS`, `RNG`, `VM`) [#3012](https://github.com/IntelPython/dpnp/pull/3012)
 * `dpnp` uses pybind11 3.1.0 [#3015](https://github.com/IntelPython/dpnp/pull/3015)
 * Reworked the ASV benchmarks and added end-to-end workload benchmarks derived from dpBench [#2996](https://github.com/IntelPython/dpnp/pull/2996)
+* Reduced allocations in `dpnp.linalg.norm` by reusing the reduction result as the `sqrt` output buffer in the 2-norm and Frobenius-norm branches [#3062](https://github.com/IntelPython/dpnp/pull/3062)
+* Avoided a copy of `dpnp.einsum` result into C-order by building the product in the requested layout directly [#3069](https://github.com/IntelPython/dpnp/pull/3069)
+* Updated the implementation of `dpnp.putmask` by adding dedicated contiguous and strided SYCL kernels [#3014](https://github.com/IntelPython/dpnp/pull/3014)
 
 ### Deprecated
 
@@ -92,6 +96,16 @@ This release is compatible with NumPy 2.5.
 * Fixed `dpnp.all` and `dpnp.any` aborting when reducing over an empty axis (e.g. an array with a zero-length dimension) [#3021](https://github.com/IntelPython/dpnp/pull/3021)
 * Released the GIL before the blocking OneMKL DFT calls in the FFT extension [#3040](https://github.com/IntelPython/dpnp/pull/3040)
 * Fixed `astype` casting an out-of-range floating point value to a signed narrow integer type saturating to the destination min/max instead of wrapping like NumPy, generalizing the earlier unsigned-only fix [#3033](https://github.com/IntelPython/dpnp/pull/3033)
+* Fixed `dpnp.insert` silently ignoring out-of-bounds negative indices in a multi-element `obj`, so a mix of in-bounds and out-of-bounds indices now consistently raises `IndexError` [#3041](https://github.com/IntelPython/dpnp/pull/3041)
+* Fixed a per-call `sycl::queue` leak in `usm_ndarray::get_queue()`/`get_device()` [#3042](https://github.com/IntelPython/dpnp/pull/3042)
+* Fixed `dpnp.linspace` returning `nan` for equal infinite endpoints [#3043](https://github.com/IntelPython/dpnp/pull/3043)
+* Fixed `dpnp.cumsum`, `dpnp.cumprod`, and their `nan`/`cumulative_*` variants (including `dpnp.tensor.cumulative_sum`/`cumulative_prod`) silently returning incorrect results when accumulating along an axis of an array with more than one row [#3063](https://github.com/IntelPython/dpnp/pull/3063)
+* Fixed `dpnp.einsum` returning a result whose memory layout differs from NumPy for the default `order="K"`, and ignoring `out` and `order` for a contraction over a size-0 dimension [#3058](https://github.com/IntelPython/dpnp/pull/3058)
+* Fixed operations on a boolean array whose bytes are not `0x00`/`0x01` [#3055](https://github.com/IntelPython/dpnp/pull/3055)
+* Fixed the `dpnp.ndarray` constructor returning a view at the wrong address [#3068](https://github.com/IntelPython/dpnp/pull/3068)
+* Fixed the strided kernel of `dpnp.full` and `dpnp.tensor.full` not waiting on the events passed to the binding [#3072](https://github.com/IntelPython/dpnp/pull/3072)
+* Fixed the list of events the copy kernels of `dpnp.reshape`, `dpnp.tensor.reshape`, `dpnp.roll` and `dpnp.tensor.roll` wait on being padded with default-constructed events [#3072](https://github.com/IntelPython/dpnp/pull/3072)
+* Fixed `simplify_iteration_three_strides` and `simplify_iteration_four_strides` accumulating into their third and fourth output displacements without zeroing them first, which required the caller to initialize them [#3072](https://github.com/IntelPython/dpnp/pull/3072)
 
 ### Security
 

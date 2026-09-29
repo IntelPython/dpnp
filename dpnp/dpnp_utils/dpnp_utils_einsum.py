@@ -880,7 +880,7 @@ def _parse_possible_contraction(
     return [sort, positions, new_input_sets]
 
 
-def _reduced_binary_einsum(arr0, sub0, arr1, sub1, sub_others):
+def _reduced_binary_einsum(arr0, sub0, arr1, sub1, sub_others, prefer_c=False):
     """Copied from _reduced_binary_einsum in cupy/core/_einsum.py"""
 
     set0 = set(sub0)
@@ -915,6 +915,27 @@ def _reduced_binary_einsum(arr0, sub0, arr1, sub1, sub_others):
         arr0 = _expand_dims_transpose(arr0, sub0, sub_out)
         arr1 = _expand_dims_transpose(arr1, sub1, sub_out)
         return arr0 * arr1, sub_out
+
+    if (
+        prefer_c
+        and sub_l
+        and sub_r
+        and sub_others.index(sub_l[0]) > sub_others.index(sub_r[0])
+    ):
+        # Swap the operand roles so the free axes of the product already come
+        # out in `sub_others` order. Otherwise the caller transposes the
+        # result, which makes it f-contiguous and costs a copy into c-order.
+        sub_out = sub_b + sub_r + sub_l
+        arr0, bs0, cs0, ts0, arr1, bs1, cs1, ts1 = (
+            arr1,
+            bs1,
+            cs1,
+            ts1,
+            arr0,
+            bs0,
+            cs0,
+            ts0,
+        )
 
     tmp0, shapes0 = _flatten_transpose(arr0, [bs0, ts0, cs0])
     tmp1, shapes1 = _flatten_transpose(arr1, [bs1, cs1, ts1])
@@ -1039,8 +1060,22 @@ def dpnp_einsum(
             )
             arrays.append(operands[id])
     result_dtype = dpnp.result_type(*arrays) if dtype is None else dtype
-    if order is not None and order in "aA":
-        order = "F" if all(arr.flags.fnc for arr in arrays) else "C"
+    # validated here because the view path below skips `dpnp.asarray`
+    if order is None:
+        order = "K"
+    elif not isinstance(order, str):
+        raise TypeError(f"order must be str, not {type(order).__name__}")
+    elif len(order) == 1 and order in "afkcAFKC":
+        order = order.upper()
+    else:
+        raise ValueError(
+            f"order must be one of 'C', 'F', 'A', or 'K' (got '{order}')"
+        )
+    all_f_contiguous = all(arr.flags.f_contiguous for arr in arrays)
+    if order == "A":
+        # NumPy uses f_contiguous here, not fnc; they differ for an array that
+        # is both C- and F-contiguous, such as a 1-D or size-1 one
+        order = "F" if all_f_contiguous else "C"
 
     input_subscripts = [
         _parse_ellipsis_subscript(sub, idx, ndim=arr.ndim)
@@ -1110,12 +1145,15 @@ def dpnp_einsum(
     # no more raises
     if len(operands) >= 2:
         if any(arr.size == 0 for arr in operands):
-            return dpnp.zeros(
+            # NumPy falls back to "C" for "K" here
+            arr_out = dpnp.zeros(
                 tuple(dimension_dict[label] for label in output_subscript),
                 dtype=result_dtype,
+                order="C" if order == "K" else order,
                 usm_type=res_usm_type,
                 sycl_queue=exec_q,
             )
+            return dpnp.get_result_array(arr_out, out, casting=casting)
 
         # Don't squeeze if unary, because this affects later (in trivial sum)
         # whether the return is a writeable view.
@@ -1194,7 +1232,15 @@ def dpnp_einsum(
                 stacklevel=2,
             )
 
-    for idx0, idx1 in _iter_path_pairs(path):
+    # Resolved above the loop because `prefer_c` below needs the final order:
+    # only a "C" target gains from a product laid out in output order.
+    if order == "K" and optimize is False and not all_f_contiguous:
+        # only the unoptimized path of NumPy copies into a c-contiguous
+        # array, the optimized one is matmul-based, as dpnp always is
+        order = "C"
+
+    pairs = list(_iter_path_pairs(path))
+    for pair_idx, (idx0, idx1) in enumerate(pairs):
         # "reduced" binary einsum
         arr0 = operands.pop(idx0)
         sub0 = input_subscripts.pop(idx0)
@@ -1207,7 +1253,13 @@ def dpnp_einsum(
             )
         )
         arr_out, sub_out = _reduced_binary_einsum(
-            arr0, sub0, arr1, sub1, sub_others
+            arr0,
+            sub0,
+            arr1,
+            sub1,
+            sub_others,
+            # only "C" and the last contraction
+            prefer_c=order == "C" and pair_idx == len(pairs) - 1,
         )
         operands.append(arr_out)
         input_subscripts.append(sub_out)
@@ -1226,6 +1278,8 @@ def dpnp_einsum(
         [dimension_dict[label] for label in output_subscript]
     )
 
-    arr_out = dpnp.asarray(arr_out, order=order)
+    # a view is returned for any `order`, the same way NumPy does
+    if not returns_view:
+        arr_out = dpnp.asarray(arr_out, order=order)
     assert returns_view or arr_out.dtype == result_dtype
     return dpnp.get_result_array(arr_out, out, casting=casting)

@@ -277,6 +277,29 @@ class TestExtins:
     def test_place_wrong_array_type(self, xp):
         assert_raises(TypeError, xp.place, [1, 2, 3], [True, False], [0, 1])
 
+    # NumPy treats any non-zero byte of a bool as True, see gh-2121
+    def test_extract_nonstandard_bool_bytes(self):
+        raw = numpy.array([0, 1, 2, 255, 0, 1], dtype=numpy.uint8)
+        a = numpy.arange(raw.size, dtype=numpy.int32)
+        mask = raw.view(numpy.bool_)
+        ia = dpnp.asarray(a)
+        imask = dpnp.asarray(raw).view(dpnp.bool)
+
+        result = dpnp.extract(imask, ia)
+        expected = numpy.extract(mask, a)
+        assert_array_equal(result, expected)
+
+    def test_place_nonstandard_bool_bytes(self):
+        raw = numpy.array([0, 1, 2, 255, 0, 1], dtype=numpy.uint8)
+        a = numpy.arange(raw.size, dtype=numpy.int32)
+        mask = raw.view(numpy.bool_)
+        ia = dpnp.asarray(a)
+        imask = dpnp.asarray(raw).view(dpnp.bool)
+
+        dpnp.place(ia, imask, [-1])
+        numpy.place(a, mask, [-1])
+        assert_array_equal(ia, a)
+
     @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
     def test_both(self, dt):
         a = numpy.random.rand(10).astype(dt)
@@ -615,6 +638,42 @@ class TestNonzero:
         a = numpy.array([[1, 0, 0], [4, 0, 6]], dtype=dtype)
         ia = dpnp.array(a)
         assert_array_equal(a.nonzero(), ia.nonzero())
+
+    # NumPy treats any non-zero byte of a bool as True, see gh-2121
+    @pytest.mark.parametrize(
+        "bytes_val",
+        [
+            [0, 1, 2, 255, 0, 1],
+            [2] * 8,
+            [255],
+            [0] * 8,
+            [0, 128] * 64,
+            list(range(256)),
+        ],
+        ids=["mixed", "all_twos", "single_255", "all_zeros", "long", "range"],
+    )
+    def test_nonstandard_bool_bytes(self, bytes_val):
+        a = numpy.array(bytes_val, dtype=numpy.uint8).view(numpy.bool_)
+        ia = dpnp.asarray(numpy.array(bytes_val, dtype=numpy.uint8)).view(
+            dpnp.bool
+        )
+
+        assert_array_equal(numpy.nonzero(a), dpnp.nonzero(ia))
+        assert_array_equal(numpy.where(a), dpnp.where(ia))
+
+    def test_nonstandard_bool_bytes_strided(self):
+        raw = numpy.arange(24, dtype=numpy.uint8)
+        a = raw.view(numpy.bool_)[::3]
+        ia = dpnp.asarray(raw).view(dpnp.bool)[::3]
+
+        assert_array_equal(numpy.nonzero(a), dpnp.nonzero(ia))
+
+    def test_nonstandard_bool_bytes_2d(self):
+        raw = numpy.array([[0, 1, 2], [255, 0, 7]], dtype=numpy.uint8)
+        a = raw.view(numpy.bool_)
+        ia = dpnp.asarray(raw).view(dpnp.bool)
+
+        assert_array_equal(numpy.nonzero(a), dpnp.nonzero(ia))
 
 
 class TestPut:
@@ -1169,126 +1228,241 @@ def test_indices(dimension, dtype, sparse):
         assert_array_equal(Xnp, X)
 
 
-@pytest.mark.parametrize(
-    "mask",
-    [
-        [[True, False], [False, True]],
-        [[False, True], [True, False]],
-        [[False, False], [True, True]],
-    ],
-    ids=[
-        "[[True, False], [False, True]]",
-        "[[False, True], [True, False]]",
-        "[[False, False], [True, True]]",
-    ],
-)
-@pytest.mark.parametrize(
-    "arr",
-    [[[0, 0], [0, 0]], [[1, 2], [1, 2]], [[1, 2], [3, 4]]],
-    ids=["[[0, 0], [0, 0]]", "[[1, 2], [1, 2]]", "[[1, 2], [3, 4]]"],
-)
-def test_putmask1(arr, mask):
-    a = numpy.array(arr)
-    ia = dpnp.array(a)
-    m = numpy.array(mask)
-    im = dpnp.array(m)
-    v = numpy.array([100, 200])
-    iv = dpnp.array(v)
-    numpy.putmask(a, m, v)
-    dpnp.putmask(ia, im, iv)
-    assert_array_equal(a, ia)
+class TestPutMask:
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("shape", [(7,), (2, 3), (4, 3, 2)])
+    def test_same_shape_values(self, dt, shape):
+        a = generate_random_numpy_array(shape, dtype=dt)
+        mask = generate_random_numpy_array(shape, dtype=dpnp.bool)
+        vals = generate_random_numpy_array(shape, dtype=dt)
+        ia, imask, ivals = dpnp.array(a), dpnp.array(mask), dpnp.array(vals)
 
+        numpy.putmask(a, mask, vals)
+        dpnp.putmask(ia, imask, ivals)
+        assert_array_equal(ia, a)
 
-@pytest.mark.parametrize(
-    "vals",
-    [
-        [100, 200],
-        [100, 200, 300, 400, 500, 600],
-        [100, 200, 300, 400, 500, 600, 800, 900],
-    ],
-    ids=[
-        "[100, 200]",
-        "[100, 200, 300, 400, 500, 600]",
-        "[100, 200, 300, 400, 500, 600, 800, 900]",
-    ],
-)
-@pytest.mark.parametrize(
-    "mask",
-    [
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("order", ["C", "F"])
+    @pytest.mark.parametrize("shape", [(7,), (2, 3), (4, 3, 2)])
+    @pytest.mark.parametrize("n_vals", [1, 3, 15])
+    def test_broadcast_values(self, dt, order, shape, n_vals):
+        a = generate_random_numpy_array(shape, dtype=dt, order=order)
+        mask = generate_random_numpy_array(shape, dtype=dpnp.bool, order=order)
+        vals = generate_random_numpy_array((n_vals,), dtype=dt)
+        ia = dpnp.array(a, order=order)
+        imask = dpnp.array(mask, order=order)
+        ivals = dpnp.array(vals)
+
+        numpy.putmask(a, mask, vals)
+        dpnp.putmask(ia, imask, ivals)
+        assert_array_equal(ia, a)
+
+    def test_broadcast_values_diff_dtype(self):
+        a = generate_random_numpy_array((2, 3), dtype="i8")
+        mask = generate_random_numpy_array((2, 3), dtype=dpnp.bool)
+        vals = generate_random_numpy_array((4,), dtype="i4")
+        ia, imask, ivals = dpnp.array(a), dpnp.array(mask), dpnp.array(vals)
+
+        numpy.putmask(a, mask, vals)
+        dpnp.putmask(ia, imask, ivals)
+        assert_array_equal(ia, a)
+
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("n_vals", [7, 2048])
+    def test_large_contiguous(self, dt, n_vals):
+        a = generate_random_numpy_array((1024,), dtype=dt)
+        mask = generate_random_numpy_array((1024,), dtype=dpnp.bool)
+        vals = generate_random_numpy_array((n_vals,), dtype=dt)
+        ia, imask, ivals = dpnp.array(a), dpnp.array(mask), dpnp.array(vals)
+
+        numpy.putmask(a, mask, vals)
+        dpnp.putmask(ia, imask, ivals)
+        assert_array_equal(ia, a)
+
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    def test_large_strided(self, dt):
+        a = generate_random_numpy_array((64, 64), dtype=dt)
+        ia = dpnp.array(a)
+        a, ia = a[:, ::2], ia[:, ::2]
+        mask = generate_random_numpy_array(a.shape, dtype=dpnp.bool)
+        vals = generate_random_numpy_array((7,), dtype=dt)
+        imask, ivals = dpnp.array(mask), dpnp.array(vals)
+
+        numpy.putmask(a, mask, vals)
+        dpnp.putmask(ia, imask, ivals)
+        assert_array_equal(ia, a)
+
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize(
+        "slice_spec",
         [
-            [[True, False], [False, True]],
-            [[False, True], [True, False]],
-            [[False, False], [True, True]],
-        ]
-    ],
-    ids=[
-        "[[[True, False], [False, True]], [[False, True], [True, False]], [[False, False], [True, True]]]"
-    ],
-)
-@pytest.mark.parametrize(
-    "arr",
-    [[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]],
-    ids=["[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]"],
-)
-def test_putmask2(arr, mask, vals):
-    a = numpy.array(arr)
-    ia = dpnp.array(a)
-    m = numpy.array(mask)
-    im = dpnp.array(m)
-    v = numpy.array(vals)
-    iv = dpnp.array(v)
-    numpy.putmask(a, m, v)
-    dpnp.putmask(ia, im, iv)
-    assert_array_equal(a, ia)
+            (slice(None), slice(None, None, 2)),
+            (slice(None, None, 2), slice(None)),
+            (slice(None, None, 2), slice(None, None, 2)),
+        ],
+    )
+    def test_strided(self, dt, slice_spec):
+        a = generate_random_numpy_array((4, 6), dtype=dt)
+        ia = dpnp.array(a)
+        a, ia = a[slice_spec], ia[slice_spec]
+        mask = generate_random_numpy_array(a.shape, dtype=dpnp.bool)
+        vals = generate_random_numpy_array((5,), dtype=dt)
+        imask, ivals = dpnp.array(mask), dpnp.array(vals)
 
+        numpy.putmask(a, mask, vals)
+        dpnp.putmask(ia, imask, ivals)
+        assert_array_equal(ia, a)
 
-@pytest.mark.parametrize(
-    "vals",
-    [
-        [100, 200],
-        [100, 200, 300, 400, 500, 600],
-        [100, 200, 300, 400, 500, 600, 800, 900],
-    ],
-    ids=[
-        "[100, 200]",
-        "[100, 200, 300, 400, 500, 600]",
-        "[100, 200, 300, 400, 500, 600, 800, 900]",
-    ],
-)
-@pytest.mark.parametrize(
-    "mask",
-    [
-        [
-            [[[False, False], [True, True]], [[True, True], [True, True]]],
-            [[[False, False], [True, True]], [[False, False], [False, False]]],
-        ]
-    ],
-    ids=[
-        "[[[[False, False], [True, True]], [[True, True], [True, True]]], [[[False, False], [True, True]], [[False, False], [False, False]]]]"
-    ],
-)
-@pytest.mark.parametrize(
-    "arr",
-    [
-        [
-            [[[1, 2], [3, 4]], [[1, 2], [2, 1]]],
-            [[[1, 3], [3, 1]], [[0, 1], [1, 3]]],
-        ]
-    ],
-    ids=[
-        "[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]"
-    ],
-)
-def test_putmask3(arr, mask, vals):
-    a = numpy.array(arr)
-    ia = dpnp.array(a)
-    m = numpy.array(mask)
-    im = dpnp.array(m)
-    v = numpy.array(vals)
-    iv = dpnp.array(v)
-    numpy.putmask(a, m, v)
-    dpnp.putmask(ia, im, iv)
-    assert_array_equal(a, ia)
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    def test_transpose(self, dt):
+        a = generate_random_numpy_array((3, 4), dtype=dt)
+        ia = dpnp.array(a)
+        a, ia = a.T, ia.T
+        mask = generate_random_numpy_array(a.shape, dtype=dpnp.bool)
+        vals = generate_random_numpy_array((3,), dtype=dt)
+        imask, ivals = dpnp.array(mask), dpnp.array(vals)
+
+        numpy.putmask(a, mask, vals)
+        dpnp.putmask(ia, imask, ivals)
+        assert_array_equal(ia, a)
+
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    def test_scalar_values(self, dt):
+        a = generate_random_numpy_array((2, 3), dtype=dt)
+        mask = generate_random_numpy_array((2, 3), dtype=dpnp.bool)
+        ia, imask = dpnp.array(a), dpnp.array(mask)
+
+        numpy.putmask(a, mask, 5)
+        dpnp.putmask(ia, imask, 5)
+        assert_array_equal(ia, a)
+
+    @pytest.mark.parametrize("dt", get_integer_dtypes())
+    @pytest.mark.parametrize("values", [3.7, 2.5, [2.0, 1.5]])
+    def test_values_unsafe_cast(self, dt, values):
+        a = generate_random_numpy_array((2, 3), dtype=dt)
+        mask = generate_random_numpy_array((2, 3), dtype=dpnp.bool)
+        ia, imask = dpnp.array(a), dpnp.array(mask)
+
+        numpy.putmask(a, mask, values)
+        dpnp.putmask(ia, imask, values)
+        assert_array_equal(ia, a)
+
+    @pytest.mark.parametrize("vals_dt", [dpnp.bool, "i2", "i4"])
+    def test_numpy_values_safe_cast(self, vals_dt):
+        a = generate_random_numpy_array((2, 3), dtype="i4")
+        mask = generate_random_numpy_array((2, 3), dtype=dpnp.bool)
+        vals = generate_random_numpy_array((4,), dtype=vals_dt)
+        ia, imask = dpnp.array(a), dpnp.array(mask)
+
+        numpy.putmask(a, mask, vals)
+        dpnp.putmask(ia, imask, vals)
+        assert_array_equal(ia, a)
+
+    @pytest.mark.parametrize("mask_dt", get_integer_dtypes())
+    def test_integer_mask(self, mask_dt):
+        a = numpy.array([1, 2, 3, 3])
+        mask = numpy.array([0, 1, 0, 2], dtype=mask_dt)
+        ia, imask = dpnp.array(a), dpnp.array(mask)
+
+        numpy.putmask(a, mask, 0)
+        dpnp.putmask(ia, imask, 0)
+        assert_array_equal(ia, a)
+
+    @pytest.mark.parametrize("order", ["C", "F"])
+    def test_empty_values(self, order):
+        dt = dpnp.default_float_type()
+        a = generate_random_numpy_array((2, 3), dtype=dt, order=order)
+        mask = generate_random_numpy_array((2, 3), dtype=dpnp.bool, order=order)
+        ia = dpnp.array(a, order=order)
+        imask = dpnp.array(mask, order=order)
+        vals = numpy.array([], dtype=dt)
+        ivals = dpnp.array(vals)
+
+        numpy.putmask(a, mask, vals)
+        dpnp.putmask(ia, imask, ivals)
+        assert_array_equal(ia, a)
+
+    def test_empty_array(self):
+        a = numpy.array([], dtype=dpnp.default_float_type())
+        mask = numpy.array([], dtype=dpnp.bool)
+        ia, imask = dpnp.array(a), dpnp.array(mask)
+
+        numpy.putmask(a, mask, numpy.array([1, 2], dtype=a.dtype))
+        dpnp.putmask(ia, imask, dpnp.array([1, 2], dtype=a.dtype))
+        assert_array_equal(ia, a)
+
+    def test_0d(self):
+        a = numpy.array(5, dtype=dpnp.default_float_type())
+        mask = numpy.array(True)
+        ia, imask = dpnp.array(a), dpnp.array(mask)
+
+        numpy.putmask(a, mask, numpy.array([7], dtype=a.dtype))
+        dpnp.putmask(ia, imask, dpnp.array([7], dtype=a.dtype))
+        assert_array_equal(ia, a)
+
+    @pytest.mark.parametrize(
+        "vals_shape",
+        [None, (2, 3), (4,)],
+        ids=["scalar", "same-shape", "repeat"],
+    )
+    def test_usm_ndarray_input(self, vals_shape):
+        a = generate_random_numpy_array((2, 3), dtype="i8")
+        mask = generate_random_numpy_array((2, 3), dtype=dpnp.bool)
+        ia, imask = dpt.asarray(a), dpt.asarray(mask)
+
+        if vals_shape is None:
+            values = ivalues = 5
+        else:
+            values = generate_random_numpy_array(vals_shape, dtype="i8")
+            ivalues = dpt.asarray(values)
+
+        numpy.putmask(a, mask, values)
+        dpnp.putmask(ia, imask, ivalues)
+        assert_array_equal(dpnp.asnumpy(ia), a)
+
+    def test_array_like_input(self):
+        a = numpy.arange(6)
+        ia = dpnp.array(a)
+
+        numpy.putmask(a, [1, 0, 1, 0, 1, 0], [7, 8])
+        dpnp.putmask(ia, [1, 0, 1, 0, 1, 0], [7, 8])
+        assert_array_equal(ia, a)
+
+    def test_overlapping_values(self):
+        a = numpy.arange(10, dtype="i4")
+        ia = dpnp.array(a)
+
+        numpy.putmask(a[:6], a[:6] > 1, a[4:7])
+        dpnp.putmask(ia[:6], ia[:6] > 1, ia[4:7])
+        assert_array_equal(ia, a)
+
+    def test_errors(self):
+        ia = dpnp.arange(6, dtype="i4")
+
+        # the array must be a dpnp.ndarray or usm_ndarray
+        assert_raises(TypeError, dpnp.putmask, dpnp.asnumpy(ia), ia > 2, 0)
+
+        # array and mask must have the same shape
+        assert_raises(
+            ValueError, dpnp.putmask, ia, dpnp.array([True, False]), 0
+        )
+
+        # values cannot be safely cast to the array data type
+        vals = dpnp.arange(2, dtype="i8")
+        assert_raises(TypeError, dpnp.putmask, ia, ia > 2, vals)
+
+        # a 0-d float values array cannot be safely cast to an integer array
+        assert_raises(TypeError, dpnp.putmask, ia, ia > 2, dpnp.array(3.7))
+
+        # the casting rule applies to a NumPy array of values as well
+        assert_raises(
+            TypeError, dpnp.putmask, ia, ia > 2, numpy.array([2.5, 3.5])
+        )
+        assert_raises(TypeError, dpnp.putmask, ia, ia > 2, numpy.array(3.7))
+
+        # an out-of-range scalar cannot be cast to the array data type
+        a_i1 = dpnp.zeros(6, dtype="i1")
+        assert_raises(OverflowError, dpnp.putmask, a_i1, a_i1 == 0, 300)
 
 
 @pytest.mark.parametrize("m", [None, 0, 1, 2, 3, 4])

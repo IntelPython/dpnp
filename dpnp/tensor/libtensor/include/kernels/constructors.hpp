@@ -152,6 +152,13 @@ public:
     void operator()(sycl::id<1> wiid) const
     {
         auto i = wiid.get(0);
+
+        // equal endpoints => constant, and avoids `inf * 0 = NaN`
+        if (start_v == end_v) {
+            p[i] = start_v;
+            return;
+        }
+
         wTy wc = wTy(i) / n;
         wTy w = wTy(n - i) / n;
         using dpnp::tensor::type_utils::is_complex;

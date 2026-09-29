@@ -156,7 +156,7 @@ def argsort(
     :obj:`dpnp.sort` : Return a sorted copy of an array.
     :obj:`dpnp.lexsort` : Indirect stable sort with multiple keys.
     :obj:`dpnp.argpartition` : Indirect partial sort.
-    :obj:`dpnp.take_along_axis` : Apply ``index_array`` from obj:`dpnp.argsort`
+    :obj:`dpnp.take_along_axis` : Apply ``index_array`` from :obj:`dpnp.argsort`
                                   to an array as if by calling sort.
 
     Examples

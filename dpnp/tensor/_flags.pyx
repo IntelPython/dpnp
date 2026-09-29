@@ -162,7 +162,7 @@ cdef class Flags:
     def __repr__(self):
         out = []
         for name in "C_CONTIGUOUS", "F_CONTIGUOUS", "WRITABLE":
-            out.append("  {} : {}".format(name, self[name]))
+            out.append(f"  {name} : {self[name]}")
         return "\n".join(out)
 
     def __eq__(self, other):

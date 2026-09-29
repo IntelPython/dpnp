@@ -416,7 +416,7 @@ def test_slice_constructor_1d():
     ]:
         assert np.array_equal(
             dpt.asnumpy(Xusm[ind]), Xh[ind]
-        ), "Failed for {}".format(ind)
+        ), f"Failed for {ind}"
 
 
 def test_slice_constructor_3d():
@@ -438,7 +438,7 @@ def test_slice_constructor_3d():
     ]:
         assert np.array_equal(
             dpt.to_numpy(Xusm[ind]), Xh[ind]
-        ), "Failed for {}".format(ind)
+        ), f"Failed for {ind}"
 
 
 @pytest.mark.parametrize("usm_type", ["device", "shared", "host"])
@@ -451,7 +451,7 @@ def test_slice_suai(usm_type):
     for ind in [slice(2, 3, None), slice(5, 7, None), slice(3, 9, None)]:
         assert np.array_equal(
             dpm.as_usm_memory(Xusm[ind]).copy_to_host(), Xh[ind]
-        ), "Failed for {}".format(ind)
+        ), f"Failed for {ind}"
 
 
 def test_slicing_basic():
@@ -1571,6 +1571,18 @@ def test_linspace_int():
     X = dpt.linspace(0.1, 9.1, 11, endpoint=True, dtype=int, sycl_queue=q)
     Xnp = np.linspace(0.1, 9.1, 11, endpoint=True, dtype=int)
     assert np.array_equal(dpt.asnumpy(X), Xnp)
+
+
+@pytest.mark.parametrize("dtype", ["f2", "f4", "f8", "c8", "c16"])
+@pytest.mark.parametrize("endpoint", [True, False])
+def test_linspace_inf_equal_endpoints(dtype, endpoint):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+    val = complex(np.inf, np.inf) if dpt.dtype(dtype).kind == "c" else np.inf
+    X = dpt.linspace(
+        val, val, num=5, endpoint=endpoint, dtype=dtype, sycl_queue=q
+    )
+    assert np.array_equal(dpt.asnumpy(X), np.full(5, val, dtype=dtype))
 
 
 @pytest.mark.parametrize(

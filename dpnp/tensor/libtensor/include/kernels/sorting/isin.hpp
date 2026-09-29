@@ -43,6 +43,7 @@
 #include "kernels/sorting/search_sorted_detail.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/rich_comparisons.hpp"
+#include "utils/type_utils.hpp"
 
 namespace dpnp::tensor::kernels
 {
@@ -87,7 +88,10 @@ public:
         static constexpr Compare comp{};
 
         const std::size_t i = id[0];
-        const T needle_v = needles_tp[needles_indexer(i)];
+        // normalize: for bool a byte other than 0x00/0x01 would not compare
+        // equal to the normalized value in the hay array, see gh-2121
+        const T needle_v = dpnp::tensor::type_utils::normalize_bool(
+            needles_tp[needles_indexer(i)]);
 
         // position of the needle_v in the hay array
         std::size_t pos{};
@@ -100,7 +104,10 @@ public:
         // needle_v) is false, i.e. needle_v <= hay[pos]
         pos = search_sorted_detail::lower_bound_indexed_impl(
             hay_tp, zero, hay_nelems, needle_v, comp, hay_indexer);
-        bool out = (pos == hay_nelems ? false : hay_tp[pos] == needle_v);
+        bool out =
+            (pos == hay_nelems ? false
+                               : dpnp::tensor::type_utils::normalize_bool(
+                                     hay_tp[pos]) == needle_v);
         out_tp[out_indexer(i)] = (invert) ? !out : out;
     }
 };

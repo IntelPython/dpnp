@@ -51,7 +51,7 @@ def _pyx_capi_fnptr_to_callable(
     cap = mod.__pyx_capi__.get(pyx_capi_name, None)
     if cap is None:
         raise ValueError(
-            "__pyx_capi__ does not export {} capsule".format(pyx_capi_name)
+            f"__pyx_capi__ does not export {pyx_capi_name} capsule"
         )
     # construct Python callable to invoke these functions
     cap_ptr_fn = ctypes.pythonapi.PyCapsule_GetPointer
@@ -229,8 +229,19 @@ def test_pyx_capi_get_queue_ref():
         fn_restype=ctypes.c_void_p,
         fn_argtypes=(ctypes.py_object,),
     )
+    remove_queue_ref_fn = _pyx_capi_fnptr_to_callable(
+        X,
+        "UsmNDArray_RemoveQueueRef",
+        b"void (DPCTLSyclQueueRef)",
+        fn_restype=None,
+        fn_argtypes=(ctypes.c_void_p,),
+    )
     queue_ref = get_queue_ref_fn(X)  # address of a copy, should be unequal
     assert queue_ref != X.sycl_queue.addressof_ref()
+    # UsmNDArray_GetQueueRef returns an owning copy;
+    # UsmNDArray_RemoveQueueRef must free it and be a no-op on NULL
+    remove_queue_ref_fn(queue_ref)
+    remove_queue_ref_fn(None)
 
 
 def test_pyx_capi_make_from_memory():
@@ -522,7 +533,7 @@ def _pyx_capi_int(X, pyx_capi_name, caps_name=b"int", val_restype=ctypes.c_int):
     cap = mod.__pyx_capi__.get(pyx_capi_name, None)
     if cap is None:
         raise ValueError(
-            "__pyx_capi__ does not export {} capsule".format(pyx_capi_name)
+            f"__pyx_capi__ does not export {pyx_capi_name} capsule"
         )
     # construct Python callable to invoke these functions
     cap_ptr_fn = ctypes.pythonapi.PyCapsule_GetPointer
