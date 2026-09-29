@@ -1055,12 +1055,58 @@
 <h1>dpnp.putmask<a class="headerlink" href="#dpnp-putmask" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.putmask">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">putmask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_indexing.html#putmask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.putmask" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">putmask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_indexing.html#putmask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.putmask" title="Link to this definition">¶</a></dt>
 <dd><p>Changes elements of an array based on conditional and input values.</p>
+<p>Sets <code class="docutils literal notranslate"><span class="pre">a.flat[n]</span> <span class="pre">=</span> <span class="pre">values[n]</span></code> for each <code class="docutils literal notranslate"><span class="pre">n</span></code> where <code class="docutils literal notranslate"><span class="pre">mask.flat[n]</span></code> is
+<code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<p>If <cite>values</cite> is not the same size as <cite>a</cite> and <cite>mask</cite> then it will
+repeat. This gives behavior different from <code class="docutils literal notranslate"><span class="pre">a[mask]</span> <span class="pre">=</span> <span class="pre">values</span></code>.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.putmask.html#numpy.putmask" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.putmask</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>a</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}</span></dt><dd><p>Target array.</p>
+</dd>
+<dt><strong>mask</strong><span class="classifier">array_like</span></dt><dd><p>Boolean mask array. It has to be the same shape as <cite>a</cite>.</p>
+</dd>
+<dt><strong>values</strong><span class="classifier">{array_like, scalar}</span></dt><dd><p>Values to put into <cite>a</cite> where <cite>mask</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>. If <cite>values</cite> is smaller
+than <cite>a</cite> it will be repeated.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Limitations</p>
-<p>Input arrays <code class="docutils literal notranslate"><span class="pre">arr</span></code>, <code class="docutils literal notranslate"><span class="pre">mask</span></code> and <code class="docutils literal notranslate"><span class="pre">values</span></code> are supported
-as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.</p>
+<p>Input array <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">mask</span></code> are expected to have the same shape (unlike
+<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.putmask.html#numpy.putmask" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.putmask</span></code></a>, which only requires the same size).</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.place.html#dpnp.place" title="dpnp.place"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.place</span></code></a></dt><dd><p>Change elements of an array based on conditional and input values.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.put.html#dpnp.put" title="dpnp.put"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.put</span></code></a></dt><dd><p>Replaces specified elements of an array with given values.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.take.html#dpnp.take" title="dpnp.take"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.take</span></code></a></dt><dd><p>Take elements from an array along an axis.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.copyto.html#dpnp.copyto" title="dpnp.copyto"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.copyto</span></code></a></dt><dd><p>Copies values from one array to another.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">putmask</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="o">&gt;</span><span class="mi">2</span><span class="p">,</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span>
+<span class="go">array([[ 0,  1,  2],</span>
+<span class="go">       [ 9, 16, 25]])</span>
+</pre></div>
+</div>
+<p>If <cite>values</cite> is smaller than <cite>a</cite> it is repeated:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">putmask</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">33</span><span class="p">,</span> <span class="o">-</span><span class="mi">44</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span>
+<span class="go">array([  0,   1, -33, -44, -33])</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>
