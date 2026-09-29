@@ -15,13 +15,13 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="dpnp.real_if_close" href="dpnp.real_if_close.html"><link rel="prev" title="dpnp.abs" href="dpnp.abs.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>dpnp.nan_to_num - Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</title>
+        <title>dpnp.nan_to_num - Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -173,7 +173,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -194,7 +194,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -1069,40 +1069,41 @@ value in <cite>neginf</cite> keyword.</p>
 imaginary components of <cite>x</cite> separately.</p>
 <p>If <cite>x</cite> is not inexact, then no replacements are made.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.nan_to_num.html#numpy.nan_to_num" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.nan_to_num</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input data.</p></li>
-<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>Whether to create a copy of <cite>x</cite> (<code class="docutils literal notranslate"><span class="pre">True</span></code>) or to replace values
+<dd class="field-odd"><dl>
+<dt><strong>x</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}</span></dt><dd><p>Input data.</p>
+</dd>
+<dt><strong>copy</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to create a copy of <cite>x</cite> (<code class="docutils literal notranslate"><span class="pre">True</span></code>) or to replace values
 in-place (<code class="docutils literal notranslate"><span class="pre">False</span></code>). The in-place operation only occurs if casting to
 an array does not require a copy.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
-</p></li>
-<li><p><strong>nan</strong> (<em>{scalar</em><em>, </em><em>array_like}</em><em>, </em><em>optional</em>) -- <p>Values to be used to fill <code class="docutils literal notranslate"><span class="pre">NaN</span></code> values. If no values are passed then
+</dd>
+<dt><strong>nan</strong><span class="classifier">{scalar, array_like}, optional</span></dt><dd><p>Values to be used to fill <code class="docutils literal notranslate"><span class="pre">NaN</span></code> values. If no values are passed then
 <code class="docutils literal notranslate"><span class="pre">NaN</span></code> values will be replaced with <code class="docutils literal notranslate"><span class="pre">0.0</span></code>.
 Expected to have a real-valued data type for the values.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">0.0</span></code>.</p>
-</p></li>
-<li><p><strong>posinf</strong> (<em>{None</em><em>, </em><em>scalar</em><em>, </em><em>array_like}</em><em>, </em><em>optional</em>) -- <p>Values to be used to fill positive infinity values. If no values are
+</dd>
+<dt><strong>posinf</strong><span class="classifier">{None, scalar, array_like}, optional</span></dt><dd><p>Values to be used to fill positive infinity values. If no values are
 passed then positive infinity values will be replaced with a very
 large number.
 Expected to have a real-valued data type for the values.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>neginf</strong> (<em>{None</em><em>, </em><em>scalar</em><em>, </em><em>array_like}</em><em>, </em><em>optional</em>) -- <p>Values to be used to fill negative infinity values. If no values are
+</dd>
+<dt><strong>neginf</strong><span class="classifier">{None, scalar, array_like}, optional</span></dt><dd><p>Values to be used to fill negative infinity values. If no values are
 passed then negative infinity values will be replaced with a very
 small (or negative) number.
 Expected to have a real-valued data type for the values.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-</ul>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> -- <cite>x</cite>, with the non-finite values replaced. If <cite>copy</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, this
+<dd class="field-even"><dl class="simple">
+<dt><strong>out</strong><span class="classifier">dpnp.ndarray</span></dt><dd><p><cite>x</cite>, with the non-finite values replaced. If <cite>copy</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, this
 may be <cite>x</cite> itself.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray">dpnp.ndarray</a></p>
+</dl>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1228,13 +1229,12 @@ may be <cite>x</cite> itself.</p>
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=b97f887b"></script>
+</div><script src="../../_static/documentation_options.js?v=ec7b459e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

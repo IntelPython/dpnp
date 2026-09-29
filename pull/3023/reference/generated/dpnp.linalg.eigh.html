@@ -15,13 +15,13 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="dpnp.linalg.eigvals" href="dpnp.linalg.eigvals.html"><link rel="prev" title="dpnp.linalg.eig" href="dpnp.linalg.eig.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>dpnp.linalg.eigh - Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</title>
+        <title>dpnp.linalg.eigh - Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -173,7 +173,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -194,7 +194,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -1062,32 +1062,31 @@
 a 2-D square array or matrix (depending on the input type) of the
 corresponding eigenvectors (in columns).</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.eigh.html#numpy.linalg.eigh" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linalg.eigh</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>(</em><em>...</em><em>, </em><em>M</em><em>, </em><em>M</em><em>) </em><em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- A complex- or real-valued array whose eigenvalues and eigenvectors are
-to be computed.</p></li>
-<li><p><strong>UPLO</strong> (<em>{&quot;L&quot;</em><em>, </em><em>&quot;U&quot;}</em><em>, </em><em>optional</em>) -- <p>Specifies the calculation uses either the lower (&quot;L&quot;) or upper (&quot;U&quot;)
+<dd class="field-odd"><dl>
+<dt><strong>a</strong><span class="classifier">(..., M, M) {dpnp.ndarray, usm_ndarray}</span></dt><dd><p>A complex- or real-valued array whose eigenvalues and eigenvectors are
+to be computed.</p>
+</dd>
+<dt><strong>UPLO</strong><span class="classifier">{&quot;L&quot;, &quot;U&quot;}, optional</span></dt><dd><p>Specifies the calculation uses either the lower (&quot;L&quot;) or upper (&quot;U&quot;)
 triangular part of the matrix.
 Regardless of this choice, only the real parts of the diagonal are
 considered to preserve the Hermite matrix property.
 It therefore follows that the imaginary part of the diagonal
 will always be treated as zero.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;L&quot;</span></code>.</p>
-</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>A namedtuple with the following attributes</dt><dd><ul class="simple">
-<li><p><strong>eigenvalues</strong> (<em>(..., M) dpnp.ndarray</em>) -- The eigenvalues in ascending order, each repeated according to its
-multiplicity.</p></li>
-<li><p><strong>eigenvectors</strong> (<em>(..., M, M) dpnp.ndarray</em>) -- The column <code class="docutils literal notranslate"><span class="pre">eigenvectors[:,</span> <span class="pre">i]</span></code> is the normalized eigenvector
-corresponding to the eigenvalue <code class="docutils literal notranslate"><span class="pre">eigenvalues[i]</span></code>.</p></li>
-</ul>
 </dd>
 </dl>
-</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>eigenvalues</strong><span class="classifier">(..., M) dpnp.ndarray</span></dt><dd><p>The eigenvalues in ascending order, each repeated according to its
+multiplicity.</p>
+</dd>
+<dt><strong>eigenvectors</strong><span class="classifier">(..., M, M) dpnp.ndarray</span></dt><dd><p>The column <code class="docutils literal notranslate"><span class="pre">eigenvectors[:,</span> <span class="pre">i]</span></code> is the normalized eigenvector
+corresponding to the eigenvalue <code class="docutils literal notranslate"><span class="pre">eigenvalues[i]</span></code>.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1186,13 +1185,12 @@ corresponding to the eigenvalue <code class="docutils literal notranslate"><span
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=b97f887b"></script>
+</div><script src="../../_static/documentation_options.js?v=ec7b459e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

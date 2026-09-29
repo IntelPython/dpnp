@@ -15,13 +15,13 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="dpnp.ndim" href="dpnp.ndim.html"><link rel="prev" title="Array manipulation routines" href="../array-manipulation.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>dpnp.copyto - Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</title>
+        <title>dpnp.copyto - Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
     
 
@@ -173,7 +173,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -194,7 +194,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev8 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev11 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -1060,20 +1060,22 @@
 <p>Raises a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> if the <cite>casting</cite> rule is violated, and if
 <cite>where</cite> is provided, it selects which elements to copy.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.copyto.html#numpy.copyto" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.copyto</span></code></a>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dst</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- The array into which values are copied.</p></li>
-<li><p><strong>src</strong> (<em>array_like</em>) -- The array from which values are copied.</p></li>
-<li><p><strong>casting</strong> (<em>{'no'</em><em>, </em><em>'equiv'</em><em>, </em><em>'safe'</em><em>, </em><em>'same_kind'</em><em>, </em><em>'unsafe'}</em><em>, </em><em>optional</em>) -- <p>Controls what kind of data casting may occur when copying.</p>
+<dd class="field-odd"><dl>
+<dt><strong>dst</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}</span></dt><dd><p>The array into which values are copied.</p>
+</dd>
+<dt><strong>src</strong><span class="classifier">array_like</span></dt><dd><p>The array from which values are copied.</p>
+</dd>
+<dt><strong>casting</strong><span class="classifier">{'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional</span></dt><dd><p>Controls what kind of data casting may occur when copying.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;same_kind&quot;</span></code>.</p>
-</p></li>
-<li><p><strong>where</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em><em> of </em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>A boolean array or a scalar which is broadcasted to match
+</dd>
+<dt><strong>where</strong><span class="classifier">{dpnp.ndarray, usm_ndarray, scalar} of bool, optional</span></dt><dd><p>A boolean array or a scalar which is broadcasted to match
 the dimensions of <cite>dst</cite>, and selects elements to copy
 from <cite>src</cite> to <cite>dst</cite> wherever it contains the value <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
-</p></li>
-</ul>
+</dd>
+</dl>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -1165,13 +1167,12 @@ from <cite>src</cite> to <cite>dst</cite> wherever it contains the value <code c
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=b97f887b"></script>
+</div><script src="../../_static/documentation_options.js?v=ec7b459e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

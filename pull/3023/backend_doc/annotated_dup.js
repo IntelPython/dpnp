@@ -158,6 +158,10 @@ var annotated_dup =
           [ "NanToNumContigFunctor", "structdpnp_1_1kernels_1_1nan__to__num_1_1_nan_to_num_contig_functor.html", null ],
           [ "NanToNumFunctor", "structdpnp_1_1kernels_1_1nan__to__num_1_1_nan_to_num_functor.html", null ]
         ] ],
+        [ "putmask", null, [
+          [ "PutMaskContigFunctor", "structdpnp_1_1kernels_1_1putmask_1_1_put_mask_contig_functor.html", null ],
+          [ "PutMaskStridedFunctor", "structdpnp_1_1kernels_1_1putmask_1_1_put_mask_strided_functor.html", null ]
+        ] ],
         [ "radians", null, [
           [ "RadiansFunctor", "structdpnp_1_1kernels_1_1radians_1_1_radians_functor.html", null ]
         ] ],
