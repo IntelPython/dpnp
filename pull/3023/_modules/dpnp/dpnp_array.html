@@ -2456,9 +2456,37 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">flat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Return a flat iterator, or set a flattened version of self to value.</span>
+<span class="sd">        A 1-D iterator over the array.</span>
 
-<span class="sd">        """</span>  <span class="c1"># noqa: D200</span>
+<span class="sd">        This is a :obj:`dpnp.flatiter` instance, which acts similarly to, but</span>
+<span class="sd">        is not a subclass of, Python's built-in iterator object.</span>
+
+<span class="sd">        For full documentation refer to :obj:`numpy.ndarray.flat`.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        :obj:`dpnp.flatiter` : Flat iterator object to iterate over arrays.</span>
+<span class="sd">        :obj:`dpnp.ndarray.flatten` : Return a flattened copy of the array.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; x = np.arange(1, 7).reshape(2, 3)</span>
+<span class="sd">        &gt;&gt;&gt; x</span>
+<span class="sd">        array([[1, 2, 3],</span>
+<span class="sd">               [4, 5, 6]])</span>
+<span class="sd">        &gt;&gt;&gt; x.flat[3]</span>
+<span class="sd">        array(4)</span>
+<span class="sd">        &gt;&gt;&gt; x.T.flat[3]</span>
+<span class="sd">        array(5)</span>
+
+<span class="sd">        An assignment example:</span>
+
+<span class="sd">        &gt;&gt;&gt; x.flat[[1, 4]] = 1; x</span>
+<span class="sd">        array([[1, 1, 3],</span>
+<span class="sd">               [4, 1, 6]])</span>
+
+<span class="sd">        """</span>
 
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">flatiter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
@@ -2493,7 +2521,7 @@
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
 <span class="sd">        :obj:`dpnp.ravel` : Return a flattened array.</span>
-<span class="sd">        :obj:`dpnp.flat` : A 1-D flat iterator over the array.</span>
+<span class="sd">        :obj:`dpnp.ndarray.flat` : A 1-D flat iterator over the array.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
