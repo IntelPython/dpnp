@@ -45,6 +45,7 @@
 #include <sycl/sycl.hpp>
 
 #include "kernels/sorting/merge_sort.hpp"
+#include "kernels/sorting/radix_select.hpp"
 #include "kernels/sorting/radix_sort.hpp"
 #include "kernels/sorting/search_sorted_detail.hpp"
 #include "kernels/sorting/sort_utils.hpp"
@@ -503,6 +504,32 @@ sycl::event topk_radix_impl(sycl::queue &exec_q,
         exec_q, {write_topk_ev}, workspace_owner);
 
     return cleanup_ev;
+}
+
+// the order of the k elements of each row is unspecified
+template <typename argTy, typename IndexTy>
+sycl::event
+    topk_radix_select_impl(sycl::queue &exec_q,
+                           std::size_t iter_nelems, // number of sub-arrays
+                           std::size_t axis_nelems, // size of each sub-array
+                           std::size_t k,
+                           bool ascending,
+                           const char *arg_cp,
+                           char *vals_cp,
+                           char *inds_cp,
+                           const std::vector<sycl::event> &depends)
+{
+    if (axis_nelems < k) {
+        throw std::runtime_error("Invalid sort axis size for value of k");
+    }
+
+    const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp);
+    argTy *vals_tp = reinterpret_cast<argTy *>(vals_cp);
+    IndexTy *inds_tp = reinterpret_cast<IndexTy *>(inds_cp);
+
+    return radix_select_details::radix_select_impl<argTy, IndexTy>(
+        exec_q, iter_nelems, axis_nelems, k, ascending, arg_tp, vals_tp,
+        inds_tp, depends);
 }
 
 } // namespace dpnp::tensor::kernels
