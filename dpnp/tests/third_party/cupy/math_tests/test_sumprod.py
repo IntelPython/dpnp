@@ -967,6 +967,7 @@ class TestCumprod:
             return cupy.cumprod(a_numpy)
 
     @pytest.mark.parametrize("shape, axis", _BATCH_SCAN_AXIS_CASES)
+    @pytest.mark.filterwarnings("ignore:overflow encountered:RuntimeWarning")
     @testing.numpy_cupy_allclose(
         rtol=1e-5,
         atol=1e-6,
