@@ -5,6 +5,7 @@ from numpy.testing import assert_array_equal
 import dpnp
 import dpnp.tensor as dpt
 
+from .helper import get_array
 from .third_party.cupy import testing
 
 
@@ -25,6 +26,17 @@ class TestFlatiter:
         result = ia.flat[index]
         expected = a.flat[index]
         assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize(
+        "idx",
+        [np.int64(3), np.int64(-1), np.array(3), dpnp.array(-2)],
+        ids=["np_scalar", "np_scalar_neg", "np_0d", "dpnp_0d"],
+    )
+    def test_flat_getitem_scalar_like(self, idx):
+        a = np.arange(1, 7)
+        ia = dpnp.array(a)
+
+        assert_array_equal(ia.flat[idx], a.flat[get_array(np, idx)])
 
     def test_flat_iteration(self):
         a = np.array([[1, 2], [3, 4]])

@@ -28,6 +28,8 @@
 
 """Implementation of flatiter."""
 
+import operator
+
 import numpy
 
 import dpnp
@@ -86,8 +88,9 @@ class flatiter:
         """
         Validate `key` as a flat iterator index.
 
-        Return the array of flat positions for an integer-array key, or
-        ``None`` when the caller has to resolve the positions itself.
+        Return the array of flat positions for a fancy integer-array key, a
+        Python int for a 0-d integer scalar, or ``None`` when the caller has
+        to resolve the positions itself.
 
         """
         # Ellipsis/slice/tuple need no validation here
@@ -134,6 +137,10 @@ class flatiter:
         if not dpnp.issubdtype(idx.dtype, dpnp.integer) or idx.size == 0:
             return None
 
+        # a 0-d integer index is a single position, so the caller can fast-path
+        if idx.ndim == 0:
+            return operator.index(idx)
+
         # fancy int indices wrap instead of raising, so bounds-check
         size = self._size
         hi, lo = int(idx.max()), int(idx.min())
@@ -145,7 +152,7 @@ class flatiter:
 
     def _prepare_key(self, key):
         # normalize a 1-D iterator index (unwrap a 1-elem tuple; reject None
-        # and longer tuples) and return it with the validated positions or None
+        # and longer tuples) and return it with the validated positions
         if isinstance(key, tuple) and len(key) == 1:
             key = key[0]
         if key is None or (isinstance(key, tuple) and len(key) > 1):
@@ -153,7 +160,13 @@ class flatiter:
                 "only integers, slices (`:`), ellipsis (`...`) and integer "
                 "or boolean arrays are valid indices"
             )
-        return key, self._validate_key(key)
+
+        idx = self._validate_key(key)
+        if isinstance(idx, int):
+            # a scalar integer index (NumPy scalar or 0-d array) reduced to a
+            # position; the caller takes the scalar fast path
+            return idx, None
+        return key, idx
 
     def _scalar_pos(self, key):
         # normalize a scalar flat index (wrap negatives) and bounds-check it
