@@ -749,7 +749,7 @@ def asarray_chkfinite(
         already an ndarray.
 
     Raises
-    -------
+    ------
     ValueError
         Raises ``ValueError`` if `a` contains NaN (Not a Number) or
         Inf (Infinity).
@@ -3860,7 +3860,8 @@ def split(ary, indices_or_sections, axis=0):
         raise IndexError("Axis exceeds ndim")
 
     try:
-        len(indices_or_sections)
+        # check if `indices_or_sections` is a sequence of indices
+        _ = len(indices_or_sections)
     except TypeError:
         if ary.shape[axis] % indices_or_sections != 0:
             raise ValueError(
@@ -4537,8 +4538,6 @@ def unique_all(x, /):
 
     Returns
     -------
-    A namedtuple with the following attributes:
-
     values : dpnp.ndarray
         The unique elements of an input array.
     indices : dpnp.ndarray
@@ -4591,8 +4590,6 @@ def unique_counts(x, /):
 
     Returns
     -------
-    A namedtuple with the following attributes:
-
     values : dpnp.ndarray
         The unique elements of an input array.
     counts : dpnp.ndarray
@@ -4637,8 +4634,6 @@ def unique_inverse(x, /):
 
     Returns
     -------
-    A namedtuple with the following attributes:
-
     values : dpnp.ndarray
         The unique elements of an input array.
     inverse_indices : dpnp.ndarray

@@ -152,9 +152,10 @@ std::pair<sycl::event, sycl::event>
     const char *src_data = src.get_data();
     char *dst_data = dst.get_data();
 
-    std::vector<sycl::event> all_deps(depends.size() + 1);
-    all_deps.push_back(copy_shape_ev);
+    std::vector<sycl::event> all_deps;
+    all_deps.reserve(depends.size() + 1);
     all_deps.insert(std::end(all_deps), std::begin(depends), std::end(depends));
+    all_deps.push_back(copy_shape_ev);
 
     sycl::event copy_for_reshape_event =
         fn(exec_q, src_nelems, src_nd, dst_nd, shape_strides, src_data,

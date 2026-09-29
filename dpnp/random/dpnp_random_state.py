@@ -119,7 +119,7 @@ class RandomState:
         )
 
     def __repr__(self):
-        return self.__str__() + " at 0x{:X}".format(id(self))
+        return self.__str__() + f" at 0x{id(self):X}"
 
     def __str__(self):
         _str = self.__class__.__name__
