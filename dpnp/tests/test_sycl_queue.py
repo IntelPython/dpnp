@@ -852,7 +852,7 @@ def test_vecmat(device, shape1, shape2):
             [],
             {"low": 2, "high": 15, "size": (4, 8, 16), "dtype": dpnp.int32},
         ),
-        pytest.param("randn", [], {"d0": 20}),
+        pytest.param("randn", [20], {}),
         pytest.param("random", [], {"size": (35, 45)}),
         pytest.param(
             "random_integers", [], {"low": -17, "high": 3, "size": (12, 16)}
