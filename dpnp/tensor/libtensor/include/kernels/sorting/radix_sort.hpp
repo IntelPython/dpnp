@@ -170,9 +170,11 @@ std::uint16_t order_preserving_cast(sycl::half val)
 {
     using UIntT = std::uint16_t;
 
-    const UIntT uint_val = sycl::bit_cast<UIntT>(
-        (sycl::isnan(val)) ? std::numeric_limits<sycl::half>::quiet_NaN()
-                           : val);
+    // NaNs sort to the end for both orders
+    if (sycl::isnan(val))
+        return std::numeric_limits<UIntT>::max();
+
+    const UIntT uint_val = sycl::bit_cast<UIntT>(val);
     UIntT mask;
 
     // test the sign bit of the original value
@@ -203,8 +205,11 @@ std::uint32_t order_preserving_cast(FloatT val)
 {
     using UIntT = std::uint32_t;
 
-    UIntT uint_val = sycl::bit_cast<UIntT>(
-        (sycl::isnan(val)) ? std::numeric_limits<FloatT>::quiet_NaN() : val);
+    // NaNs sort to the end for both orders
+    if (sycl::isnan(val))
+        return std::numeric_limits<UIntT>::max();
+
+    const UIntT uint_val = sycl::bit_cast<UIntT>(val);
 
     UIntT mask;
 
@@ -231,8 +236,11 @@ std::uint64_t order_preserving_cast(FloatT val)
 {
     using UIntT = std::uint64_t;
 
-    UIntT uint_val = sycl::bit_cast<UIntT>(
-        (sycl::isnan(val)) ? std::numeric_limits<FloatT>::quiet_NaN() : val);
+    // NaNs sort to the end for both orders
+    if (sycl::isnan(val))
+        return std::numeric_limits<UIntT>::max();
+
+    const UIntT uint_val = sycl::bit_cast<UIntT>(val);
     UIntT mask;
 
     // test the sign bit of the original value
