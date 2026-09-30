@@ -80,6 +80,26 @@ def _get_dtype(operators, dtypes=None):
     return dpnp.result_type(*dtypes) if dtypes else None
 
 
+def _adjoint_unsupported(name):
+    """Raise the uniform error for every adjoint-family entry point.
+
+    ``cg``, ``gmres`` and ``minres`` drive their operators through
+    ``shape``, ``dtype`` and ``matvec`` alone -- the adjoint is never
+    required. Supporting it only for the operators that happen to be
+    reversible (dense arrays, callables that were handed an explicit
+    ``rmatvec``) would make ``A.H`` work or fail depending on how ``A``
+    was built, which is worse than not offering it at all. The whole
+    family therefore raises uniformly.
+    """
+    raise NotImplementedError(
+        f"{name} is not implemented: dpnp.scipy.sparse.linalg operators "
+        "support only the forward matvec / matmat, which is all the "
+        "iterative solvers (cg, gmres, minres) require. Adjoint "
+        "operations (rmatvec, rmatmat, .H, .T, adjoint, transpose) are "
+        "not available; build the adjoint operator explicitly instead."
+    )
+
+
 class LinearOperator:
     """
     Common interface for performing matrix-vector products, backed by dpnp
@@ -90,9 +110,9 @@ class LinearOperator:
     entries. This class is the abstract interface between such solvers and
     matrix-like objects. Construct it either by passing callables to the
     constructor, or by subclassing and implementing ``_matvec`` (and
-    optionally ``_rmatvec`` / ``_matmat`` / ``_rmatmat``). It also supports
-    the full operator algebra (``+``, ``@``, scaling, power, adjoint ``A.H``,
-    transpose ``A.T``), each producing a new lazy ``LinearOperator``.
+    optionally ``_matmat``). It also supports the forward operator algebra
+    (``+``, ``-``, ``@``, scaling, integer power), each producing a new
+    lazy ``LinearOperator``.
 
     For full documentation refer to :obj:`scipy.sparse.linalg.LinearOperator`.
 
@@ -102,15 +122,11 @@ class LinearOperator:
         Operator dimensions ``(M, N)``.
     matvec : callable
         Returns ``A @ v`` for a 1-D `v`.
-    rmatvec : callable, optional
-        Returns ``A^H @ v`` (conjugate transpose applied to `v`).
     matmat : callable, optional
         Returns ``A @ V`` for a dense 2-D `V` of shape ``(N, K)``.
     dtype : dtype, optional
         Data type of the operator. Inferred from a trial ``matvec`` when
         ``None``.
-    rmatmat : callable, optional
-        Returns ``A^H @ V`` for a dense 2-D `V` of shape ``(M, K)``.
 
     Attributes
     ----------
@@ -119,14 +135,21 @@ class LinearOperator:
         binary operation.
     ndim : int
         Number of dimensions, always ``2``.
+
+    Notes
+    -----
+    Unlike :obj:`scipy.sparse.linalg.LinearOperator`, the adjoint family
+    -- ``rmatvec``, ``rmatmat``, ``A.H``, ``A.T``, ``adjoint()`` and
+    ``transpose()`` -- is **not implemented** and raises
+    ``NotImplementedError``. The three iterative solvers never apply
+    ``A^H``, and an adjoint that worked only for the operators that
+    happen to be reversible would succeed or fail depending on how the
+    operator was constructed. Build the adjoint operator explicitly if
+    you need one.
     """
 
     ndim = 2
 
-    # Opt out of NumPy's ufunc (NEP 13) and function (NEP 18) dispatch;
-    # defers ``host_array * linop`` / ``numpy.dot(linop, x)`` etc. to
-    # ``LinearOperator``'s own operators instead of materializing a host
-    # array. Same convention as ``dpnp.ndarray`` and SciPy's LinearOperator.
     __array_ufunc__ = None
     __array_function__ = None
 
@@ -149,14 +172,13 @@ class LinearOperator:
     def __init__(self, dtype, shape):
         if dtype is not None:
             dtype = dpnp.empty(0, dtype=dtype).dtype
-        shape = tuple(int(s) for s in shape)
         if not _isshape(shape):
             raise ValueError(
                 f"invalid shape {shape!r} (must be a length-2 tuple of "
                 "non-negative ints)"
             )
         self.dtype = dtype
-        self.shape = shape
+        self.shape = tuple(int(s) for s in shape)
 
     def _init_dtype(self):
         """Infer dtype via a trial matvec on an int8 zero vector.
@@ -186,19 +208,15 @@ class LinearOperator:
             [self._matvec(X[:, i]) for i in range(X.shape[1])], axis=-1
         )
 
+    # The probe argument is unused: these exist only to raise.
+    # pylint: disable=unused-argument
     def _rmatvec(self, x):
-        if type(self)._adjoint is LinearOperator._adjoint:
-            raise NotImplementedError(
-                "rmatvec is not defined for this LinearOperator"
-            )
-        return self.H.matvec(x)
+        _adjoint_unsupported("rmatvec")
 
     def _rmatmat(self, X):
-        if type(self)._adjoint is LinearOperator._adjoint:
-            return dpnp.stack(
-                [self._rmatvec(X[:, i]) for i in range(X.shape[1])], axis=-1
-            )
-        return self.H.matmat(X)
+        _adjoint_unsupported("rmatmat")
+
+    # pylint: enable=unused-argument
 
     def matvec(self, x):
         """
@@ -241,14 +259,13 @@ class LinearOperator:
             of `x`.
         """
         dpnp.check_supported_arrays_type(x)
-        M, N = self.shape
+        M, _ = self.shape
         if x.shape not in ((M,), (M, 1)):
             raise ValueError(
                 f"dimension mismatch: operator shape {self.shape}, "
                 f"vector shape {x.shape}"
             )
-        y = self._rmatvec(x)
-        return y.reshape(N) if x.ndim == 1 else y.reshape(N, 1)
+        return self._rmatvec(x)
 
     def matmat(self, X):
         """
@@ -386,24 +403,24 @@ class LinearOperator:
         return self.__add__(-x)
 
     def _adjoint(self):
-        """Return conjugate-transpose operator (override in subclasses)."""
-        return _AdjointLinearOperator(self)
+        """Conjugate-transpose operator (not implemented)."""
+        _adjoint_unsupported("_adjoint")
 
     def _transpose(self):
-        """Return plain-transpose operator (override in subclasses)."""
-        return _TransposedLinearOperator(self)
+        """Plain-transpose operator (not implemented)."""
+        _adjoint_unsupported("_transpose")
 
     def adjoint(self):
-        """Hermitian adjoint A^H."""
-        return self._adjoint()
+        """Hermitian adjoint ``A^H`` (not implemented)."""
+        _adjoint_unsupported("adjoint")
 
     def transpose(self):
-        """Plain (non-conjugated) transpose A^T."""
-        return self._transpose()
+        """Plain (non-conjugated) transpose ``A^T`` (not implemented)."""
+        _adjoint_unsupported("transpose")
 
-    #: A.H — conjugate transpose
+    #: A.H -- conjugate transpose (raises NotImplementedError)
     H = property(adjoint)
-    #: A.T — plain transpose
+    #: A.T -- plain transpose (raises NotImplementedError)
     T = property(transpose)
 
     def __repr__(self):
@@ -419,14 +436,10 @@ class LinearOperator:
 class _CustomLinearOperator(LinearOperator):
     """Created when the user calls LinearOperator(shape, matvec=...)"""
 
-    def __init__(
-        self, shape, matvec, rmatvec=None, matmat=None, dtype=None, rmatmat=None
-    ):
+    def __init__(self, shape, matvec, matmat=None, dtype=None):
         super().__init__(dtype, shape)
         self.args = ()
         self.__matvec_impl = matvec
-        self.__rmatvec_impl = rmatvec
-        self.__rmatmat_impl = rmatmat
         self.__matmat_impl = matmat
         self._init_dtype()
 
@@ -437,76 +450,6 @@ class _CustomLinearOperator(LinearOperator):
         if self.__matmat_impl is not None:
             return self.__matmat_impl(X)
         return super()._matmat(X)
-
-    def _rmatvec(self, x):
-        if self.__rmatvec_impl is None:
-            raise NotImplementedError(
-                "rmatvec is not defined for this operator"
-            )
-        return self.__rmatvec_impl(x)
-
-    def _rmatmat(self, X):
-        if self.__rmatmat_impl is not None:
-            return self.__rmatmat_impl(X)
-        return super()._rmatmat(X)
-
-    def _adjoint(self):
-        return _CustomLinearOperator(
-            shape=(self.shape[1], self.shape[0]),
-            matvec=self.__rmatvec_impl,
-            rmatvec=self.__matvec_impl,
-            matmat=self.__rmatmat_impl,
-            rmatmat=self.__matmat_impl,
-            dtype=self.dtype,
-        )
-
-
-class _AdjointLinearOperator(LinearOperator):
-    def __init__(self, A):
-        super().__init__(A.dtype, (A.shape[1], A.shape[0]))
-        self.A = A
-        self.args = (A,)
-
-    def _matvec(self, x):
-        return self.A._rmatvec(x)  # pylint: disable=protected-access
-
-    def _rmatvec(self, x):
-        return self.A._matvec(x)  # pylint: disable=protected-access
-
-    def _matmat(self, X):
-        return self.A._rmatmat(X)  # pylint: disable=protected-access
-
-    def _rmatmat(self, X):
-        return self.A._matmat(X)  # pylint: disable=protected-access
-
-    def _adjoint(self):
-        return self.A
-
-
-class _TransposedLinearOperator(LinearOperator):
-    def __init__(self, A):
-        super().__init__(A.dtype, (A.shape[1], A.shape[0]))
-        self.A = A
-        self.args = (A,)
-
-    def _matvec(self, x):
-        # pylint: disable=protected-access
-        return dpnp.conj(self.A._rmatvec(dpnp.conj(x)))
-
-    def _rmatvec(self, x):
-        # pylint: disable=protected-access
-        return dpnp.conj(self.A._matvec(dpnp.conj(x)))
-
-    def _matmat(self, X):
-        # pylint: disable=protected-access
-        return dpnp.conj(self.A._rmatmat(dpnp.conj(X)))
-
-    def _rmatmat(self, X):
-        # pylint: disable=protected-access
-        return dpnp.conj(self.A._matmat(dpnp.conj(X)))
-
-    def _transpose(self):
-        return self.A
 
 
 class _SumLinearOperator(LinearOperator):
@@ -519,17 +462,8 @@ class _SumLinearOperator(LinearOperator):
     def _matvec(self, x):
         return self.args[0].matvec(x) + self.args[1].matvec(x)
 
-    def _rmatvec(self, x):
-        return self.args[0].rmatvec(x) + self.args[1].rmatvec(x)
-
     def _matmat(self, X):
         return self.args[0].matmat(X) + self.args[1].matmat(X)
-
-    def _rmatmat(self, X):
-        return self.args[0].rmatmat(X) + self.args[1].rmatmat(X)
-
-    def _adjoint(self):
-        return self.args[0].H + self.args[1].H
 
 
 class _ProductLinearOperator(LinearOperator):
@@ -542,18 +476,8 @@ class _ProductLinearOperator(LinearOperator):
     def _matvec(self, x):
         return self.args[0].matvec(self.args[1].matvec(x))
 
-    def _rmatvec(self, x):
-        return self.args[1].rmatvec(self.args[0].rmatvec(x))
-
     def _matmat(self, X):
         return self.args[0].matmat(self.args[1].matmat(X))
-
-    def _rmatmat(self, X):
-        return self.args[1].rmatmat(self.args[0].rmatmat(X))
-
-    def _adjoint(self):
-        A, B = self.args
-        return B.H * A.H
 
 
 class _ScaledLinearOperator(LinearOperator):
@@ -565,18 +489,8 @@ class _ScaledLinearOperator(LinearOperator):
     def _matvec(self, x):
         return self.args[1] * self.args[0].matvec(x)
 
-    def _rmatvec(self, x):
-        return self.args[1].conjugate() * self.args[0].rmatvec(x)
-
     def _matmat(self, X):
         return self.args[1] * self.args[0].matmat(X)
-
-    def _rmatmat(self, X):
-        return self.args[1].conjugate() * self.args[0].rmatmat(X)
-
-    def _adjoint(self):
-        A, alpha = self.args
-        return A.H * alpha.conjugate()
 
 
 class _PowerLinearOperator(LinearOperator):
@@ -599,18 +513,8 @@ class _PowerLinearOperator(LinearOperator):
     def _matvec(self, x):
         return self._power(self.args[0].matvec, x)
 
-    def _rmatvec(self, x):
-        return self._power(self.args[0].rmatvec, x)
-
     def _matmat(self, X):
         return self._power(self.args[0].matmat, X)
-
-    def _rmatmat(self, X):
-        return self._power(self.args[0].rmatmat, X)
-
-    def _adjoint(self):
-        A, p = self.args
-        return A.H**p
 
 
 class MatrixLinearOperator(LinearOperator):
@@ -619,60 +523,25 @@ class MatrixLinearOperator(LinearOperator):
     def __init__(self, A):
         super().__init__(A.dtype, A.shape)
         self.A = A
-        self.__adj = None
         self.args = (A,)
 
     def _matvec(self, x):
-        # csr_matrix.dot is 1-D-only (like cupyx); x is already 1-D here.
-        if issparse(self.A):
-            return self.A.dot(x)
-        return super()._matvec(x)
+        # dpnp.ndarray.dot with a 1-D argument already dispatches to
+        # gemv, and csr_matrix.dot is 1-D-only (like cupyx); x is
+        # already 1-D here, so both branches reduce to the same call.
+        return self.A.dot(x)
 
     def _matmat(self, X):
         # No native SpMM: emulate as a column loop of 1-D SpMVs (no densify).
+        # ``X[:, i]`` of a C-contiguous X is a strided view, which the
+        # oneMKL SpMV cannot consume; converting X to F order once makes
+        # every column a contiguous view, so the loop copies nothing.
         if issparse(self.A):
+            X = dpnp.asarray(X, order="F")
             return dpnp.stack(
                 [self.A.dot(X[:, i]) for i in range(X.shape[1])], axis=-1
             )
         return self.A.dot(X)
-
-    def _rmatmat(self, X):
-        if issparse(self.A):
-            raise NotImplementedError(
-                "rmatvec/adjoint is not supported for sparse csr_matrix "
-                "operators; only the forward matvec is implemented."
-            )
-        return dpnp.conj(self.A.T).dot(X)
-
-    def _adjoint(self):
-        if issparse(self.A):
-            raise NotImplementedError(
-                "rmatvec/adjoint is not supported for sparse csr_matrix "
-                "operators; only the forward matvec is implemented."
-            )
-        if self.__adj is None:
-            self.__adj = _AdjointMatrixOperator(self)
-        return self.__adj
-
-
-class _AdjointMatrixOperator(MatrixLinearOperator):
-    # super().__init__() is intentionally skipped: this operator stores its
-    # own (adjoint-derived) A, shape and dtype, and must NOT re-validate
-    # shape via the base ``MatrixLinearOperator.__init__`` path.
-    # pylint: disable=super-init-not-called
-    def __init__(self, adjoint):
-        self.A = dpnp.conj(adjoint.A.T)
-        self.__adjoint = adjoint
-        self.args = (adjoint,)
-        self.shape = (adjoint.shape[1], adjoint.shape[0])
-
-    @property
-    def dtype(self):
-        """Inherit dtype from the wrapped operator."""
-        return self.__adjoint.dtype
-
-    def _adjoint(self):
-        return self.__adjoint
 
 
 class IdentityOperator(LinearOperator):
@@ -685,20 +554,8 @@ class IdentityOperator(LinearOperator):
         """Apply matrix-vector product via stored array."""
         return x
 
-    def _rmatvec(self, x):
-        return x
-
     def _matmat(self, X):
         return X
-
-    def _rmatmat(self, X):
-        return X
-
-    def _adjoint(self):
-        return self
-
-    def _transpose(self):
-        return self
 
 
 def aslinearoperator(A) -> LinearOperator:
@@ -720,7 +577,7 @@ def aslinearoperator(A) -> LinearOperator:
         * a 2-D array, ``dpnp.ndarray`` or ``usm_ndarray`` (promoted
           via :func:`dpnp.atleast_2d`);
         * an object exposing ``.shape`` and ``.matvec`` (and optionally
-          ``rmatvec`` / ``matmat`` / ``rmatmat`` / ``dtype``).
+          ``matmat`` / ``dtype``).
 
     Returns
     -------
@@ -767,9 +624,7 @@ def aslinearoperator(A) -> LinearOperator:
         return LinearOperator(
             shape,
             matvec=A.matvec,
-            rmatvec=getattr(A, "rmatvec", None),
             matmat=getattr(A, "matmat", None),
-            rmatmat=getattr(A, "rmatmat", None),
             dtype=getattr(A, "dtype", None),
         )
 

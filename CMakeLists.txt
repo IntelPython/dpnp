@@ -112,7 +112,24 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(pybind11)
 
-set(CYTHON_FLAGS "-t -w \"${CMAKE_SOURCE_DIR}\"")
+# dpnp's .pyx sources `cimport` dpctl's Cython declarations (e.g.
+# `from dpctl._sycl_queue cimport SyclQueue`). Cython resolves a
+# `cimport package.module` by searching its `-I` include path for
+# `package/module.pxd`, not via the Python import machinery -- so when
+# dpctl is used from an arbitrary checkout via PYTHONPATH (rather than
+# `pip install`ed into this interpreter's site-packages, which Cython's
+# default search already covers), the cimport fails with e.g.
+# "'dpctl/_sycl_queue.pxd' not found" and can cascade into unrelated
+# compiler crashes in later translation units. Point Cython at dpctl's
+# package parent directory explicitly so this works regardless of how
+# dpctl was installed.
+execute_process(
+    COMMAND "${Python_EXECUTABLE}" -c
+            "import dpctl, os; print(os.path.dirname(os.path.dirname(dpctl.__file__)))"
+    OUTPUT_VARIABLE Dpctl_Cython_INCLUDE_DIR
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+set(CYTHON_FLAGS "-t -w \"${CMAKE_SOURCE_DIR}\" -I \"${Dpctl_Cython_INCLUDE_DIR}\"")
 find_package(Cython REQUIRED)
 
 find_package(Dpctl REQUIRED)

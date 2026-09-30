@@ -45,6 +45,12 @@ where ``csr_matrix.dot`` calls cuSPARSE SpMV directly without
 densification, and lets the iterative solvers in
 ``dpnp.scipy.sparse.linalg`` reuse the same handle through
 ``_make_fast_matvec`` without rebuilding it.
+
+An all-zero matrix (``nnz == 0``) has no handle: oneMKL
+``set_csr_data`` rejects ``nnz == 0``. ``_ensure_spmv_handle`` returns
+``None`` in that case and ``dot`` short-circuits to a zero result, so
+every caller -- ``dot`` and the solver fast-path alike -- stays on a
+handle-free path.
 """
 
 import sys
@@ -171,10 +177,11 @@ class csr_matrix(SparseABC):
         self._spmv_si = None
         self._spmv_exec_q = None
         self._has_sorted_indices = None
+        self._checked_format = False
 
-        self.data = None
-        self.indices = None
-        self.indptr = None
+        self._data = None
+        self._indices = None
+        self._indptr = None
         self._shape = None
 
         if issparse(arg1):
@@ -217,10 +224,10 @@ class csr_matrix(SparseABC):
             "usm_type": usm_type,
             "sycl_queue": sycl_queue,
         }
-        self.data = _dpnp.empty(0, dtype=dtype, **common)
+        self._data = _dpnp.empty(0, dtype=dtype, **common)
         idx_dtype = _dpnp.int64
-        self.indices = _dpnp.empty(0, dtype=idx_dtype, **common)
-        self.indptr = _dpnp.zeros(nrows + 1, dtype=idx_dtype, **common)
+        self._indices = _dpnp.empty(0, dtype=idx_dtype, **common)
+        self._indptr = _dpnp.zeros(nrows + 1, dtype=idx_dtype, **common)
         self._shape = (nrows, ncols)
         self._has_sorted_indices = True
 
@@ -285,12 +292,22 @@ class csr_matrix(SparseABC):
             indices = indices.copy()
             indptr = indptr.copy()
 
+        # oneMKL reads each component as a bare unit-stride pointer, so a
+        # non-contiguous input (a slice or strided view) would be misread
+        # element-for-element -- and because the pointers are baked into
+        # the cached handle, every later matvec would be wrong. Pack here
+        # rather than at use, so the stored arrays are always valid CSR.
+        # ascontiguousarray is a no-op for the usual contiguous input.
+        data = _dpnp.ascontiguousarray(data)
+        indices = _dpnp.ascontiguousarray(indices)
+        indptr = _dpnp.ascontiguousarray(indptr)
+
         # Store components verbatim (matching scipy): the caller's column
         # order is preserved and copy=False aliasing is honoured. Sorting
         # is deferred to sort_indices(), invoked lazily by the SpMV path.
-        self.data = data
-        self.indices = indices
-        self.indptr = indptr
+        self._data = data
+        self._indices = indices
+        self._indptr = indptr
         self._shape = (nrows, ncols)
         self._has_sorted_indices = None
 
@@ -305,15 +322,19 @@ class csr_matrix(SparseABC):
         return self._has_sorted_indices
 
     def _check_sorted(self):
-        idx = self.indices
+        idx = self._indices
         if idx.shape[0] == 0:
             return True
+        # Row lengths feed dpnp.repeat below, which rejects a negative
+        # count with an opaque "'repeats' elements must be positive";
+        # validate first so a malformed indptr names the real problem.
+        self.check_format()
         # Sorted iff no adjacent pair within the same row is decreasing.
         q = idx.sycl_queue
         nrows = self._shape[0]
-        row_lengths = self.indptr[1:] - self.indptr[:-1]
+        row_lengths = self._indptr[1:] - self._indptr[:-1]
         row_ids = _dpnp.repeat(
-            _dpnp.arange(nrows, dtype=self.indptr.dtype, sycl_queue=q),
+            _dpnp.arange(nrows, dtype=self._indptr.dtype, sycl_queue=q),
             row_lengths,
         )
         same_row = row_ids[1:] == row_ids[:-1]
@@ -328,7 +349,7 @@ class csr_matrix(SparseABC):
         """
         if self.has_sorted_indices:
             return
-        indices = self.indices
+        indices = self._indices
         nnz = indices.shape[0]
         if nnz == 0:
             self._has_sorted_indices = True
@@ -336,7 +357,7 @@ class csr_matrix(SparseABC):
 
         q = indices.sycl_queue
         nrows = self._shape[0]
-        row_lengths = self.indptr[1:] - self.indptr[:-1]
+        row_lengths = self._indptr[1:] - self._indptr[:-1]
         row_ids = _dpnp.repeat(
             _dpnp.arange(nrows, dtype=indices.dtype, sycl_queue=q),
             row_lengths,
@@ -345,8 +366,8 @@ class csr_matrix(SparseABC):
         order = _dpnp.argsort(indices, kind="stable")
         order = order[_dpnp.argsort(row_ids[order], kind="stable")]
 
-        self.data = self.data[order]
-        self.indices = self.indices[order]
+        self._data = self._data[order]
+        self._indices = self._indices[order]
         self._has_sorted_indices = True
 
     def _init_from_dense(self, dense, dtype=None):
@@ -366,9 +387,9 @@ class csr_matrix(SparseABC):
         nnz = int(rows.shape[0])
 
         if nnz == 0:
-            self.data = _dpnp.empty(0, dtype=dense.dtype, sycl_queue=q)
-            self.indices = _dpnp.empty(0, dtype=_dpnp.int64, sycl_queue=q)
-            self.indptr = _dpnp.zeros(
+            self._data = _dpnp.empty(0, dtype=dense.dtype, sycl_queue=q)
+            self._indices = _dpnp.empty(0, dtype=_dpnp.int64, sycl_queue=q)
+            self._indptr = _dpnp.zeros(
                 nrows + 1, dtype=_dpnp.int64, sycl_queue=q
             )
             self._shape = (nrows, ncols)
@@ -382,14 +403,46 @@ class csr_matrix(SparseABC):
         indptr[0] = 0
         indptr[1:] = _dpnp.cumsum(row_counts)
 
-        self.data = values
-        self.indices = cols.astype(idx_dtype)
-        self.indptr = indptr
+        self._data = values
+        self._indices = cols.astype(idx_dtype)
+        self._indptr = indptr
         self._shape = (nrows, ncols)
         # dpnp.nonzero yields row-major order, columns ascending per row.
         self._has_sorted_indices = True
 
     # --- read-only properties ------------------------------------------
+
+    @property
+    def data(self):
+        """Non-zero values, one per stored entry (read-only).
+
+        Read-only because the oneMKL SpMV handle caches raw pointers
+        into this array (see module docstring); reassigning it would
+        leave the cached handle pointing at stale or freed USM memory
+        without any signal that it needs to be rebuilt. Use
+        :meth:`copy` or construct a new ``csr_matrix`` to change the
+        stored values.
+        """
+        return self._data
+
+    @property
+    def indices(self):
+        """Column index of each stored entry (read-only).
+
+        Read-only for the same reason as :attr:`data`: it feeds the
+        cached oneMKL handle by raw pointer.
+        """
+        return self._indices
+
+    @property
+    def indptr(self):
+        """Row-start offsets into :attr:`data` / :attr:`indices`
+        (read-only).
+
+        Read-only for the same reason as :attr:`data`: it feeds the
+        cached oneMKL handle by raw pointer.
+        """
+        return self._indptr
 
     @property
     def shape(self):
@@ -399,12 +452,12 @@ class csr_matrix(SparseABC):
     @property
     def dtype(self):
         """Data type of stored values."""
-        return self.data.dtype
+        return self._data.dtype
 
     @property
     def nnz(self):
         """Number of stored nonzero entries."""
-        return int(self.data.shape[0])
+        return int(self._data.shape[0])
 
     @property
     def size(self):
@@ -417,13 +470,88 @@ class csr_matrix(SparseABC):
         """Transpose (not implemented)."""
         raise NotImplementedError("csr_matrix.T is not implemented.")
 
+    # --- structural validation -----------------------------------------
+
+    def check_format(self):
+        """Validate the CSR structure, raising ``ValueError`` if invalid.
+
+        oneMKL trusts ``indptr`` / ``indices`` and indexes the value
+        array with them directly, so malformed input is an out-of-bounds
+        device read rather than a clean error. The checks mirror
+        :meth:`scipy.sparse.csr_matrix.check_format`:
+
+        * ``indptr[0] == 0`` and ``indptr`` non-decreasing,
+        * ``indptr[-1] <= nnz`` (a larger value reads past ``data``),
+        * every column index within ``[0, N)``.
+
+        Called once automatically before the oneMKL handle is built (see
+        ``_ensure_spmv_handle``); the result is cached, so repeated
+        matvecs on the same matrix re-validate nothing. Calling it
+        directly is only needed to validate a matrix ahead of its first
+        matvec.
+
+        Raises
+        ------
+        ValueError
+            If the CSR structure is malformed.
+        """
+        if self._checked_format:
+            return
+        nrows, ncols = self._shape
+        nnz = int(self._data.shape[0])
+
+        # One device->host transfer for the three indptr facts, instead
+        # of three separate syncs.
+        if self._indptr.shape[0] != nrows + 1:
+            raise ValueError(
+                f"csr_matrix: indptr length {self._indptr.shape[0]} != "
+                f"nrows+1 ({nrows + 1})"
+            )
+        indptr_ok = bool(
+            _dpnp.all(self._indptr[1:] >= self._indptr[:-1])
+            & (self._indptr[0] == 0)
+            & (self._indptr[-1] <= nnz)
+        )
+        if not indptr_ok:
+            first = int(self._indptr[0])
+            last = int(self._indptr[-1])
+            if first != 0:
+                raise ValueError(
+                    f"csr_matrix: indptr[0] must be 0, got {first}"
+                )
+            if last > nnz:
+                raise ValueError(
+                    f"csr_matrix: indptr[-1] ({last}) exceeds the number "
+                    f"of stored values ({nnz}); the index arrays would "
+                    "read past the end of data."
+                )
+            raise ValueError(
+                "csr_matrix: indptr must be non-decreasing (row lengths "
+                "cannot be negative)."
+            )
+
+        if nnz > 0:
+            # Bounds-check the column indices in a single reduction.
+            in_range = bool(
+                _dpnp.all((self._indices >= 0) & (self._indices < ncols))
+            )
+            if not in_range:
+                lo = int(_dpnp.min(self._indices))
+                hi = int(_dpnp.max(self._indices))
+                raise ValueError(
+                    f"csr_matrix: column indices must lie in [0, {ncols}), "
+                    f"got range [{lo}, {hi}]."
+                )
+
+        self._checked_format = True
+
     # --- SpMV fast-path internals --------------------------------------
 
     def _spmv_supported(self):
         """True iff value and index dtypes are in the oneMKL dispatch table."""
         return (
-            _np.dtype(self.data.dtype).char in _SPMV_VALUE_DTYPES
-            and _np.dtype(self.indices.dtype).char in _SPMV_INDEX_DTYPES
+            _np.dtype(self._data.dtype).char in _SPMV_VALUE_DTYPES
+            and _np.dtype(self._indices.dtype).char in _SPMV_INDEX_DTYPES
         )
 
     def _ensure_spmv_handle(self):
@@ -431,8 +559,10 @@ class csr_matrix(SparseABC):
 
         Returns the ``(si, handle, val_type_id, exec_q)`` quadruple so
         callers can drive ``_sparse_gemv_compute`` directly. Returns
-        ``None`` only if the value/index dtype combination is not in the
-        oneMKL dispatch table (so callers can decide how to react).
+        ``None`` if the value/index dtype combination is not in the
+        oneMKL dispatch table, or if the matrix has nnz == 0 (oneMKL
+        ``set_csr_data`` rejects nnz == 0; callers fall back to a zero
+        matvec instead).
         """
         if self._spmv_handle is not None:
             return (
@@ -442,23 +572,30 @@ class csr_matrix(SparseABC):
                 self._spmv_exec_q,
             )
 
+        if self._data.shape[0] == 0:
+            return None
+
         if not self._spmv_supported():
             return None
 
+        # Validate before the structure reaches oneMKL, which would
+        # otherwise index out of bounds on malformed input. Cached, so
+        # this costs one sync per matrix, not one per matvec.
+        self.check_format()
         self.sort_indices()
 
-        exec_q = self.data.sycl_queue
+        exec_q = self._data.sycl_queue
         _manager = _dpu.SequentialOrderManager[exec_q]
         # pylint: disable-next=protected-access
         handle, val_type_id, ev = _si._sparse_gemv_init(
             exec_q,
             0,  # trans=N (forward)
-            _dpnp.get_usm_ndarray(self.indptr),
-            _dpnp.get_usm_ndarray(self.indices),
-            _dpnp.get_usm_ndarray(self.data),
+            _dpnp.get_usm_ndarray(self._indptr),
+            _dpnp.get_usm_ndarray(self._indices),
+            _dpnp.get_usm_ndarray(self._data),
             int(self._shape[0]),
             int(self._shape[1]),
-            int(self.data.shape[0]),
+            int(self._data.shape[0]),
             _manager.submitted_events,
         )
 
@@ -497,27 +634,34 @@ class csr_matrix(SparseABC):
                 f"csr_matrix.dot: x length {x.shape[0]} does not match "
                 f"number of columns {ncols}"
             )
-        if x.dtype != self.data.dtype:
+        if x.dtype != self._data.dtype:
             raise TypeError(
                 f"csr_matrix.dot: x dtype {x.dtype} does not match matrix "
-                f"dtype {self.data.dtype}"
+                f"dtype {self._data.dtype}"
             )
 
         # nnz == 0: A @ x == 0. oneMKL set_csr_data rejects nnz == 0.
-        if self.data.shape[0] == 0:
-            return _dpnp.zeros_like(self.data, shape=nrows)
+        if self._data.shape[0] == 0:
+            return _dpnp.zeros_like(self._data, shape=nrows)
+
+        # oneMKL reads x as a bare unit-stride pointer, so a strided view
+        # (e.g. a column of a C-contiguous 2-D array) must be packed
+        # first. ascontiguousarray is a no-op when x is already unit
+        # stride, so the common path pays nothing.
+        if not x.flags.c_contiguous:
+            x = _dpnp.ascontiguousarray(x)
 
         handle_info = self._ensure_spmv_handle()
         if handle_info is None:
             raise TypeError(
                 f"csr_matrix.dot: unsupported dtype combination "
-                f"(value={self.data.dtype}, index={self.indices.dtype}); "
+                f"(value={self._data.dtype}, index={self._indices.dtype}); "
                 "supported: {float32, float64, complex64, complex128} x "
                 "{int32, int64}."
             )
 
         _si, handle, val_type_id, exec_q = handle_info
-        y = _dpnp.empty_like(self.data, shape=nrows)
+        y = _dpnp.empty_like(self._data, shape=nrows)
         _manager = _dpu.SequentialOrderManager[exec_q]
         # pylint: disable-next=protected-access
         ht_ev, comp_ev = _si._sparse_gemv_compute(
@@ -562,17 +706,22 @@ class csr_matrix(SparseABC):
     def toarray(self):
         """Convert to a dense dpnp 2-D array."""
         nrows = self._shape[0]
-        q = self.data.sycl_queue
+        q = self._data.sycl_queue
         dense = _dpnp.zeros(self._shape, dtype=self.dtype, sycl_queue=q)
         if self.nnz == 0:
             return dense
 
-        row_lengths = self.indptr[1:] - self.indptr[:-1]
+        # Malformed indices would scatter out of bounds below (or, for
+        # an over-long indptr, silently drop entries), so validate on
+        # this path too. Cached, and shared with the SpMV path.
+        self.check_format()
+
+        row_lengths = self._indptr[1:] - self._indptr[:-1]
         rows = _dpnp.repeat(
-            _dpnp.arange(nrows, dtype=self.indices.dtype, sycl_queue=q),
+            _dpnp.arange(nrows, dtype=self._indices.dtype, sycl_queue=q),
             row_lengths,
         )
-        dense[rows, self.indices] = self.data
+        dense[rows, self._indices] = self._data
         return dense
 
     def copy(self):

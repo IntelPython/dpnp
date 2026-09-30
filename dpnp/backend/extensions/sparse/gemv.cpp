@@ -26,6 +26,7 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#include <complex>
 #include <cstdint>
 #include <stdexcept>
 #include <string>
@@ -129,6 +130,9 @@ struct SpmvCache
     void *workspace = nullptr;
     mkl_sparse::matrix_view view{};
     bool optimized = false;
+
+    std::complex<double> alpha{};
+    std::complex<double> beta{};
 };
 
 // ---------------------------------------------------------------------------
@@ -149,9 +153,6 @@ static std::pair<std::uintptr_t, sycl::event>
 {
     type_utils::validate_type_for_device<Tv>(exec_q);
 
-    // init_csr_matrix has no dependency-list overload in the USM API;
-    // the caller-supplied depends are honoured at the first compute
-    // (spmv_optimize / spmv accept them).
     static_cast<void>(depends);
 
     Ti *row_ptr = const_cast<Ti *>(reinterpret_cast<const Ti *>(row_ptr_data));
@@ -185,8 +186,6 @@ static std::pair<std::uintptr_t, sycl::event>
                                     mkl::index_base::zero, row_ptr, col_ind,
                                     values);
 
-        // values is a placeholder pointer; the real x / y pointers are
-        // bound on every compute call via set_dense_vector_data.
         mkl_sparse::init_dense_vector(exec_q, &cache->x, op_cols, values);
         mkl_sparse::init_dense_vector(exec_q, &cache->y, op_rows, values);
 
@@ -204,8 +203,6 @@ static std::pair<std::uintptr_t, sycl::event>
     }
 
     auto handle_ptr = reinterpret_cast<std::uintptr_t>(cache);
-    // No optimize event yet -- optimization is deferred to first compute.
-    // Return a completed event so the caller's wait() is a no-op.
     return {handle_ptr, sycl::event{}};
 }
 
@@ -307,8 +304,12 @@ static sycl::event gemv_compute_impl(sycl::queue &exec_q,
 {
     auto *cache = reinterpret_cast<SpmvCache *>(handle_ptr);
 
-    const Tv alpha = static_cast<Tv>(alpha_d);
-    const Tv beta = static_cast<Tv>(beta_d);
+    // Stored in the cache, not on the stack: spmv reads them after this
+    // function returns (see SpmvCache).
+    Tv *alpha = reinterpret_cast<Tv *>(&cache->alpha);
+    Tv *beta = reinterpret_cast<Tv *>(&cache->beta);
+    *alpha = static_cast<Tv>(alpha_d);
+    *beta = static_cast<Tv>(beta_d);
 
     Tv *x = const_cast<Tv *>(reinterpret_cast<const Tv *>(x_data));
     Tv *y = reinterpret_cast<Tv *>(y_data);
@@ -326,8 +327,8 @@ static sycl::event gemv_compute_impl(sycl::queue &exec_q,
             // spmv_buffer_size + spmv_optimize must each run at least
             // once before spmv; do so on the first matvec only.
             std::size_t workspace_bytes = 0;
-            mkl_sparse::spmv_buffer_size(exec_q, mkl_trans, &alpha, cache->view,
-                                         cache->A, cache->x, &beta, cache->y,
+            mkl_sparse::spmv_buffer_size(exec_q, mkl_trans, alpha, cache->view,
+                                         cache->A, cache->x, beta, cache->y,
                                          alg, cache->descr, workspace_bytes);
             if (workspace_bytes > 0) {
                 cache->workspace = sycl::malloc_device(workspace_bytes, exec_q);
@@ -338,17 +339,17 @@ static sycl::event gemv_compute_impl(sycl::queue &exec_q,
             }
 
             sycl::event ev_opt = mkl_sparse::spmv_optimize(
-                exec_q, mkl_trans, &alpha, cache->view, cache->A, cache->x,
-                &beta, cache->y, alg, cache->descr, cache->workspace, depends);
+                exec_q, mkl_trans, alpha, cache->view, cache->A, cache->x,
+                beta, cache->y, alg, cache->descr, cache->workspace, depends);
             cache->optimized = true;
 
-            return mkl_sparse::spmv(exec_q, mkl_trans, &alpha, cache->view,
-                                    cache->A, cache->x, &beta, cache->y, alg,
+            return mkl_sparse::spmv(exec_q, mkl_trans, alpha, cache->view,
+                                    cache->A, cache->x, beta, cache->y, alg,
                                     cache->descr, {ev_opt});
         }
 
-        return mkl_sparse::spmv(exec_q, mkl_trans, &alpha, cache->view,
-                                cache->A, cache->x, &beta, cache->y, alg,
+        return mkl_sparse::spmv(exec_q, mkl_trans, alpha, cache->view,
+                                cache->A, cache->x, beta, cache->y, alg,
                                 cache->descr, depends);
     } catch (mkl::exception const &e) {
         throw std::runtime_error(
@@ -442,6 +443,17 @@ std::tuple<std::uintptr_t, int, sycl::event>
         throw py::value_error(
             "sparse_gemv_init: row_ptr, col_ind, values must all be 1-D.");
 
+    // oneMKL's set_csr_data reads each array as a bare unit-stride
+    // pointer; a strided view would be silently misread into the
+    // handle that every later matvec reuses. The Python layer already
+    // packs these via ascontiguousarray before calling in, but check
+    // here too since this is a public entry point.
+    if (!row_ptr.is_c_contiguous() || !col_ind.is_c_contiguous() ||
+        !values.is_c_contiguous())
+        throw py::value_error(
+            "sparse_gemv_init: row_ptr, col_ind, values must be "
+            "contiguous (unit stride).");
+
     if (row_ptr.get_shape(0) != num_rows + 1)
         throw py::value_error(
             "sparse_gemv_init: row_ptr length must equal num_rows + 1.");
@@ -492,6 +504,16 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("sparse_gemv_compute: x must be a 1-D array.");
     if (y.get_ndim() != 1)
         throw py::value_error("sparse_gemv_compute: y must be a 1-D array.");
+
+    // The dense vectors are handed to oneMKL as bare pointers, which it
+    // reads/writes with unit stride. A strided view (e.g. a column of a
+    // C-contiguous 2-D array) would otherwise be silently misread.
+    if (!x.is_c_contiguous())
+        throw py::value_error(
+            "sparse_gemv_compute: x must be contiguous (unit stride).");
+    if (!y.is_c_contiguous())
+        throw py::value_error(
+            "sparse_gemv_compute: y must be contiguous (unit stride).");
 
     if (!dpctl::utils::queues_are_compatible(exec_q,
                                              {x.get_queue(), y.get_queue()}))

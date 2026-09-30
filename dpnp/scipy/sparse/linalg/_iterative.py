@@ -84,7 +84,12 @@ import dpnp.tensor as dpt
 from dpnp.exceptions import ExecutionPlacementError
 
 from ..._lib._sparse import issparse
-from ._interface import IdentityOperator, LinearOperator, aslinearoperator
+from ._interface import (
+    IdentityOperator,
+    LinearOperator,
+    _adjoint_unsupported,
+    aslinearoperator,
+)
 
 _SUPPORTED_DTYPES = frozenset("fdFD")
 
@@ -122,6 +127,10 @@ class _CachedSpMVPair:
         # Validated by _make_fast_matvec, so it cannot return None here.
         # pylint: disable-next=protected-access
         _si, handle, val_type_id, exec_q = self._A._ensure_spmv_handle()
+        # oneMKL reads x as a bare unit-stride pointer; a strided view
+        # (a column of a C-contiguous 2-D array) must be packed first.
+        if not x.flags.c_contiguous:
+            x = dpnp.ascontiguousarray(x)
         y = dpnp.empty_like(self._A.data, shape=self._A.shape[0])
         _manager = dpu.SequentialOrderManager[exec_q]
         # pylint: disable-next=protected-access
@@ -141,26 +150,27 @@ class _CachedSpMVPair:
         _manager.add_event_pair(ht_ev, comp_ev)
         return y
 
+    # pylint: disable-next=unused-argument
     def rmatvec(self, x):
-        """Adjoint SpMV is not supported for sparse csr_matrix operators."""
-        raise NotImplementedError(
-            "rmatvec/adjoint is not supported for sparse csr_matrix "
-            "operators; only the forward matvec is implemented."
-        )
+        """Adjoint SpMV is not supported (see ``LinearOperator``)."""
+        _adjoint_unsupported("rmatvec")
 
 
 def _make_fast_matvec(A):
     """Return a _CachedSpMVPair if A is a CSR matrix with oneMKL support,
     or None if A is not an eligible sparse matrix.
 
-    Returns None when A is not a dpnp CSR sparse matrix, or when its
+    Returns None when A is not a dpnp CSR sparse matrix, when its
     (value, index) dtype combination is not registered with the oneMKL
-    dispatch table.
+    dispatch table, or when ``A.nnz == 0`` (oneMKL cannot build a handle
+    for an empty matrix). In every None case the caller keeps the generic
+    ``MatrixLinearOperator`` wrapper, whose matvec routes through
+    ``csr_matrix.dot`` and returns the correct zero vector for nnz == 0.
     """
     if not (issparse(A) and getattr(A, "format", None) == "csr"):
         return None
 
-    # Returns a handle cached on A, or None for an unsupported dtype.
+    # Returns a handle cached on A, or None when no handle can be built.
     if not hasattr(A, "_ensure_spmv_handle"):
         return None
     # pylint: disable-next=protected-access
@@ -215,16 +225,21 @@ def _make_system(A, M, x0, b):
             f"b length {b.shape[0]} does not match operator dimension {n}"
         )
 
-    # Dtype promotion: prefer A.dtype; fall back via b.dtype.
+    # Dtype promotion: prefer A.dtype; fall back via b.dtype. The
+    # fallback must respect the device's fp64 aspect -- float64 /
+    # complex128 are not supported on every GPU, and hardcoding them
+    # would raise downstream instead of degrading gracefully like
+    # dpnp.default_float_type() does elsewhere in dpnp.
     if (
         A_op.dtype is not None
         and _np_dtype(A_op.dtype).char in _SUPPORTED_DTYPES
     ):
         dtype = A_op.dtype
     elif dpnp.issubdtype(b.dtype, dpnp.complexfloating):
-        dtype = dpnp.complex128
+        has_fp64 = b.sycl_device.has_aspect_fp64
+        dtype = dpnp.complex128 if has_fp64 else dpnp.complex64
     else:
-        dtype = dpnp.float64
+        dtype = dpnp.default_float_type(sycl_queue=b.sycl_queue)
 
     b = dpnp.astype(b, dtype, copy=False)
     _check_dtype(b.dtype, "b")
@@ -274,6 +289,24 @@ def _make_system(A, M, x0, b):
         A_op = _FastOp()
 
     return A_op, M_op, x, b, dtype
+
+
+def _check_maxiter(maxiter, default: int) -> int:
+    """Resolve `maxiter`, rejecting negative values.
+
+    A negative budget used to propagate straight into the return value
+    (``cg(maxiter=-1)`` returned ``info == -1``), contradicting the
+    documented contract that ``info < 0`` is never produced. ``0`` is
+    kept legal and means "do no iterations", matching SciPy.
+    """
+    if maxiter is None:
+        return default
+    maxiter = int(maxiter)
+    if maxiter < 0:
+        raise ValueError(
+            f"maxiter={maxiter} is invalid; must be a non-negative integer."
+        )
+    return maxiter
 
 
 def _get_atol(b_norm: float, atol, rtol: float) -> float:
@@ -367,8 +400,7 @@ def cg(
 
     atol_eff_host = _get_atol(bnrm_host, atol=atol, rtol=rtol)
 
-    if maxiter is None:
-        maxiter = n * 10
+    maxiter = _check_maxiter(maxiter, n * 10)
 
     rhotol = float(numpy.finfo(_np_dtype(dtype)).eps ** 2)
 
@@ -378,7 +410,13 @@ def cg(
 
     rz = dpnp.real(dpnp.vdot(r, z))
     if float(dpnp.abs(rz)) < rhotol:
-        return x, 0
+        # rz == 0 has two causes: r == 0 (already converged) or a
+        # preconditioner breakdown, M @ r == 0 with r != 0 (singular M).
+        # Only the first is convergence; reporting info == 0 for the
+        # second would claim a solution that was never computed.
+        if float(dpnp.linalg.norm(r)) <= atol_eff_host:
+            return x, 0
+        return x, 1
 
     info = maxiter
     for k in range(maxiter):
@@ -483,13 +521,19 @@ def gmres(
         return dpnp.empty_like(b), 0
     b_norm = float(dpnp.linalg.norm(b))
     if b_norm == 0.0:
-        return b, 0
+        return dpnp.zeros_like(b), 0
     atol = max(float(atol), rtol * b_norm)
 
-    if maxiter is None:
-        maxiter = n * 10
+    maxiter = _check_maxiter(maxiter, n * 10)
     if restart is None:
         restart = 20
+    # A non-positive restart leaves the Arnoldi basis empty, which used
+    # to surface as an IndexError from V[:, 0] (restart == 0) or an
+    # allocation error (restart < 0) deep inside the loop.
+    if int(restart) < 1:
+        raise ValueError(
+            f"restart={restart!r} is invalid; must be a positive integer."
+        )
     restart = min(int(restart), n)
 
     if callback_type is None:
@@ -648,8 +692,7 @@ def minres(
     psolve = M_op.matvec
 
     n = A_op.shape[0]
-    if maxiter is None:
-        maxiter = 5 * n
+    maxiter = _check_maxiter(maxiter, 5 * n)
 
     istop = 0
     itn = 0
