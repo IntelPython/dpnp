@@ -187,9 +187,10 @@ struct IntegerTypes : std::bool_constant<std::is_integral_v<T>>
 {
 };
 
-// The raw output of a bit generator is always 64 bits wide
+// The raw output of a bit generator, whole or as 32-bit halves
 template <typename T>
-struct RawTypes : std::bool_constant<std::is_same_v<T, std::uint64_t>>
+struct RawTypes : std::bool_constant<std::is_same_v<T, std::uint64_t> ||
+                                     std::is_same_v<T, std::uint32_t>>
 {
 };
 
@@ -219,7 +220,7 @@ void init_sample_dispatch_table(sample_dispatch_table_t &table)
 {
     using ext::common::init_dispatch_vector;
 
-    static_assert(rng_ns::num_engines == 1,
+    static_assert(rng_ns::num_engines == 2,
                   "Every engine must have a row in the dispatch table");
 
     constexpr int philox = static_cast<int>(rng_ns::engine_id::philox4x32x10);
@@ -227,18 +228,29 @@ void init_sample_dispatch_table(sample_dispatch_table_t &table)
                          SampleFactoryFor<rng_ns::Philox4x32x10, SamplerT,
                                           SupportedT>::template type>(
         table[philox]);
+
+    constexpr int pcg = static_cast<int>(rng_ns::engine_id::pcg64dxsm);
+    init_dispatch_vector<sample_fn_ptr_t,
+                         SampleFactoryFor<rng_ns::PCG64DXSM, SamplerT,
+                                          SupportedT>::template type>(
+        table[pcg]);
 }
 
 template <template <typename> class SamplerT>
 void init_discrete_dispatch_table(discrete_dispatch_table_t &table)
 {
-    static_assert(rng_ns::num_engines == 1,
+    static_assert(rng_ns::num_engines == 2,
                   "Every engine must have a row in the dispatch table");
 
     using Philox = rng_ns::Philox4x32x10;
     constexpr int philox = static_cast<int>(rng_ns::engine_id::philox4x32x10);
     table[philox][0] = sample_impl<Philox, SamplerT<float>, float>;
     table[philox][1] = sample_impl<Philox, SamplerT<double>, double>;
+
+    using PCG = rng_ns::PCG64DXSM;
+    constexpr int pcg = static_cast<int>(rng_ns::engine_id::pcg64dxsm);
+    table[pcg][0] = sample_impl<PCG, SamplerT<float>, float>;
+    table[pcg][1] = sample_impl<PCG, SamplerT<double>, double>;
 }
 
 // Looks up the sampler of `result`'s type, and throws if there is none

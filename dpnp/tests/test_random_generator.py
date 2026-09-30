@@ -13,7 +13,7 @@ from numpy.testing import (
 )
 
 import dpnp
-from dpnp.random import Generator, Philox4x3210, default_rng
+from dpnp.random import PCG64DXSM, Generator, Philox4x3210, default_rng
 
 from .helper import get_float_dtypes, has_support_aspect64
 
@@ -157,6 +157,141 @@ class TestPhilox4x3210:
 
     def test_base_class(self):
         assert_raises(TypeError, dpnp.random.BitGenerator)
+
+
+class TestPCG64DXSM:
+    @staticmethod
+    def _pair(seed):
+        bg = PCG64DXSM(seed)
+        ref = numpy.random.PCG64DXSM(seed)
+        assert bg.state == ref.state
+        return bg, ref
+
+    @pytest.mark.parametrize("seed", [0, 1234, (1 << 70) + 5])
+    @pytest.mark.parametrize("n", [0, 1, 7, 8, 9, 100, 1001])
+    def test_random_raw(self, seed, n):
+        bg, ref = self._pair(seed)
+        assert_array_equal(dpnp.asnumpy(bg.random_raw(n)), ref.random_raw(n))
+        assert bg.state == ref.state
+
+        bg.random_raw(n, output=False)
+        ref.random_raw(n, output=False)
+        assert bg.state == ref.state
+
+    @pytest.mark.parametrize("dtype", float_dtypes)
+    @pytest.mark.parametrize("n", [1, 5, 8, 17, 1000])
+    def test_random(self, dtype, n):
+        bg, ref = self._pair(3)
+        rng, ref_rng = Generator(bg), numpy.random.Generator(ref)
+        for _ in range(3):
+            res = rng.random(n, dtype=dtype)
+            assert_array_equal(dpnp.asnumpy(res), ref_rng.random(n, dtype))
+            assert bg.state == ref.state
+
+    @pytest.mark.skipif(not has_support_aspect64(), reason="fp64 required")
+    def test_uniform(self):
+        bg, ref = self._pair(4)
+        rng, ref_rng = Generator(bg), numpy.random.Generator(ref)
+        res = rng.uniform(-3.0, 7.5, 1001)
+        assert_array_equal(dpnp.asnumpy(res), ref_rng.uniform(-3.0, 7.5, 1001))
+
+        low = numpy.arange(10.0)
+        res = rng.uniform(dpnp.asarray(low), 20.0, (3, 10))
+        assert_array_equal(
+            dpnp.asnumpy(res), ref_rng.uniform(low, 20.0, (3, 10))
+        )
+        assert bg.state == ref.state
+
+    def test_bytes(self):
+        bg, ref = self._pair(5)
+        rng, ref_rng = Generator(bg), numpy.random.Generator(ref)
+        for length in [0, 1, 3, 4, 5, 13, -1, -3, -5, 1000]:
+            assert rng.bytes(length) == ref_rng.bytes(length)
+            assert bg.state == ref.state
+
+    @pytest.mark.parametrize("seed", range(5))
+    def test_mixed_calls(self, seed):
+        bg, ref = self._pair(seed)
+        rng, ref_rng = Generator(bg), numpy.random.Generator(ref)
+        sizes = numpy.random.default_rng(seed).integers(0, 40, size=20).tolist()
+        for i, n in enumerate(sizes):
+            kind = i % 4
+            if kind == 0:
+                res, exp = bg.random_raw(n), ref.random_raw(n)
+            elif kind == 1:
+                res = rng.random(n, dtype=dpnp.float32)
+                exp = ref_rng.random(n, dtype=numpy.float32)
+            elif kind == 2:
+                res, exp = rng.bytes(n), ref_rng.bytes(n)
+            else:
+                bg.advance(n)
+                ref.advance(n)
+                res = exp = None
+            if res is not None and not isinstance(res, bytes):
+                res = dpnp.asnumpy(res)
+            assert_array_equal(res, exp)
+            assert bg.state == ref.state
+
+    def test_rejection_sampler_streams(self):
+        # work-item w of a sampler whose draws vary draws from the stream of
+        # jumped(w), and the state advances as jumped(n_wi)
+        bg, ref = self._pair(6)
+        rng = Generator(bg)
+        rng.random(1, dtype=dpnp.float32)
+        state = bg.state
+
+        n_wi = 5
+        res = rng.integers(0, 1000, size=n_wi * ITEMS_PER_WORK_ITEM)
+        exp = numpy.empty(n_wi * ITEMS_PER_WORK_ITEM, dtype=numpy.int64)
+        for w in range(n_wi):
+            ref.state = state
+            ref_rng = numpy.random.Generator(ref.jumped(w))
+            exp[w::n_wi] = ref_rng.integers(0, 1000, ITEMS_PER_WORK_ITEM)
+        assert_array_equal(dpnp.asnumpy(res), exp)
+
+        ref.state = state
+        jumped = ref.jumped(n_wi).state
+        assert bg.state["state"] == jumped["state"]
+        assert bg.state["has_uint32"] == state["has_uint32"] == 1
+        assert bg.state["uinteger"] == state["uinteger"]
+
+    def test_state_exchange(self):
+        ref = numpy.random.PCG64DXSM(8)
+        numpy.random.Generator(ref).random(3, dtype=numpy.float32)
+        bg = PCG64DXSM()
+        bg.state = ref.state
+        assert bg.state == ref.state
+        assert_array_equal(dpnp.asnumpy(bg.random_raw(9)), ref.random_raw(9))
+
+        ref.state = bg.state
+        assert_array_equal(dpnp.asnumpy(bg.random_raw(9)), ref.random_raw(9))
+
+    def test_advance_jumped(self):
+        bg, ref = self._pair(9)
+        bg.random_raw(3)
+        ref.random_raw(3)
+        assert bg.advance(12345) is bg
+        ref.advance(12345)
+        assert bg.state == ref.state
+
+        jumped = bg.jumped(3)
+        assert jumped is not bg
+        assert jumped.state == ref.jumped(3).state
+        assert jumped.sycl_queue == bg.sycl_queue
+        assert bg.state == ref.state
+
+    def test_state_errors(self):
+        bg = PCG64DXSM(42)
+        assert_raises(TypeError, setattr, bg, "state", 1)
+        assert_raises(
+            ValueError, setattr, bg, "state", {"bit_generator": "PCG64"}
+        )
+
+    def test_spawn(self):
+        children = PCG64DXSM(5).spawn(2)
+        ref = numpy.random.PCG64DXSM(5).spawn(2)
+        for c, r in zip(children, ref):
+            assert c.state == r.state
 
 
 class TestDefaultRng:
@@ -909,6 +1044,38 @@ class TestDiscreteMethods:
         res = rng.multinomial(10, dpnp.asarray([nan, 0.5, nan]))
         assert res.shape == (3,)
 
+        # a shape just below zero would reject nearly every draw
+        shape = dpnp.asarray([-1e-8, -1e-12, -1e-30, -1.0])
+        res = rng.standard_gamma(shape, size=(8, 4))
+        assert dpnp.isnan(res).all()
+        res = rng.chisquare(shape, size=(8, 4))
+        assert dpnp.isnan(res).all()
+        res = rng.standard_gamma(shape.astype(dpnp.float32), dtype="f4")
+        assert dpnp.isnan(res).all()
+        rng.standard_t(shape)
+        rng.negative_binomial(shape, 0.5)
+        rng.noncentral_chisquare(shape, dpnp.asarray([1e-30] * 4))
+
+        p = dpnp.asarray([nan, -0.0, -1e-300, 0.0, -inf])
+        res = rng.geometric(p, size=(8, 5))
+        assert_array_equal(res, int64_min, strict=False)
+
+    def test_host_params_terminate(self, discrete_precision):
+        # valid parameters on which rounding in single precision made every
+        # draw of a rejection sampler fail
+        rng = default_rng(0)
+        res = rng.zipf([129.0, 200.0, 1024.0], size=(8, 3))
+        assert_array_equal(res, 1, strict=False)
+        res = rng.binomial([25 * 10**14, 10**17], [0.5, 0.05], size=(8, 2))
+        mean = numpy.array([12.5e14, 5e15])
+        assert_allclose(dpnp.asnumpy(res).mean(axis=0), mean, rtol=1e-3)
+        res = rng.multinomial(10**16, [0.5, 0.5], size=4)
+        assert_array_equal(res.sum(axis=-1), 10**16, strict=False)
+
+        kappa = [5e-5, 1e-4, 3e-4, 4e-4]
+        res = rng.vonmises(0.0, kappa, size=(8, 4), dtype=dpnp.float32)
+        assert (dpnp.abs(res) <= numpy.pi).all()
+
 
 def _assert_same_error(np_call, dp_call):
     """Assert `dp_call` raises the same exception as `np_call`."""
@@ -1483,8 +1650,8 @@ class TestChoice:
 
 @pytest.mark.skipif(len(_all_devices()) < 2, reason="needs two devices")
 class TestDeviceIndependence:
-    def _draw(self, device):
-        rng = default_rng(12, device=device)
+    def _draw(self, device, bitgen):
+        rng = Generator(bitgen(12, device=device))
         return (
             rng.random(1000, dtype=dpnp.float32),
             rng.integers(0, 1000, size=1000),
@@ -1497,11 +1664,12 @@ class TestDeviceIndependence:
             rng.hypergeometric(50, 70, 30, size=1000),
         )
 
-    def test_same_values(self):
+    @pytest.mark.parametrize("bitgen", [Philox4x3210, PCG64DXSM])
+    def test_same_values(self, bitgen):
         devices = _all_devices()
-        ref = [dpnp.asnumpy(x) for x in self._draw(devices[0])]
+        ref = [dpnp.asnumpy(x) for x in self._draw(devices[0], bitgen)]
         for dev in devices[1:]:
-            res = [dpnp.asnumpy(x) for x in self._draw(dev)]
+            res = [dpnp.asnumpy(x) for x in self._draw(dev, bitgen)]
             # uniform bits and integers are exact
             for a, b in zip(ref[:3], res[:3]):
                 assert_array_equal(a, b)

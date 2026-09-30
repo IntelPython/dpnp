@@ -167,71 +167,124 @@ def _check_real(value):
         raise TypeError(f"must be real number, not {t.__name__}")
 
 
-def _uniform_range(low, high, overflow_msg):
+def _uniform_range(low, high, overflow_msg, device=False):
     """
-    ``high - low`` of host params, raising OverflowError with `overflow_msg`
-    unless it is finite, or ``None`` when either param is on the device.
+    ``high - low``, raising OverflowError with `overflow_msg` unless it is
+    finite, or ``None`` when either param is on the device, unless `device`
+    is true.
 
     """
 
-    if dpnp.is_supported_array_type(low) or dpnp.is_supported_array_type(high):
+    xp, (flow, fhigh) = _check_arrays((low, high), device, numpy.float64)
+    if xp is None:
         return None
-    with numpy.errstate(over="ignore", invalid="ignore"):
-        rng = numpy.subtract(
-            numpy.asarray(high, dtype=numpy.float64),
-            numpy.asarray(low, dtype=numpy.float64),
-        )
-    if _is_scalar_path(low, high):
-        _check_real(low)
-        _check_real(high)
-    if not numpy.all(numpy.isfinite(rng)):
+    if xp is dpnp:
+        rng = dpnp.subtract(fhigh, flow)
+    else:
+        with numpy.errstate(over="ignore", invalid="ignore"):
+            rng = numpy.subtract(fhigh, flow)
+        if _is_scalar_path(low, high):
+            _check_real(low)
+            _check_real(high)
+    if not xp.all(xp.isfinite(rng)):
         raise OverflowError(overflow_msg)
     return rng
 
 
-# pylint: disable=too-many-branches
-def _check_constraint(value, name, cons, scalar):
+def _on_device(value):
     """
-    Raise ValueError, as NumPy does, when the host parameter `value`
-    violates the constraint `cons`.
+    `value` for a check on the device, as a floating-point array unless it
+    already is one.
 
-    Parameters on the device are not checked, as that would wait for the
-    device. `scalar` selects the messages of NumPy's scalar path.
+    """
+
+    value = dpnp.asarray(value)
+    if dpnp.issubdtype(value.dtype, dpnp.inexact):
+        return value
+    return value.astype(dpnp.default_float_type(sycl_queue=value.sycl_queue))
+
+
+def _check_arrays(params, device, dtype=None):
+    """
+    `params` as arrays to check, with the module to check them by, which is
+    ``None`` when some are on the device and `device` is false.
+
+    Host parameters are converted to `dtype`, and moved to the device when
+    others are on the device.
+
+    """
+
+    queues = [p.sycl_queue for p in params if dpnp.is_supported_array_type(p)]
+    host = [
+        None if dpnp.is_supported_array_type(p) else numpy.asarray(p, dtype)
+        for p in params
+    ]
+    if not queues:
+        return numpy, host
+    if not device:
+        return None, [None] * len(params)
+
+    def _to_device(p, h):
+        if h is None:
+            return dpnp.asarray(p)
+        if (
+            h.dtype == numpy.float64
+            and not queues[0].sycl_device.has_aspect_fp64
+        ):
+            h = h.astype(numpy.float32)
+        return dpnp.asarray(h, sycl_queue=queues[0])
+
+    return dpnp, [_to_device(p, h) for p, h in zip(params, host)]
+
+
+# pylint: disable=too-many-branches
+def _check_constraint(value, name, cons, scalar, device=False):
+    """
+    Raise ValueError, as NumPy does, when the parameter `value` violates the
+    constraint `cons`.
+
+    Parameters on the device are checked only with `device`, as the check
+    waits for the device. `scalar` selects the messages of NumPy's scalar
+    path.
 
     """
 
     if dpnp.is_supported_array_type(value):
-        return
-
-    val = numpy.asarray(value, dtype=numpy.float64)
-    if scalar:
-        _check_real(value)
+        if not device:
+            return
+        xp = dpnp
+        val = _on_device(value)
+    else:
+        xp = numpy
+        val = numpy.asarray(value, dtype=numpy.float64)
+        if scalar:
+            _check_real(value)
     if cons == _CONS_NONE:
         return
 
     nan_msg = "is NaN" if scalar else "contains NaNs"
     if cons == _CONS_NON_NEGATIVE:
-        if numpy.any(~numpy.isnan(val) & numpy.signbit(val)):
+        if xp.any(~xp.isnan(val) & xp.signbit(val)):
             raise ValueError(f"{name} < 0")
     elif cons in (_CONS_POSITIVE, _CONS_POSITIVE_NOT_NAN):
-        if cons == _CONS_POSITIVE_NOT_NAN and numpy.any(numpy.isnan(val)):
+        if cons == _CONS_POSITIVE_NOT_NAN and xp.any(xp.isnan(val)):
             raise ValueError(f"{name} must not be NaN")
-        if numpy.any(val <= 0):
+        if xp.any(val <= 0):
             raise ValueError(f"{name} <= 0")
     elif cons == _CONS_BOUNDED_0_1:
-        if not numpy.all((val >= 0) & (val <= 1)):
+        if not xp.all((val >= 0) & (val <= 1)):
             raise ValueError(f"{name} < 0, {name} > 1 or {name} {nan_msg}")
     elif cons == _CONS_BOUNDED_GT_0_1:
-        if not numpy.all((val > 0) & (val <= 1)):
+        if not xp.all((val > 0) & (val <= 1)):
             raise ValueError(f"{name} <= 0, {name} > 1 or {name} contains NaNs")
     elif cons == _CONS_BOUNDED_LT_0_1:
-        if not numpy.all((val >= 0) & (val < 1)):
+        if not xp.all((val >= 0) & (val < 1)):
             raise ValueError(f"{name} < 0, {name} >= 1 or {name} {nan_msg}")
     elif cons == _CONS_GT_1:
-        if not numpy.all(val > 1):
+        if not xp.all(val > 1):
             raise ValueError(f"{name} <= 1 or {name} {nan_msg}")
     elif cons == _CONS_GTE_1:
-        if not numpy.all(val >= 1):
+        if not xp.all(val >= 1):
             raise ValueError(f"{name} < 1 or {name} {nan_msg}")
     elif cons == _CONS_POISSON:
         # the array path checks the upper bound first, so NaN fails it
@@ -241,9 +294,9 @@ def _check_constraint(value, name, cons, scalar):
             if val > _POISSON_LAM_MAX:
                 raise ValueError(f"{name} value too large")
         else:
-            if not numpy.all(val <= _POISSON_LAM_MAX):
+            if not xp.all(val <= _POISSON_LAM_MAX):
                 raise ValueError(f"{name} value too large")
-            if not numpy.all(val >= 0):
+            if not xp.all(val >= 0):
                 raise ValueError(f"{name} < 0 or {name} contains NaNs")
 
 
@@ -271,7 +324,8 @@ class Generator:
     Parameters
     ----------
     bit_generator : BitGenerator
-        The bit generator, such as :class:`dpnp.random.Philox4x3210`.
+        The bit generator, such as :class:`dpnp.random.Philox4x3210` or
+        :class:`dpnp.random.PCG64DXSM`.
 
     Limitations
     -----------
@@ -283,7 +337,9 @@ class Generator:
 
     Parameters on the host (scalars, lists and NumPy arrays) are checked as
     in NumPy. Parameters on the device are not, since that would wait for
-    the device, and invalid ones give undefined values.
+    the device. Invalid ones give undefined values, such as NaN or the
+    smallest ``int64``, but never make the kernels loop without end or
+    access memory out of bounds.
 
     The discrete distributions return ``int64`` values, and compute in
     double precision on devices supporting it, and in single precision
@@ -291,6 +347,9 @@ class Generator:
     as a Poisson `lam` beyond about ``1e7``, are less accurate than NumPy's.
 
     """
+
+    # Whether parameters on the device are checked, waiting for the device
+    _check_device = False
 
     def __init__(self, bit_generator):
         if not isinstance(bit_generator, BitGenerator):
@@ -492,7 +551,9 @@ class Generator:
         values = tuple(p[0] for p in params)
         scalar = _is_scalar_path(*values)
         for value, pname, cons in params:
-            _check_constraint(value, pname, cons, scalar)
+            _check_constraint(
+                value, pname, cons, scalar, device=self._check_device
+            )
         return self._float_sample(
             kernel, values, size, dtype, usm_type, name, out=out
         )
@@ -593,9 +654,16 @@ class Generator:
                 if scalar
                 else "Range exceeds valid bounds"
             ),
+            self._check_device,
         )
         if rng is not None:
-            _check_constraint(rng, "high - low", _CONS_NON_NEGATIVE, scalar)
+            _check_constraint(
+                rng,
+                "high - low",
+                _CONS_NON_NEGATIVE,
+                scalar,
+                device=self._check_device,
+            )
         return self._float_sample(
             ri._uniform, (low, high), size, dtype, usm_type, "uniform"
         )
@@ -932,18 +1000,18 @@ class Generator:
         """
 
         params = (left, mode, right)
-        if not any(dpnp.is_supported_array_type(p) for p in params):
-            fleft, fmode, fright = (
-                numpy.asarray(p, dtype=numpy.float64) for p in params
-            )
-            if _is_scalar_path(*params):
+        xp, (fleft, fmode, fright) = _check_arrays(
+            params, self._check_device, numpy.float64
+        )
+        if xp is not None:
+            if xp is numpy and _is_scalar_path(*params):
                 for p in params:
                     _check_real(p)
-            if numpy.any(fleft > fmode):
+            if xp.any(fleft > fmode):
                 raise ValueError("left > mode")
-            if numpy.any(fmode > fright):
+            if xp.any(fmode > fright):
                 raise ValueError("mode > right")
-            if numpy.any(fleft == fright):
+            if xp.any(fleft == fright):
                 raise ValueError("left == right")
         return self._float_sample(
             ri._triangular, params, size, dtype, usm_type, "triangular"
@@ -987,7 +1055,11 @@ class Generator:
         """
 
         _check_constraint(
-            shape, "shape", _CONS_NON_NEGATIVE, _is_scalar_path(shape)
+            shape,
+            "shape",
+            _CONS_NON_NEGATIVE,
+            _is_scalar_path(shape),
+            device=self._check_device,
         )
         return self._float_sample(
             ri._gamma,
@@ -1169,7 +1241,13 @@ class Generator:
 
         """
 
-        _check_constraint(lam, "lam", _CONS_POISSON, _is_scalar_path(lam))
+        _check_constraint(
+            lam,
+            "lam",
+            _CONS_POISSON,
+            _is_scalar_path(lam),
+            device=self._check_device,
+        )
         return self._discrete_sample(ri._poisson, (lam,), size, usm_type)
 
     def binomial(self, n, p, size=None, *, usm_type="device"):
@@ -1188,8 +1266,12 @@ class Generator:
         scalar = _is_scalar_path(n, p)
         # NumPy converts both parameters before checking either
         n = _as_int64(n)
-        _check_constraint(p, "p", _CONS_BOUNDED_0_1, scalar)
-        _check_constraint(n, "n", _CONS_NON_NEGATIVE, scalar)
+        _check_constraint(
+            p, "p", _CONS_BOUNDED_0_1, scalar, device=self._check_device
+        )
+        _check_constraint(
+            n, "n", _CONS_NON_NEGATIVE, scalar, device=self._check_device
+        )
         return self._discrete_sample(
             ri._binomial, (n, p), size, usm_type, param_types=(_int64, None)
         )
@@ -1208,8 +1290,12 @@ class Generator:
         """
 
         # NumPy takes scalar parameters as arrays here, so None gives NaN
-        _check_constraint(n, "n", _CONS_POSITIVE_NOT_NAN, False)
-        _check_constraint(p, "p", _CONS_BOUNDED_GT_0_1, False)
+        _check_constraint(
+            n, "n", _CONS_POSITIVE_NOT_NAN, False, device=self._check_device
+        )
+        _check_constraint(
+            p, "p", _CONS_BOUNDED_GT_0_1, False, device=self._check_device
+        )
         if not (
             dpnp.is_supported_array_type(n) or dpnp.is_supported_array_type(p)
         ):
@@ -1239,7 +1325,13 @@ class Generator:
 
         """
 
-        _check_constraint(p, "p", _CONS_BOUNDED_GT_0_1, _is_scalar_path(p))
+        _check_constraint(
+            p,
+            "p",
+            _CONS_BOUNDED_GT_0_1,
+            _is_scalar_path(p),
+            device=self._check_device,
+        )
         return self._discrete_sample(ri._geometric, (p,), size, usm_type)
 
     def logseries(self, p, size=None, *, usm_type="device"):
@@ -1255,7 +1347,13 @@ class Generator:
 
         """
 
-        _check_constraint(p, "p", _CONS_BOUNDED_LT_0_1, _is_scalar_path(p))
+        _check_constraint(
+            p,
+            "p",
+            _CONS_BOUNDED_LT_0_1,
+            _is_scalar_path(p),
+            device=self._check_device,
+        )
         return self._discrete_sample(ri._logseries, (p,), size, usm_type)
 
     def zipf(self, a, size=None, *, usm_type="device"):
@@ -1270,7 +1368,9 @@ class Generator:
 
         """
 
-        _check_constraint(a, "a", _CONS_GT_1, _is_scalar_path(a))
+        _check_constraint(
+            a, "a", _CONS_GT_1, _is_scalar_path(a), device=self._check_device
+        )
         return self._discrete_sample(ri._zipf, (a,), size, usm_type)
 
     def hypergeometric(
@@ -1292,18 +1392,19 @@ class Generator:
         names = ("ngood", "nbad", "nsample")
         scalar = _is_scalar_path(*params)
 
-        on_host = [not dpnp.is_supported_array_type(x) for x in params]
-        for x, host in zip(params[:2], on_host):
-            if host and numpy.any(numpy.asarray(x) >= _HYPERGEOM_MAX):
+        for x in params[:2]:
+            xp, (xa,) = _check_arrays((x,), self._check_device)
+            if xp is not None and xp.any(xa >= _HYPERGEOM_MAX):
                 raise ValueError(
                     "both ngood and nbad must be less than " f"{_HYPERGEOM_MAX}"
                 )
-        if all(on_host):
-            good, bad, sample = (numpy.asarray(x) for x in params)
-            if numpy.any(good + bad < sample):
-                raise ValueError("ngood + nbad < nsample")
+        xp, (good, bad, sample) = _check_arrays(params, self._check_device)
+        if xp is not None and xp.any(good + bad < sample):
+            raise ValueError("ngood + nbad < nsample")
         for x, name in zip(params, names):
-            _check_constraint(x, name, _CONS_NON_NEGATIVE, scalar)
+            _check_constraint(
+                x, name, _CONS_NON_NEGATIVE, scalar, device=self._check_device
+            )
 
         return self._discrete_sample(
             ri._hypergeometric,
@@ -1420,9 +1521,12 @@ class Generator:
                 "pvals must have at least 1 dimension and the last dimension "
                 "of pvals must be greater than 0."
             )
-        if on_host:
-            _check_constraint(pvals, "pvals", _CONS_BOUNDED_0_1, False)
-            if numpy.any(pvals[..., :-1].sum(axis=-1) > 1.0 + 1e-12):
+        if on_host or self._check_device:
+            xp = numpy if on_host else dpnp
+            _check_constraint(
+                pvals, "pvals", _CONS_BOUNDED_0_1, False, device=True
+            )
+            if xp.any(pvals[..., :-1].sum(axis=-1) > 1.0 + 1e-12):
                 raise ValueError(
                     "sum(pvals[:-1]) > 1.0"
                     if pvals.ndim == 1
@@ -1430,7 +1534,13 @@ class Generator:
                 )
 
         n = _as_int64(n)
-        _check_constraint(n, "n", _CONS_NON_NEGATIVE, numpy.ndim(n) == 0)
+        _check_constraint(
+            n,
+            "n",
+            _CONS_NON_NEGATIVE,
+            numpy.ndim(n) == 0,
+            device=self._check_device,
+        )
 
         d = pvals.shape[-1]
         batch = numpy.broadcast_shapes(numpy.shape(n), pvals.shape[:-1])
@@ -1856,7 +1966,7 @@ class Generator:
             if pop_size == 0 and not no_samples:
                 raise ValueError(msgs["a_empty"])
 
-        p_host = None
+        p_host = p_check = None
         if p is not None:
             if dpnp.is_supported_array_type(p):
                 p_dev = dpnp.asarray(p)
@@ -1872,11 +1982,18 @@ class Generator:
                 raise ValueError(msgs["p_1d"])
             if p_dev.size != pop_size:
                 raise ValueError(msgs["p_size"])
-            if p_host is not None:
-                p_sum = p_host.sum()
+            if p_host is None and self._check_device:
+                p_check = p_dev
+                atol = numpy.sqrt(numpy.finfo(numpy.float64).eps)
+                if dpnp.issubdtype(p_dev.dtype, dpnp.floating):
+                    atol = max(atol, numpy.sqrt(numpy.finfo(p_dev.dtype).eps))
+            else:
+                p_check = p_host
+            if p_check is not None:
+                p_sum = float(p_check.sum())
                 if numpy.isnan(p_sum):
                     raise ValueError(msgs["p_nan"])
-                if numpy.any(p_host < 0):
+                if (p_check < 0).any():
                     raise ValueError(msgs["p_neg"])
                 if abs(p_sum - 1.0) > atol:
                     raise ValueError(msgs["p_sum"])
@@ -1888,7 +2005,7 @@ class Generator:
         if not replace:
             if n > pop_size:
                 raise ValueError(msgs["too_large"])
-            if p_host is not None and numpy.count_nonzero(p_host > 0) < n:
+            if p_check is not None and int((p_check > 0).sum()) < n:
                 raise ValueError("Fewer non-zero entries in p than size")
 
         if n == 0:
@@ -1999,7 +2116,11 @@ class Generator:
             params = (low, high)
 
             def _on_host(x):
-                return None if dpnp.is_supported_array_type(x) else x
+                if not dpnp.is_supported_array_type(x):
+                    return x
+                # NumPy's checks of mixed integer types and Python integers
+                # are exact, so bounds on the device are checked on the host
+                return dpnp.asnumpy(x) if self._check_device else None
 
             _check_bounds(
                 *(
@@ -2053,9 +2174,16 @@ class Generator:
 
         """
 
+        # as in NumPy, 32-bit values in little-endian order, as many as
+        # (length - 1) / 4 + 1 in C division, so bytes(0) draws one
         length = operator.index(length)
-        values = self.integers(0, 256, size=length, dtype=numpy.uint8)
-        return dpnp.asnumpy(values).tobytes()
+        q = length - 1
+        n_uint32 = (q // 4 if q >= 0 else -(-q // 4)) + 1
+        values = dpnp.empty(
+            n_uint32, dtype=dpnp.uint32, sycl_queue=self.sycl_queue
+        )
+        self._bit_generator._fill(ri._random_raw, (), values)
+        return dpnp.asnumpy(values).astype("<u4").tobytes()[:length]
 
 
 def default_rng(seed=None, *, device=None, sycl_queue=None):

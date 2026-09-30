@@ -55,6 +55,7 @@ This release requires DPC++ compiler 2026.1.1 or newer and `dpctl` 0.23.0 or new
 * Added support for the `"nuc"` (nuclear) norm in `dpnp.linalg.cond` [#3084](https://github.com/IntelPython/dpnp/pull/3084)
 * Added support for Python 3.15 [#3098](https://github.com/IntelPython/dpnp/pull/3098)
 * Added the `dpnp.random.Generator` API, with `default_rng`, `BitGenerator`, `SeedSequence` and the `Philox4x3210` bit generator, drawing all samples on the device through the oneMKL device RNG API [#XXXX](https://github.com/IntelPython/dpnp/pull/XXXX)
+* Added the `dpnp.random.PCG64DXSM` bit generator, which reproduces the streams of `numpy.random.PCG64DXSM` for raw values, `random`, `uniform` and `bytes` [#XXXX](https://github.com/IntelPython/dpnp/pull/XXXX)
 
 ### Changed
 

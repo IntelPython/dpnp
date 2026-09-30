@@ -54,9 +54,11 @@ from ._generator import (
     _CONS_GTE_1,
     _CONS_NON_NEGATIVE,
     _CONS_POSITIVE,
+    _HYPERGEOM_MAX,
     _INT64_MAX,
     Generator,
     _as_int64,
+    _check_arrays,
     _check_constraint,
     _int64,
     _is_array,
@@ -84,6 +86,17 @@ _CHOICE_MSGS = {
 }
 
 _SEED_MAX = 2**32 - 1
+
+
+class _LegacyGenerator(Generator):
+    """
+    The generator of a :class:`RandomState`, which checks the parameters on
+    the device as NumPy's legacy API checks all parameters, at the cost of
+    waiting for the device.
+
+    """
+
+    _check_device = True
 
 
 def _legacy_seed(seed):
@@ -164,8 +177,9 @@ class RandomState:
     scalar. The floating-point methods take a `dtype`, which defaults to the
     default floating-point type of the device, and every method a
     `usm_type`, the type of USM allocation of the output. Parameters that
-    are on the device are not checked, and invalid values give undefined
-    results.
+    are on the device are checked as NumPy checks all parameters, so a call
+    with such parameters waits for the device, unlike the methods of
+    :class:`dpnp.random.Generator`.
 
     """
 
@@ -173,7 +187,7 @@ class RandomState:
         self._sycl_queue = dpnp.get_normalized_queue_device(
             device=device, sycl_queue=sycl_queue
         )
-        self._generator = Generator(self._make_bit_generator(seed))
+        self._generator = _LegacyGenerator(self._make_bit_generator(seed))
 
     def _make_bit_generator(self, seed):
         return Philox4x3210(_legacy_seed(seed), sycl_queue=self._sycl_queue)
@@ -354,10 +368,6 @@ class RandomState:
 
         For full documentation refer to :obj:`numpy.random.RandomState.choice`.
 
-        Limitations
-        -----------
-        `p` is checked only when it is on the host.
-
         """
         return self._generator._choice(
             a, size, replace, p, 0, usm_type, _CHOICE_MSGS
@@ -440,7 +450,10 @@ class RandomState:
         :obj:`numpy.random.RandomState.dirichlet`.
 
         """
-        if not dpnp.is_supported_array_type(alpha) and numpy.ndim(alpha) == 1:
+        if dpnp.is_supported_array_type(alpha):
+            # the Generator copies alpha to the host anyway
+            alpha = dpnp.asnumpy(alpha)
+        if numpy.ndim(alpha) == 1:
             if numpy.any(numpy.asarray(alpha, dtype=numpy.float64) <= 0):
                 raise ValueError("alpha <= 0")
         return self._generator.dirichlet(alpha, size, dtype, usm_type=usm_type)
@@ -520,18 +533,27 @@ class RandomState:
 
         """
         params = tuple(_as_int64(x) for x in (ngood, nbad, nsample))
-        if not any(dpnp.is_supported_array_type(x) for x in params):
-            good, bad, sample = (numpy.asarray(x) for x in params)
-            if numpy.any(good + bad < sample):
-                raise ValueError("ngood + nbad < nsample")
+        xp, (good, bad, sample) = _check_arrays(params, True)
+        if xp.any(good + bad < sample):
+            raise ValueError("ngood + nbad < nsample")
         scalar = _is_scalar_path(*params)
         for x, name, cons in zip(
             params,
             ("ngood", "nbad", "nsample"),
             (_CONS_NON_NEGATIVE, _CONS_NON_NEGATIVE, _CONS_GTE_1),
         ):
-            _check_constraint(x, name, cons, scalar)
-        return self._generator.hypergeometric(*params, size, usm_type=usm_type)
+            _check_constraint(x, name, cons, scalar, device=True)
+        if xp.any(good >= _HYPERGEOM_MAX) or xp.any(bad >= _HYPERGEOM_MAX):
+            raise ValueError(
+                f"both ngood and nbad must be less than {_HYPERGEOM_MAX}"
+            )
+        return self._generator._discrete_sample(
+            ri._hypergeometric,
+            params,
+            size,
+            usm_type,
+            param_types=(_int64,) * 3,
+        )
 
     def laplace(
         self, loc=0.0, scale=1.0, size=None, dtype=None, *, usm_type="device"
@@ -668,8 +690,8 @@ class RandomState:
 
         """
         scalar = _is_scalar_path(n, p)
-        _check_constraint(n, "n", _CONS_POSITIVE, scalar)
-        _check_constraint(p, "p", _CONS_BOUNDED_0_1, scalar)
+        _check_constraint(n, "n", _CONS_POSITIVE, scalar, device=True)
+        _check_constraint(p, "p", _CONS_BOUNDED_0_1, scalar, device=True)
         return self._generator._discrete_sample(
             ri._negative_binomial, (n, p), size, usm_type
         )
@@ -837,7 +859,7 @@ class RandomState:
         :obj:`numpy.random.RandomState.uniform`.
 
         """
-        _uniform_range(low, high, "Range exceeds valid bounds")
+        _uniform_range(low, high, "Range exceeds valid bounds", device=True)
         return self._generator._float_sample(
             ri._uniform, (low, high), size, dtype, usm_type, "uniform"
         )

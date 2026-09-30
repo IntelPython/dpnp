@@ -45,22 +45,35 @@ namespace dpnp::kernels::rng
 //
 // `result_type` is the type of the samples, and `param_types` lists the
 // type of each parameter, in the order the constructor takes them.
+//
+// `halves_per_item` is the number of 32-bit halves of raw 64-bit outputs
+// the sampler takes for every element, if that number is fixed, and 0
+// otherwise.
 template <typename ResT, typename... ParamTs>
 struct SamplerBase
 {
     using result_type = ResT;
     using param_types = std::tuple<ParamTs...>;
+
+    static constexpr unsigned halves_per_item = 0;
 };
 
-// The raw 64-bit output of the bit generator
+// The raw 64-bit, or 32-bit, output of the bit generator
 template <typename T>
 class RawSampler : public SamplerBase<T>
 {
 public:
+    static constexpr unsigned halves_per_item = sizeof(T) / 4;
+
     template <typename BitGenT>
     T operator()(BitGenT &bg, const std::size_t)
     {
-        return bg.next_uint64();
+        if constexpr (sizeof(T) == 8) {
+            return bg.next_uint64();
+        }
+        else {
+            return bg.next_uint32();
+        }
     }
 };
 
@@ -73,6 +86,8 @@ private:
     Param<T> high_;
 
 public:
+    static constexpr unsigned halves_per_item = sizeof(T) / 4;
+
     UniformSampler(const Param<T> &low, const Param<T> &high)
         : low_(low), high_(high)
     {
@@ -81,6 +96,8 @@ public:
     template <typename BitGenT>
     T operator()(BitGenT &bg, const std::size_t i)
     {
+        // no fused multiply-add, to round as NumPy does
+#pragma clang fp contract(off)
         const T low = low_[i];
         return low + (high_[i] - low) * bg.template next_uniform<T>();
     }

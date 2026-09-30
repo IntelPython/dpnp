@@ -53,11 +53,19 @@ inline std::size_t num_work_items(std::size_t n)
 // number of work-items, so neighbouring work-items write neighbouring
 // elements. The values depend only on the engine state and `n`, never on
 // the device or on how the work-items are scheduled.
+//
+// For an ordered engine and a sampler taking a fixed number of draws per
+// element, the elements are instead the sequential stream of the engine:
+// work-item `w` draws elements w * I to (w + 1) * I - 1, where I is
+// items_per_work_item, from the engine advanced past the earlier ones.
 template <typename EngineTraitsT, typename SamplerT>
 class SampleFunctor
 {
 private:
     using T = typename SamplerT::result_type;
+
+    static constexpr bool sequential =
+        EngineTraitsT::ordered && SamplerT::halves_per_item != 0;
 
     EngineState state_;
     SamplerT sampler_;
@@ -78,12 +86,23 @@ public:
     void operator()(sycl::id<1> id) const
     {
         const std::size_t w = id[0];
-
-        BitGen bg(EngineTraitsT::make(state_, w));
         SamplerT sampler = sampler_;
 
-        for (std::size_t i = w; i < n_; i += n_wi_) {
-            out_[i] = sampler(bg, i);
+        if constexpr (sequential) {
+            const std::size_t first = w * items_per_work_item;
+            const std::size_t last = sycl::min(first + items_per_work_item, n_);
+
+            auto bg = EngineTraitsT::make_at(state_, first,
+                                             SamplerT::halves_per_item);
+            for (std::size_t i = first; i < last; ++i) {
+                out_[i] = sampler(bg, i);
+            }
+        }
+        else {
+            auto bg = EngineTraitsT::make(state_, w);
+            for (std::size_t i = w; i < n_; i += n_wi_) {
+                out_[i] = sampler(bg, i);
+            }
         }
     }
 };

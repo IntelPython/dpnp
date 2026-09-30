@@ -45,7 +45,8 @@ PYBIND11_MODULE(_rng_impl, m, py::mod_gil_not_used())
     using dpnp::kernels::rng::engine_id;
 
     py::enum_<engine_id>(m, "engine_id")
-        .value("philox4x32x10", engine_id::philox4x32x10);
+        .value("philox4x32x10", engine_id::philox4x32x10)
+        .value("pcg64dxsm", engine_id::pcg64dxsm);
 
     m.attr("items_per_work_item") =
         py::int_(dpnp::kernels::rng::items_per_work_item);

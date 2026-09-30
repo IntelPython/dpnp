@@ -5,9 +5,9 @@ Random sampling (:mod:`dpnp.random`)
 
 .. hint:: `NumPy API Reference: Random sampling <https://numpy.org/doc/stable/reference/random/index.html>`_
 
-DPNP draws random numbers on the SYCL device, with the counter-based
-Philox4x32x10 generator of the oneMKL device RNG API. It provides both
-NumPy random APIs: the :class:`Generator` API recommended for new code,
+DPNP draws random numbers on the SYCL device, by default with the
+counter-based Philox4x32x10 generator of the oneMKL device RNG API, or with
+NumPy's PCG64DXSM generator. It provides both NumPy random APIs: the :class:`Generator` API recommended for new code,
 and the legacy :class:`RandomState` API with the module-level functions
 built on it.
 
@@ -29,14 +29,22 @@ depend only on the seed, not on the device. All samples are
 Differences from NumPy
 ----------------------
 
-* The streams differ from NumPy's, since no NumPy bit generator is provided.
-  The same seed gives the same stream on every device.
+* The same seed gives the same stream on every device. The streams differ
+  from NumPy's, except that :class:`PCG64DXSM` gives NumPy's raw values,
+  :meth:`Generator.random`, :meth:`Generator.uniform` and
+  :meth:`Generator.bytes`, and can exchange states with
+  :class:`numpy.random.PCG64DXSM`.
 * The floating-point distributions take a ``dtype`` keyword, as in CuPy,
   which defaults to the default floating-point type of the device. All
   methods take a ``usm_type`` keyword.
 * Parameters on the host (Python scalars, lists and NumPy arrays) are
-  checked as in NumPy. Parameters in :class:`dpnp.ndarray` are not, since
-  that would wait for the device, and invalid ones give undefined values.
+  checked as in NumPy. In :class:`Generator`, parameters in
+  :class:`dpnp.ndarray` are not, since that would wait for the device.
+  Invalid ones give undefined values, such as NaN or the smallest ``int64``,
+  but the kernels handle them safely: they never loop without end or access
+  memory out of bounds. Floating-point arrays given for integer parameters
+  are converted as by :meth:`dpnp.ndarray.astype`, whose result for NaN and
+  out-of-range values is undefined.
 * The discrete distributions return ``int64`` values. They compute in double
   precision on devices supporting it, and in single precision otherwise,
   where the samples for very large parameters are less accurate.
@@ -131,6 +139,7 @@ Bit generators
 
    BitGenerator
    Philox4x3210
+   PCG64DXSM
    SeedSequence
 
 Legacy random generation
@@ -138,8 +147,10 @@ Legacy random generation
 
 .. hint:: `NumPy API Reference: Legacy random generation <https://numpy.org/doc/stable/reference/random/legacy.html>`_
 
-:class:`RandomState` keeps the parameter checks of NumPy's legacy one. The
-module-level functions use one :class:`RandomState` per SYCL queue: the
+:class:`RandomState` keeps the parameter checks of NumPy's legacy one, also
+for parameters in :class:`dpnp.ndarray`, as CuPy's does, so that a call with
+such parameters waits for the device to check them. The module-level
+functions use one :class:`RandomState` per SYCL queue: the
 queue given by the ``device`` or ``sycl_queue`` keyword, or else the queue of
 a :class:`dpnp.ndarray` parameter, or else the default queue.
 

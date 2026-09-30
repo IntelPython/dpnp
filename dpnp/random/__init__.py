@@ -26,7 +26,12 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-from ._bit_generator import BitGenerator, Philox4x3210, SeedSequence
+from ._bit_generator import (
+    PCG64DXSM,
+    BitGenerator,
+    Philox4x3210,
+    SeedSequence,
+)
 from ._generator import Generator, default_rng
 from .dpnp_iface_random import (
     beta,
@@ -85,6 +90,7 @@ from .dpnp_random_state import RandomState
 __all__ = [
     "BitGenerator",
     "Generator",
+    "PCG64DXSM",
     "Philox4x3210",
     "SeedSequence",
     "default_rng",
