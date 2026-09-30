@@ -227,9 +227,9 @@ def _make_system(A, M, x0, b):
 
     # Dtype promotion: prefer A.dtype; fall back via b.dtype. The
     # fallback must respect the device's fp64 aspect -- float64 /
-    # complex128 are not supported on every GPU, and hardcoding them
+    # complex128 are not supported on every GPU and hardcoding them
     # would raise downstream instead of degrading gracefully like
-    # dpnp.default_float_type() does elsewhere in dpnp.
+    # dpnp.default_float_type()
     if (
         A_op.dtype is not None
         and _np_dtype(A_op.dtype).char in _SUPPORTED_DTYPES
