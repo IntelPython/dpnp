@@ -25,7 +25,6 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
-
 #include <pybind11/pybind11.h>
 
 #include "common.hpp"
@@ -35,16 +34,36 @@ namespace dpnp::extensions::rng
 {
 static sample_dispatch_table_t gamma_dispatch_table;
 static sample_dispatch_table_t beta_dispatch_table;
+static sample_dispatch_table_t chisquare_dispatch_table;
+static sample_dispatch_table_t standard_t_dispatch_table;
+static sample_dispatch_table_t f_dispatch_table;
 
 void init_gamma(py::module_ m)
 {
     def_sampler<rng_ns::GammaSampler, RealTypes>(
         m, "_gamma",
-        "Fill the result with gamma samples of shape a and scale b",
+        "Fill the result with gamma samples of shape shape and scale scale",
         gamma_dispatch_table);
 
     def_sampler<rng_ns::BetaSampler, RealTypes>(
-        m, "_beta", "Fill the result with beta samples of parameters a and b",
+        m, "_beta",
+        "Fill the result with beta samples of shape parameters a and b",
         beta_dispatch_table);
+
+    def_sampler<rng_ns::ChisquareSampler, RealTypes>(
+        m, "_chisquare",
+        "Fill the result with chi-square samples of df degrees of freedom",
+        chisquare_dispatch_table);
+
+    def_sampler<rng_ns::StandardTSampler, RealTypes>(
+        m, "_standard_t",
+        "Fill the result with Student's t samples of df degrees of freedom",
+        standard_t_dispatch_table);
+
+    def_sampler<rng_ns::FSampler, RealTypes>(
+        m, "_f",
+        "Fill the result with F samples of dfnum and dfden degrees of "
+        "freedom",
+        f_dispatch_table);
 }
 } // namespace dpnp::extensions::rng

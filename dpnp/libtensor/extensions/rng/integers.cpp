@@ -25,7 +25,6 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
-
 #include <pybind11/pybind11.h>
 
 #include "common.hpp"
@@ -39,7 +38,8 @@ void init_integers(py::module_ m)
 {
     def_sampler<rng_ns::IntegersSampler, IntegerTypes>(
         m, "_integers",
-        "Fill the result with uniform integers on the closed interval [a, b]",
+        "Fill the result with uniform integers on the closed interval [low, "
+        "high]",
         integers_dispatch_table);
 }
 } // namespace dpnp::extensions::rng
