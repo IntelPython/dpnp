@@ -439,6 +439,11 @@ class TestIntegers:
             ((0, 2**31 + 1), {"dtype": numpy.int32}),
             ((0, 3), {"dtype": numpy.bool_}),
             ((5,), {"dtype": numpy.float64}),
+            ((0,), {}),
+            ((1, [0, 1]), {}),
+            ((0, [0, 1]), {}),
+            (([-1], 3), {"dtype": numpy.uint8}),
+            (([0], 257), {"dtype": numpy.uint8}),
         ],
     )
     def test_errors(self, args, kwargs):
@@ -446,6 +451,13 @@ class TestIntegers:
             lambda: numpy.random.RandomState().randint(*args, **kwargs),
             lambda: RandomState().randint(*args, **kwargs),
         )
+
+    def test_random_integers_none(self):
+        with pytest.warns(DeprecationWarning):
+            _assert_same_error(
+                lambda: numpy.random.RandomState().random_integers(None),
+                lambda: RandomState().random_integers(None),
+            )
 
     @pytest.mark.parametrize("args", [(5,), (-2, 3)])
     def test_random_integers(self, args):
@@ -536,6 +548,14 @@ class TestLegacy:
             ("choice", (3, None, True, [0.5, 0.5])),
             ("choice", (3, None, True, [[0.5, 0.5, 0.0]])),
             ("choice", (3, 2, False, [1.0, 0.0, 0.0])),
+            ("poisson", (None,)),
+            ("normal", (0.0, None)),
+            ("uniform", (None, 1.0)),
+            ("negative_binomial", (None, 0.5)),
+            ("exponential", ("x",)),
+            ("multinomial", (None, [0.5, 0.5])),
+            ("multinomial", ("5", [0.5, 0.5])),
+            ("multinomial", (5, "x")),
         ],
     )
     @pytest.mark.filterwarnings("ignore:overflow encountered:RuntimeWarning")
