@@ -892,6 +892,10 @@ std::int64_t geometric(BitGenT &bg, const T p)
 template <typename T, typename BitGenT>
 std::int64_t logseries(BitGenT &bg, const T p)
 {
+    if (!(p < T(1))) {
+        // invalid input; for p == 1 every draw would be rejected
+        return std::numeric_limits<std::int64_t>::min();
+    }
     const T r = sycl::log1p(-p);
     for (;;) {
         const T V = bg.template next_uniform<T>();
