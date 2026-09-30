@@ -18,7 +18,10 @@ from dpnp.tests.third_party.cupy.testing import _condition, _hypothesis
 
 from . import common_distributions
 
-pytest.skip("random.generator() is not supported yet", allow_module_level=True)
+pytest.skip(
+    "tests the internals of CuPy's legacy random generator",
+    allow_module_level=True,
+)
 
 
 def test_get_indices_preserves_uint64_cumsum_values():

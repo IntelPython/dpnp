@@ -258,4 +258,3 @@ add_subdirectory(libtensor/extensions/sparse)
 
 add_subdirectory(dpnp_algo)
 add_subdirectory(dpnp_utils)
-add_subdirectory(random)

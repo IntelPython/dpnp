@@ -54,6 +54,7 @@ This release requires DPC++ compiler 2026.1.1 or newer and `dpctl` 0.23.0 or new
 * Added a `rattler-build`-compatible conda recipe (`conda-recipe/rattler_recipe.yaml`) alongside the existing `conda-build` recipe [#3031](https://github.com/IntelPython/dpnp/pull/3031)
 * Added support for the `"nuc"` (nuclear) norm in `dpnp.linalg.cond` [#3084](https://github.com/IntelPython/dpnp/pull/3084)
 * Added support for Python 3.15 [#3098](https://github.com/IntelPython/dpnp/pull/3098)
+* Added the `dpnp.random.Generator` API, with `default_rng`, `BitGenerator`, `SeedSequence` and the `Philox4x3210` bit generator, drawing all samples on the device through the oneMKL device RNG API [#XXXX](https://github.com/IntelPython/dpnp/pull/XXXX)
 
 ### Changed
 
@@ -91,6 +92,7 @@ This release requires DPC++ compiler 2026.1.1 or newer and `dpctl` 0.23.0 or new
 * Documented and made explicit support for `copy=None` ("copy only if needed") in `dpnp.nan_to_num` [#3083](https://github.com/IntelPython/dpnp/pull/3083)
 * Changed `dpnp.linalg.pinv` to compute the default tolerance from the machine epsilon of the data type used for the computation, and to return a floating-point result for an empty integer or boolean array [#3090](https://github.com/IntelPython/dpnp/pull/3090)
 * Avoided a full-size copy of a broadcast input in `dpnp.nansum`, `dpnp.nanprod`, `dpnp.nancumsum` and `dpnp.nancumprod` by replacing `NaN` values only in the distinct elements of the input [#3108](https://github.com/IntelPython/dpnp/pull/3108)
+* Reimplemented `dpnp.random.RandomState` and the `dpnp.random` functions on device kernels, supporting every NumPy distribution without falling back on NumPy, with NumPy's parameter checks and a stream which does not depend on the device. `device`, `usm_type` and `sycl_queue` are now keyword-only, `randint(dtype=int)` returns `int64`, and `shuffle` requires a `dpnp.ndarray` [#XXXX](https://github.com/IntelPython/dpnp/pull/XXXX)
 
 ### Deprecated
 
@@ -103,6 +105,7 @@ This release requires DPC++ compiler 2026.1.1 or newer and `dpctl` 0.23.0 or new
 * Removed `dpnp.row_stack` in favor of `dpnp.vstack` [#2957](https://github.com/IntelPython/dpnp/pull/2957)
 * Removed all references to the unimplemented `dpnp.ndarray.resize` method from the documentation [#2989](https://github.com/IntelPython/dpnp/pull/2989)
 * Removed an obsolete oneAPI 2021.x workaround from the Windows conda build script that manually prepended `BUILD_PREFIX` paths onto the `LIB` and `INCLUDE` [#3013](https://github.com/IntelPython/dpnp/pull/3013)
+* Removed the legacy backend implementation of `dpnp.random` and the link to the oneMKL RNG host library [#XXXX](https://github.com/IntelPython/dpnp/pull/XXXX)
 
 ### Fixed
 

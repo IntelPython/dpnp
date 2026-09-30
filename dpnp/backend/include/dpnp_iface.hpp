@@ -61,8 +61,6 @@ typedef ssize_t shape_elem_type;
 
 #include <dpctl_sycl_interface.h>
 
-#include "dpnp_iface_random.hpp"
-
 /**
  * @defgroup BACKEND_API Backend C++ library interface API
  * @{

@@ -13,8 +13,6 @@ from dpnp.tests.third_party.cupy.testing import _condition
 
 from . import common_distributions
 
-pytest.skip("random.Generator() is not supported yet", allow_module_level=True)
-
 
 class GeneratorTestCase(common_distributions.BaseGeneratorTestCase):
 
@@ -338,6 +336,7 @@ class TestHypergeometricValidation:
         out = self.gen.hypergeometric(5, 10, 15, size=10)
         testing.assert_array_equal(out, cupy.full(10, 5, dtype=cupy.int64))
 
+    @pytest.mark.skip("NumPy raises ValueError for nsample > ngood + nbad")
     def test_hypergeometric_nsample_exceeds_total(self):
         # nsample > ngood + nbad would previously cause an infinite
         # loop in the HRUA kernel. The kernel now routes this through
@@ -361,16 +360,10 @@ class TestPower(common_distributions.Power, GeneratorTestCase):
 
 
 @testing.with_requires("numpy>=1.17.0")
-@pytest.mark.skipif(
-    cupy.cuda.runtime.is_hip
-    and (int(str(cupy.cuda.runtime.runtimeGetVersion())[:3]) < 403),
-    reason="HIP<4.3 not supported ",
-)
 class TestRandomStateThreadSafe(unittest.TestCase):
 
     def test_default_rng_thread_safe(self):
         def _f(func, args=()):
-            cupy.cuda.Device().use()
             func(*args)
 
         seed = 10
@@ -417,10 +410,15 @@ class TestF(common_distributions.F, GeneratorTestCase):
 @testing.parameterize(*common_distributions.dirichlet_params)
 @testing.fix_random()
 class TestDrichlet(common_distributions.Dirichlet, GeneratorTestCase):
-    pass
+
+    @pytest.fixture(autouse=True)
+    def skip_scalar_alpha(self):
+        if numpy.ndim(self.alpha) == 0:
+            pytest.skip("NumPy raises TypeError for a scalar alpha")
 
 
 @testing.slow
+@pytest.mark.skip("XORWOW is not provided")
 class TestLarge:
     # @pytest.mark.thread_unsafe(reason="allocates large memory")
     def test_large(self):

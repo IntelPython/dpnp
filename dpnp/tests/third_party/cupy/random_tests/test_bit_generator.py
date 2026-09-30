@@ -7,8 +7,6 @@ import dpnp as cupy
 from dpnp import random
 from dpnp.tests.third_party.cupy import testing
 
-pytest.skip("bit generator is not supported yet", allow_module_level=True)
-
 
 class BitGeneratorTestCase:
 
@@ -49,6 +47,7 @@ class BitGeneratorTestCase:
 
 @testing.with_requires("numpy>=1.17.0")
 @testing.fix_random()
+@pytest.mark.skip("XORWOW is not provided")
 class TestBitGeneratorXORWOW(BitGeneratorTestCase, unittest.TestCase):
     def setUp(self):
         super().setUp()
@@ -57,6 +56,7 @@ class TestBitGeneratorXORWOW(BitGeneratorTestCase, unittest.TestCase):
 
 @testing.with_requires("numpy>=1.17.0")
 @testing.fix_random()
+@pytest.mark.skip("MRG32k3a is not provided")
 class TestBitGeneratorMRG32k3a(BitGeneratorTestCase, unittest.TestCase):
     def setUp(self):
         super().setUp()
