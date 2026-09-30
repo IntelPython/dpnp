@@ -134,6 +134,11 @@ T standard_gamma(BitGenT &bg, StandardNormal<T> &normal, const T shape)
     else if (shape == T(0)) {
         return T(0);
     }
+    else if (!(shape > T(0))) {
+        // invalid, and for a shape just below zero every draw would be
+        // rejected
+        return std::numeric_limits<T>::quiet_NaN();
+    }
     else if (shape < T(1)) {
         for (;;) {
             const T U = bg.template next_uniform<T>();
@@ -616,12 +621,16 @@ T vonmises(BitGenT &bg, StandardNormal<T> &normal, const T mu, const T kappa)
 
     T s;
     if (kappa < T(1e-5)) {
-        // with double precision rho is zero until 1.4e-8
+        // as in NumPy, whose form of rho is zero in double precision until
+        // 1.4e-8
         s = T(1) / kappa + kappa;
     }
     else if (kappa <= T(1e6)) {
+        // rho = (r - sqrt(2 r)) / (2 kappa), without the cancellation which
+        // makes it zero in single precision for kappa below about 4e-4,
+        // where every draw would be rejected
         const T r = T(1) + sycl::sqrt(T(1) + T(4) * kappa * kappa);
-        const T rho = (r - sycl::sqrt(T(2) * r)) / (T(2) * kappa);
+        const T rho = T(2) * kappa / (r + sycl::sqrt(T(2) * r));
         s = (T(1) + rho * rho) / (T(2) * rho);
     }
     else {
@@ -708,9 +717,13 @@ std::int64_t binomial_btpe(BitGenT &bg, const std::int64_t n, const T p)
     const T xl = xm - p1;
     const T xr = xm + p1;
     const T c = T(0.134) + T(20.5) / (T(15.3) + mf);
-    T a = (fm - xl) / (fm - xl * r);
+    // fm - xl and xr - fm, without the cancellation which makes both zero
+    // in single precision for n * p above about 1e15, where every draw
+    // would be rejected
+    const T dm = fm - xm;
+    T a = (p1 + dm) / (fm - xl * r);
     const T laml = a * (T(1) + a / T(2));
-    a = (xr - fm) / (xr * q);
+    a = (p1 - dm) / (xr * q);
     const T lamr = a * (T(1) + a / T(2));
     const T p2 = p1 * (T(1) + T(2) * c);
     const T p3 = p2 + c / laml;
@@ -864,6 +877,10 @@ std::int64_t negative_binomial(BitGenT &bg,
 template <typename T, typename BitGenT>
 std::int64_t geometric(BitGenT &bg, const T p)
 {
+    if (!(p > T(0))) {
+        // invalid, and the inversion would convert NaN or -inf to int64
+        return std::numeric_limits<std::int64_t>::min();
+    }
     if (p >= T(0.333333333333333333333333)) {
         // search
         std::int64_t X = 1;
@@ -928,8 +945,9 @@ std::int64_t zipf(BitGenT &bg, const T a)
         // invalid, and every draw would be rejected
         return 0;
     }
-    if (a >= T(1025)) {
-        // every draw is 1
+    if (a >= T(std::numeric_limits<T>::max_exponent + 1)) {
+        // every draw is 1, and 2**(a - 1) would overflow, so that every
+        // draw would be rejected
         return 1;
     }
 
