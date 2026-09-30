@@ -311,8 +311,10 @@ class RandomState:
             )
         if dpnp.is_supported_array_type(high):
             high = high + 1
-        else:
+        elif _is_array(high):
             high = numpy.array(high) + 1
+        else:
+            high = int(high) + 1
         return self.randint(low, high, size, _int64, usm_type=usm_type)
 
     def random_sample(self, size=None, dtype=None, *, usm_type="device"):
@@ -591,12 +593,15 @@ class RandomState:
         :obj:`numpy.random.RandomState.multinomial`.
 
         """
-        if _is_array(n):
+        t = type(n)
+        if _is_array(n) or not (
+            hasattr(t, "__int__") or hasattr(t, "__index__")
+        ):
             raise TypeError("an integer is required")
         n = int(n)
-        ndim = pvals.ndim if dpnp.is_supported_array_type(pvals) else None
-        if ndim is None:
-            ndim = numpy.ndim(pvals)
+        if not dpnp.is_supported_array_type(pvals):
+            pvals = numpy.asarray(pvals, dtype=numpy.float64)
+        ndim = pvals.ndim
         if ndim == 0:
             raise TypeError("pvals must be a 1-d sequence")
         if ndim > 1:

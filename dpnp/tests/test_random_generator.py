@@ -621,6 +621,16 @@ class TestIntegers:
         assert res.dtype == numpy.uint8
         assert dpnp.asnumpy(res)[1] >= 250
 
+        res = rng.integers(-1, [3, 2**63], size=(1000, 2))
+        res = dpnp.asnumpy(res)
+        assert res[:, 0].min() == -1 and res[:, 0].max() == 2
+        assert (res[:, 1] >= -1).all() and (res[:, 1] > 2**62).any()
+
+    def test_float_array_bounds(self):
+        # truncated to integers, as in NumPy
+        res = default_rng(0).integers([0.5, -0.5], 2.5, size=(1000, 2))
+        assert_equal(numpy.unique(dpnp.asnumpy(res)), [0, 1])
+
     @pytest.mark.parametrize(
         "args, kwargs, msg",
         [
@@ -1042,6 +1052,21 @@ class TestChecks:
             ("choice", (3, None, True, [0.5, 0.5])),
             ("choice", (3, None, True, [[0.5, 0.5, 0.0]])),
             ("choice", (3, 2, False, [1.0, 0.0, 0.0])),
+            ("poisson", (None,)),
+            ("normal", (0.0, None)),
+            ("uniform", (None, 1.0)),
+            ("binomial", (5, None)),
+            ("triangular", (0.0, None, 2.0)),
+            ("exponential", ("x",)),
+            ("exponential", (1j,)),
+            ("negative_binomial", (None, 0.5)),
+            ("binomial", (None, [0.5])),
+            ("integers", (1, [0, 1])),
+            ("integers", ([0, 1], 1)),
+            ("integers", (0, [0, 1])),
+            ("integers", (0, [-1, 1], None, numpy.int64, True)),
+            ("integers", ([-1], 3, None, numpy.uint8)),
+            ("integers", ([0], 256, None, numpy.uint8, True)),
         ],
     )
     @pytest.mark.filterwarnings("ignore:overflow encountered:RuntimeWarning")
@@ -1052,6 +1077,20 @@ class TestChecks:
             lambda: getattr(np_rng, name)(*args),
             lambda: getattr(rng, name)(*args),
         )
+
+    @pytest.mark.parametrize(
+        "name, args",
+        [
+            ("normal", (None, [1.0, 2.0])),
+            ("laplace", (0.0, [None, 1.0])),
+            ("gamma", (None, [1.0, 2.0])),
+            ("triangular", (None, [1.0, 2.0], 3.0)),
+        ],
+    )
+    def test_none_with_array_is_nan(self, name, args):
+        # as in NumPy, None is NaN when another parameter is an array
+        res = getattr(default_rng(0), name)(*args)
+        assert dpnp.isnan(res).any()
 
     def test_multivariate_hypergeometric_method(self):
         _assert_same_error(

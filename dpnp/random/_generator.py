@@ -155,6 +155,18 @@ def _normalize_size(size):
     return shape
 
 
+def _check_real(value):
+    """
+    Raise TypeError, as NumPy does on the path of scalar parameters, unless
+    the host scalar `value` converts to a Python float.
+
+    """
+
+    t = type(value)
+    if not (hasattr(t, "__float__") or hasattr(t, "__index__")):
+        raise TypeError(f"must be real number, not {t.__name__}")
+
+
 def _uniform_range(low, high, overflow_msg):
     """
     ``high - low`` of host params, raising OverflowError with `overflow_msg`
@@ -169,6 +181,9 @@ def _uniform_range(low, high, overflow_msg):
             numpy.asarray(high, dtype=numpy.float64),
             numpy.asarray(low, dtype=numpy.float64),
         )
+    if _is_scalar_path(low, high):
+        _check_real(low)
+        _check_real(high)
     if not numpy.all(numpy.isfinite(rng)):
         raise OverflowError(overflow_msg)
     return rng
@@ -185,10 +200,15 @@ def _check_constraint(value, name, cons, scalar):
 
     """
 
-    if cons == _CONS_NONE or dpnp.is_supported_array_type(value):
+    if dpnp.is_supported_array_type(value):
         return
 
     val = numpy.asarray(value, dtype=numpy.float64)
+    if scalar:
+        _check_real(value)
+    if cons == _CONS_NONE:
+        return
+
     nan_msg = "is NaN" if scalar else "contains NaNs"
     if cons == _CONS_NON_NEGATIVE:
         if numpy.any(~numpy.isnan(val) & numpy.signbit(val)):
@@ -413,10 +433,14 @@ class Generator:
 
         def _to_kernel_param(p, dt):
             if _is_array(p):
+                if not dpnp.is_supported_array_type(p):
+                    # NumPy converts None to NaN, dpnp.asarray does not
+                    p = numpy.asarray(p, dtype=dt)
                 p = dpnp.asarray(p, dtype=dt, sycl_queue=queue)
                 return dpnp.ascontiguousarray(dpnp.broadcast_to(p, shape))
             if dt.kind == "f":
-                return float(p)
+                # as in NumPy, None is NaN along with array parameters
+                return float(numpy.asarray(p, dtype=numpy.float64))
             if dt.kind == "b":
                 return bool(p)
             return int(p)
@@ -912,6 +936,9 @@ class Generator:
             fleft, fmode, fright = (
                 numpy.asarray(p, dtype=numpy.float64) for p in params
             )
+            if _is_scalar_path(*params):
+                for p in params:
+                    _check_real(p)
             if numpy.any(fleft > fmode):
                 raise ValueError("left > mode")
             if numpy.any(fmode > fright):
@@ -1159,8 +1186,9 @@ class Generator:
         """
 
         scalar = _is_scalar_path(n, p)
-        _check_constraint(p, "p", _CONS_BOUNDED_0_1, scalar)
+        # NumPy converts both parameters before checking either
         n = _as_int64(n)
+        _check_constraint(p, "p", _CONS_BOUNDED_0_1, scalar)
         _check_constraint(n, "n", _CONS_NON_NEGATIVE, scalar)
         return self._discrete_sample(
             ri._binomial, (n, p), size, usm_type, param_types=(_int64, None)
@@ -1179,9 +1207,9 @@ class Generator:
 
         """
 
-        scalar = _is_scalar_path(n, p)
-        _check_constraint(n, "n", _CONS_POSITIVE_NOT_NAN, scalar)
-        _check_constraint(p, "p", _CONS_BOUNDED_GT_0_1, scalar)
+        # NumPy takes scalar parameters as arrays here, so None gives NaN
+        _check_constraint(n, "n", _CONS_POSITIVE_NOT_NAN, False)
+        _check_constraint(p, "p", _CONS_BOUNDED_GT_0_1, False)
         if not (
             dpnp.is_supported_array_type(n) or dpnp.is_supported_array_type(p)
         ):
@@ -1937,6 +1965,27 @@ class Generator:
         else:
             info = numpy.iinfo(dtype)
             lo_lim, hi_lim = int(info.min), int(info.max)
+        dt_name = "bool" if dtype == numpy.bool_ else str(dtype)
+
+        def _check_bounds(low, high):
+            # the checks of NumPy, for host bounds only
+            if low is not None and numpy.any(numpy.less(low, lo_lim)):
+                raise ValueError(f"low is out of bounds for {dt_name}")
+            if high is not None and numpy.any(
+                numpy.greater(high, hi_lim if endpoint else hi_lim + 1)
+            ):
+                raise ValueError(f"high is out of bounds for {dt_name}")
+            if low is None or high is None:
+                return
+            if numpy.any(
+                numpy.greater(low, high)
+                if endpoint
+                else numpy.greater_equal(low, high)
+            ):
+                if not numpy.any(low):
+                    # low is 0 when only one bound is given
+                    raise ValueError("high < 0" if endpoint else "high <= 0")
+                raise ValueError("low > high" if endpoint else "low >= high")
 
         if _is_array(low) or _is_array(high):
             # Widen to 64 bits with the sign of the result type, so that an
@@ -1949,11 +1998,27 @@ class Generator:
             queue = self.sycl_queue
             params = (low, high)
 
+            def _on_host(x):
+                return None if dpnp.is_supported_array_type(x) else x
+
+            _check_bounds(
+                *(
+                    None if x is None else numpy.asarray(x)
+                    for x in map(_on_host, params)
+                )
+            )
+
             def _to_bound(x, shift):
-                if _is_array(x):
+                if dpnp.is_supported_array_type(x):
                     x = dpnp.asarray(x, dtype=wide, sycl_queue=queue)
                     return (x - shift if shift else x).astype(dtype)
-                return int(x) - shift
+                if not _is_array(x):
+                    return int(x) - shift
+                # exact integers, truncated as in NumPy, since max + 1 fits
+                # the wide type only after the shift
+                x = numpy.frompyfunc(int, 1, 1)(numpy.asarray(x)) - shift
+                x = dpnp.asarray(x.astype(wide), sycl_queue=queue)
+                return x.astype(dtype)
 
             low = _to_bound(low, 0)
             high = _to_bound(high, 0 if endpoint else 1)
@@ -1967,14 +2032,10 @@ class Generator:
             )
 
         low = int(low)
-        high = int(high) if endpoint else int(high) - 1
-        dt_name = "bool" if dtype == numpy.bool_ else str(dtype)
-        if low < lo_lim:
-            raise ValueError(f"low is out of bounds for {dt_name}")
-        if high > hi_lim:
-            raise ValueError(f"high is out of bounds for {dt_name}")
-        if low > high:
-            raise ValueError("low > high" if endpoint else "low >= high")
+        high = int(high)
+        _check_bounds(low, high)
+        if not endpoint:
+            high -= 1
 
         return self._sample(
             ri._integers, (), size, dtype, usm_type, kernel_params=(low, high)
