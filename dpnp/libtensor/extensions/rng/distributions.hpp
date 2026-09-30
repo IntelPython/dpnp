@@ -38,5 +38,9 @@ void init_uniform(py::module_ m);
 void init_normal(py::module_ m);
 void init_exponential(py::module_ m);
 void init_gamma(py::module_ m);
+void init_noncentral(py::module_ m);
 void init_integers(py::module_ m);
+void init_poisson(py::module_ m);
+void init_binomial(py::module_ m);
+void init_discrete(py::module_ m);
 } // namespace dpnp::extensions::rng

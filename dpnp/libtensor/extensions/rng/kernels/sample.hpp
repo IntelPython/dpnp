@@ -53,10 +53,12 @@ inline std::size_t num_work_items(std::size_t n)
 // number of work-items, so neighbouring work-items write neighbouring
 // elements. The values depend only on the engine state and `n`, never on
 // the device or on how the work-items are scheduled.
-template <typename EngineTraitsT, typename T, typename SamplerT>
+template <typename EngineTraitsT, typename SamplerT>
 class SampleFunctor
 {
 private:
+    using T = typename SamplerT::result_type;
+
     EngineState state_;
     SamplerT sampler_;
     T *out_ = nullptr;

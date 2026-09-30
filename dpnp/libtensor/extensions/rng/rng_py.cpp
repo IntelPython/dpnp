@@ -54,5 +54,9 @@ PYBIND11_MODULE(_rng_impl, m, py::mod_gil_not_used())
     rng_ns::init_normal(m);
     rng_ns::init_exponential(m);
     rng_ns::init_gamma(m);
+    rng_ns::init_noncentral(m);
     rng_ns::init_integers(m);
+    rng_ns::init_poisson(m);
+    rng_ns::init_binomial(m);
+    rng_ns::init_discrete(m);
 }

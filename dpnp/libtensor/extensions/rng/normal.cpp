@@ -25,7 +25,6 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
-
 #include <pybind11/pybind11.h>
 
 #include "common.hpp"
@@ -35,19 +34,30 @@ namespace dpnp::extensions::rng
 {
 static sample_dispatch_table_t normal_dispatch_table;
 static sample_dispatch_table_t lognormal_dispatch_table;
+static sample_dispatch_table_t standard_cauchy_dispatch_table;
+static sample_dispatch_table_t wald_dispatch_table;
 
 void init_normal(py::module_ m)
 {
     def_sampler<rng_ns::NormalSampler, RealTypes>(
         m, "_normal",
-        "Fill the result with normal samples of mean a and standard "
-        "deviation b",
+        "Fill the result with normal samples of mean loc and standard "
+        "deviation scale",
         normal_dispatch_table);
 
     def_sampler<rng_ns::LognormalSampler, RealTypes>(
         m, "_lognormal",
-        "Fill the result with log-normal samples whose logarithm has mean a "
-        "and standard deviation b",
+        "Fill the result with log-normal samples whose logarithm has mean "
+        "mean and standard deviation sigma",
         lognormal_dispatch_table);
+
+    def_sampler<rng_ns::StandardCauchySampler, RealTypes>(
+        m, "_standard_cauchy", "Fill the result with standard Cauchy samples",
+        standard_cauchy_dispatch_table);
+
+    def_sampler<rng_ns::WaldSampler, RealTypes>(
+        m, "_wald",
+        "Fill the result with Wald samples of mean mean and shape scale",
+        wald_dispatch_table);
 }
 } // namespace dpnp::extensions::rng

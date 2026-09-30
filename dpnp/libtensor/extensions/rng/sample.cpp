@@ -51,49 +51,77 @@ namespace td_ns = dpnp::tensor::type_dispatch;
 
 namespace
 {
-ParamArg to_param_arg(const char *name,
+void check_engine(const int engine)
+{
+    if (engine < 0 || engine >= rng_ns::num_engines) {
+        throw py::value_error("Unknown engine " + std::to_string(engine) + ".");
+    }
+}
+
+ParamArg to_param_arg(const std::size_t pos,
                       sycl::queue &exec_q,
-                      const py::object &param,
+                      const py::handle &param,
                       const dpnp::tensor::usm_ndarray &result)
 {
     if (!py::isinstance<dpnp::tensor::usm_ndarray>(param)) {
-        return {nullptr, param};
+        return {nullptr, -1, py::reinterpret_borrow<py::object>(param)};
     }
 
     auto arr = py::reinterpret_borrow<dpnp::tensor::usm_ndarray>(param);
+    const std::string name = "Parameter array " + std::to_string(pos);
 
-    if (arr.get_typenum() != result.get_typenum()) {
-        throw py::value_error(std::string("Parameter array `") + name +
-                              "` and the result must have the same data type.");
-    }
     if (arr.get_size() != result.get_size()) {
-        throw py::value_error(std::string("Parameter array `") + name +
-                              "` and the result must have the same size.");
+        throw py::value_error(name +
+                              " and the result must have the same size.");
     }
     if (!arr.is_c_contiguous()) {
-        throw py::value_error(std::string("Parameter array `") + name +
-                              "` is not c-contiguous.");
+        throw py::value_error(name + " is not c-contiguous.");
     }
     if (!dpnp::utils::queues_are_compatible(exec_q, {arr.get_queue()})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queue.");
     }
 
-    return {arr.get_data(), py::none()};
+    auto array_types = td_ns::usm_ndarray_types();
+    const int type_id = array_types.typenum_to_lookup_id(arr.get_typenum());
+    return {arr.get_data(), type_id, py::none()};
 }
 } // namespace
 
+sample_fn_ptr_t lookup_sampler(const sample_dispatch_table_t &table,
+                               const int engine,
+                               const dpnp::tensor::usm_ndarray &result)
+{
+    check_engine(engine);
+
+    auto array_types = td_ns::usm_ndarray_types();
+    const int result_type_id =
+        array_types.typenum_to_lookup_id(result.get_typenum());
+    const sample_fn_ptr_t fn = table[engine][result_type_id];
+
+    if (fn == nullptr) {
+        throw std::runtime_error("Type of given array is not supported");
+    }
+    return fn;
+}
+
+sample_fn_ptr_t lookup_sampler(const discrete_dispatch_table_t &table,
+                               const int engine,
+                               const bool double_precision)
+{
+    check_engine(engine);
+    return table[engine][double_precision ? 1 : 0];
+}
+
 std::pair<sycl::event, sycl::event>
     py_sample(sycl::queue &exec_q,
-              const int engine,
               const std::vector<std::uint64_t> &seed,
               const std::uint64_t counter_lo,
               const std::uint64_t counter_hi,
-              const py::object &a,
-              const py::object &b,
+              const py::sequence &params,
               const dpnp::tensor::usm_ndarray &result,
               const std::vector<sycl::event> &depends,
-              const sample_dispatch_table_t &dispatch_table)
+              const sample_fn_ptr_t fn)
 {
     dpnp::tensor::validation::CheckWritable::throw_if_not_writable(result);
 
@@ -106,29 +134,16 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("The result array is not c-contiguous.");
     }
 
-    if (engine < 0 || engine >= rng_ns::num_engines) {
-        throw py::value_error("Unknown engine " + std::to_string(engine) + ".");
-    }
-
     if (seed.size() > rng_ns::max_seed_words) {
         throw py::value_error("The seed has too many words.");
     }
 
-    const int result_typenum = result.get_typenum();
-    auto array_types = td_ns::usm_ndarray_types();
-    const int result_type_id = array_types.typenum_to_lookup_id(result_typenum);
-    sample_fn_ptr_t fn = dispatch_table[engine][result_type_id];
-
-    if (fn == nullptr) {
-        throw std::runtime_error("Type of given array is not supported");
-    }
-
-    const ParamArg a_arg = to_param_arg("a", exec_q, a, result);
-    const ParamArg b_arg = to_param_arg("b", exec_q, b, result);
-
-    const std::size_t nelems = result.get_size();
-    if (nelems == 0) {
-        return std::make_pair(sycl::event{}, sycl::event{});
+    // hold the parameters in a tuple, to keep them alive with the result
+    const py::tuple params_tuple(params);
+    std::vector<ParamArg> param_args;
+    param_args.reserve(params_tuple.size());
+    for (std::size_t i = 0; i < params_tuple.size(); ++i) {
+        param_args.push_back(to_param_arg(i, exec_q, params_tuple[i], result));
     }
 
     rng_ns::EngineState state{};
@@ -138,11 +153,21 @@ std::pair<sycl::event, sycl::event>
     state.counter_lo = counter_lo;
     state.counter_hi = counter_hi;
 
-    sycl::event sample_ev =
-        fn(exec_q, state, nelems, result.get_data(), a_arg, b_arg, depends);
+    auto array_types = td_ns::usm_ndarray_types();
+    const int result_type_id =
+        array_types.typenum_to_lookup_id(result.get_typenum());
+    const std::size_t nelems = result.get_size();
 
-    sycl::event args_ev =
-        dpnp::utils::keep_args_alive(exec_q, {result, a, b}, {sample_ev});
+    // checks the parameters, and submits nothing when there is nothing to
+    // sample
+    sycl::event sample_ev = fn(exec_q, state, nelems, result_type_id,
+                               result.get_data(), param_args, depends);
+    if (nelems == 0) {
+        return std::make_pair(sycl::event{}, sycl::event{});
+    }
+
+    sycl::event args_ev = dpnp::utils::keep_args_alive(
+        exec_q, {result, params_tuple}, {sample_ev});
 
     return std::make_pair(args_ev, sample_ev);
 }

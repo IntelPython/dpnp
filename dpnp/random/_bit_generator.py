@@ -163,19 +163,22 @@ class BitGenerator:
         """
         raise NotImplementedError
 
-    def _fill(self, kernel, a, b, result):
+    def _fill(self, kernel, params, result, **kwargs):
         """
         Fill the C-contiguous array `result` by `kernel` of the extension,
-        with the distribution parameters `a` and `b`.
+        with the distribution parameters `params`.
 
-        Each parameter is either a Python scalar, ``None``, or a C-contiguous
-        array of the data type and the size of `result`.
+        Each parameter is either a Python scalar or a C-contiguous array of
+        the size of `result` and of the data type the kernel expects for it.
+        Keyword arguments are passed to `kernel` as is.
 
         """
 
         result_usm = dpnp.get_usm_ndarray(result)
-        a = dpnp.get_usm_ndarray(a) if isinstance(a, dpnp.ndarray) else a
-        b = dpnp.get_usm_ndarray(b) if isinstance(b, dpnp.ndarray) else b
+        params = [
+            dpnp.get_usm_ndarray(p) if isinstance(p, dpnp.ndarray) else p
+            for p in params
+        ]
 
         n_blocks = -(-result_usm.size // ri.items_per_work_item)
         counter_lo, counter_hi = self._reserve(n_blocks)
@@ -188,10 +191,10 @@ class BitGenerator:
             self._seed_words(),
             counter_lo,
             counter_hi,
-            a,
-            b,
+            params,
             result_usm,
             depends=_manager.submitted_events,
+            **kwargs,
         )
         _manager.add_event_pair(ht_ev, ev)
         return result
@@ -241,7 +244,7 @@ class BitGenerator:
             usm_type=usm_type,
             sycl_queue=self._sycl_queue,
         )
-        return self._fill(ri._random_raw, None, None, result)
+        return self._fill(ri._random_raw, (), result)
 
     def spawn(self, n_children):
         """

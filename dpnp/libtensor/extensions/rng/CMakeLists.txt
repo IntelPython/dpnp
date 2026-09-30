@@ -29,10 +29,14 @@
 
 set(python_module_name _rng_impl)
 set(_module_src
+    ${CMAKE_CURRENT_SOURCE_DIR}/binomial.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/discrete.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/exponential.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gamma.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/integers.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/noncentral.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/normal.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/poisson.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/rng_py.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sample.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/uniform.cpp
