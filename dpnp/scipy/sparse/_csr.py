@@ -101,30 +101,6 @@ def _isshape(arg):
 class csr_matrix(SparseABC):
     """Compressed Sparse Row matrix on a SYCL device.
 
-    Construction
-    ------------
-    csr_matrix(D)
-        from a 2-D array (``dpnp.ndarray`` or ``usm_ndarray``).
-
-    csr_matrix((M, N), [dtype=...])
-        an empty (all-zero) matrix of shape ``(M, N)``; ``dtype``
-        defaults to the default floating-point type of the device on
-        which the matrix is allocated.
-
-    csr_matrix((data, indices, indptr), [shape=(M, N)])
-        from raw CSR component arrays (1-D, on the same SYCL queue).
-        ``shape`` is inferred from the index arrays when omitted.
-        Components are stored as given; indices are sorted lazily
-        (see ``sort_indices``) when required by the SpMV path.
-
-    csr_matrix(other_csr)
-        copy of another csr_matrix.
-
-    Duplicate column indices within a row are not supported (unlike
-    scipy, which sums them); each column must appear at most once per
-    row. This matches the CSR produced by dense construction and the
-    solvers, which never generate duplicates.
-
     Attributes
     ----------
     data : {dpnp.ndarray, usm_ndarray}
@@ -145,6 +121,28 @@ class csr_matrix(SparseABC):
         Always 'csr'.
     ndim : int
         Always 2.
+
+    Notes
+    -----
+    Construction:
+
+    * ``csr_matrix(D)`` -- from a 2-D array (``dpnp.ndarray`` or
+      ``usm_ndarray``).
+    * ``csr_matrix((M, N), [dtype=...])`` -- an empty (all-zero) matrix
+      of shape ``(M, N)``; ``dtype`` defaults to the default
+      floating-point type of the device on which the matrix is
+      allocated.
+    * ``csr_matrix((data, indices, indptr), [shape=(M, N)])`` -- from
+      raw CSR component arrays (1-D, on the same SYCL queue). ``shape``
+      is inferred from the index arrays when omitted. Components are
+      stored as given; indices are sorted lazily (see
+      ``sort_indices``) when required by the SpMV path.
+    * ``csr_matrix(other_csr)`` -- copy of another csr_matrix.
+
+    Duplicate column indices within a row are not supported (unlike
+    scipy, which sums them); each column must appear at most once per
+    row. This matches the CSR produced by dense construction and the
+    solvers, which never generate duplicates.
 
     Supported operations: construction, ``dot`` (matvec) via cached
     oneMKL SpMV, ``toarray``, ``copy``. This is a solver-support

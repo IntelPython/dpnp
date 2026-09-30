@@ -1542,6 +1542,42 @@ class TestCsrMatrix:
         y = m.dot(wrap(x))
         assert_allclose(dpnp.asnumpy(y), a @ x)
 
+    @pytest.mark.skipif(not has_support_aspect64(), reason="fp64 is required")
+    def test_dot_noncontiguous_x(self):
+        # Regression test: a strided x (e.g. a sliced view) must be
+        # packed to contiguous before reaching oneMKL, not read with
+        # its native stride. Exact repro from the PR review comment:
+        # a sliced ``x = dpnp.arange(6)[::2]`` fed to a 3x3 csr_matrix
+        # used to silently read the wrong elements of the underlying
+        # length-6 buffer instead of the logical length-3 vector.
+        a = numpy.array(
+            [[1.0, 2.0, 0.0], [0.0, 3.0, 4.0], [5.0, 0.0, 6.0]],
+            dtype=numpy.float64,
+        )
+        m = csr_matrix(dpnp.asarray(a))
+        x_full = dpnp.arange(6, dtype=dpnp.float64)
+        x = x_full[::2]
+        assert not x.flags.c_contiguous
+        y = m.dot(x)
+        expected = a @ numpy.arange(6, dtype=numpy.float64)[::2]
+        assert_allclose(dpnp.asnumpy(y), expected)
+
+    @pytest.mark.skipif(not has_support_aspect64(), reason="fp64 is required")
+    def test_dot_noncontiguous_x_larger_stride(self):
+        # Same hazard with a coarser stride and a rectangular matrix,
+        # so the fix isn't just verified for stride 2 / square shape.
+        a = numpy.array(
+            [[1.0, 0.0, 2.0, 0.0], [0.0, 3.0, 0.0, 4.0]], dtype=numpy.float64
+        )
+        m = csr_matrix(dpnp.asarray(a))
+        x_full = dpnp.arange(12, dtype=dpnp.float64)
+        x = x_full[::3]
+        assert x.shape[0] == 4
+        assert not x.flags.c_contiguous
+        y = m.dot(x)
+        expected = a @ numpy.arange(12, dtype=numpy.float64)[::3]
+        assert_allclose(dpnp.asnumpy(y), expected)
+
     def test_dot_unsupported_dtype_raises(self):
         # No dense fallback: an unsupported value dtype must raise.
         data = dpnp.ones(2, dtype=dpnp.int32)
