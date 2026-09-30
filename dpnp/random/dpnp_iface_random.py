@@ -79,9 +79,8 @@ def _get_random_state(device=None, sycl_queue=None):
                 _dpnp_random_states[sycl_queue] = rs
             else:
                 raise RuntimeError(
-                    "Normalized SYCL queue {} mismatched with one returned by RandmoState {}".format(
-                        sycl_queue, rs.get_sycl_queue()
-                    )
+                    f"Normalized SYCL queue {sycl_queue} mismatched with one "
+                    f"returned by RandmoState {rs.get_sycl_queue()}"
                 )
         return _dpnp_random_states[sycl_queue]
 

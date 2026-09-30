@@ -95,17 +95,14 @@ def _options_dict(
         val = local[str_arg]
         if val is not None:
             if not isinstance(val, str):
-                raise TypeError(
-                    "`{}` ".format(str_arg) + "must be of `string` type."
-                )
+                raise TypeError(f"`{str_arg}` must be of `string` type.")
             options[str_arg] = val
 
     signs = ["-", "+", " "]
     if sign is not None:
         if sign not in signs:
             raise ValueError(
-                "`sign` must be one of"
-                + ", ".join("`{}`".format(s) for s in signs)
+                "`sign` must be one of" + ", ".join(f"`{s}`" for s in signs)
             )
         options["sign"] = sign
 
@@ -114,7 +111,7 @@ def _options_dict(
         if floatmode not in floatmodes:
             raise ValueError(
                 "`floatmode` must be one of"
-                + ", ".join("`{}`".format(m) for m in floatmodes)
+                + ", ".join(f"`{m}`" for m in floatmodes)
             )
         options["floatmode"] = floatmode
 

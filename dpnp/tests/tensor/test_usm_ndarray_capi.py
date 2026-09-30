@@ -51,7 +51,7 @@ def _pyx_capi_fnptr_to_callable(
     cap = mod.__pyx_capi__.get(pyx_capi_name, None)
     if cap is None:
         raise ValueError(
-            "__pyx_capi__ does not export {} capsule".format(pyx_capi_name)
+            f"__pyx_capi__ does not export {pyx_capi_name} capsule"
         )
     # construct Python callable to invoke these functions
     cap_ptr_fn = ctypes.pythonapi.PyCapsule_GetPointer
@@ -533,7 +533,7 @@ def _pyx_capi_int(X, pyx_capi_name, caps_name=b"int", val_restype=ctypes.c_int):
     cap = mod.__pyx_capi__.get(pyx_capi_name, None)
     if cap is None:
         raise ValueError(
-            "__pyx_capi__ does not export {} capsule".format(pyx_capi_name)
+            f"__pyx_capi__ does not export {pyx_capi_name} capsule"
         )
     # construct Python callable to invoke these functions
     cap_ptr_fn = ctypes.pythonapi.PyCapsule_GetPointer

@@ -278,9 +278,15 @@ std::pair<sycl::event, sycl::event>
         const sycl::event &copy_shape_ev = std::get<2>(ptr_size_event_tuple);
         py::ssize_t *shape_strides = shape_strides_owner.get();
 
+        std::vector<sycl::event> all_deps;
+        all_deps.reserve(depends.size() + 1);
+        all_deps.insert(std::end(all_deps), std::begin(depends),
+                        std::end(depends));
+        all_deps.push_back(copy_shape_ev);
+
         const sycl::event &full_strided_ev =
             fn(exec_q, nd, dst_nelems, shape_strides, py_value, dst_data,
-               {copy_shape_ev});
+               all_deps);
 
         // free shape_strides
         const auto &temporaries_cleanup_ev =

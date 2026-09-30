@@ -2329,7 +2329,7 @@ out : dpnp.ndarray
     returned array is determined by the Type Promotion Rules.
 
 Limitations
-----------
+-----------
 Parameters `where` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise ``NotImplementedError`` exception will be raised.
@@ -3929,8 +3929,8 @@ See Also
 :obj:`dpnp.negative` : Return the numerical negative of each element of `x`.
 :obj:`dpnp.copysign` : Change the sign of `x1` to that of `x2`, element-wise.
 
-Note
-----
+Notes
+-----
 Equivalent to `x.copy()`, but only defined for types that support arithmetic.
 
 Examples
