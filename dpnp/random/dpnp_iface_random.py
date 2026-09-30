@@ -1,4 +1,3 @@
-# cython: language_level=3
 # *****************************************************************************
 # Copyright (c) 2016, Intel Corporation
 # All rights reserved.
@@ -28,827 +27,746 @@
 # *****************************************************************************
 
 """
-Module Intel NumPy Random
+The functions of :mod:`dpnp.random` of NumPy's legacy API.
 
-Set of functions to implement NumPy random module API
+Every function draws from a :class:`dpnp.random.RandomState` of the SYCL
+queue given by `device` or `sycl_queue`. Without either, the queue of the
+first parameter that is a :class:`dpnp.ndarray` is used, or else the default
+queue. There is one state per queue, which :func:`seed` reseeds.
 
     .. seealso:: :obj:`numpy.random`
 
 """
 
-import operator
+# pylint: disable=redefined-builtin
+# pylint: disable=too-many-arguments
+
 import threading
 
-import numpy
-
 import dpnp
-from dpnp.dpnp_algo import *
-from dpnp.dpnp_utils import *
 
-from .dpnp_algo_random import *
 from .dpnp_random_state import RandomState
 
-# lock the RNG calls for concurrent access
-_legacy_rng_lock = threading.RLock()
+# The states of the queues. The lock guarantees that concurrent callers
+# asking for the state of the same queue get the same instance back rather
+# than each building one of their own.
+_random_states = {}
+_random_states_lock = threading.Lock()
+
+_QUEUE_PARAMS = """\
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
+        An array API concept of device where the output array is created.
+        `device` can be ``None``, a oneAPI filter selector string, an
+        instance of :class:`dpctl.SyclDevice` corresponding to a
+        non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
+        or a :class:`dpnp.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+        Default: ``None``."""
+
+_USM_PARAM = """\
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+
+        Default: ``"device"``."""
+
+_DTYPE_PARAM = """\
+    dtype : {None, float32, float64}, optional
+        The floating-point type of the output.
+
+        Default: ``None``, the default floating-point type of the device."""
 
 
-def _legacy_rng(func, *args, **kwargs):
-    """Call a legacy ``dpnp_rng_*`` generator holding `_legacy_rng_lock`."""
-    with _legacy_rng_lock:
-        return func(*args, **kwargs)
+def _params_doc(func):
+    """Fill the placeholders of the parameters common to the functions."""
+
+    func.__doc__ = (
+        func.__doc__.replace("    %(queue)s", _QUEUE_PARAMS)
+        .replace("    %(usm)s", _USM_PARAM)
+        .replace("    %(dtype)s", _DTYPE_PARAM)
+    )
+    return func
 
 
-# Guards the `_dpnp_random_states` cache, so that concurrent callers asking
-# for the state of the same queue are guaranteed to get the same instance
-# back rather than each building one of their own.
-_random_states_lock = threading.RLock()
+def _get_random_state(device=None, sycl_queue=None, arrays=()):
+    """
+    The state of the queue of `device` or `sycl_queue`, or else of the first
+    array of `arrays`, or else of the default queue.
 
+    """
 
-def _get_random_state(device=None, sycl_queue=None):
-    global _dpnp_random_states
-
+    if device is None and sycl_queue is None:
+        for x in arrays:
+            if dpnp.is_supported_array_type(x):
+                sycl_queue = x.sycl_queue
+                break
     sycl_queue = dpnp.get_normalized_queue_device(
         device=device, sycl_queue=sycl_queue
     )
     with _random_states_lock:
-        if not isinstance(_dpnp_random_states, dict):
-            _dpnp_random_states = {}
-        if sycl_queue not in _dpnp_random_states:
-            rs = RandomState(device=device, sycl_queue=sycl_queue)
-            if sycl_queue == rs.get_sycl_queue():
-                _dpnp_random_states[sycl_queue] = rs
-            else:
-                raise RuntimeError(
-                    f"Normalized SYCL queue {sycl_queue} mismatched with one "
-                    f"returned by RandmoState {rs.get_sycl_queue()}"
-                )
-        return _dpnp_random_states[sycl_queue]
+        rs = _random_states.get(sycl_queue)
+        if rs is None:
+            rs = RandomState(sycl_queue=sycl_queue)
+            _random_states[sycl_queue] = rs
+        return rs
 
 
-def _is_type_supported(obj_type):
-    """Return True if type is supported by dpnp.random"""
+@_params_doc
+def seed(seed=None, *, device=None, sycl_queue=None):
+    # pylint: disable=redefined-outer-name
+    """
+    Reseed the state of a queue.
 
-    if obj_type in (dpnp.float64, dpnp.float32, dpnp.int64, dpnp.int32):
-        return True
-    return False
+    For full documentation refer to :obj:`numpy.random.seed`.
+
+    Parameters
+    ----------
+    %(queue)s
+
+    """
+    _get_random_state(device, sycl_queue).seed(seed)
 
 
-def beta(a, b, size=None):
+@_params_doc
+def get_state(legacy=True, *, device=None, sycl_queue=None):
+    """
+    Return the state of a queue.
+
+    For full documentation refer to :obj:`numpy.random.get_state`.
+
+    Parameters
+    ----------
+    %(queue)s
+
+    Limitations
+    -----------
+    See :meth:`dpnp.random.RandomState.get_state`.
+
+    """
+    return _get_random_state(device, sycl_queue).get_state(legacy)
+
+
+@_params_doc
+def set_state(state, *, device=None, sycl_queue=None):
+    """
+    Set the state of a queue.
+
+    For full documentation refer to :obj:`numpy.random.set_state`.
+
+    Parameters
+    ----------
+    %(queue)s
+
+    Limitations
+    -----------
+    See :meth:`dpnp.random.RandomState.set_state`.
+
+    """
+    _get_random_state(device, sycl_queue).set_state(state)
+
+
+@_params_doc
+def beta(
+    a,
+    b,
+    size=None,
+    dtype=None,
+    *,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
     """
     Draw samples from a Beta distribution.
 
     For full documentation refer to :obj:`numpy.random.beta`.
 
-    Limitations
-    -----------
-    Parameters `a` and `b` are supported as scalar.
-    Otherwise, :obj:`numpy.random.beta(a, b, size)` samples are drawn.
-    Output array data type is :obj:`dpnp.float64`.
+    Parameters
+    ----------
+    %(dtype)s
+    %(queue)s
+    %(usm)s
 
-    Examples
+    See Also
     --------
-    Draw samples from the distribution:
-
-    >>> a, b = .4, .5  # alpha, beta
-    >>> s = dpnp.random.beta(a, b, 1000)
+    :obj:`dpnp.random.RandomState.beta`
 
     """
-
-    if not use_origin_backend(a):
-        if dpnp.is_cuda_backend():  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-
-        # TODO:
-        # array_like of floats for `a`, `b`
-        if not dpnp.isscalar(a):
-            pass
-        elif not dpnp.isscalar(b):
-            pass
-        elif a <= 0:
-            pass
-        elif b <= 0:
-            pass
-        else:
-            return _legacy_rng(dpnp_rng_beta, a, b, size).get_pyobj()
-
-    return call_origin(numpy.random.beta, a, b, size)
+    rs = _get_random_state(device, sycl_queue, (a, b))
+    return rs.beta(a, b, size, dtype, usm_type=usm_type)
 
 
-def binomial(n, p, size=None):
+@_params_doc
+def binomial(
+    n, p, size=None, *, device=None, usm_type="device", sycl_queue=None
+):
     """
     Draw samples from a binomial distribution.
 
     For full documentation refer to :obj:`numpy.random.binomial`.
 
-    Limitations
-    -----------
-    Output array data type is :obj:`dpnp.int32`.
-    Parameters `n` and `p` are supported as scalar.
-    Otherwise, :obj:`numpy.random.binomial(n, p, size)` samples are drawn.
+    Parameters
+    ----------
+    %(queue)s
+    %(usm)s
 
-    Examples
+    See Also
     --------
-    Draw samples from the distribution:
-
-    >>> n, p = 10, .5  # number of trials, probability of each trial
-    >>> s = dpnp.random.binomial(n, p, 1000)
-    # result of flipping a coin 10 times, tested 1000 times.
-    A real world example. A company drills 9 wild-cat oil exploration
-    wells, each with an estimated probability of success of 0.1. All nine
-    wells fail. What is the probability of that happening?
-    Let's do 20,000 trials of the model, and count the number that
-    generate zero positive results.
-    >>> sum(dpnp.random.binomial(9, 0.1, 20000) == 0)/20000.
-    # answer = 0.38885, or 38%.
+    :obj:`dpnp.random.RandomState.binomial`
 
     """
-
-    if not use_origin_backend(n):
-        if dpnp.is_cuda_backend():  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-
-        # TODO:
-        # array_like of floats for `p` param
-        if not dpnp.isscalar(n):
-            pass
-        elif not dpnp.isscalar(p):
-            pass
-        elif p > 1 or p < 0:
-            pass
-        elif n < 0:
-            pass
-        else:
-            return _legacy_rng(dpnp_rng_binomial, int(n), p, size).get_pyobj()
-
-    return call_origin(numpy.random.binomial, n, p, size)
+    rs = _get_random_state(device, sycl_queue, (n, p))
+    return rs.binomial(n, p, size, usm_type=usm_type)
 
 
-def bytes(length):
+@_params_doc
+def bytes(length, *, device=None, sycl_queue=None):
     """
     Return random bytes.
 
     For full documentation refer to :obj:`numpy.random.bytes`.
 
-    Notes
-    -----
-    The function uses `numpy.random.bytes` on the backend and will be
-    executed on fallback backend.
+    Parameters
+    ----------
+    %(queue)s
 
     """
+    return _get_random_state(device, sycl_queue).bytes(length)
 
-    return call_origin(numpy.random.bytes, length)
 
-
-def chisquare(df, size=None):
+@_params_doc
+def chisquare(
+    df,
+    size=None,
+    dtype=None,
+    *,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
     """
     Draw samples from a chi-square distribution.
 
     For full documentation refer to :obj:`numpy.random.chisquare`.
 
-    Limitations
-    -----------
-    Parameter `df` is supported as a scalar.
-    Otherwise, :obj:`numpy.random.chisquare(df, size)` samples are drawn.
-    Output array data type is default float type.
+    Parameters
+    ----------
+    %(dtype)s
+    %(queue)s
+    %(usm)s
 
-    Examples
+    See Also
     --------
-    >>> dpnp.random.chisquare(2, 4)
-    array([ 1.89920014,  9.00867716,  3.13710533,  5.62318272]) # random
+    :obj:`dpnp.random.RandomState.chisquare`
 
     """
-
-    if not use_origin_backend(df):
-        if dpnp.is_cuda_backend():  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-
-        # TODO:
-        # array_like of floats for `df`
-        if not dpnp.isscalar(df):
-            pass
-        elif df <= 0:
-            pass
-        else:
-            # TODO:
-            # float to int, safe
-            return _legacy_rng(dpnp_rng_chisquare, int(df), size).get_pyobj()
-
-    return call_origin(numpy.random.chisquare, df, size)
+    rs = _get_random_state(device, sycl_queue, (df,))
+    return rs.chisquare(df, size, dtype, usm_type=usm_type)
 
 
-def choice(a, size=None, replace=True, p=None):
+@_params_doc
+def choice(
+    a,
+    size=None,
+    replace=True,
+    p=None,
+    *,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
     """
-    Generates a random sample from a given 1-D array.
+    Generate a random sample from a given 1-D array.
 
     For full documentation refer to :obj:`numpy.random.choice`.
 
-    Notes
-    -----
-    The function uses `numpy.random.choice` on the backend and will be
-    executed on fallback backend.
+    Parameters
+    ----------
+    %(queue)s
+    %(usm)s
+
+    See Also
+    --------
+    :obj:`dpnp.random.RandomState.choice`
 
     """
+    rs = _get_random_state(device, sycl_queue, (a, p))
+    return rs.choice(a, size, replace, p, usm_type=usm_type)
 
-    return call_origin(numpy.random.choice, a, size, replace, p)
 
-
-def dirichlet(alpha, size=None):
+@_params_doc
+def dirichlet(
+    alpha,
+    size=None,
+    dtype=None,
+    *,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
     """
     Draw samples from the Dirichlet distribution.
 
     For full documentation refer to :obj:`numpy.random.dirichlet`.
 
-    Notes
-    -----
-    The function uses `numpy.random.dirichlet` on the backend and will be
-    executed on fallback backend.
+    Parameters
+    ----------
+    %(dtype)s
+    %(queue)s
+    %(usm)s
+
+    See Also
+    --------
+    :obj:`dpnp.random.RandomState.dirichlet`
 
     """
+    rs = _get_random_state(device, sycl_queue, (alpha,))
+    return rs.dirichlet(alpha, size, dtype, usm_type=usm_type)
 
-    return call_origin(numpy.random.dirichlet, alpha, size)
 
-
-def exponential(scale=1.0, size=None):
+@_params_doc
+def exponential(
+    scale=1.0,
+    size=None,
+    dtype=None,
+    *,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
     """
     Draw samples from an exponential distribution.
 
     For full documentation refer to :obj:`numpy.random.exponential`.
 
-    Limitations
-    -----------
-    Parameter `scale` is supported as a scalar.
-    Otherwise, :obj:`numpy.random.exponential(scale, size)` samples are drawn.
-    Output array data type is :obj:`dpnp.float64`.
+    Parameters
+    ----------
+    %(dtype)s
+    %(queue)s
+    %(usm)s
 
-    Examples
+    See Also
     --------
-    Draw samples from the distribution:
-
-    >>> scale = .5  # alpha
-    >>> s = dpnp.random.exponential(scale, 1000)
+    :obj:`dpnp.random.RandomState.exponential`
 
     """
-
-    if not use_origin_backend(scale):
-        if dpnp.is_cuda_backend():  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-
-        # TODO:
-        # array_like of floats for `scale`
-        if not dpnp.isscalar(scale):
-            pass
-        elif scale < 0:
-            pass
-        else:
-            return _legacy_rng(dpnp_rng_exponential, scale, size).get_pyobj()
-
-    return call_origin(numpy.random.exponential, scale, size)
+    rs = _get_random_state(device, sycl_queue, (scale,))
+    return rs.exponential(scale, size, dtype, usm_type=usm_type)
 
 
-def f(dfnum, dfden, size=None):
+@_params_doc
+def f(
+    dfnum,
+    dfden,
+    size=None,
+    dtype=None,
+    *,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
     """
     Draw samples from an F distribution.
 
     For full documentation refer to :obj:`numpy.random.f`.
 
-    Limitations
-    -----------
-    Parameters `dfnum` and `dfden` are supported as scalar.
-    Otherwise, :obj:`numpy.random.f(dfnum, dfden, size)` samples are drawn.
-    Output array data type is :obj:`dpnp.float64`.
+    Parameters
+    ----------
+    %(dtype)s
+    %(queue)s
+    %(usm)s
 
-    Examples
+    See Also
     --------
-    >>> dfnum, dfden = 3., 2.
-    >>> s = dpnp.random.f(dfnum, dfden, size)
+    :obj:`dpnp.random.RandomState.f`
 
     """
-
-    if not use_origin_backend(dfnum):
-        if dpnp.is_cuda_backend():  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-
-        # TODO:
-        # array_like of floats for `dfnum` and `dfden`
-        if not dpnp.isscalar(dfnum):
-            pass
-        elif not dpnp.isscalar(dfden):
-            pass
-        elif dfnum <= 0:
-            pass
-        elif dfden <= 0:
-            pass
-        else:
-            return _legacy_rng(dpnp_rng_f, dfnum, dfden, size).get_pyobj()
-
-    return call_origin(numpy.random.f, dfnum, dfden, size)
+    rs = _get_random_state(device, sycl_queue, (dfnum, dfden))
+    return rs.f(dfnum, dfden, size, dtype, usm_type=usm_type)
 
 
-def gamma(shape, scale=1.0, size=None):
+@_params_doc
+def gamma(
+    shape,
+    scale=1.0,
+    size=None,
+    dtype=None,
+    *,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
     """
     Draw samples from a Gamma distribution.
 
     For full documentation refer to :obj:`numpy.random.gamma`.
 
-    Limitations
-    -----------
-    Parameters `shape` and `scale` are supported as scalar.
-    Otherwise, :obj:`numpy.random.gamma(shape, scale, size)` samples are drawn.
-    Output array data type is :obj:`dpnp.float64`.
+    Parameters
+    ----------
+    %(dtype)s
+    %(queue)s
+    %(usm)s
 
-    Examples
+    See Also
     --------
-    Draw samples from the distribution:
-
-    >>> shape, scale = 0, 0.1  # shape and scale
-    >>> s = dpnp.random.gamma(shape, scale, 1000)
+    :obj:`dpnp.random.RandomState.gamma`
 
     """
-
-    if not use_origin_backend(scale):
-        if dpnp.is_cuda_backend():  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-
-        # TODO:
-        # array_like of floats for `scale` and `shape`
-        if not dpnp.isscalar(scale):
-            pass
-        elif not dpnp.isscalar(shape):
-            pass
-        elif scale < 0:
-            pass
-        elif shape < 0:
-            pass
-        else:
-            return _legacy_rng(dpnp_rng_gamma, shape, scale, size).get_pyobj()
-
-    return call_origin(numpy.random.gamma, shape, scale, size)
+    rs = _get_random_state(device, sycl_queue, (shape, scale))
+    return rs.gamma(shape, scale, size, dtype, usm_type=usm_type)
 
 
-def geometric(p, size=None):
+@_params_doc
+def geometric(p, size=None, *, device=None, usm_type="device", sycl_queue=None):
     """
     Draw samples from the geometric distribution.
 
     For full documentation refer to :obj:`numpy.random.geometric`.
 
-    Limitations
-    -----------
-    Parameter `p` is supported as a scalar.
-    Otherwise, :obj:`numpy.random.geometric(p, size)` samples are drawn.
-    Output array data type is :obj:`dpnp.int32`.
+    Parameters
+    ----------
+    %(queue)s
+    %(usm)s
 
-    Examples
+    See Also
     --------
-    Draw ten thousand values from the geometric distribution,
-    with the probability of an individual success equal to 0.35:
-
-    >>> z = dpnp.random.geometric(p=0.35, size=10000)
+    :obj:`dpnp.random.RandomState.geometric`
 
     """
-
-    if not use_origin_backend(p):
-        if dpnp.is_cuda_backend():  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-
-        # TODO:
-        # array_like of floats for `p` param
-        if not dpnp.isscalar(p):
-            pass
-        elif p > 1 or p <= 0:
-            pass
-        else:
-            return _legacy_rng(dpnp_rng_geometric, p, size).get_pyobj()
-
-    return call_origin(numpy.random.geometric, p, size)
+    rs = _get_random_state(device, sycl_queue, (p,))
+    return rs.geometric(p, size, usm_type=usm_type)
 
 
-def gumbel(loc=0.0, scale=1.0, size=None):
+@_params_doc
+def gumbel(
+    loc=0.0,
+    scale=1.0,
+    size=None,
+    dtype=None,
+    *,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
     """
     Draw samples from a Gumbel distribution.
 
     For full documentation refer to :obj:`numpy.random.gumbel`.
 
-    Limitations
-    -----------
-    Parameters `loc` and `scale` are supported as scalar.
-    Otherwise, :obj:`numpy.random.gumbel(loc, scale, size)` samples are drawn.
-    Output array data type is :obj:`dpnp.float64`.
+    Parameters
+    ----------
+    %(dtype)s
+    %(queue)s
+    %(usm)s
 
-    Examples
+    See Also
     --------
-    Draw samples from the distribution:
-
-    >>> mu, beta = 0, 0.1 # location and scale
-    >>> s = dpnp.random.gumbel(mu, beta, 1000)
+    :obj:`dpnp.random.RandomState.gumbel`
 
     """
-
-    if not use_origin_backend(loc):
-        if dpnp.is_cuda_backend():  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-
-        # TODO:
-        # array_like of floats for `loc` and `scale` params
-        if not dpnp.isscalar(scale):
-            pass
-        elif not dpnp.isscalar(loc):
-            pass
-        elif scale < 0:
-            pass
-        else:
-            return _legacy_rng(dpnp_rng_gumbel, loc, scale, size).get_pyobj()
-
-    return call_origin(numpy.random.gumbel, loc, scale, size)
+    rs = _get_random_state(device, sycl_queue, (loc, scale))
+    return rs.gumbel(loc, scale, size, dtype, usm_type=usm_type)
 
 
-def hypergeometric(ngood, nbad, nsample, size=None):
+@_params_doc
+def hypergeometric(
+    ngood,
+    nbad,
+    nsample,
+    size=None,
+    *,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
     """
-    Draw samples from a Hypergeometric distribution.
+    Draw samples from a hypergeometric distribution.
 
     For full documentation refer to :obj:`numpy.random.hypergeometric`.
 
-    Limitations
-    -----------
-    Parameters `ngood`, `nbad` and `nsample` are supported as scalar.
-    Otherwise, :obj:`numpy.random.hypergeometric(shape, scale, size)` samples
-    are drawn.
-    Output array data type is :obj:`dpnp.int32`.
+    Parameters
+    ----------
+    %(queue)s
+    %(usm)s
 
-    Examples
+    See Also
     --------
-    Draw samples from the distribution:
-
-    >>> ngood, nbad, nsamp = 100, 2, 10
-    # number of good, number of bad, and number of samples
-    >>> s = dpnp.random.hypergeometric(ngood, nbad, nsamp, 1000)
+    :obj:`dpnp.random.RandomState.hypergeometric`
 
     """
-
-    if not use_origin_backend(ngood):
-        if dpnp.is_cuda_backend():  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-
-        # TODO:
-        # array_like of ints for `ngood`, `nbad`, `nsample` param
-        if not dpnp.isscalar(ngood):
-            pass
-        elif not dpnp.isscalar(nbad):
-            pass
-        elif not dpnp.isscalar(nsample):
-            pass
-        elif ngood < 0:
-            pass
-        elif nbad < 0:
-            pass
-        elif nsample < 0:
-            pass
-        elif ngood + nbad < nsample:
-            pass
-        elif nsample < 1:
-            pass
-        else:
-            _m = int(ngood)
-            _l = int(ngood) + int(nbad)
-            _s = int(nsample)
-            return _legacy_rng(
-                dpnp_rng_hypergeometric, _l, _s, _m, size
-            ).get_pyobj()
-
-    return call_origin(numpy.random.hypergeometric, ngood, nbad, nsample, size)
+    rs = _get_random_state(device, sycl_queue, (ngood, nbad, nsample))
+    return rs.hypergeometric(ngood, nbad, nsample, size, usm_type=usm_type)
 
 
-def laplace(loc=0.0, scale=1.0, size=None):
+@_params_doc
+def laplace(
+    loc=0.0,
+    scale=1.0,
+    size=None,
+    dtype=None,
+    *,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
     """
-    Draw samples from the Laplace or double exponential distribution with
-    specified location (or mean) and scale (decay).
+    Draw samples from the Laplace or double exponential distribution.
 
     For full documentation refer to :obj:`numpy.random.laplace`.
 
-    Limitations
-    -----------
-    Parameters `loc` and `scale` are supported as scalar.
-    Otherwise, :obj:`numpy.random.laplace(loc, scale, size)` samples are drawn.
-    Output array data type is :obj:`dpnp.float64`.
+    Parameters
+    ----------
+    %(dtype)s
+    %(queue)s
+    %(usm)s
 
-    Examples
+    See Also
     --------
-    >>> loc, scale = 0., 1.
-    >>> s = dpnp.random.laplace(loc, scale, 1000)
+    :obj:`dpnp.random.RandomState.laplace`
 
     """
-
-    if not use_origin_backend(loc):
-        if dpnp.is_cuda_backend():  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-
-        # TODO:
-        # array_like of floats for `loc` and `scale`
-        if not dpnp.isscalar(loc):
-            pass
-        elif not dpnp.isscalar(scale):
-            pass
-        elif scale < 0:
-            pass
-        else:
-            return _legacy_rng(dpnp_rng_laplace, loc, scale, size).get_pyobj()
-
-    return call_origin(numpy.random.laplace, loc, scale, size)
+    rs = _get_random_state(device, sycl_queue, (loc, scale))
+    return rs.laplace(loc, scale, size, dtype, usm_type=usm_type)
 
 
-def logistic(loc=0.0, scale=1.0, size=None):
+@_params_doc
+def logistic(
+    loc=0.0,
+    scale=1.0,
+    size=None,
+    dtype=None,
+    *,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
     """
     Draw samples from a logistic distribution.
 
     For full documentation refer to :obj:`numpy.random.logistic`.
 
-    Limitations
-    -----------
-    Parameters `loc` and `scale` are supported as scalar.
-    Otherwise, :obj:`numpy.random.logistic(loc, scale, size)` samples are drawn.
-    Output array data type is :obj:`dpnp.float64`.
+    Parameters
+    ----------
+    %(dtype)s
+    %(queue)s
+    %(usm)s
 
-    Examples
+    See Also
     --------
-    >>> loc, scale = 0., 1.
-    >>> s = dpnp.random.logistic(loc, scale, 1000)
+    :obj:`dpnp.random.RandomState.logistic`
 
     """
-
-    if not use_origin_backend(loc):
-        if dpnp.is_cuda_backend():  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-
-        # TODO:
-        # array_like of floats for `loc` and `scale`
-        if not dpnp.isscalar(loc):
-            pass
-        elif not dpnp.isscalar(scale):
-            pass
-        elif scale < 0:
-            pass
-        else:
-            result = _legacy_rng(
-                dpnp_rng_logistic, loc, scale, size
-            ).get_pyobj()
-            if size is None or size == 1:
-                return result[0]
-            else:
-                return result
-
-    return call_origin(numpy.random.logistic, loc, scale, size)
+    rs = _get_random_state(device, sycl_queue, (loc, scale))
+    return rs.logistic(loc, scale, size, dtype, usm_type=usm_type)
 
 
-def lognormal(mean=0.0, sigma=1.0, size=None):
+@_params_doc
+def lognormal(
+    mean=0.0,
+    sigma=1.0,
+    size=None,
+    dtype=None,
+    *,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
     """
     Draw samples from a log-normal distribution.
 
     For full documentation refer to :obj:`numpy.random.lognormal`.
 
-    Limitations
-    -----------
-    Parameters `mean` and `sigma` are supported as scalar.
-    Otherwise, :obj:`numpy.random.lognormal(mean, sigma, size)` samples
-    are drawn.
-    Output array data type is :obj:`dpnp.float64`.
+    Parameters
+    ----------
+    %(dtype)s
+    %(queue)s
+    %(usm)s
 
-    Examples
+    See Also
     --------
-    Draw samples from the distribution:
-
-    >>> mu, sigma = 3., 1. # mean and standard deviation
-    >>> s = dpnp.random.lognormal(mu, sigma, 1000)
+    :obj:`dpnp.random.RandomState.lognormal`
 
     """
-
-    if not use_origin_backend(mean):
-        if dpnp.is_cuda_backend():  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-
-        # TODO:
-        # array_like of floats for `mean` and `sigma` params
-        if not dpnp.isscalar(mean):
-            pass
-        elif not dpnp.isscalar(sigma):
-            pass
-        elif sigma < 0:
-            pass
-        else:
-            return _legacy_rng(
-                dpnp_rng_lognormal, mean, sigma, size
-            ).get_pyobj()
-
-    return call_origin(numpy.random.lognormal, mean, sigma, size)
+    rs = _get_random_state(device, sycl_queue, (mean, sigma))
+    return rs.lognormal(mean, sigma, size, dtype, usm_type=usm_type)
 
 
-def logseries(p, size=None):
+@_params_doc
+def logseries(p, size=None, *, device=None, usm_type="device", sycl_queue=None):
     """
     Draw samples from a logarithmic series distribution.
 
     For full documentation refer to :obj:`numpy.random.logseries`.
 
-    Notes
-    -----
-    The function uses `numpy.random.logseries` on the backend and will be
-    executed on fallback backend.
+    Parameters
+    ----------
+    %(queue)s
+    %(usm)s
+
+    See Also
+    --------
+    :obj:`dpnp.random.RandomState.logseries`
 
     """
+    rs = _get_random_state(device, sycl_queue, (p,))
+    return rs.logseries(p, size, usm_type=usm_type)
 
-    return call_origin(numpy.random.logseries, p, size)
 
-
-def multinomial(n, pvals, size=None):
+@_params_doc
+def multinomial(
+    n, pvals, size=None, *, device=None, usm_type="device", sycl_queue=None
+):
     """
     Draw samples from a multinomial distribution.
 
     For full documentation refer to :obj:`numpy.random.multinomial`.
 
-    Limitations
-    -----------
-    Parameter `n` limited with int32 max. See, `numpy.iinfo(numpy.int32).max`.
-    Sum of ``pvals``, `sum(pvals)` should be between (0, 1).
-    Otherwise, :obj:`numpy.random.multinomial(n, pvals, size)`
-    samples are drawn.
+    Parameters
+    ----------
+    %(queue)s
+    %(usm)s
 
-    Examples
+    See Also
     --------
-    Throw a dice 20 times:
-
-    >>> s = dpnp.random.multinomial(20, [1/6.]*6, size=1)
-    >>> s.shape
-    (1, 6)
+    :obj:`dpnp.random.RandomState.multinomial`
 
     """
-
-    if not use_origin_backend(n):
-        pvals_sum = sum(pvals)
-        pvals_desc = dpnp.get_dpnp_descriptor(dpnp.array(pvals))
-        d = len(pvals)
-        if dpnp.is_cuda_backend(pvals_desc.get_array()):  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-
-        if n < 0:
-            pass
-        elif n > dpnp.iinfo(dpnp.int32).max:
-            pass
-        elif pvals_sum > 1.0:
-            pass
-        elif pvals_sum < 0.0:
-            pass
-        else:
-            if size is None:
-                shape = (d,)
-            else:
-                try:
-                    shape = (operator.index(size), d)
-                except Exception:
-                    shape = tuple(size) + (d,)
-
-            return _legacy_rng(
-                dpnp_rng_multinomial, int(n), pvals_desc, shape
-            ).get_pyobj()
-
-    return call_origin(numpy.random.multinomial, n, pvals, size)
+    rs = _get_random_state(device, sycl_queue, (n, pvals))
+    return rs.multinomial(n, pvals, size, usm_type=usm_type)
 
 
-def multivariate_normal(mean, cov, size=None, check_valid="warn", tol=1e-8):
+@_params_doc
+def multivariate_normal(
+    mean,
+    cov,
+    size=None,
+    check_valid="warn",
+    tol=1e-8,
+    *,
+    dtype=None,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
     """
     Draw random samples from a multivariate normal distribution.
 
     For full documentation refer to :obj:`numpy.random.multivariate_normal`.
 
-    Limitations
-    -----------
-    Parameters `check_valid` and `tol` are not supported.
-    Otherwise, :obj:`numpy.random.multivariate_normal(mean, cov, size, check_valid, tol)`
-    samples are drawn.
+    Parameters
+    ----------
+    %(dtype)s
+    %(queue)s
+    %(usm)s
 
-    Examples
+    See Also
     --------
-    >>> mean = (1, 2)
-    >>> cov = [[1, 0], [0, 1]]
-    >>> x = dpnp.random.multivariate_normal(mean, cov, (3, 3))
-    >>> x.shape
-    (3, 3, 2)
+    :obj:`dpnp.random.RandomState.multivariate_normal`
 
     """
-
-    if not use_origin_backend(mean):
-        mean_ = dpnp.get_dpnp_descriptor(dpnp.array(mean, dtype=dpnp.float64))
-        cov_ = dpnp.get_dpnp_descriptor(dpnp.array(cov, dtype=dpnp.float64))
-        if dpnp.is_cuda_backend(mean_.get_array()) or dpnp.is_cuda_backend(
-            cov_.get_array()
-        ):  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-
-        if size is None:
-            shape = []
-        elif isinstance(size, (int, dpnp.integer)):
-            shape = [size]
-        else:
-            shape = size
-        if len(mean_.shape) != 1:
-            pass
-        elif (len(cov_.shape) != 2) or (cov_.shape[0] != cov_.shape[1]):
-            pass
-        elif mean_.shape[0] != cov_.shape[0]:
-            pass
-        else:
-            final_shape = list(shape[:])
-            final_shape.append(mean_.shape[0])
-            return _legacy_rng(
-                dpnp_rng_multivariate_normal, mean_, cov_, final_shape
-            ).get_pyobj()
-
-    return call_origin(
-        numpy.random.multivariate_normal, mean, cov, size, check_valid, tol
+    rs = _get_random_state(device, sycl_queue, (mean, cov))
+    return rs.multivariate_normal(
+        mean, cov, size, check_valid, tol, dtype=dtype, usm_type=usm_type
     )
 
 
-def negative_binomial(n, p, size=None):
+@_params_doc
+def negative_binomial(
+    n, p, size=None, *, device=None, usm_type="device", sycl_queue=None
+):
     """
     Draw samples from a negative binomial distribution.
 
     For full documentation refer to :obj:`numpy.random.negative_binomial`.
 
-    Limitations
-    -----------
-    Parameters `n` and `p` are supported as scalar.
-    Otherwise, :obj:`numpy.random.negative_binomial(n, p, size)` samples
-    are drawn.
-    Output array data type is :obj:`dpnp.int32`.
+    Parameters
+    ----------
+    %(queue)s
+    %(usm)s
 
-    Examples
+    See Also
     --------
-    Draw samples from the distribution:
-    A real world example. A company drills wild-cat oil
-    exploration wells, each with an estimated probability of
-    success of 0.1.  What is the probability of having one success
-    for each successive well, that is what is the probability of a
-    single success after drilling 5 wells, after 6 wells, etc.?
-
-    >>> s = dpnp.random.negative_binomial(1, 0.1, 100000)
-    >>> for i in range(1, 11):
-    ...    probability = sum(s<i) / 100000.
-    ...    print(i, "wells drilled, probability of one success =", probability)
+    :obj:`dpnp.random.RandomState.negative_binomial`
 
     """
-
-    if not use_origin_backend(n):
-        if dpnp.is_cuda_backend():  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-
-        # TODO:
-        # array_like of floats for `p` and `n` params
-        if not dpnp.isscalar(n):
-            pass
-        elif not dpnp.isscalar(p):
-            pass
-        elif p > 1 or p < 0:
-            pass
-        elif n <= 0:
-            pass
-        else:
-            return _legacy_rng(
-                dpnp_rng_negative_binomial, n, p, size
-            ).get_pyobj()
-
-    return call_origin(numpy.random.negative_binomial, n, p, size)
+    rs = _get_random_state(device, sycl_queue, (n, p))
+    return rs.negative_binomial(n, p, size, usm_type=usm_type)
 
 
+@_params_doc
+def noncentral_chisquare(
+    df,
+    nonc,
+    size=None,
+    dtype=None,
+    *,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
+    """
+    Draw samples from a noncentral chi-square distribution.
+
+    For full documentation refer to :obj:`numpy.random.noncentral_chisquare`.
+
+    Parameters
+    ----------
+    %(dtype)s
+    %(queue)s
+    %(usm)s
+
+    See Also
+    --------
+    :obj:`dpnp.random.RandomState.noncentral_chisquare`
+
+    """
+    rs = _get_random_state(device, sycl_queue, (df, nonc))
+    return rs.noncentral_chisquare(df, nonc, size, dtype, usm_type=usm_type)
+
+
+@_params_doc
+def noncentral_f(
+    dfnum,
+    dfden,
+    nonc,
+    size=None,
+    dtype=None,
+    *,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
+    """
+    Draw samples from the noncentral F distribution.
+
+    For full documentation refer to :obj:`numpy.random.noncentral_f`.
+
+    Parameters
+    ----------
+    %(dtype)s
+    %(queue)s
+    %(usm)s
+
+    See Also
+    --------
+    :obj:`dpnp.random.RandomState.noncentral_f`
+
+    """
+    rs = _get_random_state(device, sycl_queue, (dfnum, dfden, nonc))
+    return rs.noncentral_f(dfnum, dfden, nonc, size, dtype, usm_type=usm_type)
+
+
+@_params_doc
 def normal(
     loc=0.0,
     scale=1.0,
     size=None,
+    dtype=None,
+    *,
     device=None,
     usm_type="device",
     sycl_queue=None,
@@ -860,324 +778,141 @@ def normal(
 
     Parameters
     ----------
-    device : {None, string, SyclDevice, SyclQueue, Device}, optional
-        An array API concept of device where the output array is created.
-        `device` can be ``None``, a oneAPI filter selector string, an instance
-        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
-        device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpnp.tensor.Device` object returned by
-        :attr:`dpnp.ndarray.device`.
+    %(dtype)s
+    %(queue)s
+    %(usm)s
 
-        Default: ``None``.
-    usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
-
-        Default: ``"device"``.
-    sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for output array allocation and copying. The
-        `sycl_queue` can be passed as ``None`` (the default), which means
-        to get the SYCL queue from `device` keyword if present or to use
-        a default queue.
-
-        Default: ``None``.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        Drawn samples from the parameterized normal distribution.
-        Output array data type is the same as input `dtype`. If `dtype` is ``None`` (the default),
-        :obj:`dpnp.float64` type will be used if device supports it, or :obj:`dpnp.float32` otherwise.
-
-    Limitations
-    -----------
-    Parameters `loc` and `scale` are supported as scalar.
-    Otherwise, :obj:`numpy.random.normal(loc, scale, size)` samples are drawn.
-    Parameter `dtype` is supported only as :obj:`dpnp.float32`, :obj:`dpnp.float64` or ``None``.
-
-    Examples
+    See Also
     --------
-    Draw samples from the distribution:
-
-    >>> mu, sigma = 0, 0.1 # mean and standard deviation
-    >>> s = dpnp.random.normal(mu, sigma, 1000)
+    :obj:`dpnp.random.RandomState.normal`
 
     """
-
-    rs = _get_random_state(device=device, sycl_queue=sycl_queue)
-    return rs.normal(
-        loc=loc, scale=scale, size=size, dtype=None, usm_type=usm_type
-    )
+    rs = _get_random_state(device, sycl_queue, (loc, scale))
+    return rs.normal(loc, scale, size, dtype, usm_type=usm_type)
 
 
-def noncentral_chisquare(df, nonc, size=None):
+@_params_doc
+def pareto(
+    a, size=None, dtype=None, *, device=None, usm_type="device", sycl_queue=None
+):
     """
-    Draw samples from a non-central chi-square distribution.
-
-    For full documentation refer to :obj:`numpy.random.noncentral_chisquare`.
-
-    TODO
-
-    """
-
-    if not use_origin_backend(df):
-        if dpnp.is_cuda_backend():  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-
-        # TODO:
-        # array_like of floats for `mean` and `scale`
-        if not dpnp.isscalar(df):
-            pass
-        elif not dpnp.isscalar(nonc):
-            pass
-        elif df <= 0:
-            pass
-        elif nonc < 0:
-            pass
-        else:
-            return _legacy_rng(
-                dpnp_rng_noncentral_chisquare, df, nonc, size
-            ).get_pyobj()
-
-    return call_origin(numpy.random.noncentral_chisquare, df, nonc, size)
-
-
-def noncentral_f(dfnum, dfden, nonc, size=None):
-    """
-    Draw samples from the non-central F distribution.
-
-    For full documentation refer to :obj:`numpy.random.noncentral_f`.
-
-    Notes
-    -----
-    The function uses `numpy.random.noncentral_f` on the backend and
-    will be executed on fallback backend.
-
-    """
-
-    return call_origin(numpy.random.noncentral_f, dfnum, dfden, nonc, size)
-
-
-def pareto(a, size=None):
-    """
-    Draw samples from a Pareto II or Lomax distribution with specified shape.
+    Draw samples from a Pareto II or Lomax distribution with specified
+    shape.
 
     For full documentation refer to :obj:`numpy.random.pareto`.
 
-    Limitations
-    -----------
-    Parameter `a` is supported as a scalar.
-    Otherwise, :obj:`numpy.random.pareto(a, size)` samples are drawn.
-    Output array data type is :obj:`dpnp.float64`.
+    Parameters
+    ----------
+    %(dtype)s
+    %(queue)s
+    %(usm)s
 
-    Examples
+    See Also
     --------
-    Draw samples from the distribution:
-
-    >>> a = .5  # alpha
-    >>> s = dpnp.random.pareto(a, 1000)
+    :obj:`dpnp.random.RandomState.pareto`
 
     """
-
-    if not use_origin_backend(a):
-        if dpnp.is_cuda_backend():  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-
-        # TODO:
-        # array_like of floats for `a`
-        if not dpnp.isscalar(a):
-            pass
-        elif a <= 0:
-            pass
-        else:
-            return _legacy_rng(dpnp_rng_pareto, a, size).get_pyobj()
-
-    return call_origin(numpy.random.pareto, a, size)
+    rs = _get_random_state(device, sycl_queue, (a,))
+    return rs.pareto(a, size, dtype, usm_type=usm_type)
 
 
-def permutation(x):
+@_params_doc
+def permutation(x, *, device=None, sycl_queue=None):
     """
     Randomly permute a sequence, or return a permuted range.
 
     For full documentation refer to :obj:`numpy.random.permutation`.
 
-    Examples
+    Parameters
+    ----------
+    %(queue)s
+
+    See Also
     --------
-    >>> arr = dpnp.random.permutation(10)
-    >>> print(arr)
-    [3 8 7 9 0 6 1 2 4 5] # random
-
-    >>> arr = dpnp.random.permutation([1, 4, 9, 12, 15])
-    >>> print(arr)
-    [12  1  4  9 15] # random
-
-    >>> arr = dpnp.arange(9).reshape((3, 3))
-    >>> dpnp.random.permutation(arr)
-    >>> print(arr)
-    [[0 1 2]
-     [3 4 5]
-     [6 7 8]]  # random
+    :obj:`dpnp.random.RandomState.permutation`
 
     """
-    if not use_origin_backend(x):
-        if isinstance(x, (int, dpnp.integer)):
-            arr = dpnp.arange(x)
-        else:
-            arr = dpnp.array(x)
-        shuffle(arr)
-        return arr
-
-    return call_origin(numpy.random.permutation, x)
+    return _get_random_state(device, sycl_queue, (x,)).permutation(x)
 
 
-def poisson(lam=1.0, size=None):
+@_params_doc
+def poisson(
+    lam=1.0, size=None, *, device=None, usm_type="device", sycl_queue=None
+):
     """
     Draw samples from a Poisson distribution.
 
     For full documentation refer to :obj:`numpy.random.poisson`.
 
-    Limitations
-    -----------
-    Parameter `lam` is supported as a scalar.
-    Otherwise, :obj:`numpy.random.poisson(lam, size)` samples are drawn.
-    Output array data type is :obj:`dpnp.int32`.
+    Parameters
+    ----------
+    %(queue)s
+    %(usm)s
 
-    Examples
+    See Also
     --------
-    Draw samples from the distribution:
-
-    >>> import numpy as np
-    >>> s = dpnp.random.poisson(5, 10000)
+    :obj:`dpnp.random.RandomState.poisson`
 
     """
-
-    if not use_origin_backend(lam):
-        if dpnp.is_cuda_backend():  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-
-        # TODO:
-        # array_like of floats for `lam` param
-        if not dpnp.isscalar(lam):
-            pass
-        elif lam < 0:
-            pass
-        else:
-            return _legacy_rng(dpnp_rng_poisson, lam, size).get_pyobj()
-
-    return call_origin(numpy.random.poisson, lam, size)
+    rs = _get_random_state(device, sycl_queue, (lam,))
+    return rs.poisson(lam, size, usm_type=usm_type)
 
 
-def power(a, size=None):
+@_params_doc
+def power(
+    a, size=None, dtype=None, *, device=None, usm_type="device", sycl_queue=None
+):
     """
     Draws samples in [0, 1] from a power distribution with positive
     exponent a - 1.
 
     For full documentation refer to :obj:`numpy.random.power`.
 
-    Limitations
-    -----------
-    Parameter `a` is supported as a scalar.
-    Otherwise, :obj:`numpy.random.power(a, size)` samples are drawn.
-    Output array data type is :obj:`dpnp.float64`.
+    Parameters
+    ----------
+    %(dtype)s
+    %(queue)s
+    %(usm)s
 
-    Examples
+    See Also
     --------
-    Draw samples from the distribution:
-
-    >>> a = .5  # alpha
-    >>> s = dpnp.random.power(a, 1000)
+    :obj:`dpnp.random.RandomState.power`
 
     """
-
-    if not use_origin_backend(a):
-        if dpnp.is_cuda_backend():  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-
-        # TODO:
-        # array_like of floats for `a`
-        if not dpnp.isscalar(a):
-            pass
-        elif a <= 0:
-            pass
-        else:
-            return _legacy_rng(dpnp_rng_power, a, size).get_pyobj()
-
-    return call_origin(numpy.random.power, a, size)
+    rs = _get_random_state(device, sycl_queue, (a,))
+    return rs.power(a, size, dtype, usm_type=usm_type)
 
 
-def rand(*args, device=None, usm_type="device", sycl_queue=None):
+@_params_doc
+def rand(*args, dtype=None, device=None, usm_type="device", sycl_queue=None):
     """
-    Random values in a given shape.
-
-    Create an array of the given shape and populate it with random samples from
-    a uniform distribution over ``[0, 1)``.
+    Random values in a given shape, from a uniform distribution over [0,
+    1).
 
     For full documentation refer to :obj:`numpy.random.rand`.
 
     Parameters
     ----------
-    *args : sequence of ints, optional
-        The dimensions of the returned array, must be non-negative.
-        If no argument is given a single Python float is returned.
-    device : {None, string, SyclDevice, SyclQueue, Device}, optional
-        An array API concept of device where the output array is created.
-        `device` can be ``None``, a oneAPI filter selector string, an instance
-        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
-        device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpnp.tensor.Device` object returned by
-        :attr:`dpnp.ndarray.device`.
-
-        Default: ``None``.
-    usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
-
-        Default: ``"device"``.
-    sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for output array allocation and copying. The
-        `sycl_queue` can be passed as ``None`` (the default), which means
-        to get the SYCL queue from `device` keyword if present or to use
-        a default queue.
-
-        Default: ``None``.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        Random values in a given shape ``(d0, d1, ..., dn)``.
-        Output array data type is :obj:`dpnp.float64` if a device supports it,
-        or :obj:`dpnp.float32` type otherwise.
+    %(dtype)s
+    %(queue)s
+    %(usm)s
 
     See Also
     --------
-    :obj:`dpnp.random.random` : Return random floats in the half-open interval
-                                ``[0.0, 1.0)``.
-    :obj:`dpnp.random.random_sample` : Return random floats in the half-open
-                                       interval ``[0.0, 1.0)``.
-    :obj:`dpnp.random.uniform` : Draw samples from a uniform distribution.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> s = np.random.rand(3, 2)
+    :obj:`dpnp.random.RandomState.rand`
 
     """
+    rs = _get_random_state(device, sycl_queue)
+    return rs.random_sample(args or None, dtype, usm_type=usm_type)
 
-    rs = _get_random_state(device=device, sycl_queue=sycl_queue)
-    return rs.rand(*args, usm_type=usm_type)
 
-
+@_params_doc
 def randint(
     low,
     high=None,
     size=None,
     dtype=int,
+    *,
     device=None,
     usm_type="device",
     sycl_queue=None,
@@ -1189,174 +924,73 @@ def randint(
 
     Parameters
     ----------
-    device : {None, string, SyclDevice, SyclQueue, Device}, optional
-        An array API concept of device where the output array is created.
-        `device` can be ``None``, a oneAPI filter selector string, an instance
-        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
-        device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpnp.tensor.Device` object returned by
-        :attr:`dpnp.ndarray.device`.
-
-        Default: ``None``.
-    usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
-
-        Default: ``"device"``.
-    sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for output array allocation and copying. The
-        `sycl_queue` can be passed as ``None`` (the default), which means
-        to get the SYCL queue from `device` keyword if present or to use
-        a default queue.
-
-        Default: ``None``.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        `size`-shaped array of random integers from the appropriate distribution,
-        or a single such random int if `size` is not provided.
-        Output array data type is the same as input `dtype`.
-
-    Limitations
-    -----------
-    Parameters `low` and `high` are supported only as a scalar.
-    Parameter `dtype` is supported only as :obj:`dpnp.int32` or ``int``,
-    but ``int`` value is considered to be exactly equivalent to :obj:`dpnp.int32`.
-    Otherwise, :obj:`numpy.random.RandomState.randint(low, high, size, dtype)` samples are drawn.
-
-    Examples
-    --------
-    Draw samples from the distribution:
-
-    >>> low, high = 3, 11 # low and high
-    >>> s = dpnp.random.randint(low, high, 1000, dtype=dpnp.int32)
+    %(queue)s
+    %(usm)s
 
     See Also
     --------
-    :obj:`dpnp.random.random_integers` : similar to `randint`, only for the closed
-                                         interval [`low`, `high`], and 1 is the
-                                         lowest value if `high` is omitted.
+    :obj:`dpnp.random.RandomState.randint`
 
     """
-
-    rs = _get_random_state(device=device, sycl_queue=sycl_queue)
-    return rs.randint(
-        low=low, high=high, size=size, dtype=dtype, usm_type=usm_type
-    )
+    rs = _get_random_state(device, sycl_queue, (low, high))
+    return rs.randint(low, high, size, dtype, usm_type=usm_type)
 
 
-def randn(d0, *dn, device=None, usm_type="device", sycl_queue=None):
+@_params_doc
+def randn(*args, dtype=None, device=None, usm_type="device", sycl_queue=None):
     """
-    Return a sample (or samples) from the "standard normal" distribution.
+    Return a sample (or samples) from the standard normal distribution.
 
     For full documentation refer to :obj:`numpy.random.randn`.
 
     Parameters
     ----------
-    device : {None, string, SyclDevice, SyclQueue, Device}, optional
-        An array API concept of device where the output array is created.
-        `device` can be ``None``, a oneAPI filter selector string, an instance
-        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
-        device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpnp.tensor.Device` object returned by
-        :attr:`dpnp.ndarray.device`.
-
-        Default: ``None``.
-    usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
-
-        Default: ``"device"``.
-    sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for output array allocation and copying. The
-        `sycl_queue` can be passed as ``None`` (the default), which means
-        to get the SYCL queue from `device` keyword if present or to use
-        a default queue.
-
-        Default: ``None``.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        A ``(d0, d1, ..., dn)``-shaped array of floating-point samples from
-        the standard normal distribution, or a single such float if no parameters were supplied.
-        Output array data type is :obj:`dpnp.float64` if device supports it, or :obj:`dpnp.float32` otherwise.
-
-    Examples
-    --------
-    >>> dpnp.random.randn()
-    2.1923875335537315  # random
-
-    Two-by-four array of samples from N(3, 6.25):
-
-    >>> s = 3 + 2.5 * dpnp.random.randn(2, 4)
+    %(dtype)s
+    %(queue)s
+    %(usm)s
 
     See Also
     --------
-    :obj:`dpnp.random.standard_normal`
-    :obj:`dpnp.random.normal`
+    :obj:`dpnp.random.RandomState.randn`
 
     """
+    rs = _get_random_state(device, sycl_queue)
+    return rs.standard_normal(args or None, dtype, usm_type=usm_type)
 
-    rs = _get_random_state(device=device, sycl_queue=sycl_queue)
-    return rs.randn(d0, *dn, usm_type=usm_type)
 
-
-def random(size=None, device=None, usm_type="device", sycl_queue=None):
+@_params_doc
+def random(
+    size=None, dtype=None, *, device=None, usm_type="device", sycl_queue=None
+):
     """
     Return random floats in the half-open interval [0.0, 1.0).
-
-    Alias for random_sample.
 
     For full documentation refer to :obj:`numpy.random.random`.
 
     Parameters
     ----------
-    device : {None, string, SyclDevice, SyclQueue, Device}, optional
-        An array API concept of device where the output array is created.
-        `device` can be ``None``, a oneAPI filter selector string, an instance
-        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
-        device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpnp.tensor.Device` object returned by
-        :attr:`dpnp.ndarray.device`.
-
-        Default: ``None``.
-    usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
-
-        Default: ``"device"``.
-    sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for output array allocation and copying. The
-        `sycl_queue` can be passed as ``None`` (the default), which means
-        to get the SYCL queue from `device` keyword if present or to use
-        a default queue.
-
-        Default: ``None``.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        Array of random floats of shape `size` (if ``size=None``, zero dimension array with a single float is returned).
-        Output array data type is :obj:`dpnp.float64` if device supports it, or :obj:`dpnp.float32` otherwise.
-
-    Examples
-    --------
-    >>> s = dpnp.random.random(1000)
+    %(dtype)s
+    %(queue)s
+    %(usm)s
 
     See Also
     --------
-    :obj:`dpnp.random.rand`
-    :obj:`dpnp.random.random_sample`
-    :obj:`dpnp.random.uniform`
+    :obj:`dpnp.random.RandomState.random_sample`
 
     """
-
-    return random_sample(
-        size=size, device=device, usm_type=usm_type, sycl_queue=sycl_queue
-    )
+    rs = _get_random_state(device, sycl_queue)
+    return rs.random_sample(size, dtype, usm_type=usm_type)
 
 
+@_params_doc
 def random_integers(
-    low, high=None, size=None, device=None, usm_type="device", sycl_queue=None
+    low,
+    high=None,
+    size=None,
+    *,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
 ):
     """
     Random integers between `low` and `high`, inclusive.
@@ -1365,830 +999,438 @@ def random_integers(
 
     Parameters
     ----------
-    device : {None, string, SyclDevice, SyclQueue, Device}, optional
-        An array API concept of device where the output array is created.
-        `device` can be ``None``, a oneAPI filter selector string, an instance
-        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
-        device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpnp.tensor.Device` object returned by
-        :attr:`dpnp.ndarray.device`.
-
-        Default: ``None``.
-    usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
-
-        Default: ``"device"``.
-    sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for output array allocation and copying. The
-        `sycl_queue` can be passed as ``None`` (the default), which means
-        to get the SYCL queue from `device` keyword if present or to use
-        a default queue.
-
-        Default: ``None``.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        `size`-shaped array of random integers from the appropriate distribution,
-        or a single such random int if `size` is not provided.
-
-    Limitations
-    -----------
-    Parameters `low` and `high` are supported as scalar.
-    Otherwise, :obj:`numpy.random.random_integers(low, high, size)` samples are drawn.
+    %(queue)s
+    %(usm)s
 
     See Also
     --------
-    :obj:`dpnp.random.randint`
+    :obj:`dpnp.random.RandomState.random_integers`
 
     """
-
-    if high is None:
-        high = low
-        low = 0
-
-    # TODO:
-    # array_like of floats for `low` and `high` params
-    if not dpnp.isscalar(low):
-        pass
-    elif not dpnp.isscalar(high):
-        pass
-    else:
-        return randint(
-            low,
-            int(high) + 1,
-            size=size,
-            device=device,
-            usm_type=usm_type,
-            sycl_queue=sycl_queue,
-        )
-
-    return call_origin(numpy.random.random_integers, low, high, size)
+    rs = _get_random_state(device, sycl_queue, (low, high))
+    with_warning = rs.random_integers
+    return with_warning(low, high, size, usm_type=usm_type)
 
 
-def random_sample(size=None, device=None, usm_type="device", sycl_queue=None):
+@_params_doc
+def random_sample(
+    size=None, dtype=None, *, device=None, usm_type="device", sycl_queue=None
+):
     """
     Return random floats in the half-open interval [0.0, 1.0).
-
-    Results are from the “continuous uniform” distribution over the interval.
 
     For full documentation refer to :obj:`numpy.random.random_sample`.
 
     Parameters
     ----------
-    device : {None, string, SyclDevice, SyclQueue, Device}, optional
-        An array API concept of device where the output array is created.
-        `device` can be ``None``, a oneAPI filter selector string, an instance
-        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
-        device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpnp.tensor.Device` object returned by
-        :attr:`dpnp.ndarray.device`.
-
-        Default: ``None``.
-    usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
-
-        Default: ``"device"``.
-    sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for output array allocation and copying. The
-        `sycl_queue` can be passed as ``None`` (the default), which means
-        to get the SYCL queue from `device` keyword if present or to use
-        a default queue.
-
-        Default: ``None``.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        Array of random floats of shape `size` (if ``size=None``, zero dimension array with a single float is returned).
-        Output array data type is :obj:`dpnp.float64` if device supports it, or :obj:`dpnp.float32` otherwise.
-
-    Examples
-    --------
-    >>> s = dpnp.random.random_sample((5,))
+    %(dtype)s
+    %(queue)s
+    %(usm)s
 
     See Also
     --------
-    :obj:`dpnp.random.rand`
-    :obj:`dpnp.random.random`
-    :obj:`dpnp.random.uniform`
+    :obj:`dpnp.random.RandomState.random_sample`
 
     """
+    rs = _get_random_state(device, sycl_queue)
+    return rs.random_sample(size, dtype, usm_type=usm_type)
 
-    rs = _get_random_state(device=device, sycl_queue=sycl_queue)
-    return rs.random_sample(size=size, usm_type=usm_type)
 
-
-def ranf(size=None, device=None, usm_type="device", sycl_queue=None):
+@_params_doc
+def ranf(
+    size=None, dtype=None, *, device=None, usm_type="device", sycl_queue=None
+):
     """
-    Return random floats in the half-open interval [0.0, 1.0).
-
-    This is an alias of random_sample.
+    Return random floats in the half-open interval [0.0, 1.0). An alias of
+    :obj:`dpnp.random.random_sample`.
 
     For full documentation refer to :obj:`numpy.random.ranf`.
 
     Parameters
     ----------
-    device : {None, string, SyclDevice, SyclQueue, Device}, optional
-        An array API concept of device where the output array is created.
-        `device` can be ``None``, a oneAPI filter selector string, an instance
-        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
-        device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpnp.tensor.Device` object returned by
-        :attr:`dpnp.ndarray.device`.
-
-        Default: ``None``.
-    usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
-
-        Default: ``"device"``.
-    sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for output array allocation and copying. The
-        `sycl_queue` can be passed as ``None`` (the default), which means
-        to get the SYCL queue from `device` keyword if present or to use
-        a default queue.
-
-        Default: ``None``.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        Array of random floats of shape `size` (if ``size=None``, zero dimension array with a single float is returned).
-        Output array data type is :obj:`dpnp.float64` if device supports it, or :obj:`dpnp.float32` otherwise.
-
-    Examples
-    --------
-    >>> s = dpnp.random.ranf(1000)
+    %(dtype)s
+    %(queue)s
+    %(usm)s
 
     See Also
     --------
-    :obj:`dpnp.random.rand`
-    :obj:`dpnp.random.random`
-    :obj:`dpnp.random.random_sample`
-    :obj:`dpnp.random.uniform`
+    :obj:`dpnp.random.RandomState.random_sample`
 
     """
+    rs = _get_random_state(device, sycl_queue)
+    return rs.random_sample(size, dtype, usm_type=usm_type)
 
-    return random_sample(
-        size=size, device=device, usm_type=usm_type, sycl_queue=sycl_queue
-    )
 
-
-def rayleigh(scale=1.0, size=None):
-    """
-    Draw samples from a Rayleigh distribution.
-
-    For full documentation refer to :obj:`numpy.random.rayleigh`.
-
-    Limitations
-    -----------
-    Parameter `scale` is supported as a scalar.
-    Otherwise, :obj:`numpy.random.rayleigh(scale, size)` samples are drawn.
-    Output array data type is :obj:`dpnp.float64`.
-
-    Examples
-    --------
-    Draw samples from the distribution:
-
-    >>> import numpy as np
-    >>> s = dpnp.random.rayleigh(1.0, 10000)
-
-    """
-
-    if not use_origin_backend(scale):
-        if dpnp.is_cuda_backend():  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-
-        # TODO:
-        # array_like of floats for `scale` params
-        if not dpnp.isscalar(scale):
-            pass
-        elif scale < 0:
-            pass
-        else:
-            return _legacy_rng(dpnp_rng_rayleigh, scale, size).get_pyobj()
-
-    return call_origin(numpy.random.rayleigh, scale, size)
-
-
-def sample(size=None, device=None, usm_type="device", sycl_queue=None):
-    """
-    Return random floats in the half-open interval [0.0, 1.0).
-
-    This is an alias of random_sample.
-
-    For full documentation refer to :obj:`numpy.random.sample`.
-
-    Parameters
-    ----------
-    device : {None, string, SyclDevice, SyclQueue, Device}, optional
-        An array API concept of device where the output array is created.
-        `device` can be ``None``, a oneAPI filter selector string, an instance
-        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
-        device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpnp.tensor.Device` object returned by
-        :attr:`dpnp.ndarray.device`.
-
-        Default: ``None``.
-    usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
-
-        Default: ``"device"``.
-    sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for output array allocation and copying. The
-        `sycl_queue` can be passed as ``None`` (the default), which means
-        to get the SYCL queue from `device` keyword if present or to use
-        a default queue.
-
-        Default: ``None``.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        Array of random floats of shape `size` (if ``size=None``, zero dimension array with a single float is returned).
-        Output array data type is :obj:`dpnp.float64` if device supports it, or :obj:`dpnp.float32` otherwise.
-
-    Examples
-    --------
-    >>> s = dpnp.random.sample(1000)
-
-    See Also
-    --------
-    :obj:`dpnp.random.rand`
-    :obj:`dpnp.random.random`
-    :obj:`dpnp.random.random_sample`
-    :obj:`dpnp.random.uniform`
-
-    """
-
-    return random_sample(
-        size=size, device=device, usm_type=usm_type, sycl_queue=sycl_queue
-    )
-
-
-def shuffle(x1):
-    """
-    Modify a sequence in-place by shuffling its contents.
-
-    For full documentation refer to :obj:`numpy.random.shuffle`.
-
-    Limitations
-    -----------
-    Otherwise, the function will use :obj:`numpy.random.shuffle` on the backend
-    and will be executed on fallback backend.
-
-    """
-
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
-    if x1_desc:
-
-        if dpnp.is_cuda_backend(x1_desc.get_array()):  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-
-        if not _is_type_supported(x1_desc.dtype):
-            pass
-        else:
-            _legacy_rng(dpnp_rng_shuffle, x1_desc).get_pyobj()
-            return
-
-    call_origin(numpy.random.shuffle, x1, dpnp_inplace=True)
-    return
-
-
-def seed(seed=None, device=None, sycl_queue=None):
-    """
-    Reseed a legacy MT19937 random number generator engine.
-
-    Parameters
-    ----------
-    device : {None, string, SyclDevice, SyclQueue, Device}, optional
-        An array API concept of device where the output array is created.
-        `device` can be ``None``, a oneAPI filter selector string, an instance
-        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
-        device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpnp.tensor.Device` object returned by
-        :attr:`dpnp.ndarray.device`.
-
-        Default: ``None``.
-    sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for an array with generated numbers.
-
-        Default: ``None``.
-
-    Limitations
-    -----------
-    The `seed` parameter is supported as a scalar or an array of at most three
-    integer scalars.
-
-    """
-
-    # update a mt19937 random number for both RandomState and legacy functionality
-    global _dpnp_random_states  # noqa: F824
-
-    sycl_queue = dpnp.get_normalized_queue_device(
-        device=device, sycl_queue=sycl_queue
-    )
-    with _random_states_lock:
-        _dpnp_random_states[sycl_queue] = RandomState(
-            seed=seed, sycl_queue=sycl_queue
-        )
-
-    if not use_origin_backend(seed):
-        if dpnp.is_cuda_backend():  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-
-        # TODO:
-        # array_like of ints for `seed`
-        if seed is None:
-            seed = 1
-        if not isinstance(seed, int):
-            pass
-        elif seed < 0:
-            pass
-        else:
-            # TODO:
-            # migrate to a single approach with RandomState class
-            _legacy_rng(dpnp_rng_srand, seed)
-
-    # always reseed numpy engine also
-    return call_origin(numpy.random.seed, seed, allow_fallback=True)
-
-
-def standard_cauchy(size=None):
-    """
-    Draw samples from a standard Cauchy distribution with mode = 0.
-
-    Also known as the Lorentz distribution.
-
-    Limitations
-    -----------
-    Output array data type is default float type.
-
-    Examples
-    --------
-    Draw samples and plot the distribution:
-
-    >>> import matplotlib.pyplot as plt
-    >>> s = dpnp.random.standard_cauchy(1000000)
-    >>> s = s[(s>-25) & (s<25)]  # truncate distribution so it plots well
-    >>> plt.hist(s, bins=100)
-    >>> plt.show()
-
-    """
-
-    if not use_origin_backend(size):
-        if dpnp.is_cuda_backend():  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-        return _legacy_rng(dpnp_rng_standard_cauchy, size).get_pyobj()
-
-    return call_origin(numpy.random.standard_cauchy, size)
-
-
-def standard_exponential(size=None):
-    """
-    Draw samples from the standard exponential distribution.
-
-    `standard_exponential` is identical to the exponential distribution
-    with a scale parameter of 1.
-
-    Limitations
-    -----------
-    Output array data type is default float type.
-
-    Examples
-    --------
-    Output a 3x8000 array:
-
-    >>> n = dpnp.random.standard_exponential((3, 8000))
-
-    """
-
-    if not use_origin_backend(size):
-        if dpnp.is_cuda_backend():  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-        return _legacy_rng(dpnp_rng_standard_exponential, size).get_pyobj()
-
-    return call_origin(numpy.random.standard_exponential, size)
-
-
-def standard_gamma(shape, size=None):
-    """
-    Draw samples from a standard Gamma distribution.
-
-    For full documentation refer to :obj:`numpy.random.standard_gamma`.
-
-    Limitations
-    -----------
-    Parameter `shape` is supported as a scalar.
-    Otherwise, :obj:`numpy.random.standard_gamma(shape, size)` samples
-    are drawn.
-    Output array data type is :obj:`dpnp.float64`.
-
-    Examples
-    --------
-    Draw samples from the distribution:
-
-    >>> shape = 2.
-    >>> s = dpnp.random.standard_gamma(shape, 1000000)
-
-    """
-
-    if not use_origin_backend(shape):
-        if dpnp.is_cuda_backend():  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-
-        # TODO:
-        # array_like of floats for `shape`
-        if not dpnp.isscalar(shape):
-            pass
-        elif shape < 0:
-            pass
-        else:
-            return _legacy_rng(dpnp_rng_standard_gamma, shape, size).get_pyobj()
-
-    return call_origin(numpy.random.standard_gamma, shape, size)
-
-
-def standard_normal(size=None, device=None, usm_type="device", sycl_queue=None):
-    """
-    Draw samples from a standard Normal distribution ``(mean=0, stdev=1)``.
-
-    For full documentation refer to :obj:`numpy.random.standard_normal`.
-
-    Parameters
-    ----------
-    device : {None, string, SyclDevice, SyclQueue, Device}, optional
-        An array API concept of device where the output array is created.
-        `device` can be ``None``, a oneAPI filter selector string, an instance
-        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
-        device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpnp.tensor.Device` object returned by
-        :attr:`dpnp.ndarray.device`.
-
-        Default: ``None``.
-    usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
-
-        Default: ``"device"``.
-    sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for output array allocation and copying. The
-        `sycl_queue` can be passed as ``None`` (the default), which means
-        to get the SYCL queue from `device` keyword if present or to use
-        a default queue.
-
-        Default: ``None``.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        A floating-point array of shape `size` of drawn samples, or a
-        single sample if `size` was not specified.
-        Output array data type is :obj:`dpnp.float64` if device supports it, or :obj:`dpnp.float32` otherwise.
-
-    Examples
-    --------
-    Draw samples from the distribution:
-
-    >>> s = dpnp.random.standard_normal(1000)
-
-    """
-
-    rs = _get_random_state(device=device, sycl_queue=sycl_queue)
-    return rs.standard_normal(size=size, usm_type=usm_type)
-
-
-def standard_t(df, size=None):
-    """
-    Draw samples from a standard Student’s t distribution with
-    `df` degrees of freedom.
-
-    For full documentation refer to :obj:`numpy.random.standard_t`.
-
-    Limitations
-    -----------
-    Parameter `df` is supported as a scalar.
-    Otherwise, :obj:`numpy.random.standard_t(df, size)` samples
-    are drawn.
-    Output array data type is :obj:`dpnp.float64`.
-
-    Examples
-    --------
-    Draw samples from the distribution:
-
-    >>> df = 2.
-    >>> s = dpnp.random.standard_t(df, 1000000)
-
-    """
-
-    if not use_origin_backend(df):
-        if dpnp.is_cuda_backend():  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-
-        # TODO:
-        # array_like of floats for `df`
-        if not dpnp.isscalar(df):
-            pass
-        elif df <= 0:
-            pass
-        else:
-            return _legacy_rng(dpnp_rng_standard_t, df, size).get_pyobj()
-
-    return call_origin(numpy.random.standard_t, df, size)
-
-
-def triangular(left, mode, right, size=None):
-    """
-    Draw samples from the triangular distribution over the interval
-    [left, right].
-
-    For full documentation refer to :obj:`numpy.random.triangular`.
-
-    Limitations
-    -----------
-    Parameters `left`, `mode` and `right` are supported as scalar.
-    Otherwise, :obj:`numpy.random.triangular(left, mode, right, size)`
-    samples are drawn.
-    Output array data type is :obj:`dpnp.float64`.
-
-    Examples
-    --------
-    Draw samples from the distribution:
-
-    >>> df = 2.
-    >>> s = dpnp.random.triangular(-3, 0, 8, 1000000)
-
-    """
-
-    if not use_origin_backend(left):
-        if dpnp.is_cuda_backend():  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-
-        # TODO:
-        # array_like of floats for `left`, `mode`, `right`.
-        if not dpnp.isscalar(left):
-            pass
-        elif not dpnp.isscalar(mode):
-            pass
-        elif not dpnp.isscalar(right):
-            pass
-        elif left > mode:
-            pass
-        elif mode > right:
-            pass
-        elif left == right:
-            pass
-        else:
-            return _legacy_rng(
-                dpnp_rng_triangular, left, mode, right, size
-            ).get_pyobj()
-
-    return call_origin(numpy.random.triangular, left, mode, right, size)
-
-
-def uniform(
-    low=0.0,
-    high=1.0,
+@_params_doc
+def rayleigh(
+    scale=1.0,
     size=None,
+    dtype=None,
+    *,
     device=None,
     usm_type="device",
     sycl_queue=None,
 ):
     """
-    Draw samples from a uniform distribution.
+    Draw samples from a Rayleigh distribution.
 
-    Samples are uniformly distributed over the half-open interval [low, high) (includes low, but excludes high).
-    In other words, any value within the given interval is equally likely to be drawn by uniform.
+    For full documentation refer to :obj:`numpy.random.rayleigh`.
+
+    Parameters
+    ----------
+    %(dtype)s
+    %(queue)s
+    %(usm)s
+
+    See Also
+    --------
+    :obj:`dpnp.random.RandomState.rayleigh`
+
+    """
+    rs = _get_random_state(device, sycl_queue, (scale,))
+    return rs.rayleigh(scale, size, dtype, usm_type=usm_type)
+
+
+@_params_doc
+def sample(
+    size=None, dtype=None, *, device=None, usm_type="device", sycl_queue=None
+):
+    """
+    Return random floats in the half-open interval [0.0, 1.0). An alias of
+    :obj:`dpnp.random.random_sample`.
+
+    For full documentation refer to :obj:`numpy.random.sample`.
+
+    Parameters
+    ----------
+    %(dtype)s
+    %(queue)s
+    %(usm)s
+
+    See Also
+    --------
+    :obj:`dpnp.random.RandomState.random_sample`
+
+    """
+    rs = _get_random_state(device, sycl_queue)
+    return rs.random_sample(size, dtype, usm_type=usm_type)
+
+
+def shuffle(x):
+    """
+    Modify an array in place by shuffling its contents along the first axis.
+
+    For full documentation refer to :obj:`numpy.random.shuffle`.
+
+    The state of the queue of `x` is used.
+
+    See Also
+    --------
+    :obj:`dpnp.random.RandomState.shuffle`
+
+    """
+    _get_random_state(arrays=(x,)).shuffle(x)
+
+
+@_params_doc
+def standard_cauchy(
+    size=None, dtype=None, *, device=None, usm_type="device", sycl_queue=None
+):
+    """
+    Draw samples from a standard Cauchy distribution with mode = 0.
+
+    For full documentation refer to :obj:`numpy.random.standard_cauchy`.
+
+    Parameters
+    ----------
+    %(dtype)s
+    %(queue)s
+    %(usm)s
+
+    See Also
+    --------
+    :obj:`dpnp.random.RandomState.standard_cauchy`
+
+    """
+    rs = _get_random_state(device, sycl_queue, ())
+    return rs.standard_cauchy(size, dtype, usm_type=usm_type)
+
+
+@_params_doc
+def standard_exponential(
+    size=None, dtype=None, *, device=None, usm_type="device", sycl_queue=None
+):
+    """
+    Draw samples from the standard exponential distribution.
+
+    For full documentation refer to :obj:`numpy.random.standard_exponential`.
+
+    Parameters
+    ----------
+    %(dtype)s
+    %(queue)s
+    %(usm)s
+
+    See Also
+    --------
+    :obj:`dpnp.random.RandomState.standard_exponential`
+
+    """
+    rs = _get_random_state(device, sycl_queue, ())
+    return rs.standard_exponential(size, dtype, usm_type=usm_type)
+
+
+@_params_doc
+def standard_gamma(
+    shape,
+    size=None,
+    dtype=None,
+    *,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
+    """
+    Draw samples from a standard Gamma distribution.
+
+    For full documentation refer to :obj:`numpy.random.standard_gamma`.
+
+    Parameters
+    ----------
+    %(dtype)s
+    %(queue)s
+    %(usm)s
+
+    See Also
+    --------
+    :obj:`dpnp.random.RandomState.standard_gamma`
+
+    """
+    rs = _get_random_state(device, sycl_queue, (shape,))
+    return rs.standard_gamma(shape, size, dtype, usm_type=usm_type)
+
+
+@_params_doc
+def standard_normal(
+    size=None, dtype=None, *, device=None, usm_type="device", sycl_queue=None
+):
+    """
+    Draw samples from a standard Normal distribution (mean=0, stdev=1).
+
+    For full documentation refer to :obj:`numpy.random.standard_normal`.
+
+    Parameters
+    ----------
+    %(dtype)s
+    %(queue)s
+    %(usm)s
+
+    See Also
+    --------
+    :obj:`dpnp.random.RandomState.standard_normal`
+
+    """
+    rs = _get_random_state(device, sycl_queue, ())
+    return rs.standard_normal(size, dtype, usm_type=usm_type)
+
+
+@_params_doc
+def standard_t(
+    df,
+    size=None,
+    dtype=None,
+    *,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
+    """
+    Draw samples from a standard Student's t distribution with `df` degrees
+    of freedom.
+
+    For full documentation refer to :obj:`numpy.random.standard_t`.
+
+    Parameters
+    ----------
+    %(dtype)s
+    %(queue)s
+    %(usm)s
+
+    See Also
+    --------
+    :obj:`dpnp.random.RandomState.standard_t`
+
+    """
+    rs = _get_random_state(device, sycl_queue, (df,))
+    return rs.standard_t(df, size, dtype, usm_type=usm_type)
+
+
+@_params_doc
+def triangular(
+    left,
+    mode,
+    right,
+    size=None,
+    dtype=None,
+    *,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
+    """
+    Draw samples from the triangular distribution over the interval [left,
+    right].
+
+    For full documentation refer to :obj:`numpy.random.triangular`.
+
+    Parameters
+    ----------
+    %(dtype)s
+    %(queue)s
+    %(usm)s
+
+    See Also
+    --------
+    :obj:`dpnp.random.RandomState.triangular`
+
+    """
+    rs = _get_random_state(device, sycl_queue, (left, mode, right))
+    return rs.triangular(left, mode, right, size, dtype, usm_type=usm_type)
+
+
+@_params_doc
+def uniform(
+    low=0.0,
+    high=1.0,
+    size=None,
+    dtype=None,
+    *,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
+    """
+    Draw samples from a uniform distribution over [low, high).
 
     For full documentation refer to :obj:`numpy.random.uniform`.
 
     Parameters
     ----------
-    device : {None, string, SyclDevice, SyclQueue, Device}, optional
-        An array API concept of device where the output array is created.
-        `device` can be ``None``, a oneAPI filter selector string, an instance
-        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
-        device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpnp.tensor.Device` object returned by
-        :attr:`dpnp.ndarray.device`.
-
-        Default: ``None``.
-    usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
-
-        Default: ``"device"``.
-    sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for output array allocation and copying. The
-        `sycl_queue` can be passed as ``None`` (the default), which means
-        to get the SYCL queue from `device` keyword if present or to use
-        a default queue.
-
-        Default: ``None``.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        Drawn samples from the parameterized uniform distribution.
-        Output array data type is the same as input `dtype`. If `dtype` is ``None`` (the default),
-        :obj:`dpnp.float64` type will be used if device supports it, or :obj:`dpnp.float32` otherwise.
-
-    Limitations
-    -----------
-    Parameters `low` and `high` are supported as a scalar. Otherwise,
-    :obj:`numpy.random.uniform(low, high, size)` samples are drawn.
-    Parameter `dtype` is supported only as :obj:`dpnp.int32`, :obj:`dpnp.float32`, :obj:`dpnp.float64` or ``None``.
-
-    Examples
-    --------
-    Draw samples from the distribution:
-
-    >>> low, high = 0, 0.1 # low and high
-    >>> s = dpnp.random.uniform(low, high, 10000)
+    %(dtype)s
+    %(queue)s
+    %(usm)s
 
     See Also
     --------
-    :obj:`dpnp.random.random` : Floats uniformly distributed over ``[0, 1)``.
+    :obj:`dpnp.random.RandomState.uniform`
 
     """
-
-    rs = _get_random_state(device=device, sycl_queue=sycl_queue)
-    return rs.uniform(
-        low=low, high=high, size=size, dtype=None, usm_type=usm_type
-    )
+    rs = _get_random_state(device, sycl_queue, (low, high))
+    return rs.uniform(low, high, size, dtype, usm_type=usm_type)
 
 
-def vonmises(mu, kappa, size=None):
+@_params_doc
+def vonmises(
+    mu,
+    kappa,
+    size=None,
+    dtype=None,
+    *,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
     """
     Draw samples from a von Mises distribution.
 
     For full documentation refer to :obj:`numpy.random.vonmises`.
 
-    Limitations
-    -----------
-    Parameters `mu` and `kappa` are supported as scalar.
-    Otherwise, :obj:`numpy.random.vonmises(mu, kappa, size)`
-    samples are drawn.
-    Output array data type is :obj:`dpnp.float64`.
+    Parameters
+    ----------
+    %(dtype)s
+    %(queue)s
+    %(usm)s
 
-    Examples
+    See Also
     --------
-    Draw samples from the distribution:
-
-    >>> mu, kappa = 0.0, 4.0 # mean and dispersion
-    >>> s = dpnp.random.vonmises(mu, kappa, 1000)
+    :obj:`dpnp.random.RandomState.vonmises`
 
     """
-
-    if not use_origin_backend(mu):
-        if dpnp.is_cuda_backend():  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-
-        # TODO:
-        # array_like of floats for `mu`, `kappa`.
-        if not dpnp.isscalar(mu):
-            pass
-        elif not dpnp.isscalar(kappa):
-            pass
-        elif numpy.isnan(kappa):
-            return dpnp.nan
-        elif kappa < 0:
-            pass
-        else:
-            return _legacy_rng(dpnp_rng_vonmises, mu, kappa, size).get_pyobj()
-
-    return call_origin(numpy.random.vonmises, mu, kappa, size)
+    rs = _get_random_state(device, sycl_queue, (mu, kappa))
+    return rs.vonmises(mu, kappa, size, dtype, usm_type=usm_type)
 
 
-def wald(mean, scale, size=None):
+@_params_doc
+def wald(
+    mean,
+    scale,
+    size=None,
+    dtype=None,
+    *,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
     """
     Draw samples from a Wald, or inverse Gaussian, distribution.
 
     For full documentation refer to :obj:`numpy.random.wald`.
 
-    Limitations
-    -----------
-    Parameters `mean` and `scale` are supported as scalar.
-    Otherwise, :obj:`numpy.random.wald(mean, scale, size)` samples are drawn.
-    Output array data type is :obj:`dpnp.float64`.
+    Parameters
+    ----------
+    %(dtype)s
+    %(queue)s
+    %(usm)s
 
-    Examples
+    See Also
     --------
-    >>> loc, scale = 3., 2.
-    >>> s = dpnp.random.wald(loc, scale, 1000)
+    :obj:`dpnp.random.RandomState.wald`
 
     """
-
-    if not use_origin_backend(mean):
-        if dpnp.is_cuda_backend():  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-
-        # TODO:
-        # array_like of floats for `mean` and `scale`
-        if not dpnp.isscalar(mean):
-            pass
-        elif not dpnp.isscalar(scale):
-            pass
-        elif mean <= 0:
-            pass
-        elif scale <= 0:
-            pass
-        else:
-            return _legacy_rng(dpnp_rng_wald, mean, scale, size).get_pyobj()
-
-    return call_origin(numpy.random.wald, mean, scale, size)
+    rs = _get_random_state(device, sycl_queue, (mean, scale))
+    return rs.wald(mean, scale, size, dtype, usm_type=usm_type)
 
 
-def weibull(a, size=None):
+@_params_doc
+def weibull(
+    a, size=None, dtype=None, *, device=None, usm_type="device", sycl_queue=None
+):
     """
     Draw samples from a Weibull distribution.
 
     For full documentation refer to :obj:`numpy.random.weibull`.
 
-    Limitations
-    -----------
-    Parameter `a` is supported as a scalar.
-    Otherwise, :obj:`numpy.random.weibull(a, size)` samples are drawn.
-    Output array data type is :obj:`dpnp.float64`.
+    Parameters
+    ----------
+    %(dtype)s
+    %(queue)s
+    %(usm)s
 
-    Examples
+    See Also
     --------
-    >>> a = 5. # shape
-    >>> s = np.random.weibull(a, 1000)
+    :obj:`dpnp.random.RandomState.weibull`
 
     """
-
-    if not use_origin_backend(a):
-        if dpnp.is_cuda_backend():  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-
-        # TODO:
-        # array_like of floats for `a` param
-        if not dpnp.isscalar(a):
-            pass
-        elif a < 0:
-            pass
-        else:
-            return _legacy_rng(dpnp_rng_weibull, a, size).get_pyobj()
-
-    return call_origin(numpy.random.weibull, a, size)
+    rs = _get_random_state(device, sycl_queue, (a,))
+    return rs.weibull(a, size, dtype, usm_type=usm_type)
 
 
-def zipf(a, size=None):
+@_params_doc
+def zipf(a, size=None, *, device=None, usm_type="device", sycl_queue=None):
     """
-    Returns an array of samples drawn from the Zipf distribution.
+    Draw samples from a Zipf distribution.
 
     For full documentation refer to :obj:`numpy.random.zipf`.
 
-    Limitations
-    -----------
-    Parameter `a`` is supported as a scalar.
-    Otherwise, :obj:`numpy.zipf.weibull(a, size)` samples are drawn.
-    Output array data type is :obj:`dpnp.float64`.
+    Parameters
+    ----------
+    %(queue)s
+    %(usm)s
 
-    Examples
+    See Also
     --------
-    >>> a = 2. # parameter
-    >>> s = np.random.zipf(a, 1000)
+    :obj:`dpnp.random.RandomState.zipf`
 
     """
-
-    if not use_origin_backend(a):
-        if dpnp.is_cuda_backend():  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-
-        # TODO:
-        # array_like of floats for `a` param
-        if not dpnp.isscalar(a):
-            pass
-        elif a <= 1:
-            pass
-        else:
-            return _legacy_rng(dpnp_rng_zipf, a, size).get_pyobj()
-
-    return call_origin(numpy.random.zipf, a, size)
-
-
-_dpnp_random_states = {}
+    rs = _get_random_state(device, sycl_queue, (a,))
+    return rs.zipf(a, size, usm_type=usm_type)

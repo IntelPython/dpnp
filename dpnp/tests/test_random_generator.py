@@ -440,6 +440,34 @@ class TestFloatMethods:
         res = default_rng(4).chisquare(df, size=(10**5, 2))
         assert_allclose(dpnp.asnumpy(res.mean(axis=0)), [1.0, 10.0], rtol=0.05)
 
+    @pytest.mark.parametrize(
+        "size",
+        [
+            True,
+            [True],
+            numpy.bool_(True),
+            numpy.array(True),
+            -1,
+            (2, -1),
+            2.0,
+            (2.0,),
+            numpy.array([[2]]),
+        ],
+    )
+    def test_bad_size(self, size):
+        _assert_same_error(
+            lambda: numpy.random.default_rng(0).normal(size=size),
+            lambda: default_rng(0).normal(size=size),
+        )
+
+    @pytest.mark.parametrize(
+        "size",
+        [numpy.int64(3), numpy.array(3), dpnp.array(3), (numpy.int64(2), 3)],
+    )
+    def test_size_castable_to_integer(self, size):
+        res = default_rng(0).normal(size=size)
+        assert res.shape == numpy.random.default_rng(0).normal(size=size).shape
+
     def test_size_not_broadcastable(self):
         rng = default_rng(0)
         assert_raises_regex(
@@ -846,6 +874,28 @@ class TestDiscreteMethods:
         rng.zipf(dpnp.asarray([0.5, numpy.nan]))
         rng.hypergeometric(dpnp.asarray([10**10]), 1, 5)
         rng.normal(0, dpnp.asarray([-1.0]))
+
+    def test_device_params_terminate(self):
+        # the parameters on which the rejection samplers could loop forever
+        # give INT64_MIN, or NaN for beta
+        rng = default_rng(0)
+        nan, inf = numpy.nan, numpy.inf
+        int64_min = numpy.iinfo(numpy.int64).min
+
+        res = rng.poisson(dpnp.asarray([inf, 1e300, 2.0**63]), size=(8, 3))
+        assert_array_equal(res, int64_min, strict=False)
+        res = rng.binomial(5, dpnp.asarray([nan, -1.0, 2.0]), size=(8, 3))
+        assert_array_equal(res, int64_min, strict=False)
+        n = dpnp.asarray([2**40, -1], dtype=dpnp.int64)
+        res = rng.hypergeometric(n, n.max(), 10**9, size=(8, 2))
+        assert_array_equal(res, int64_min, strict=False)
+        res = rng.beta(dpnp.asarray([-inf, -1.0, 0.0, nan]), 1.0, size=(8, 4))
+        assert dpnp.isnan(res).all()
+        rng.negative_binomial(dpnp.asarray([inf, nan]), 0.5)
+        rng.noncentral_chisquare(1.0, dpnp.asarray([inf, nan]))
+        rng.noncentral_f(1.0, 1.0, dpnp.asarray([inf, nan]))
+        res = rng.multinomial(10, dpnp.asarray([nan, 0.5, nan]))
+        assert res.shape == (3,)
 
 
 def _assert_same_error(np_call, dp_call):

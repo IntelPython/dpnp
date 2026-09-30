@@ -180,6 +180,10 @@ T standard_gamma(BitGenT &bg, StandardNormal<T> &normal, const T shape)
 template <typename T, typename BitGenT>
 T beta(BitGenT &bg, StandardNormal<T> &normal, const T a, const T b)
 {
+    if (!(a > T(0)) || !(b > T(0))) {
+        // invalid input, which Johnk's algorithm would reject forever
+        return std::numeric_limits<T>::quiet_NaN();
+    }
     if ((a <= T(1)) && (b <= T(1))) {
         // Below this threshold the result is 0 or 1 with overwhelming
         // probability, so a single uniform draw decides which. The
@@ -476,6 +480,12 @@ std::int64_t poisson_ptrs(BitGenT &bg, const T lam)
 template <typename T, typename BitGenT>
 std::int64_t poisson(BitGenT &bg, const T lam)
 {
+    if (lam >= T(0x1p63)) {
+        // invalid input, which PTRS would reject forever; this is the value
+        // of the out of range cast in NumPy's legacy code. NaN gives 0 below,
+        // as there.
+        return std::numeric_limits<std::int64_t>::min();
+    }
     if (lam >= T(10)) {
         return poisson_ptrs<T>(bg, lam);
     }
@@ -817,6 +827,11 @@ std::int64_t binomial_btpe(BitGenT &bg, const std::int64_t n, const T p)
 template <typename T, typename BitGenT>
 std::int64_t binomial(BitGenT &bg, const std::int64_t n, const T p)
 {
+    // Invalid params are only possible on the device, where they are not
+    // checked. BTPE rejects forever for a NaN p.
+    if (!(n >= 0) || !(p >= T(0) && p <= T(1))) {
+        return std::numeric_limits<std::int64_t>::min();
+    }
     if ((n == 0) || (p == T(0))) {
         return 0;
     }
@@ -1066,6 +1081,14 @@ std::int64_t hypergeometric(BitGenT &bg,
                             const std::int64_t bad,
                             const std::int64_t sample)
 {
+    // Invalid params are only possible on the device, where they are not
+    // checked. HRUA's integer products overflow for good or bad of 10**9 or
+    // more, after which it may reject forever.
+    constexpr std::int64_t max_good_bad = 1000000000;
+    if (!((good >= 0) && (good < max_good_bad) && (bad >= 0) &&
+          (bad < max_good_bad) && (sample >= 0) && (sample <= good + bad))) {
+        return std::numeric_limits<std::int64_t>::min();
+    }
     if ((sample >= 10) && (sample <= good + bad - 10)) {
         return hypergeometric_hrua<T>(bg, good, bad, sample);
     }

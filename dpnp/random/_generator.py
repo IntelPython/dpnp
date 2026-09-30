@@ -82,9 +82,29 @@ _CONS_BOUNDED_GT_0_1 = 5
 _CONS_BOUNDED_LT_0_1 = 6
 _CONS_GT_1 = 7
 _CONS_POISSON = 8
+_CONS_GTE_1 = 9
 
 _POISSON_LAM_MAX = _INT64_MAX - numpy.sqrt(_INT64_MAX) * 10
 _HYPERGEOM_MAX = 10**9
+
+# the messages of Generator.choice
+_CHOICE_MSGS = {
+    "a_type": "a must be a sequence or an integer, not {}",
+    "a_int": "a must be a positive integer unless no samples are taken",
+    "a_1d": None,
+    "a_empty": "a cannot be empty unless no samples are taken",
+    "p_1d": "p must be 1-dimensional",
+    "p_size": "a and p must have same size",
+    "p_nan": "Probabilities contain NaN",
+    "p_neg": "Probabilities are not non-negative",
+    "p_sum": (
+        "Probabilities do not sum to 1. See Notes section of docstring for "
+        "more information."
+    ),
+    "too_large": (
+        "Cannot take a larger sample than population when replace is False"
+    ),
+}
 
 
 def _is_array(x):
@@ -100,13 +120,58 @@ def _is_scalar_path(*params):
     return all(numpy.ndim(p) == 0 for p in params)
 
 
+def _size_dim(s):
+    # booleans have __index__, but NumPy does not take them as dimensions
+    if isinstance(s, (bool, numpy.bool_)):
+        raise TypeError("an integer is required")
+    return operator.index(s)
+
+
 def _normalize_size(size):
+    """`size` as a shape, with the checks and the messages of NumPy."""
+
     if size is None:
         return None
-    try:
-        return (operator.index(size),)
-    except TypeError:
-        return tuple(operator.index(s) for s in size)
+    if numpy.ndim(size) == 0:
+        if isinstance(size, (bool, numpy.bool_)) or (
+            getattr(size, "dtype", None) == numpy.bool_
+        ):
+            index = None
+        else:
+            try:
+                index = operator.index(size)
+            except TypeError:
+                index = None
+        if index is None:
+            raise TypeError(
+                "expected a sequence of integers or a single integer, "
+                f"got '{size!r}'"
+            )
+        shape = (index,)
+    else:
+        shape = tuple(_size_dim(s) for s in size)
+    if any(s < 0 for s in shape):
+        raise ValueError("negative dimensions are not allowed")
+    return shape
+
+
+def _uniform_range(low, high, overflow_msg):
+    """
+    ``high - low`` of host params, raising OverflowError with `overflow_msg`
+    unless it is finite, or ``None`` when either param is on the device.
+
+    """
+
+    if dpnp.is_supported_array_type(low) or dpnp.is_supported_array_type(high):
+        return None
+    with numpy.errstate(over="ignore", invalid="ignore"):
+        rng = numpy.subtract(
+            numpy.asarray(high, dtype=numpy.float64),
+            numpy.asarray(low, dtype=numpy.float64),
+        )
+    if not numpy.all(numpy.isfinite(rng)):
+        raise OverflowError(overflow_msg)
+    return rng
 
 
 # pylint: disable=too-many-branches
@@ -145,6 +210,9 @@ def _check_constraint(value, name, cons, scalar):
     elif cons == _CONS_GT_1:
         if not numpy.all(val > 1):
             raise ValueError(f"{name} <= 1 or {name} {nan_msg}")
+    elif cons == _CONS_GTE_1:
+        if not numpy.all(val >= 1):
+            raise ValueError(f"{name} < 1 or {name} {nan_msg}")
     elif cons == _CONS_POISSON:
         # the array path checks the upper bound first, so NaN fails it
         if scalar:
@@ -493,21 +561,16 @@ class Generator:
         """
 
         scalar = _is_scalar_path(low, high)
-        if not (
-            dpnp.is_supported_array_type(low)
-            or dpnp.is_supported_array_type(high)
-        ):
-            with numpy.errstate(over="ignore", invalid="ignore"):
-                rng = numpy.subtract(
-                    numpy.asarray(high, dtype=numpy.float64),
-                    numpy.asarray(low, dtype=numpy.float64),
-                )
-            if not numpy.all(numpy.isfinite(rng)):
-                raise OverflowError(
-                    "high - low range exceeds valid bounds"
-                    if scalar
-                    else "Range exceeds valid bounds"
-                )
+        rng = _uniform_range(
+            low,
+            high,
+            (
+                "high - low range exceeds valid bounds"
+                if scalar
+                else "Range exceeds valid bounds"
+            ),
+        )
+        if rng is not None:
             _check_constraint(rng, "high - low", _CONS_NON_NEGATIVE, scalar)
         return self._float_sample(
             ri._uniform, (low, high), size, dtype, usm_type, "uniform"
@@ -1701,7 +1764,6 @@ class Generator:
         out[...] = res
         return out
 
-    # pylint: disable=too-many-branches, too-many-statements
     def choice(
         self,
         a,
@@ -1728,6 +1790,17 @@ class Generator:
         """
 
         # pylint: disable=unused-argument
+        return self._choice(a, size, replace, p, axis, usm_type, _CHOICE_MSGS)
+
+    # pylint: disable=too-many-branches, too-many-statements
+    def _choice(self, a, size, replace, p, axis, usm_type, msgs):
+        """
+        The implementation of :meth:`choice`, raising the messages of the
+        table `msgs`, as those of NumPy's legacy ``RandomState.choice``
+        differ.
+
+        """
+
         validate_usm_type(usm_type, allow_none=False)
         queue = self.sycl_queue
         no_samples = size is not None and numpy.prod(size) == 0
@@ -1743,20 +1816,17 @@ class Generator:
                 pop_size = operator.index(a.item())
             except TypeError as exc:
                 raise ValueError(
-                    "a must be a sequence or an integer, "
-                    f"not {type(a_original)}"
+                    msgs["a_type"].format(type(a_original))
                 ) from exc
             if pop_size <= 0 and not no_samples:
-                raise ValueError(
-                    "a must be a positive integer unless no samples are taken"
-                )
+                raise ValueError(msgs["a_int"])
         else:
+            if msgs["a_1d"] is not None and a.ndim != 1:
+                raise ValueError(msgs["a_1d"])
             axis = normalize_axis_index(axis, a.ndim)
             pop_size = a.shape[axis]
             if pop_size == 0 and not no_samples:
-                raise ValueError(
-                    "a cannot be empty unless no samples are taken"
-                )
+                raise ValueError(msgs["a_empty"])
 
         p_host = None
         if p is not None:
@@ -1771,20 +1841,17 @@ class Generator:
                 p_host = numpy.asarray(p, dtype=numpy.float64)
                 p_dev = p_host
             if p_dev.ndim != 1:
-                raise ValueError("p must be 1-dimensional")
+                raise ValueError(msgs["p_1d"])
             if p_dev.size != pop_size:
-                raise ValueError("a and p must have same size")
+                raise ValueError(msgs["p_size"])
             if p_host is not None:
                 p_sum = p_host.sum()
                 if numpy.isnan(p_sum):
-                    raise ValueError("Probabilities contain NaN")
+                    raise ValueError(msgs["p_nan"])
                 if numpy.any(p_host < 0):
-                    raise ValueError("Probabilities are not non-negative")
+                    raise ValueError(msgs["p_neg"])
                 if abs(p_sum - 1.0) > atol:
-                    raise ValueError(
-                        "Probabilities do not sum to 1. See Notes section of "
-                        "docstring for more information."
-                    )
+                    raise ValueError(msgs["p_sum"])
             ft = dpnp.default_float_type(sycl_queue=queue)
             p_dev = dpnp.asarray(p_dev, dtype=ft, sycl_queue=queue)
 
@@ -1792,10 +1859,7 @@ class Generator:
         n = int(numpy.prod(shape, dtype=numpy.int64))
         if not replace:
             if n > pop_size:
-                raise ValueError(
-                    "Cannot take a larger sample than population when "
-                    "replace is False"
-                )
+                raise ValueError(msgs["too_large"])
             if p_host is not None and numpy.count_nonzero(p_host > 0) < n:
                 raise ValueError("Fewer non-zero entries in p than size")
 
@@ -1851,6 +1915,13 @@ class Generator:
 
         """
 
+        return self._integers(
+            low, high, size, dtype, endpoint, usm_type, "integers"
+        )
+
+    def _integers(self, low, high, size, dtype, endpoint, usm_type, name):
+        """The implementation of :meth:`integers`, for the method `name`."""
+
         validate_usm_type(usm_type, allow_none=False)
 
         if high is None:
@@ -1858,7 +1929,7 @@ class Generator:
 
         dtype = numpy.dtype(dtype)
         if dtype not in _integer_types:
-            raise TypeError(f"Unsupported dtype {dtype!r} for integers")
+            raise TypeError(f"Unsupported dtype {dtype!r} for {name}")
 
         # The bounds are passed to the kernel as a closed interval
         if dtype == numpy.bool_:

@@ -16,7 +16,7 @@ class TestDistribution(unittest.TestCase):
         dpnp.random.seed(seed)
         res = dpnp.asnumpy(getattr(dpnp.random, dist_name)(size=size, **params))
         assert len(numpy.unique(res)) == 1
-        assert numpy.unique(res)[0] == val
+        assert numpy.isclose(numpy.unique(res)[0], val, rtol=1e-15, atol=0)
 
     def check_moments(
         self, dist_name, expected_mean, expected_var, params, size=10**5
@@ -151,7 +151,6 @@ def test_randn_normal_distribution():
 
 
 @pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsBeta(TestDistribution):
     def test_moments(self):
         a = 2.56
@@ -177,7 +176,6 @@ class TestDistributionsBeta(TestDistribution):
 
 
 @pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsBinomial(TestDistribution):
     def test_extreme_value(self):
         n = 5
@@ -216,7 +214,6 @@ class TestDistributionsBinomial(TestDistribution):
 
 
 @pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsChisquare(TestDistribution):
     def test_invalid_args(self):
         df = -1  # positive `df` is expected
@@ -228,7 +225,6 @@ class TestDistributionsChisquare(TestDistribution):
 
 
 @pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsExponential(TestDistribution):
     def test_invalid_args(self):
         scale = -1  # non-negative `scale` is expected
@@ -240,7 +236,6 @@ class TestDistributionsExponential(TestDistribution):
 
 
 @pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsF(TestDistribution):
     def test_moments(self):
         dfnum = 12.56
@@ -274,7 +269,6 @@ class TestDistributionsF(TestDistribution):
 
 
 @pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsGamma(TestDistribution):
     def test_moments(self):
         shape = 2.56
@@ -301,7 +295,6 @@ class TestDistributionsGamma(TestDistribution):
         self.check_seed("gamma", {"shape": shape})
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsGeometric(TestDistribution):
     def test_extreme_value(self):
         p = 1.0
@@ -310,7 +303,8 @@ class TestDistributionsGeometric(TestDistribution):
 
     def test_moments(self):
         p = 0.8
-        expected_mean = (1 - p) / p
+        # the number of trials up to and including the first success
+        expected_mean = 1 / p
         expected_var = (1 - p) / (p**2)
         self.check_moments("geometric", expected_mean, expected_var, {"p": p})
 
@@ -325,7 +319,6 @@ class TestDistributionsGeometric(TestDistribution):
 
 
 @pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsGumbel(TestDistribution):
     def test_extreme_value(self):
         loc = 5
@@ -357,7 +350,6 @@ class TestDistributionsGumbel(TestDistribution):
 
 
 @pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsHypergeometric(TestDistribution):
     def test_extreme_value(self):
         ngood = 100
@@ -444,12 +436,11 @@ class TestDistributionsHypergeometric(TestDistribution):
 
 
 @pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsLaplace(TestDistribution):
     def test_extreme_value(self):
         loc = 5
         scale = 0.0
-        expected_val = scale
+        expected_val = loc
         self.check_extreme_value(
             "laplace", expected_val, {"loc": loc, "scale": scale}
         )
@@ -475,7 +466,6 @@ class TestDistributionsLaplace(TestDistribution):
 
 
 @pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsLogistic(TestDistribution):
     def test_moments(self):
         loc = 2.56
@@ -501,7 +491,6 @@ class TestDistributionsLogistic(TestDistribution):
 
 
 @pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsLognormal(TestDistribution):
     def test_extreme_value(self):
         mean = 0.5
@@ -537,7 +526,6 @@ class TestDistributionsLognormal(TestDistribution):
 
 
 @pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsMultinomial(TestDistribution):
     def test_extreme_value(self):
         n = 0
@@ -586,7 +574,6 @@ class TestDistributionsMultinomial(TestDistribution):
         self.check_seed("multinomial", {"n": n, "pvals": pvals})
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsMultivariateNormal(TestDistribution):
     def test_moments(self):
         seed = 2804183
@@ -595,8 +582,8 @@ class TestDistributionsMultivariateNormal(TestDistribution):
         cov = [[1, 0], [0, 1]]
         size = 10**5
         res = dpnp.random.multivariate_normal(mean=mean, cov=cov, size=size)
-        res_mean = [dpnp.mean(res.T[0]), dpnp.mean(res.T[1])]
-        assert dpnp.allclose(res_mean, mean)
+        # six standard deviations of the sample mean
+        assert_allclose(dpnp.mean(res, axis=0), mean, atol=6 / size**0.5)
 
     def test_invalid_args(self):
         mean = [2.56, 3.23]  # OK
@@ -632,7 +619,6 @@ class TestDistributionsMultivariateNormal(TestDistribution):
 
 
 @pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsNegativeBinomial(TestDistribution):
     def test_extreme_value(self):
         seed = 28041990
@@ -694,7 +680,6 @@ class TestDistributionsNormal(TestDistribution):
 
 
 @pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsNoncentralChisquare:
     @pytest.mark.parametrize(
         "df", [5.0, 1.0, 0.5], ids=["df_grt_1", "df_eq_1", "df_less_1"]
@@ -738,11 +723,11 @@ class TestDistributionsNoncentralChisquare:
 
 
 @pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsPareto(TestDistribution):
     def test_moments(self):
+        # Pareto II (Lomax)
         a = 30.0
-        expected_mean = a / (a - 1)
+        expected_mean = 1 / (a - 1)
         expected_var = a / (((a - 1) ** 2) * (a - 2))
         self.check_moments("pareto", expected_mean, expected_var, {"a": a})
 
@@ -757,7 +742,6 @@ class TestDistributionsPareto(TestDistribution):
 
 
 @pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsPoisson(TestDistribution):
     def test_extreme_value(self):
         lam = 0.0
@@ -779,7 +763,6 @@ class TestDistributionsPoisson(TestDistribution):
 
 
 @pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsPower(TestDistribution):
     def test_moments(self):
         a = 30.0
@@ -799,7 +782,6 @@ class TestDistributionsPower(TestDistribution):
 
 
 @pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsRayleigh(TestDistribution):
     def test_extreme_value(self):
         scale = 0.0
@@ -841,7 +823,6 @@ class TestDistributionsStandardExponential(TestDistribution):
 
 
 @pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsStandardGamma(TestDistribution):
     def test_extreme_value(self):
         self.check_extreme_value("standard_gamma", 0.0, {"shape": 0.0})
@@ -873,7 +854,6 @@ class TestDistributionsStandardNormal(TestDistribution):
 
 
 @pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsStandardT(TestDistribution):
     def test_moments(self):
         df = 300.0
@@ -892,7 +872,6 @@ class TestDistributionsStandardT(TestDistribution):
 
 
 @pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsTriangular(TestDistribution):
     def test_moments(self):
         left = 1.0
@@ -964,7 +943,6 @@ class TestDistributionsUniform(TestDistribution):
 
 
 @pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsVonmises:
     @pytest.mark.parametrize(
         "kappa", [5.0, 0.5], ids=["large_kappa", "small_kappa"]
@@ -1005,7 +983,6 @@ class TestDistributionsVonmises:
 
 
 @pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsWald(TestDistribution):
     def test_moments(self):
         size = 5 * 10**6
@@ -1037,7 +1014,6 @@ class TestDistributionsWald(TestDistribution):
 
 
 @pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsWeibull(TestDistribution):
     def test_extreme_value(self):
         a = 0.0
@@ -1054,7 +1030,6 @@ class TestDistributionsWeibull(TestDistribution):
 
 
 @pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsZipf(TestDistribution):
     def test_invalid_args(self):
         a = 1.0  # parameter `a` is expected greater than 1.
@@ -1104,29 +1079,16 @@ class TestPermutationsTestShuffle:
             lambda x: dpnp.astype(dpnp.asarray(x), dpnp.int8),
             lambda x: dpnp.astype(dpnp.asarray(x), dpnp.float32),
             lambda x: dpnp.asarray(x).astype(dpnp.complex64),
-            lambda x: dpnp.astype(dpnp.asarray(x), object),
             lambda x: dpnp.asarray([[i, i] for i in x]),
-            lambda x: dpnp.vstack([x, x]).T,
-            lambda x: (
-                dpnp.asarray(
-                    [(i, i) for i in x], [("a", int), ("b", int)]
-                ).view(dpnp.recarray)
-            ),
-            lambda x: dpnp.asarray(
-                [(i, i) for i in x], [("a", object), ("b", dpnp.int32)]
-            ),
+            lambda x: dpnp.vstack([dpnp.asarray(x), dpnp.asarray(x)]).T,
         ],
         ids=[
             "lambda x: dpnp.array([])",
             "lambda x: dpnp.astype(dpnp.asarray(x), dpnp.int8)",
             "lambda x: dpnp.astype(dpnp.asarray(x), dpnp.float32)",
             "lambda x: dpnp.asarray(x).astype(dpnp.complex64)",
-            "lambda x: dpnp.astype(dpnp.asarray(x), object)",
             "lambda x: dpnp.asarray([[i, i] for i in x])",
             "lambda x: dpnp.vstack([x, x]).T",
-            "lambda x: (dpnp.asarray([(i, i) for i in x], ["
-            '("a", int), ("b", int)]).view(dpnp.recarray))',
-            'lambda x: dpnp.asarray([(i, i) for i in x], [("a", object), ("b", dpnp.int32)])]',
         ],
     )
     def test_shuffle1(self, conv):
@@ -1156,25 +1118,10 @@ class TestPermutationsTestShuffle:
         desired = conv(dpnp_1d)
         assert_array_equal(actual, desired)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize(
-        "conv",
-        [lambda x: x, lambda x: [(i, i) for i in x]],
-        ids=[
-            "lambda x: x",
-            "lambda x: [(i, i) for i in x]",
-        ],
+        "x", [[1, 2, 3], numpy.arange(3)], ids=["list", "numpy.ndarray"]
     )
-    def test_shuffle1_fallback(self, conv):
-        # This is parameterized version of original tests of `numpy.random` (both the same):
-        # * tests/test_random.py::TestRandomDist::test_shuffle
-        # * tests/test_randomstate.py::TestRandomDist::test_shuffle
-
-        seed = 1234567890
-
-        dpnp.random.seed(seed)
-        alist = conv([1, 2, 3, 4, 5, 6, 7, 8, 9, 0])
-        dpnp.random.shuffle(alist)
-        actual = alist
-        desired = conv([0, 1, 9, 6, 2, 4, 5, 8, 7, 3])
-        assert_array_equal(actual, desired)
+    def test_shuffle_not_dpnp_array(self, x):
+        # unlike NumPy, only a dpnp.ndarray is shuffled, like in CuPy
+        with pytest.raises(TypeError):
+            dpnp.random.shuffle(x)
