@@ -891,6 +891,8 @@ class TestDiscreteMethods:
         assert_array_equal(res, int64_min, strict=False)
         res = rng.beta(dpnp.asarray([-inf, -1.0, 0.0, nan]), 1.0, size=(8, 4))
         assert dpnp.isnan(res).all()
+        res = rng.logseries(dpnp.asarray([1.0, 2.0, inf, nan]), size=(8, 4))
+        assert_array_equal(res, int64_min, strict=False)
         rng.negative_binomial(dpnp.asarray([inf, nan]), 0.5)
         rng.noncentral_chisquare(1.0, dpnp.asarray([inf, nan]))
         rng.noncentral_f(1.0, 1.0, dpnp.asarray([inf, nan]))
