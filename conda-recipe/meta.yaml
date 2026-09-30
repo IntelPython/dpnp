@@ -69,7 +69,6 @@ requirements:
       - {{ pin_compatible('onemkl-sycl-blas', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('onemkl-sycl-dft', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('onemkl-sycl-lapack', min_pin='x.x', max_pin='x') }}
-      - {{ pin_compatible('onemkl-sycl-rng', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('onemkl-sycl-vm', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('onemkl-sycl-sparse', min_pin='x.x', max_pin='x') }}
       - numpy

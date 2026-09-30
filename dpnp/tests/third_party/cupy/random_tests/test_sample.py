@@ -151,23 +151,17 @@ class TestRandomIntegers(unittest.TestCase):
     def test_normal(self):
         with mock.patch("dpnp.random.RandomState.randint") as m:
             random.random_integers(3, 5)
-        m.assert_called_with(
-            low=3, high=6, size=None, dtype=int, usm_type="device"
-        )
+        m.assert_called_with(3, 6, None, numpy.int64, usm_type="device")
 
     def test_high_is_none(self):
         with mock.patch("dpnp.random.RandomState.randint") as m:
             random.random_integers(3, None)
-        m.assert_called_with(
-            low=0, high=4, size=None, dtype=int, usm_type="device"
-        )
+        m.assert_called_with(1, 4, None, numpy.int64, usm_type="device")
 
     def test_size_is_not_none(self):
         with mock.patch("dpnp.random.RandomState.randint") as m:
             random.random_integers(3, 5, (1, 2, 3))
-        m.assert_called_with(
-            low=3, high=6, size=(1, 2, 3), dtype=int, usm_type="device"
-        )
+        m.assert_called_with(3, 6, (1, 2, 3), numpy.int64, usm_type="device")
 
 
 @testing.fix_random()
@@ -258,12 +252,12 @@ class TestRandomSample(unittest.TestCase):
     def test_rand(self):
         with mock.patch("dpnp.random.RandomState.random_sample") as m:
             random.rand(1, 2, 3)
-        m.assert_called_once_with(size=(1, 2, 3), usm_type="device")
+        m.assert_called_once_with((1, 2, 3), None, usm_type="device")
 
     def test_rand_default_dtype(self):
         with mock.patch("dpnp.random.RandomState.random_sample") as m:
             random.rand(1, 2, 3)
-        m.assert_called_once_with(size=(1, 2, 3), usm_type="device")
+        m.assert_called_once_with((1, 2, 3), None, usm_type="device")
 
     def test_rand_invalid_argument(self):
         with self.assertRaises(TypeError):
@@ -272,12 +266,12 @@ class TestRandomSample(unittest.TestCase):
     def test_randn(self):
         with mock.patch("dpnp.random.RandomState.standard_normal") as m:
             random.randn(1, 2, 3)
-        m.assert_called_once_with(size=(1, 2, 3), usm_type="device")
+        m.assert_called_once_with((1, 2, 3), None, usm_type="device")
 
     def test_randn_default_dtype(self):
         with mock.patch("dpnp.random.RandomState.standard_normal") as m:
             random.randn(1, 2, 3)
-        m.assert_called_once_with(size=(1, 2, 3), usm_type="device")
+        m.assert_called_once_with((1, 2, 3), None, usm_type="device")
 
     def test_randn_invalid_argument(self):
         with self.assertRaises(TypeError):

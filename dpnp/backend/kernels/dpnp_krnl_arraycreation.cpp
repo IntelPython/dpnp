@@ -158,7 +158,6 @@ void (*dpnp_zeros_like_default_c)(void *,
 
 void func_map_init_arraycreation(func_map_t &fmap)
 {
-    // Used in dpnp_rng_geometric_c
     fmap[DPNPFuncName::DPNP_FN_ONES][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_ones_default_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_ONES][eft_LNG][eft_LNG] = {
@@ -185,8 +184,6 @@ void func_map_init_arraycreation(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_ONES_LIKE][eft_C128][eft_C128] = {
         eft_C128, (void *)dpnp_ones_like_default_c<std::complex<double>>};
 
-    // Used in dpnp_rng_binomial_c, dpnp_rng_gamma_c, dpnp_rng_hypergeometric_c
-    //         dpnp_rng_laplace_c, dpnp_rng_multinomial_c, dpnp_rng_weibull_c
     fmap[DPNPFuncName::DPNP_FN_ZEROS][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_zeros_default_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_ZEROS][eft_LNG][eft_LNG] = {

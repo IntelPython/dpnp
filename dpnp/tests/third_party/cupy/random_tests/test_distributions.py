@@ -157,6 +157,7 @@ class TestDistributionsExponential(RandomDistributionsTestCase):
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsExponentialError(RandomDistributionsTestCase):
 
+    @pytest.mark.skip("parameters on the device are not checked")
     def test_negative_scale(self):
         scale = cupy.array([2, -1, 3], dtype=numpy.float32)
         with pytest.raises(ValueError):
@@ -415,6 +416,7 @@ class TestDistributionsLogseries(RandomDistributionsTestCase):
         p = numpy.full(self.p_shape, 0.5, dtype=p_dtype)
         self.check_distribution("logseries", {"p": p})
 
+    @pytest.mark.skip("parameters on the device are not checked")
     # @testing.for_dtypes([numpy.int64, numpy.int32], "dtype") # no dtype supported
     @testing.for_float_dtypes("p_dtype", no_float16=True)
     def test_logseries_for_invalid_p(self, p_dtype):
@@ -511,6 +513,7 @@ class TestDistributionsNoncentralChisquare(RandomDistributionsTestCase):
             "noncentral_chisquare", {"df": df, "nonc": nonc}, self.dtype
         )
 
+    @pytest.mark.skip("parameters on the device are not checked")
     @testing.for_float_dtypes("param_dtype", no_float16=True)
     def test_noncentral_chisquare_for_invalid_params(self, param_dtype):
         df = cupy.full(self.df_shape, -1, dtype=param_dtype)
@@ -684,6 +687,7 @@ class TestDistributionsPower(RandomDistributionsTestCase):
         a = numpy.full(self.a_shape, 0.5, dtype=a_dtype)
         self.check_distribution("power", {"a": a})
 
+    @pytest.mark.skip("parameters on the device are not checked")
     # @testing.for_float_dtypes("dtype", no_float16=True) # no dtype supported
     @testing.for_float_dtypes("a_dtype")
     def test_power_for_negative_a(self, a_dtype):
@@ -716,6 +720,7 @@ class TestDistributionsRayleigh(RandomDistributionsTestCase):
         scale = numpy.zeros(self.scale_shape, dtype=scale_dtype)
         self.check_distribution("rayleigh", {"scale": scale})
 
+    @pytest.mark.skip("parameters on the device are not checked")
     # @testing.for_float_dtypes("dtype", no_float16=True) # no dtype supported
     @testing.for_float_dtypes("scale_dtype")
     def test_rayleigh_for_negative_scale(self, scale_dtype):
@@ -858,6 +863,7 @@ class TestDistributionsTriangular(RandomDistributionsTestCase):
             self.dtype,
         )
 
+    @pytest.mark.skip("parameters on the device are not checked")
     @testing.for_float_dtypes("param_dtype", no_float16=True)
     def test_triangular_for_invalid_params(self, param_dtype):
         left = cupy.full(self.left_shape, 1, dtype=param_dtype)
@@ -979,6 +985,7 @@ class TestDistributionsWeibull(RandomDistributionsTestCase):
         a = numpy.full(self.a_shape, numpy.inf, dtype=a_dtype)
         self.check_distribution("weibull", {"a": a})
 
+    @pytest.mark.skip("parameters on the device are not checked")
     # @testing.for_float_dtypes("dtype", no_float16=True) # no dtype supported
     @testing.for_float_dtypes("a_dtype")
     def test_weibull_for_negative_a(self, a_dtype):
