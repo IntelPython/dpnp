@@ -1028,3 +1028,36 @@ def test_matmul_out_appended_axes():
     out = dpt.empty((), dtype="i4")
     dpt.matmul(x1, x2, out=out)
     assert out == n1
+
+
+@pytest.mark.slow
+def test_vecdot_tree_multiple_passes_broadcast():
+    q = get_queue_or_skip()
+    dev = q.sycl_device
+    # number of elements above which the partial results of the work-groups
+    # are reduced
+    wg = 4 * max(dev.sub_group_sizes)
+    max_wg = min(2048, dev.max_work_group_size // 2)
+    n = 8 * wg * 8 * max_wg + 999
+
+    x1 = dpt.zeros((3, n), dtype="i1", sycl_queue=q)
+    for r in range(3):
+        x1[r, n - 1 - r :] = 1
+    # a broadcast x2 makes the strides of the operands differ from those of
+    # the result
+    x2 = dpt.ones(n, dtype="i1", sycl_queue=q)
+    res = dpt.vecdot(x1, x2)
+    assert dpt.asnumpy(res).tolist() == [1, 2, 3]
+
+
+@pytest.mark.parametrize("dt", ["c8", "c16"])
+def test_vecdot_tree_broadcast(dt):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dt, q)
+
+    n = 100000
+    x1 = dpt.ones((3, n), dtype=dt, sycl_queue=q)
+    x1 *= dpt.asarray([[1], [2], [3]], dtype=dt, sycl_queue=q)
+    x2 = dpt.ones(n, dtype=dt, sycl_queue=q)
+    res = dpt.vecdot(x1, x2)
+    assert dpt.asnumpy(res).tolist() == [n, 2 * n, 3 * n]

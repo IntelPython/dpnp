@@ -338,7 +338,7 @@ sycl::event tree_reduction_for_gemm(sycl::queue &exec_q,
         using ReductionIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
 
         const InputIndexerT inp_indexer{/* size */ iter_nelems,
-                                        /* step */ reduction_groups_};
+                                        /* step */ remaining_reduction_nelems};
         static constexpr ResIndexerT res_iter_indexer{};
 
         const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
@@ -461,7 +461,7 @@ sycl::event
         // creates a stack of reduction_nelems 2D matrices and we reduce
         // along the stack axis
         const InputIndexerT inp_indexer{/* size */ iter_nelems,
-                                        /* step */ reduction_groups_};
+                                        /* step */ remaining_reduction_nelems};
         static constexpr ResIndexerT res_iter_indexer{};
 
         const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
