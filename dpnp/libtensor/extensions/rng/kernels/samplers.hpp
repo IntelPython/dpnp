@@ -49,6 +49,12 @@ namespace dpnp::kernels::rng
 // `halves_per_item` is the number of 32-bit halves of raw 64-bit outputs
 // the sampler takes for every element, if that number is fixed, and 0
 // otherwise.
+//
+// `words_per_item` is the number of 32-bit words the sampler takes per
+// element, on average over items_per_work_item consecutive elements of one
+// work-item, if that number is fixed whatever the parameters and the
+// draws, and 0 otherwise. A rejection loop, even one that almost never
+// repeats, makes it 0.
 template <typename ResT, typename... ParamTs>
 struct SamplerBase
 {
@@ -56,7 +62,12 @@ struct SamplerBase
     using param_types = std::tuple<ParamTs...>;
 
     static constexpr unsigned halves_per_item = 0;
+    static constexpr unsigned words_per_item = 0;
 };
+
+// The number of 32-bit words one uniform value of type T takes
+template <typename T>
+inline constexpr unsigned uniform_words = sizeof(T) / 4;
 
 // The raw 64-bit, or 32-bit, output of the bit generator
 template <typename T>
@@ -64,6 +75,7 @@ class RawSampler : public SamplerBase<T>
 {
 public:
     static constexpr unsigned halves_per_item = sizeof(T) / 4;
+    static constexpr unsigned words_per_item = halves_per_item;
 
     template <typename BitGenT>
     T operator()(BitGenT &bg, const std::size_t)
@@ -87,6 +99,7 @@ private:
 
 public:
     static constexpr unsigned halves_per_item = sizeof(T) / 4;
+    static constexpr unsigned words_per_item = halves_per_item;
 
     UniformSampler(const Param<T> &low, const Param<T> &high)
         : low_(low), high_(high)
@@ -144,6 +157,9 @@ private:
     StandardNormal<T> normal_{};
 
 public:
+    // one normal, half a pair of uniform values, per element
+    static constexpr unsigned words_per_item = uniform_words<T>;
+
     NormalSampler(const Param<T> &loc, const Param<T> &scale)
         : loc_(loc), scale_(scale)
     {
@@ -166,6 +182,9 @@ private:
     StandardNormal<T> normal_{};
 
 public:
+    // one normal, half a pair of uniform values, per element
+    static constexpr unsigned words_per_item = uniform_words<T>;
+
     LognormalSampler(const Param<T> &mean, const Param<T> &sigma)
         : mean_(mean), sigma_(sigma)
     {
@@ -185,6 +204,9 @@ private:
     StandardNormal<T> normal_{};
 
 public:
+    // two normals per element
+    static constexpr unsigned words_per_item = 2 * uniform_words<T>;
+
     template <typename BitGenT>
     T operator()(BitGenT &bg, const std::size_t)
     {
@@ -202,6 +224,9 @@ private:
     StandardNormal<T> normal_{};
 
 public:
+    // one normal and one uniform value per element
+    static constexpr unsigned words_per_item = 2 * uniform_words<T>;
+
     WaldSampler(const Param<T> &mean, const Param<T> &scale)
         : mean_(mean), scale_(scale)
     {
@@ -222,6 +247,9 @@ private:
     Param<T> scale_;
 
 public:
+    // one uniform value per element
+    static constexpr unsigned words_per_item = uniform_words<T>;
+
     explicit ExponentialSampler(const Param<T> &scale) : scale_(scale) {}
 
     template <typename BitGenT>
@@ -239,6 +267,9 @@ private:
     Param<T> a_;
 
 public:
+    // one uniform value per element
+    static constexpr unsigned words_per_item = uniform_words<T>;
+
     explicit ParetoSampler(const Param<T> &a) : a_(a) {}
 
     template <typename BitGenT>
@@ -256,6 +287,9 @@ private:
     Param<T> a_;
 
 public:
+    // one uniform value per element
+    static constexpr unsigned words_per_item = uniform_words<T>;
+
     explicit WeibullSampler(const Param<T> &a) : a_(a) {}
 
     template <typename BitGenT>
@@ -278,6 +312,9 @@ private:
     Param<T> a_;
 
 public:
+    // one uniform value per element
+    static constexpr unsigned words_per_item = uniform_words<T>;
+
     explicit PowerSampler(const Param<T> &a) : a_(a) {}
 
     template <typename BitGenT>
@@ -296,6 +333,9 @@ private:
     Param<T> scale_;
 
 public:
+    // one uniform value per element
+    static constexpr unsigned words_per_item = uniform_words<T>;
+
     explicit RayleighSampler(const Param<T> &scale) : scale_(scale) {}
 
     template <typename BitGenT>
@@ -525,6 +565,9 @@ private:
     Param<T> right_;
 
 public:
+    // one uniform value per element
+    static constexpr unsigned words_per_item = uniform_words<T>;
+
     TriangularSampler(const Param<T> &left,
                       const Param<T> &mode,
                       const Param<T> &right)

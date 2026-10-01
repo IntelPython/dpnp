@@ -120,6 +120,25 @@ void validate_types_for_device(sycl::queue &exec_q, std::index_sequence<Is...>)
 {
     (validate_type_for_device<std::tuple_element_t<Is, Tuple>>(exec_q), ...);
 }
+template <typename EngineTraitsT, typename SamplerT, rng_ns::Layout L>
+sycl::event submit_sample(sycl::queue &exec_q,
+                          const rng_ns::EngineState &state,
+                          const SamplerT &sampler,
+                          typename SamplerT::result_type *res,
+                          const std::size_t nelems,
+                          const std::vector<sycl::event> &depends)
+{
+    const std::size_t n_wi = rng_ns::num_work_items(nelems, L);
+
+    return exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+
+        using SampleKernel = rng_ns::SampleFunctor<EngineTraitsT, SamplerT, L>;
+        cgh.parallel_for<SampleKernel>(
+            sycl::range<1>(n_wi),
+            SampleKernel(state, sampler, res, nelems, n_wi));
+    });
+}
 } // namespace detail
 
 // Checks the parameters and the result against SamplerT, then submits the
@@ -162,16 +181,24 @@ sycl::event sample_impl(sycl::queue &exec_q,
     }
 
     T *res = reinterpret_cast<T *>(result);
-    const std::size_t n_wi = rng_ns::num_work_items(nelems);
 
-    return exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(depends);
-
-        using SampleKernel = rng_ns::SampleFunctor<EngineTraitsT, SamplerT>;
-        cgh.parallel_for<SampleKernel>(
-            sycl::range<1>(n_wi),
-            SampleKernel(state, sampler, res, nelems, n_wi));
-    });
+    if constexpr (rng_ns::can_draw_sequential<EngineTraitsT, SamplerT>) {
+        return detail::submit_sample<EngineTraitsT, SamplerT,
+                                     rng_ns::Layout::sequential>(
+            exec_q, state, sampler, res, nelems, depends);
+    }
+    else if constexpr (rng_ns::can_draw_blocked<EngineTraitsT, SamplerT>) {
+        // the blocked layout gives the same values, faster on GPUs but
+        // slower on CPUs
+        if (exec_q.get_device().is_gpu()) {
+            return detail::submit_sample<EngineTraitsT, SamplerT,
+                                         rng_ns::Layout::blocked>(
+                exec_q, state, sampler, res, nelems, depends);
+        }
+    }
+    return detail::submit_sample<EngineTraitsT, SamplerT,
+                                 rng_ns::Layout::strided>(
+        exec_q, state, sampler, res, nelems, depends);
 }
 
 // Types the floating-point samplers support
