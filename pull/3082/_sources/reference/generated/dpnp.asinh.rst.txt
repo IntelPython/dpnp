@@ -1,0 +1,10 @@
+﻿
+
+dpnp.asinh
+==========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: asinh

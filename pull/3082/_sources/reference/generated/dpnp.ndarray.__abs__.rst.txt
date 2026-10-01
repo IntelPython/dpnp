@@ -1,0 +1,10 @@
+﻿:orphan:
+
+dpnp.ndarray.\_\_abs\_\_
+========================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: ndarray.__abs__
