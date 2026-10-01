@@ -129,6 +129,43 @@ public:
     }
 };
 
+// The first N words of the stream of BitGen<EngineT>, for a oneMKL device
+// engine of vector size N, generated together in one engine call. The
+// sampler must draw no more than N words (see SamplerBase::words_per_item);
+// their positions are then known at compile time in a fully unrolled loop,
+// so the words stay in registers. That needs everything touching them
+// inlined: when the compiler instead returned the generator from an
+// out-of-line call, the words lived in private memory and the kernel ran
+// 2-3 times slower.
+template <typename EngineT>
+class BlockBitGen : public UniformBits<BlockBitGen<EngineT>>
+{
+private:
+    static constexpr int N = EngineT::vec_size;
+
+    sycl::vec<std::uint32_t, N> words_;
+    int pos_ = 0;
+
+public:
+    __attribute__((always_inline)) explicit BlockBitGen(EngineT engine)
+    {
+        mkl_rng_dev::bits<std::uint32_t> bits;
+        words_ = mkl_rng_dev::generate(bits, engine);
+    }
+
+    __attribute__((always_inline)) std::uint32_t next_uint32()
+    {
+        return words_[pos_++];
+    }
+
+    __attribute__((always_inline)) std::uint64_t next_uint64()
+    {
+        const std::uint64_t hi = next_uint32();
+        const std::uint64_t lo = next_uint32();
+        return (hi << 32) | lo;
+    }
+};
+
 struct Philox4x32x10
 {
     using engine_t = mkl_rng_dev::philox4x32x10<1>;
@@ -138,12 +175,28 @@ struct Philox4x32x10
     // see SampleFunctor
     static constexpr bool ordered = false;
 
+    // The most words make_block can generate together
+    static constexpr unsigned max_block_words = 16;
+
     // Philox takes the key and the initial 128-bit counter as the seed
     // words {key, counter_lo, counter_hi}, so a work-item's block is set up
     // directly, with no skip-ahead.
     static bitgen_t make(const EngineState &state, std::uint64_t subsequence)
     {
         return bitgen_t(engine_t(
+            {state.seed[0], state.counter_lo, state.counter_hi + subsequence}));
+    }
+
+    template <unsigned Words>
+    using block_engine_t = mkl_rng_dev::philox4x32x10<Words>;
+
+    // The stream of make(), with its first `Words` words generated together
+    template <unsigned Words>
+    __attribute__((always_inline)) static BlockBitGen<block_engine_t<Words>>
+        make_block(const EngineState &state, std::uint64_t subsequence)
+    {
+        static_assert(Words == 8 || Words == 16);
+        return BlockBitGen<block_engine_t<Words>>(block_engine_t<Words>(
             {state.seed[0], state.counter_lo, state.counter_hi + subsequence}));
     }
 };
@@ -250,6 +303,9 @@ struct PCG64DXSM
     // The samplers that take a fixed number of 32-bit halves of raw outputs
     // per element draw the stream in order, as NumPy does
     static constexpr bool ordered = true;
+
+    // No make_block
+    static constexpr unsigned max_block_words = 0;
 
     // The seed words are the state, the increment, the map of the stride of
     // NumPy's jumped() (the step applied (phi - 1) * 2**128 times), each as

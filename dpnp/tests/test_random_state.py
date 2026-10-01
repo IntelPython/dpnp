@@ -74,7 +74,7 @@ class TestAPI:
 
     def test_module_functions(self):
         # NumPy's other bit generators are not provided
-        bit_generators = {"MT19937", "PCG64", "PCG64DXSM", "Philox", "SFC64"}
+        bit_generators = {"MT19937", "PCG64", "Philox", "SFC64"}
         missing = set(numpy.random.__all__) - set(dpnp.random.__all__)
         assert missing == bit_generators
 
@@ -563,6 +563,48 @@ class TestLegacy:
         _assert_same_error(
             lambda: getattr(numpy.random.RandomState(0), name)(*args),
             lambda: getattr(RandomState(0), name)(*args),
+        )
+
+    @pytest.mark.parametrize(
+        "name, args",
+        [
+            ("beta", ([1.0, -1.0], 1.0)),
+            ("binomial", ([3, -1], 0.5)),
+            ("binomial", (3, [0.5, 1.5])),
+            ("exponential", ([1.0, -1.0],)),
+            ("geometric", ([0.5, 0.0],)),
+            ("logseries", ([0.5, 1.0],)),
+            ("negative_binomial", ([1.0, 0.0], 0.5)),
+            ("noncentral_f", (1.0, [1.0, 0.0], 1.0)),
+            ("normal", (0.0, [1.0, -1.0])),
+            ("poisson", ([1.0, 1e19],)),
+            ("poisson", ([1.0, nan],)),
+            ("standard_gamma", ([1.0, -1.0],)),
+            ("zipf", ([2.0, 1.0],)),
+            ("hypergeometric", ([3, -1], 3, 2)),
+            ("hypergeometric", ([3, 1], 3, [2, 5])),
+            ("hypergeometric", ([3, 1], 3, [2, 0])),
+            ("triangular", ([0.0, 2.0], 1.0, 3.0)),
+            ("triangular", ([0.0, 3.0], 3.0, 3.0)),
+            ("uniform", ([0.0, -numpy.inf], 1.0)),
+            ("randint", ([0, 5], [3, 4])),
+            ("randint", ([0, -1], 3, None, "uint8")),
+            ("randint", (0, [3, 300], None, "uint8")),
+            ("choice", (3, 2, True, [0.5, 0.5, 0.5])),
+            ("choice", (3, 2, True, [0.5, -0.5, 1.0])),
+            ("choice", (3, 2, True, [0.5, nan, 0.5])),
+            ("choice", (3, 3, False, [0.5, 0.5, 0.0])),
+            ("multinomial", (3, [0.5, 1.5])),
+            ("multinomial", (3, [0.7, 0.7, 0.0])),
+            ("dirichlet", ([1.0, 0.0],)),
+        ],
+    )
+    def test_same_error_as_numpy_on_device(self, name, args):
+        # unlike Generator, RandomState checks the parameters on the device
+        dp_args = [dpnp.asarray(a) if isinstance(a, list) else a for a in args]
+        _assert_same_error(
+            lambda: getattr(numpy.random.RandomState(0), name)(*args),
+            lambda: getattr(RandomState(0), name)(*dp_args),
         )
 
     def test_uniform_reversed(self):
