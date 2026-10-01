@@ -281,7 +281,6 @@ class TestMultiGpuFftOrder:
 
 @pytest.mark.skip("default FFT function is not supported")
 @testing.with_requires("numpy>=2.0")
-# thread_unsafe marker requires pytest-run-parallel, not used by dpnp
 # @pytest.mark.thread_unsafe(reason="`nd_planning_states` is not thread-safe")
 class TestDefaultPlanType:
 
@@ -406,7 +405,6 @@ class TestFftAllocate:
         )
     )
 )
-# thread_unsafe marker requires pytest-run-parallel, not used by dpnp
 # @pytest.mark.thread_unsafe(reason="`nd_planning_states` is not thread-safe")
 class TestFft2:
 
@@ -495,12 +493,15 @@ class TestFft2:
                 {"shape": (0, 5), "s": None, "axes": None},
                 {"shape": (2, 0, 5), "s": None, "axes": None},
                 {"shape": (0, 0, 5), "s": None, "axes": None},
+                # s coincides with shape as a raw tuple, but axes is not the
+                # default order, so a real per-axis crop/pad is still required
+                {"shape": (3, 2), "s": (3, 2), "axes": (1, 0)},
+                {"shape": (2, 3, 4), "s": (2, 3, 4), "axes": (2, 1, 0)},
             ],
             testing.product({"norm": [None, "backward", "ortho", "forward"]}),
         )
     )
 )
-# thread_unsafe marker requires pytest-run-parallel, not used by dpnp
 # @pytest.mark.thread_unsafe(reason="`nd_planning_states` is not thread-safe")
 class TestFftn:
 
@@ -590,7 +591,6 @@ class TestFftn:
         )
     )
 )
-# thread_unsafe marker requires pytest-run-parallel, not used by dpnp
 # @pytest.mark.thread_unsafe(reason="`nd_planning_states` is not thread-safe")
 class TestPlanCtxManagerFftn:
 
@@ -677,6 +677,115 @@ class TestPlanCtxManagerFftn:
             fftn(a, s=self.s, axes=self.axes, norm=self.norm)
         # targeting a particular error
         assert "The cuFFT plan and a.shape do not match" in str(ex.value)
+
+
+@pytest.mark.skip("get_fft_plan() is not supported")
+def test_plan_nd_reuse_across_logical_batch_shapes():
+    from cupyx.scipy.fftpack import get_fft_plan
+
+    a = testing.shaped_random((2, 3, 8), cupy, cupy.float32)
+    plan = get_fft_plan(a, axes=(1, 2), value_type="R2C")
+
+    b = testing.shaped_random((1, 2, 3, 8), cupy, cupy.float32)
+    with plan:
+        actual = cupy.fft.rfftn(b, axes=(2, 3))
+    expected = np.fft.rfftn(cupy.asnumpy(b), axes=(2, 3))
+
+    assert actual.shape == (1, 2, 3, 5)
+    testing.assert_allclose(actual, expected, rtol=1e-3, atol=1e-7)
+
+
+@pytest.mark.skip("memory management is not supported")
+def test_plan_nd_cache_reuse_across_logical_batch_shapes():
+    cache = config.get_plan_cache()
+    cache.clear()
+    try:
+        a = testing.shaped_random((2, 3, 8), cupy, cupy.float32)
+        cupy.fft.rfftn(a, axes=(1, 2))
+        assert cache.get_curr_size() == 1
+        cached_plan = next(iter(cache))[1].plan
+
+        b = testing.shaped_random((1, 2, 3, 8), cupy, cupy.float32)
+        actual = cupy.fft.rfftn(b, axes=(2, 3))
+        expected = np.fft.rfftn(cupy.asnumpy(b), axes=(2, 3))
+
+        assert cache.get_curr_size() == 1
+        assert next(iter(cache))[1].plan is cached_plan
+        assert actual.shape == (1, 2, 3, 5)
+        testing.assert_allclose(actual, expected, rtol=1e-3, atol=1e-7)
+    finally:
+        cache.clear()
+
+
+@pytest.mark.skip("get_fft_plan() is not supported")
+def test_plan_nd_reuse_across_array_orders():
+    from cupyx.scipy.fftpack import get_fft_plan
+
+    a = testing.shaped_random((2, 3), cupy, cupy.complex64)
+    plan = get_fft_plan(a)
+
+    b = cupy.asfortranarray(testing.shaped_random((3, 2), cupy, cupy.complex64))
+    with plan:
+        actual = cupy.fft.fftn(b)
+    expected = np.fft.fftn(cupy.asnumpy(b))
+
+    assert actual.flags.f_contiguous
+    testing.assert_allclose(actual, expected, rtol=1e-3, atol=1e-7)
+
+
+@pytest.mark.skip("get_fft_plan() is not supported")
+def test_plan_nd_rejects_f_order_real_transform():
+    from cupyx.scipy.fftpack import get_fft_plan
+
+    a = testing.shaped_random((4, 4), cupy, cupy.float32)
+    plan = get_fft_plan(a, value_type="R2C")
+    b = cupy.asfortranarray(a)
+
+    with pytest.raises(ValueError):
+        with plan:
+            cupy.fft.rfftn(b)
+
+
+@pytest.mark.skip("_get_cufft_plan_nd_args() is not supported")
+@pytest.mark.parametrize("api", ["old", "new"])
+def test_plan_nd_init_api(api):
+    # Test that PlanNd constructor accepts order, last_axis, and last_size.
+    from cupy.cuda.cufft import CUFFT_R2C, PlanNd
+    from cupy.fft._fft import _get_cufft_plan_nd_args
+
+    a = testing.shaped_random((2, 3, 8), cupy, cupy.float32)
+    axes = (1, 2)
+    # Get correct args via private helper (order is just checked)
+    relevant_args = _get_cufft_plan_nd_args(
+        a.shape, CUFFT_R2C, axes=axes, order="C", out_size=5
+    )
+    # But additionally pass order, last_axis, and last_size to test old API.
+    if api == "old":
+        plan = PlanNd(*relevant_args, "C", 2, 5)
+    else:
+        plan = PlanNd(*relevant_args)
+
+    # These are not relevant and could probably be removed:
+    assert plan.order == ("C" if api == "old" else None)
+    assert plan.last_axis == (2 if api == "old" else None)
+    assert plan.last_size == (5 if api == "old" else None)
+
+    # get/check_output_array are unused by CuPy and need last_axis/last_size.
+    out = cupy.empty((2, 3, 5), cupy.complex64)
+    if api == "old":
+        assert plan.get_output_array(a).shape == out.shape
+        assert plan.get_output_array(a).dtype == out.dtype
+        plan.check_output_array(a, out)
+        with pytest.raises(ValueError):
+            plan.check_output_array(a, cupy.empty((2, 3, 8), cupy.complex64))
+    else:
+        with pytest.raises(RuntimeError):
+            plan.get_output_array(a)
+        with pytest.raises(RuntimeError):
+            plan.check_output_array(a, out)
+
+    with plan:
+        cupy.fft.rfftn(a, axes=axes)
 
 
 @pytest.mark.skip("get_fft_plan() is not supported")
@@ -859,7 +968,6 @@ class TestMultiGpuPlanCtxManagerFft:
     )
 )
 @pytest.mark.skip("default FFT function is not supported")
-# thread_unsafe marker requires pytest-run-parallel, not used by dpnp
 # @pytest.mark.thread_unsafe(reason="`nd_planning_states` is not thread-safe")
 class TestFftnContiguity:
 
@@ -1123,6 +1231,10 @@ class TestRfft2EmptyAxes:
                 {"shape": (2, 3, 4), "s": None, "axes": None},
                 {"shape": (2, 3, 4), "s": (2, 3), "axes": (0, 1, 2)},
                 {"shape": (2, 3, 4, 5), "s": None, "axes": None},
+                # s coincides with shape as a raw tuple, but axes is not the
+                # default order, so a real per-axis crop/pad is still required
+                {"shape": (3, 2), "s": (3, 2), "axes": (1, 0)},
+                {"shape": (2, 3, 4), "s": (2, 3, 4), "axes": (2, 1, 0)},
             ],
             testing.product(
                 {"norm": [None, "backward", "ortho", "forward", ""]}
@@ -1130,7 +1242,6 @@ class TestRfft2EmptyAxes:
         )
     )
 )
-# thread_unsafe marker requires pytest-run-parallel, not used by dpnp
 # @pytest.mark.thread_unsafe(reason="`nd_planning_states` is not thread-safe")
 class TestRfftn:
 
@@ -1201,7 +1312,6 @@ class TestRfftn:
     )
 )
 @pytest.mark.skip("get_fft_plan() is not supported")
-# thread_unsafe marker requires pytest-run-parallel, not used by dpnp
 # @pytest.mark.thread_unsafe(reason="`nd_planning_states` is not thread-safe")
 class TestPlanCtxManagerRfftn:
 
@@ -1283,7 +1393,6 @@ class TestPlanCtxManagerRfftn:
     )
 )
 @pytest.mark.skip("default FFT function is not supported")
-# thread_unsafe marker requires pytest-run-parallel, not used by dpnp
 # @pytest.mark.thread_unsafe(reason="`nd_planning_states` is not thread-safe")
 class TestRfftnContiguity:
 
