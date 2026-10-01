@@ -90,7 +90,7 @@ class TestSearch:
     @testing.slow
     # @pytest.mark.thread_unsafe(reason="allocation too large.")
     def test_argmax_int32_overflow(self):
-        a = cupy.arange(2**32 + 1, dtype=cupy.float64)
+        a = cupy.arange(2**32 + 1, dtype=cupy.default_float_type())
         assert a.argmax().item() == 2**32
 
     @testing.for_all_dtypes(no_complex=True)
@@ -170,7 +170,7 @@ class TestSearch:
     @testing.slow
     # @pytest.mark.thread_unsafe(reason="allocation too large.")
     def test_argmin_int32_overflow(self):
-        a = cupy.arange(2**32 + 1, dtype=cupy.float64)
+        a = cupy.arange(2**32 + 1, dtype=cupy.default_float_type())
         cupy.negative(a, out=a)
         assert a.argmin().item() == 2**32
 
