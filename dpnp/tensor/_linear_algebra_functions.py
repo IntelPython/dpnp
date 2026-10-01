@@ -65,7 +65,7 @@ def matrix_transpose(x):
 
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(
-            "Expected instance of `dpt.usm_ndarray`, got `{}`.".format(type(x))
+            f"Expected instance of `dpt.usm_ndarray`, got `{type(x)}`."
         )
     if x.ndim < 2:
         raise ValueError(

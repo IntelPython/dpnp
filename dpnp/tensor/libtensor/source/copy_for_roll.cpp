@@ -233,9 +233,10 @@ std::pair<sycl::event, sycl::event>
     sycl::event copy_shape_ev = std::get<2>(ptr_size_event_tuple);
     const py::ssize_t *shape_strides = shape_strides_owner.get();
 
-    std::vector<sycl::event> all_deps(depends.size() + 1);
-    all_deps.push_back(copy_shape_ev);
+    std::vector<sycl::event> all_deps;
+    all_deps.reserve(depends.size() + 1);
     all_deps.insert(std::end(all_deps), std::begin(depends), std::end(depends));
+    all_deps.push_back(copy_shape_ev);
 
     sycl::event copy_for_roll_event =
         fn(exec_q, offset, src_nelems, src_nd, shape_strides, src_data,
@@ -357,9 +358,10 @@ std::pair<sycl::event, sycl::event>
     sycl::event copy_shape_ev = std::get<2>(ptr_size_event_tuple);
     const py::ssize_t *shape_strides_shifts = shape_strides_shifts_owner.get();
 
-    std::vector<sycl::event> all_deps(depends.size() + 1);
-    all_deps.push_back(copy_shape_ev);
+    std::vector<sycl::event> all_deps;
+    all_deps.reserve(depends.size() + 1);
     all_deps.insert(std::end(all_deps), std::begin(depends), std::end(depends));
+    all_deps.push_back(copy_shape_ev);
 
     sycl::event copy_for_roll_event =
         fn(exec_q, src_nelems, src_nd, shape_strides_shifts, src_data,
