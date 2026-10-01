@@ -21,6 +21,7 @@ This release is compatible with NumPy 2.5.
 * Added `dpnp.broadcast` class implementation [#2901](https://github.com/IntelPython/dpnp/pull/2901)
 * Added the `ndmax` keyword to `dpnp.array` for compatibility with NumPy [#3044](https://github.com/IntelPython/dpnp/pull/3044)
 * Added `UsmNDArray_RemoveQueueRef` C API function to release a queue reference obtained from `UsmNDArray_GetQueueRef` [#3042](https://github.com/IntelPython/dpnp/pull/3042)
+* Added a `rattler-build`-compatible conda recipe (`conda-recipe/rattler_recipe.yaml`) alongside the existing `conda-build` recipe [#3031](https://github.com/IntelPython/dpnp/pull/3031)
 
 ### Changed
 
