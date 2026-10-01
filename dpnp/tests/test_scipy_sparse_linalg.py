@@ -1508,7 +1508,7 @@ class TestCsrMatrix:
 
     def test_check_sorted_detects_sorted_components(self):
         # Already-sorted components; lazy _check_sorted must report True.
-        data = dpnp.array([1.0, 2.0, 3.0, 4.0], dtype=dpnp.float64)
+        data = dpnp.array([1.0, 2.0, 3.0, 4.0], dtype=dpnp.default_float_type())
         indices = dpnp.array([0, 2, 1, 3], dtype=dpnp.int64)
         indptr = dpnp.array([0, 2, 4], dtype=dpnp.int64)
         m = csr_matrix((data, indices, indptr), shape=(2, 4))

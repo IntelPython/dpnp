@@ -28,9 +28,10 @@
 
 """Iterative sparse linear solvers for dpnp -- pure GPU/SYCL implementation.
 
-All computation stays on the device (USM/oneMKL).  There is NO host-dispatch
-fallback: transferring data to the CPU for small systems defeats the purpose
-of keeping a live computation on GPU memory.
+All O(n)-or-larger work (SpMV, Arnoldi/Lanczos basis vectors, the solution
+updates) stays on the device (USM/oneMKL). Only a few restart-sized quantities
+touch the host: the per-iteration convergence scalars that drive Python-side
+branching, and the GMRES Hessenberg least-squares solve (see ``gmres``).
 
 Solver coverage
 ---------------
@@ -598,6 +599,9 @@ def gmres(
                 v = u / dpnp.where(h_norm == 0, dpnp.ones_like(h_norm), h_norm)
                 V[:, j + 1] = v
 
+        # Hessenberg LS + breakdown check run on host: H is tiny
+        # ((restart+1) x restart, ~21x20), so a device SVD would be
+        # launch/alloc-overhead bound. Only y (restart-length) returns to device.
         H_host = dpnp.asnumpy(H)
 
         eps_break = eps * r_norm_host
