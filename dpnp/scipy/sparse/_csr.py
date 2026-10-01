@@ -98,7 +98,7 @@ def _isshape(arg):
 # pylint cap because the lazily-built oneMKL handle adds four cache
 # fields (handle, val_type_id, si, exec_q) on top of the CSR triple +
 # shape; all are required.
-class csr_matrix(SparseABC):
+class csr_matrix(SparseABC):  # pylint: disable=too-many-public-methods
     """Compressed Sparse Row matrix on a SYCL device.
 
     Attributes

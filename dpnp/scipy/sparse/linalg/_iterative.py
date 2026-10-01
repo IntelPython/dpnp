@@ -601,7 +601,8 @@ def gmres(
 
         # Hessenberg LS + breakdown check run on host: H is tiny
         # ((restart+1) x restart, ~21x20), so a device SVD would be
-        # launch/alloc-overhead bound. Only y (restart-length) returns to device.
+        # launch/alloc-overhead bound. Only y (restart-length) is
+        # copied back to the device.
         H_host = dpnp.asnumpy(H)
 
         eps_break = eps * r_norm_host

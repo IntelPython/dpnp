@@ -124,8 +124,9 @@ FetchContent_MakeAvailable(pybind11)
 # package parent directory explicitly so this works regardless of how
 # dpctl was installed.
 execute_process(
-    COMMAND "${Python_EXECUTABLE}" -c
-            "import dpctl, os; print(os.path.dirname(os.path.dirname(dpctl.__file__)))"
+    COMMAND
+        "${Python_EXECUTABLE}" -c
+        "import dpctl, os; print(os.path.dirname(os.path.dirname(dpctl.__file__)))"
     OUTPUT_VARIABLE Dpctl_Cython_INCLUDE_DIR
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )

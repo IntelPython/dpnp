@@ -339,8 +339,8 @@ static sycl::event gemv_compute_impl(sycl::queue &exec_q,
             }
 
             sycl::event ev_opt = mkl_sparse::spmv_optimize(
-                exec_q, mkl_trans, alpha, cache->view, cache->A, cache->x,
-                beta, cache->y, alg, cache->descr, cache->workspace, depends);
+                exec_q, mkl_trans, alpha, cache->view, cache->A, cache->x, beta,
+                cache->y, alg, cache->descr, cache->workspace, depends);
             cache->optimized = true;
 
             return mkl_sparse::spmv(exec_q, mkl_trans, alpha, cache->view,
@@ -348,9 +348,9 @@ static sycl::event gemv_compute_impl(sycl::queue &exec_q,
                                     cache->descr, {ev_opt});
         }
 
-        return mkl_sparse::spmv(exec_q, mkl_trans, alpha, cache->view,
-                                cache->A, cache->x, beta, cache->y, alg,
-                                cache->descr, depends);
+        return mkl_sparse::spmv(exec_q, mkl_trans, alpha, cache->view, cache->A,
+                                cache->x, beta, cache->y, alg, cache->descr,
+                                depends);
     } catch (mkl::exception const &e) {
         throw std::runtime_error(
             std::string("sparse_gemv_compute: oneMath exception: ") + e.what());
