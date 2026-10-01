@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy
 import pytest
 
@@ -7,9 +9,12 @@ else:
     from numpy import ComplexWarning
 
 import dpnp as cupy
+
+# from cupy import cuda
 from dpnp.exceptions import AxisError
 from dpnp.tests.helper import has_support_aspect64
 from dpnp.tests.third_party.cupy import testing
+from dpnp.tests.third_party.cupy.testing._helper import skip_if_after_baseline
 
 
 class TestJoin:
@@ -135,7 +140,6 @@ class TestJoin:
         return xp.concatenate((a, b) * 1024, axis=1)
 
     @testing.slow
-    # thread_unsafe marker requires pytest-run-parallel, not used by dpnp
     # @pytest.mark.thread_unsafe(reason="too large allocations")
     def test_concatenate_32bit_boundary(self):
         a = cupy.zeros((2**30,), dtype=cupy.int8)
@@ -527,3 +531,36 @@ class TestJoin:
         b = testing.shaped_arange((3, 4), xp, dtype1)
         # may raise TypeError or ComplexWarning
         return xp.stack((a, b), dtype=dtype2, casting=casting)
+
+    @testing.with_requires("numpy>=2.5")
+    @skip_if_after_baseline(numpy="2.5", reason="row_stack is removed.")
+    @testing.for_all_dtypes(name="dtype1")
+    @testing.for_all_dtypes(name="dtype2")
+    @testing.numpy_cupy_array_equal()
+    def test_row_stack(self, xp, dtype1, dtype2):
+        a = testing.shaped_arange((4, 3), xp, dtype1)
+        b = testing.shaped_arange((3,), xp, dtype2)
+        c = testing.shaped_arange((2, 3), xp, dtype1)
+        with pytest.warns(DeprecationWarning):
+            return xp.row_stack((a, b, c))
+
+    @pytest.mark.skip("row_stack is removed")
+    def test_row_stack_wrong_ndim1(self):
+        a = cupy.zeros(())
+        b = cupy.zeros((3,))
+        with pytest.raises(ValueError), pytest.warns(DeprecationWarning):
+            cupy.row_stack((a, b))
+
+    @pytest.mark.skip("row_stack is removed")
+    def test_row_stack_wrong_ndim2(self):
+        a = cupy.zeros((3, 2, 3))
+        b = cupy.zeros((3, 2))
+        with pytest.raises(ValueError), pytest.warns(DeprecationWarning):
+            cupy.row_stack((a, b))
+
+    @pytest.mark.skip("row_stack is removed")
+    def test_row_stack_wrong_shape(self):
+        a = cupy.zeros((3, 2))
+        b = cupy.zeros((4, 3))
+        with pytest.raises(ValueError), pytest.warns(DeprecationWarning):
+            cupy.row_stack((a, b))
