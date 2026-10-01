@@ -64,7 +64,6 @@ requirements:
   run:
     - python
     - ${{ pin_compatible('dpctl', lower_bound='x.x.x', upper_bound=None) }}
-    - ${{ pin_compatible('dpcpp-cpp-rt', lower_bound='x.x', upper_bound='x') }}
     - ${{ pin_compatible('intel-sycl-rt', lower_bound='x.x', upper_bound='x') }}
     - ${{ pin_compatible('intel-cmplr-lib-rt', lower_bound='x.x', upper_bound='x') }}
     - ${{ pin_compatible('mkl', lower_bound='x.x', upper_bound='x') }}
@@ -83,6 +82,8 @@ requirements:
       - dpctl
       - numpy
       - python
+      # leaked from mkl-devel-dpcpp; drags in unused onemkl-sycl-{datafitting,sparse,stats}
+      - mkl-dpcpp
       # building with Intel DPC++ and do not import the MSVC runtime DLLs
       - if: win
         then: vc14_runtime
