@@ -7,4 +7,4 @@ dpnp.conjugate
 
 
 
-.. autofunction:: conjugate
+.. autodata:: conjugate

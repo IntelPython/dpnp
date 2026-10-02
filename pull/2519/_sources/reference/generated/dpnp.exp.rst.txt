@@ -7,4 +7,4 @@ dpnp.exp
 
 
 
-.. autofunction:: exp
+.. autodata:: exp

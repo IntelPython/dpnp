@@ -7,4 +7,4 @@ dpnp.round
 
 
 
-.. autofunction:: round
+.. autodata:: round

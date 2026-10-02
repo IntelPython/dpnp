@@ -7,4 +7,4 @@ dpnp.cbrt
 
 
 
-.. autofunction:: cbrt
+.. autodata:: cbrt

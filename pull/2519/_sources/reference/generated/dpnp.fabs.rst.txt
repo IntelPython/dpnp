@@ -7,4 +7,4 @@ dpnp.fabs
 
 
 
-.. autofunction:: fabs
+.. autodata:: fabs

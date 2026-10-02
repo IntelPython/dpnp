@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['nantonumcontigfunctor_0',['NanToNumContigFunctor',['../structdpnp_1_1kernels_1_1nan__to__num_1_1_nan_to_num_contig_functor.html',1,'dpnp::kernels::nan_to_num']]],
-  ['nantonumfunctor_1',['NanToNumFunctor',['../structdpnp_1_1kernels_1_1nan__to__num_1_1_nan_to_num_functor.html',1,'dpnp::kernels::nan_to_num']]],
-  ['noweights_2',['NoWeights',['../structstatistics_1_1histogram_1_1_no_weights.html',1,'statistics::histogram']]],
-  ['nthstrideoffsetunpacked_3',['NthStrideOffsetUnpacked',['../structdpnp_1_1extensions_1_1indexing_1_1strides__detail_1_1_nth_stride_offset_unpacked.html',1,'dpnp::extensions::indexing::strides_detail']]]
+  ['mcg59_5fstruct_0',['mcg59_struct',['../structmcg59__struct.html',1,'']]],
+  ['modffunctor_1',['ModfFunctor',['../structdpnp_1_1kernels_1_1modf_1_1_modf_functor.html',1,'dpnp::kernels::modf']]],
+  ['mt19937_5fstruct_2',['mt19937_struct',['../structmt19937__struct.html',1,'']]]
 ];

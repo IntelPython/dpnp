@@ -7,4 +7,4 @@ dpnp.greater\_equal
 
 
 
-.. autofunction:: greater_equal
+.. autodata:: greater_equal

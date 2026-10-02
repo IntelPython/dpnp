@@ -7,4 +7,4 @@ dpnp.asin
 
 
 
-.. autofunction:: asin
+.. autodata:: asin

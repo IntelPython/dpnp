@@ -7,4 +7,4 @@ dpnp.less
 
 
 
-.. autofunction:: less
+.. autodata:: less

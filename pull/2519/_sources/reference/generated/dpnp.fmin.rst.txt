@@ -7,4 +7,4 @@ dpnp.fmin
 
 
 
-.. autofunction:: fmin
+.. autodata:: fmin

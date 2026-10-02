@@ -7,4 +7,4 @@ dpnp.bitwise\_or
 
 
 
-.. autofunction:: bitwise_or
+.. autodata:: bitwise_or

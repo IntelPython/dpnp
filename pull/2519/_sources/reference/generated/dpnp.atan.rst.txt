@@ -7,4 +7,4 @@ dpnp.atan
 
 
 
-.. autofunction:: atan
+.. autodata:: atan

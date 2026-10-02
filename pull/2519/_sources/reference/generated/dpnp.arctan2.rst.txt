@@ -7,4 +7,4 @@ dpnp.arctan2
 
 
 
-.. autofunction:: arctan2
+.. autodata:: arctan2

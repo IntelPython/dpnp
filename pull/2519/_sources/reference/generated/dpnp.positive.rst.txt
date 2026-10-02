@@ -7,4 +7,4 @@ dpnp.positive
 
 
 
-.. autofunction:: positive
+.. autodata:: positive

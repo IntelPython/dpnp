@@ -23,7 +23,6 @@ Boolean operations
    :toctree: generated/
    :nosignatures:
 
-   in1d
    intersect1d
    isin
    setdiff1d
