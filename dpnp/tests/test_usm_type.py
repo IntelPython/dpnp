@@ -1447,7 +1447,7 @@ class TestLinAlgebra:
         assert x.usm_type == result.usm_type
 
     @pytest.mark.parametrize(
-        "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
+        "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro", "nuc"]
     )
     def test_cond(self, usm_type, p):
         a = generate_random_numpy_array((2, 4, 4), seed_value=42)
