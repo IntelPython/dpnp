@@ -338,7 +338,7 @@ sycl::event tree_reduction_for_gemm(sycl::queue &exec_q,
         using ReductionIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
 
         const InputIndexerT inp_indexer{/* size */ iter_nelems,
-                                        /* step */ reduction_groups_};
+                                        /* step */ remaining_reduction_nelems};
         static constexpr ResIndexerT res_iter_indexer{};
 
         const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
@@ -461,7 +461,7 @@ sycl::event
         // creates a stack of reduction_nelems 2D matrices and we reduce
         // along the stack axis
         const InputIndexerT inp_indexer{/* size */ iter_nelems,
-                                        /* step */ reduction_groups_};
+                                        /* step */ remaining_reduction_nelems};
         static constexpr ResIndexerT res_iter_indexer{};
 
         const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
@@ -2432,13 +2432,14 @@ sycl::event
             using dpnp::tensor::offset_utils::Strided1DIndexer;
             using dpnp::tensor::offset_utils::StridedIndexer;
             using dpnp::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
-            using BatchDimsIndexerT =
-                ThreeOffsets_CombinedIndexer<StridedIndexer, StridedIndexer,
-                                             Strided1DIndexer>;
+            using dpnp::tensor::offset_utils::UnpackedStridedIndexer;
+            using BatchDimsIndexerT = ThreeOffsets_CombinedIndexer<
+                StridedIndexer, UnpackedStridedIndexer, Strided1DIndexer>;
             const StridedIndexer lhs_batch_indexer(batch_nd, lhs_batch_offset,
                                                    batch_shape_strides);
-            const StridedIndexer rhs_batch_indexer(
-                batch_nd, rhs_batch_offset, batch_shape_strides + 2 * batch_nd);
+            const UnpackedStridedIndexer rhs_batch_indexer(
+                batch_nd, rhs_batch_offset, batch_shape_strides,
+                batch_shape_strides + 2 * batch_nd);
             const Strided1DIndexer tmp_batch_indexer(
                 /* size   */ batch_nelems,
                 /* step   */ n * m);
