@@ -1,0 +1,10 @@
+﻿
+
+dpnp.bitwise\_xor
+=================
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: bitwise_xor

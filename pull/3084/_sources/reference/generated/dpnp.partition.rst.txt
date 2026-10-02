@@ -1,0 +1,10 @@
+﻿
+
+dpnp.partition
+==============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: partition
