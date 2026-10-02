@@ -1074,9 +1074,9 @@ imaginary components of <cite>x</cite> separately.</p>
 <dd class="field-odd"><dl>
 <dt><strong>x</strong><span class="classifier">{dpnp.ndarray, usm_ndarray}</span></dt><dd><p>Input data.</p>
 </dd>
-<dt><strong>copy</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to create a copy of <cite>x</cite> (<code class="docutils literal notranslate"><span class="pre">True</span></code>) or to replace values
-in-place (<code class="docutils literal notranslate"><span class="pre">False</span></code>). The in-place operation only occurs if casting to
-an array does not require a copy.</p>
+<dt><strong>copy</strong><span class="classifier">{None, bool}, optional</span></dt><dd><p>Whether to create a copy of <cite>x</cite> (<code class="docutils literal notranslate"><span class="pre">True</span></code>) or to replace values
+in-place (<code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>). In-place operation requires <cite>x</cite> to
+be writable; a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> is raised otherwise.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 </dd>
 <dt><strong>nan</strong><span class="classifier">{scalar, array_like}, optional</span></dt><dd><p>Values to be used to fill <code class="docutils literal notranslate"><span class="pre">NaN</span></code> values. If no values are passed then
@@ -1100,8 +1100,8 @@ Expected to have a real-valued data type for the values.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>out</strong><span class="classifier">dpnp.ndarray</span></dt><dd><p><cite>x</cite>, with the non-finite values replaced. If <cite>copy</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, this
-may be <cite>x</cite> itself.</p>
+<dt><strong>out</strong><span class="classifier">dpnp.ndarray</span></dt><dd><p><cite>x</cite>, with the non-finite values replaced. If <cite>copy</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code> or
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, this may be <cite>x</cite> itself.</p>
 </dd>
 </dl>
 </dd>
