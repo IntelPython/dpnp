@@ -3605,10 +3605,10 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
     ----------
     x : {dpnp.ndarray, usm_ndarray}
         Input data.
-    copy : bool, optional
+    copy : {None, bool}, optional
         Whether to create a copy of `x` (``True``) or to replace values
-        in-place (``False``). The in-place operation only occurs if casting to
-        an array does not require a copy.
+        in-place (``False`` or ``None``). In-place operation requires `x` to
+        be writable; a ``ValueError`` is raised otherwise.
 
         Default: ``True``.
     nan : {scalar, array_like}, optional
@@ -3635,8 +3635,8 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
     Returns
     -------
     out : dpnp.ndarray
-        `x`, with the non-finite values replaced. If `copy` is ``False``, this
-        may be `x` itself.
+        `x`, with the non-finite values replaced. If `copy` is ``False`` or
+        ``None``, this may be `x` itself.
 
     See Also
     --------
@@ -3713,10 +3713,11 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
 
     if copy:
         out = dpnp.empty_like(x)
-    else:
-        if not x.flags.writable:
-            raise ValueError("copy is required for read-only array `x`")
+    elif x.flags.writable:
+        # copy=False or None (copy-if-needed): replace values in-place
         out = x
+    else:
+        raise ValueError("copy is required for read-only array `x`")
 
     # handle a special case when nan and infs are all scalars
     if all(dpnp.isscalar(el) for el in (nan, max_f, min_f)):

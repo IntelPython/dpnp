@@ -21,6 +21,7 @@ This release is compatible with NumPy 2.5.
 * Added `dpnp.broadcast` class implementation [#2901](https://github.com/IntelPython/dpnp/pull/2901)
 * Added the `ndmax` keyword to `dpnp.array` for compatibility with NumPy [#3044](https://github.com/IntelPython/dpnp/pull/3044)
 * Added `UsmNDArray_RemoveQueueRef` C API function to release a queue reference obtained from `UsmNDArray_GetQueueRef` [#3042](https://github.com/IntelPython/dpnp/pull/3042)
+* Added a `rattler-build`-compatible conda recipe (`conda-recipe/rattler_recipe.yaml`) alongside the existing `conda-build` recipe [#3031](https://github.com/IntelPython/dpnp/pull/3031)
 
 ### Changed
 
@@ -52,6 +53,7 @@ This release is compatible with NumPy 2.5.
 * Avoided a copy of `dpnp.einsum` result into C-order by building the product in the requested layout directly [#3069](https://github.com/IntelPython/dpnp/pull/3069)
 * Updated the implementation of `dpnp.putmask` by adding dedicated contiguous and strided SYCL kernels [#3014](https://github.com/IntelPython/dpnp/pull/3014)
 * Changed `dpnp.sort`, `dpnp.argsort`, and their `dpnp.ndarray`/`dpnp.tensor` counterparts to place `NaN` values last instead of first when sorting in descending order [#3066](https://github.com/IntelPython/dpnp/pull/3066)
+* Documented and made explicit support for `copy=None` ("copy only if needed") in `dpnp.nan_to_num` [#3083](https://github.com/IntelPython/dpnp/pull/3083)
 
 ### Deprecated
 
