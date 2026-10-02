@@ -1491,13 +1491,25 @@ class TestNanToNum:
             dpnp.nan_to_num(a)
 
     @pytest.mark.parametrize("xp", [dpnp, numpy])
-    def test_error_readonly(self, xp):
+    @pytest.mark.parametrize("copy", [False, None])
+    def test_error_readonly(self, xp, copy):
         a = xp.array([0, 1, xp.nan, xp.inf, -xp.inf])
         a.flags["W"] = False
         with pytest.raises(ValueError, match="read-only"):
-            xp.nan_to_num(a, copy=False)
+            xp.nan_to_num(a, copy=copy)
 
-    @pytest.mark.parametrize("copy", [True, False])
+    @pytest.mark.parametrize("copy", [False, None])
+    @pytest.mark.parametrize("dt", get_float_complex_dtypes())
+    def test_copy_in_place(self, copy, dt):
+        a = numpy.array([0, 1, numpy.nan, numpy.inf, -numpy.inf], dtype=dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.nan_to_num(ia, copy=copy)
+        expected = numpy.nan_to_num(a, copy=copy)
+        assert result is ia
+        assert_allclose(result, expected)
+
+    @pytest.mark.parametrize("copy", [True, False, None])
     @pytest.mark.parametrize("dt", get_all_dtypes(no_bool=True, no_none=True))
     def test_strided(self, copy, dt):
         n = 10
