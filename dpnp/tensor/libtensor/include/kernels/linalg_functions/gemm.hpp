@@ -2432,13 +2432,14 @@ sycl::event
             using dpnp::tensor::offset_utils::Strided1DIndexer;
             using dpnp::tensor::offset_utils::StridedIndexer;
             using dpnp::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
-            using BatchDimsIndexerT =
-                ThreeOffsets_CombinedIndexer<StridedIndexer, StridedIndexer,
-                                             Strided1DIndexer>;
+            using dpnp::tensor::offset_utils::UnpackedStridedIndexer;
+            using BatchDimsIndexerT = ThreeOffsets_CombinedIndexer<
+                StridedIndexer, UnpackedStridedIndexer, Strided1DIndexer>;
             const StridedIndexer lhs_batch_indexer(batch_nd, lhs_batch_offset,
                                                    batch_shape_strides);
-            const StridedIndexer rhs_batch_indexer(
-                batch_nd, rhs_batch_offset, batch_shape_strides + 2 * batch_nd);
+            const UnpackedStridedIndexer rhs_batch_indexer(
+                batch_nd, rhs_batch_offset, batch_shape_strides,
+                batch_shape_strides + 2 * batch_nd);
             const Strided1DIndexer tmp_batch_indexer(
                 /* size   */ batch_nelems,
                 /* step   */ n * m);
