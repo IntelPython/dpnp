@@ -1499,8 +1499,9 @@ class TestNanToNum:
             xp.nan_to_num(a, copy=copy)
 
     @pytest.mark.parametrize("copy", [False, None])
-    def test_copy_in_place(self, copy):
-        a = numpy.array([0, 1, numpy.nan, numpy.inf, -numpy.inf])
+    @pytest.mark.parametrize("dt", get_float_complex_dtypes())
+    def test_copy_in_place(self, copy, dt):
+        a = numpy.array([0, 1, numpy.nan, numpy.inf, -numpy.inf], dtype=dt)
         ia = dpnp.array(a)
 
         result = dpnp.nan_to_num(ia, copy=copy)
