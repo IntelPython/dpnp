@@ -4687,10 +4687,10 @@
 <span class="sd">    ----------</span>
 <span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input data.</span>
-<span class="sd">    copy : bool, optional</span>
+<span class="sd">    copy : {None, bool}, optional</span>
 <span class="sd">        Whether to create a copy of `x` (``True``) or to replace values</span>
-<span class="sd">        in-place (``False``). The in-place operation only occurs if casting to</span>
-<span class="sd">        an array does not require a copy.</span>
+<span class="sd">        in-place (``False`` or ``None``). In-place operation requires `x` to</span>
+<span class="sd">        be writable; a ``ValueError`` is raised otherwise.</span>
 
 <span class="sd">        Default: ``True``.</span>
 <span class="sd">    nan : {scalar, array_like}, optional</span>
@@ -4717,8 +4717,8 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        `x`, with the non-finite values replaced. If `copy` is ``False``, this</span>
-<span class="sd">        may be `x` itself.</span>
+<span class="sd">        `x`, with the non-finite values replaced. If `copy` is ``False`` or</span>
+<span class="sd">        ``None``, this may be `x` itself.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -4795,10 +4795,11 @@
 
     <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">writable</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"copy is required for read-only array `x`"</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">x</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">writable</span><span class="p">:</span>
+        <span class="c1"># copy=False or None (copy-if-needed): replace values in-place</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">x</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"copy is required for read-only array `x`"</span><span class="p">)</span>
 
     <span class="c1"># handle a special case when nan and infs are all scalars</span>
     <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">el</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="p">(</span><span class="n">nan</span><span class="p">,</span> <span class="n">max_f</span><span class="p">,</span> <span class="n">min_f</span><span class="p">)):</span>
