@@ -427,6 +427,20 @@ class TestNanMedian:
             expected = numpy.nanmedian(a, axis=(1, 2), keepdims=keepdims)
             assert_dtype_allclose(result, expected)
 
+    @pytest.mark.usefixtures("suppress_mean_empty_slice_numpy_warnings")
+    @pytest.mark.parametrize(
+        "shape, axis", [((1, 5), 1), ((3, 1, 4), 2), ((2, 1, 5), (0, 2))]
+    )
+    @pytest.mark.parametrize("keepdims", [True, False])
+    def test_size1_kept_dim(self, shape, axis, keepdims):
+        a = generate_random_numpy_array(shape)
+        a.flat[0] = numpy.nan
+        ia = dpnp.array(a)
+
+        result = dpnp.nanmedian(ia, axis=axis, keepdims=keepdims)
+        expected = numpy.nanmedian(a, axis=axis, keepdims=keepdims)
+        assert_dtype_allclose(result, expected)
+
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("axis", [None, 0, (-1,), [0, 1], (0, -2, -1)])
     def test_no_nan(self, dtype, axis):

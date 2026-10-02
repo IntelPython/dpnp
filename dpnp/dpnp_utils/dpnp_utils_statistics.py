@@ -89,7 +89,8 @@ def _calc_nanmedian(a, out=None):
     if mask.all(axis=-1).any():
         warnings.warn("All-NaN slice encountered", RuntimeWarning, stacklevel=6)
 
-    return dpnp.squeeze(res)
+    # only drop the reduced axis, keep size-1 dimensions that are not reduced
+    return dpnp.squeeze(res, axis=-1)
 
 
 def _flatten_array_along_axes(a, axes_to_flatten, overwrite_input):

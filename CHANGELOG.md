@@ -110,6 +110,7 @@ This release is compatible with NumPy 2.5.
 * Fixed `simplify_iteration_three_strides` and `simplify_iteration_four_strides` accumulating into their third and fourth output displacements without zeroing them first, which required the caller to initialize them [#3072](https://github.com/IntelPython/dpnp/pull/3072)
 * Fixed `dpnp.ndarray.flat` indexing and assignment edge cases, adding support for slices, ellipsis, and integer/boolean array indices [#3045](https://github.com/IntelPython/dpnp/pull/3045)
 * Fixed `dpnp.median` and `dpnp.nanmedian` raising a `ValueError` for a tuple `axis` when a kept dimension has size 0 [#3081](https://github.com/IntelPython/dpnp/pull/3081)
+* Fixed `dpnp.nanmedian` dropping kept dimensions of size 1, which produced a wrong result shape [#3081](https://github.com/IntelPython/dpnp/pull/3081)
 
 ### Security
 
