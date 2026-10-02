@@ -171,7 +171,7 @@ def cond(x, p=None):
     ----------
     x : {dpnp.ndarray, usm_ndarray}
         The matrix whose condition number is sought.
-    p : {None, 1, -1, 2, -2, inf, -inf, "fro"}, optional
+    p : {None, 1, -1, 2, -2, inf, -inf, "fro", "nuc"}, optional
         Order of the norm used in the condition number computation:
 
         =====  ============================
@@ -179,6 +179,7 @@ def cond(x, p=None):
         =====  ============================
         None   2-norm
         'fro'  Frobenius norm
+        'nuc'  nuclear norm
         inf    max(sum(abs(x), axis=1))
         -inf   min(sum(abs(x), axis=1))
         1      max(sum(abs(x), axis=0))
@@ -188,7 +189,8 @@ def cond(x, p=None):
         =====  ============================
 
         ``inf`` means the :obj:`dpnp.inf` object, and the Frobenius norm is
-        the root-of-sum-of-squares norm.
+        the root-of-sum-of-squares norm. The nuclear norm is the sum of the
+        singular values.
 
         Default: ``None``.
 
@@ -204,9 +206,9 @@ def cond(x, p=None):
     Notes
     -----
     This function will raise :class:`dpnp.linalg.LinAlgError` on singular input
-    when using any of the norm: ``1``, ``-1``, ``inf``, ``-inf``, or ``'fro'``.
-    In contrast, :obj:`numpy.linalg.cond` will fill the result array with
-    ``inf`` values for each 2D batch in the input array that is singular
+    when using any of the norm: ``1``, ``-1``, ``inf``, ``-inf``, ``'fro'``, or
+    ``'nuc'``. In contrast, :obj:`numpy.linalg.cond` will fill the result array
+    with ``inf`` values for each 2D batch in the input array that is singular
     when using these norms.
 
     Examples
@@ -221,6 +223,8 @@ def cond(x, p=None):
     array(1.41421356)
     >>> np.linalg.cond(a, 'fro')
     array(3.16227766)
+    >>> np.linalg.cond(a, 'nuc')
+    array(9.24264069)
     >>> np.linalg.cond(a, np.inf)
     array(2.)
     >>> np.linalg.cond(a, -np.inf)
