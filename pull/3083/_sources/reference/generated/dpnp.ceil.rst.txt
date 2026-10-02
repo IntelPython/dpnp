@@ -1,0 +1,10 @@
+﻿
+
+dpnp.ceil
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: ceil

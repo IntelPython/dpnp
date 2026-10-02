@@ -1,0 +1,10 @@
+﻿
+
+dpnp.acosh
+==========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: acosh
