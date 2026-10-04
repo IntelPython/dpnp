@@ -131,6 +131,11 @@ struct SpmvCache
     mkl_sparse::matrix_view view{};
     bool optimized = false;
 
+    // Single-slot alpha/beta storage (spmv dereferences these after
+    // gemv_compute_impl returns, so stack is unsafe). Any scalars
+    // other than 1.0/0.0 are rejected in sparse_gemv_compute: with one
+    // shared slot, a second call could overwrite them while an earlier
+    // spmv is still in flight, silently corrupting its result.
     std::complex<double> alpha{};
     std::complex<double> beta{};
 };
@@ -186,6 +191,11 @@ static std::pair<std::uintptr_t, sycl::event>
                                     mkl::index_base::zero, row_ptr, col_ind,
                                     values);
 
+        // `values` (nnz elements) is only a placeholder: oneMath needs
+        // a non-null pointer to create the handles. Safe because every
+        // gemv_compute_impl rebinds x/y via set_dense_vector_data
+        // before any spmv runs -- load-bearing, so keep optimize
+        // deferred to first compute, after the real buffers are bound.
         mkl_sparse::init_dense_vector(exec_q, &cache->x, op_cols, values);
         mkl_sparse::init_dense_vector(exec_q, &cache->y, op_rows, values);
 
@@ -305,7 +315,9 @@ static sycl::event gemv_compute_impl(sycl::queue &exec_q,
     auto *cache = reinterpret_cast<SpmvCache *>(handle_ptr);
 
     // Stored in the cache, not on the stack: spmv reads them after this
-    // function returns (see SpmvCache).
+    // function returns. Single cached slot, not per-call storage -- see
+    // the alpha/beta race-condition note on SpmvCache above. Only
+    // 1.0/0.0 ever reach here (enforced in sparse_gemv_compute).
     Tv *alpha = reinterpret_cast<Tv *>(&cache->alpha);
     Tv *beta = reinterpret_cast<Tv *>(&cache->beta);
     *alpha = static_cast<Tv>(alpha_d);
@@ -344,8 +356,8 @@ static sycl::event gemv_compute_impl(sycl::queue &exec_q,
             cache->optimized = true;
 
             return mkl_sparse::spmv(exec_q, mkl_trans, alpha, cache->view,
-                                    cache->A, cache->x, beta, cache->y, alg,
-                                    cache->descr, {ev_opt});
+                                     cache->A, cache->x, beta, cache->y, alg,
+                                     cache->descr, {ev_opt});
         }
 
         return mkl_sparse::spmv(exec_q, mkl_trans, alpha, cache->view, cache->A,
@@ -556,6 +568,14 @@ std::pair<sycl::event, sycl::event>
 
     if (val_type_id < 0 || val_type_id >= dpnp_td_ns::num_types)
         throw py::value_error("sparse_gemv_compute: val_type_id out of range.");
+
+    // Only 1.0/0.0 are supported: the backend keeps alpha/beta in a
+    // single cached slot per handle, so any other scalars risk a torn
+    // read by an in-flight spmv. Error out instead of silently
+    // computing wrong results.
+    if (alpha != 1.0 || beta != 0.0)
+        throw py::value_error(
+            "sparse_gemv_compute: only alpha=1.0, beta=0.0 are supported.");
 
     gemv_compute_fn_ptr_t compute_fn = gemv_compute_dispatch_table[val_type_id];
 

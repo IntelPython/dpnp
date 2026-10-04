@@ -60,9 +60,11 @@ namespace dpnp::extensions::sparse
  *                   Python MUST pass this back to sparse_gemv_compute so
  *                   the C++ layer can verify that x and y dtype match the
  *                   handle's value type.
- *   - event:        dependency event the caller must wait on (or chain
- *                   via depends) before the first sparse_gemv_compute
- *                   call.
+ *   - event:        dependency event for the first sparse_gemv_compute
+ *                   call. Legacy oneMKL API: real optimize_gemv event.
+ *                   oneMath API: empty sycl::event{} (host-side setup
+ *                   only); ordering comes from that first compute
+ *                   call's depends vector instead.
  *
  */
 extern std::tuple<std::uintptr_t, int, sycl::event>

@@ -188,9 +188,18 @@ class csr_matrix(SparseABC):  # pylint: disable=too-many-public-methods
                 arg1.shape,
                 dtype=dtype if dtype is not None else arg1.dtype,
                 copy=True,
+                device=device,
+                usm_type=usm_type,
+                sycl_queue=sycl_queue,
             )
         elif _dpnp.is_supported_array_type(arg1):
-            self._init_from_dense(arg1, dtype=dtype)
+            self._init_from_dense(
+                arg1,
+                dtype=dtype,
+                device=device,
+                usm_type=usm_type,
+                sycl_queue=sycl_queue,
+            )
         elif isinstance(arg1, tuple) and len(arg1) == 2 and _isshape(arg1):
             self._init_empty(
                 arg1,
@@ -200,7 +209,15 @@ class csr_matrix(SparseABC):  # pylint: disable=too-many-public-methods
                 sycl_queue=sycl_queue,
             )
         elif isinstance(arg1, tuple) and len(arg1) == 3:
-            self._init_from_components(arg1, shape, dtype=dtype, copy=copy)
+            self._init_from_components(
+                arg1,
+                shape,
+                dtype=dtype,
+                copy=copy,
+                device=device,
+                usm_type=usm_type,
+                sycl_queue=sycl_queue,
+            )
         else:
             raise TypeError(
                 f"csr_matrix: cannot construct from {type(arg1).__name__}; "
@@ -229,15 +246,34 @@ class csr_matrix(SparseABC):  # pylint: disable=too-many-public-methods
         self._shape = (nrows, ncols)
         self._has_sorted_indices = True
 
-    def _init_from_components(self, arrays, shape, dtype=None, copy=False):
+    def _init_from_components(
+        self,
+        arrays,
+        shape,
+        dtype=None,
+        copy=False,
+        device=None,
+        usm_type=None,
+        sycl_queue=None,
+    ):
         data, indices, indptr = arrays
 
         _dpnp.check_supported_arrays_type(data, indices, indptr)
         # Normalize usm_ndarray inputs to dpnp.ndarray so all internal
-        # operations (sort_indices, toarray, dot) work uniformly.
-        data = _dpnp.asarray(data)
-        indices = _dpnp.asarray(indices)
-        indptr = _dpnp.asarray(indptr)
+        # operations (sort_indices, toarray, dot) work uniformly. The
+        # device/usm_type/sycl_queue kwargs only take effect when the
+        # caller passed host data (e.g. a Python list); for an input
+        # already on a device, asarray keeps its placement and these
+        # kwargs are no-ops (matching dpnp.asarray's own contract).
+        data = _dpnp.asarray(
+            data, device=device, usm_type=usm_type, sycl_queue=sycl_queue
+        )
+        indices = _dpnp.asarray(
+            indices, device=device, usm_type=usm_type, sycl_queue=sycl_queue
+        )
+        indptr = _dpnp.asarray(
+            indptr, device=device, usm_type=usm_type, sycl_queue=sycl_queue
+        )
         if data.ndim != 1 or indices.ndim != 1 or indptr.ndim != 1:
             raise ValueError(
                 "csr_matrix: data, indices, and indptr must be 1-D"
@@ -368,9 +404,16 @@ class csr_matrix(SparseABC):  # pylint: disable=too-many-public-methods
         self._indices = self._indices[order]
         self._has_sorted_indices = True
 
-    def _init_from_dense(self, dense, dtype=None):
+    def _init_from_dense(
+        self, dense, dtype=None, device=None, usm_type=None, sycl_queue=None
+    ):
         # Normalize usm_ndarray to dpnp.ndarray for uniform internal ops.
-        dense = _dpnp.asarray(dense)
+        # device/usm_type/sycl_queue only take effect for host input
+        # (e.g. a numpy array); an already-device dense array keeps its
+        # own placement, matching dpnp.asarray's own contract.
+        dense = _dpnp.asarray(
+            dense, device=device, usm_type=usm_type, sycl_queue=sycl_queue
+        )
         if dense.ndim != 2:
             raise ValueError(
                 f"csr_matrix: dense input must be 2-D, got {dense.ndim}-D"

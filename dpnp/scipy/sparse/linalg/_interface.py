@@ -191,6 +191,11 @@ class LinearOperator:
 
     def _matvec(self, x):
         # newaxis (not ``.reshape``) so a bare usm_ndarray input works too.
+        # A 2-D ``(N, 1)`` column passes straight through: adding another
+        # axis would build a 3-D ``(N, 1, 1)`` array that matmat
+        # implementations do not accept.
+        if x.ndim == 2:
+            return self._matmat(x)
         return self._matmat(x[..., None])[..., 0]
 
     def _matmat(self, X):

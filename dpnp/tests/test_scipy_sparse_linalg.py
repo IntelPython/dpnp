@@ -408,6 +408,64 @@ class TestLinearOperator:
             dtype=dpnp.float32,
         )
 
+    def test_array_ufunc_opt_out(self):
+        # LinearOperator must opt out of NumPy's ufunc dispatch so
+        # expressions like `numpy_scalar * lo` route through __rmul__
+        # instead of NumPy attempting (and failing) to broadcast lo.
+        n = 3
+        lo = LinearOperator(
+            (n, n), matvec=lambda x: x, dtype=dpnp.float64
+        )
+        assert getattr(lo, "__array_ufunc__", "missing") is None
+
+    def test_numpy_scalar_times_linop_dispatches_to_rmul(self):
+        n = 3
+        lo = LinearOperator(
+            (n, n), matvec=lambda x: x, dtype=dpnp.float64
+        )
+        scaled = numpy.float64(2.0) * lo
+        assert isinstance(scaled, LinearOperator)
+        x = dpnp.ones(n, dtype=dpnp.float64)
+        assert_allclose(
+            dpnp.asnumpy(scaled.matvec(x)), 2.0 * numpy.ones(n)
+        )
+
+    def test_subclass_matmat_only_accepts_column_vector(self):
+        # Regression: base _matvec must not add a second axis when the
+        # input is already a 2-D (N, 1) column (found via the CuPy-style
+        # third-party parity suite).
+        n = 4
+        a = dpnp.eye(n, dtype=dpnp.float64) * 2.0
+
+        class MatmatOnly(LinearOperator):
+            def __init__(self):
+                super().__init__(dtype=dpnp.float64, shape=(n, n))
+
+            def _matmat(self, X):
+                return a @ X
+
+        lo = MatmatOnly()
+        x_col = dpnp.ones((n, 1), dtype=dpnp.float64)
+        result = lo.matvec(x_col)
+        assert result.shape == (n, 1)
+        assert_allclose(dpnp.asnumpy(result), 2.0 * numpy.ones((n, 1)))
+
+    def test_dot_rejects_numpy_array(self):
+        # dpnp's strict-coercion contract forbids LinearOperator.dot
+        # (and its @ / * aliases) from silently host->device uploading
+        # a numpy.ndarray.
+        n = 4
+        lo = LinearOperator(
+            (n, n), matvec=lambda x: x, dtype=dpnp.float64
+        )
+        host_vec = numpy.ones(n, dtype=numpy.float64)
+        with pytest.raises(TypeError, match="numpy.ndarray"):
+            lo.dot(host_vec)
+        with pytest.raises(TypeError, match="numpy.ndarray"):
+            lo @ host_vec
+        with pytest.raises(TypeError, match="numpy.ndarray"):
+            lo * host_vec
+
 
 class TestLinearOperatorAlgebra:
     # Coverage for the operator-algebra combinators wrapped by
@@ -716,6 +774,19 @@ class TestCg:
         ib = _rhs(50, dpnp.float64)
         _, info = cg(ia, ib, rtol=1e-15, atol=0.0, maxiter=1)
         assert info != 0
+
+    @pytest.mark.skipif(not has_support_aspect64(), reason="fp64 is required")
+    def test_cg_breakdown_rank_deficient_returns_positive_info(self):
+        # Rank-deficient A (PSD but not PD: row/col 0 is zero) causes
+        # CG to break down rather than simply fail to converge within
+        # maxiter. info must still be a positive, non-zero code.
+        n = 8
+        a = numpy.eye(n, dtype=numpy.float64)
+        a[0, 0] = 0.0
+        ia = dpnp.asarray(a)
+        ib = dpnp.ones(n, dtype=dpnp.float64)
+        _, info = cg(ia, ib, rtol=1e-12, atol=0.0, maxiter=20)
+        assert info > 0
 
     @pytest.mark.skipif(not has_support_aspect64(), reason="fp64 is required")
     def test_cg_diag_preconditioner(self):
@@ -1587,6 +1658,42 @@ class TestCsrMatrix:
         x = dpnp.ones(2, dtype=dpnp.int32)
         with pytest.raises(TypeError):
             m.dot(x)
+
+    def test_spmv_compute_rejects_nontrivial_alpha_beta(self):
+        # The backend keeps alpha/beta in a single cached slot per
+        # handle, so anything but 1.0/0.0 risks a torn read by an
+        # in-flight spmv and is rejected loudly instead.
+        import dpctl.utils as dpu
+
+        from dpnp.backend.extensions.sparse import _sparse_impl as si
+
+        n = 4
+        m = csr_matrix(dpnp.eye(n, dtype=dpnp.float64))
+        info = m._ensure_spmv_handle()
+        assert info is not None
+        _, handle, val_type_id, exec_q = info
+        mgr = dpu.SequentialOrderManager[exec_q]
+        x = dpnp.ones(n, dtype=dpnp.float64)
+        y = dpnp.empty(n, dtype=dpnp.float64)
+        x_u = dpnp.get_usm_ndarray(x)
+        y_u = dpnp.get_usm_ndarray(y)
+        depends = mgr.submitted_events
+        with pytest.raises(ValueError, match="alpha=1.0"):
+            si._sparse_gemv_compute(
+                exec_q, handle, val_type_id, 0, 2.0, x_u, 0.0, y_u,
+                n, n, depends,
+            )
+        with pytest.raises(ValueError, match="alpha=1.0"):
+            si._sparse_gemv_compute(
+                exec_q, handle, val_type_id, 0, 1.0, x_u, 1.0, y_u,
+                n, n, depends,
+            )
+        _, comp_ev = si._sparse_gemv_compute(
+            exec_q, handle, val_type_id, 0, 1.0, x_u, 0.0, y_u,
+            n, n, depends,
+        )
+        comp_ev.wait()
+        assert_allclose(dpnp.asnumpy(y), numpy.ones(n))
 
     def test_dot_2d_raises(self):
         a = numpy.eye(3, dtype=numpy.float32)
