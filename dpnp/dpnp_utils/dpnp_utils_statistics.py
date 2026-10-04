@@ -26,6 +26,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+import math
 import warnings
 
 import dpnp
@@ -88,7 +89,8 @@ def _calc_nanmedian(a, out=None):
     if mask.all(axis=-1).any():
         warnings.warn("All-NaN slice encountered", RuntimeWarning, stacklevel=6)
 
-    return dpnp.squeeze(res)
+    # only drop the reduced axis, keep size-1 dimensions that are not reduced
+    return dpnp.squeeze(res, axis=-1)
 
 
 def _flatten_array_along_axes(a, axes_to_flatten, overwrite_input):
@@ -102,7 +104,10 @@ def _flatten_array_along_axes(a, axes_to_flatten, overwrite_input):
     # Move the axes_to_flatten to the end
     destination = list(range(len(axes_to_keep), a_ndim))
     a_moved = dpnp.moveaxis(a, axes_to_flatten, destination)
-    new_shape = tuple(a.shape[axis] for axis in axes_to_keep) + (-1,)
+    # Compute the merged length explicitly instead of letting `reshape` infer
+    # it with -1, since -1 is ambiguous when a kept axis has size 0
+    merged = math.prod(a.shape[axis] for axis in axes_to_flatten)
+    new_shape = tuple(a.shape[axis] for axis in axes_to_keep) + (merged,)
     a_flatten = a_moved.reshape(new_shape)
 
     # Note that the output of a_flatten is not necessarily a view of the input
