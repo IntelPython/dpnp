@@ -72,6 +72,7 @@ requirements:
     - ${{ pin_compatible('onemkl-sycl-lapack', lower_bound='x.x', upper_bound='x') }}
     - ${{ pin_compatible('onemkl-sycl-rng', lower_bound='x.x', upper_bound='x') }}
     - ${{ pin_compatible('onemkl-sycl-vm', lower_bound='x.x', upper_bound='x') }}
+    - ${{ pin_compatible('onemkl-sycl-sparse', lower_bound='x.x', upper_bound='x') }}
     - numpy
     - if: linux
       then: ocl-icd-system
@@ -82,7 +83,7 @@ requirements:
       - dpctl
       - numpy
       - python
-      # leaked from mkl-devel-dpcpp; drags in unused onemkl-sycl-{datafitting,sparse,stats}
+      # leaked from mkl-devel-dpcpp; drags in unused onemkl-sycl-{datafitting,stats}
       - mkl-dpcpp
       # building with Intel DPC++ and do not import the MSVC runtime DLLs
       - if: win
