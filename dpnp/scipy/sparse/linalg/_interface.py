@@ -38,6 +38,7 @@ written for either library is portable to dpnp.
 # mirror SciPy/CuPy verbatim, so the snake_case rule is intentionally
 # relaxed for the whole file.
 # pylint: disable=invalid-name
+# pylint: disable=no-name-in-module
 
 
 import warnings
