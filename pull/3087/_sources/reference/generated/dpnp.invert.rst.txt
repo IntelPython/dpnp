@@ -1,0 +1,10 @@
+﻿
+
+dpnp.invert
+===========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: invert
