@@ -131,11 +131,8 @@ struct SpmvCache
     mkl_sparse::matrix_view view{};
     bool optimized = false;
 
-    // Single-slot alpha/beta storage (spmv dereferences these after
-    // gemv_compute_impl returns, so stack is unsafe). Any scalars
-    // other than 1.0/0.0 are rejected in sparse_gemv_compute: with one
-    // shared slot, a second call could overwrite them while an earlier
-    // spmv is still in flight, silently corrupting its result.
+    // Read by spmv after compute returns, so kept here, not on the stack.
+    // Single slot per handle, hence only alpha=1, beta=0 are accepted.
     std::complex<double> alpha{};
     std::complex<double> beta{};
 };
@@ -191,11 +188,8 @@ static std::pair<std::uintptr_t, sycl::event>
                                     mkl::index_base::zero, row_ptr, col_ind,
                                     values);
 
-        // `values` (nnz elements) is only a placeholder: oneMath needs
-        // a non-null pointer to create the handles. Safe because every
-        // gemv_compute_impl rebinds x/y via set_dense_vector_data
-        // before any spmv runs -- load-bearing, so keep optimize
-        // deferred to first compute, after the real buffers are bound.
+        // `values` is a non-null placeholder; compute rebinds x/y before
+        // spmv (load-bearing), so keep spmv_optimize deferred to compute.
         mkl_sparse::init_dense_vector(exec_q, &cache->x, op_cols, values);
         mkl_sparse::init_dense_vector(exec_q, &cache->y, op_rows, values);
 
@@ -314,10 +308,7 @@ static sycl::event gemv_compute_impl(sycl::queue &exec_q,
 {
     auto *cache = reinterpret_cast<SpmvCache *>(handle_ptr);
 
-    // Stored in the cache, not on the stack: spmv reads them after this
-    // function returns. Single cached slot, not per-call storage -- see
-    // the alpha/beta race-condition note on SpmvCache above. Only
-    // 1.0/0.0 ever reach here (enforced in sparse_gemv_compute).
+    // In the cache, not on the stack: spmv reads them after return.
     Tv *alpha = reinterpret_cast<Tv *>(&cache->alpha);
     Tv *beta = reinterpret_cast<Tv *>(&cache->beta);
     *alpha = static_cast<Tv>(alpha_d);
@@ -569,10 +560,7 @@ std::pair<sycl::event, sycl::event>
     if (val_type_id < 0 || val_type_id >= dpnp_td_ns::num_types)
         throw py::value_error("sparse_gemv_compute: val_type_id out of range.");
 
-    // Only 1.0/0.0 are supported: the backend keeps alpha/beta in a
-    // single cached slot per handle, so any other scalars risk a torn
-    // read by an in-flight spmv. Error out instead of silently
-    // computing wrong results.
+    // Single cached alpha/beta slot: other values could race in-flight spmv.
     if (alpha != 1.0 || beta != 0.0)
         throw py::value_error(
             "sparse_gemv_compute: only alpha=1.0, beta=0.0 are supported.");
