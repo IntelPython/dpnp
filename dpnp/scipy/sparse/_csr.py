@@ -259,12 +259,8 @@ class csr_matrix(SparseABC):  # pylint: disable=too-many-public-methods
         data, indices, indptr = arrays
 
         _dpnp.check_supported_arrays_type(data, indices, indptr)
-        # Normalize usm_ndarray inputs to dpnp.ndarray so all internal
-        # operations (sort_indices, toarray, dot) work uniformly. The
-        # device/usm_type/sycl_queue kwargs only take effect when the
-        # caller passed host data (e.g. a Python list); for an input
-        # already on a device, asarray keeps its placement and these
-        # kwargs are no-ops (matching dpnp.asarray's own contract).
+        # Normalize to dpnp.ndarray; moved/copied to the requested
+        # placement if given, otherwise the input placement is kept.
         data = _dpnp.asarray(
             data, device=device, usm_type=usm_type, sycl_queue=sycl_queue
         )
@@ -389,11 +385,15 @@ class csr_matrix(SparseABC):  # pylint: disable=too-many-public-methods
             self._has_sorted_indices = True
             return
 
-        q = indices.sycl_queue
         nrows = self._shape[0]
         row_lengths = self._indptr[1:] - self._indptr[:-1]
         row_ids = _dpnp.repeat(
-            _dpnp.arange(nrows, dtype=indices.dtype, sycl_queue=q),
+            _dpnp.arange(
+                nrows,
+                dtype=indices.dtype,
+                usm_type=indices.usm_type,
+                sycl_queue=indices.sycl_queue,
+            ),
             row_lengths,
         )
         # Lexsort by (row, col) via two stable passes.
@@ -407,10 +407,8 @@ class csr_matrix(SparseABC):  # pylint: disable=too-many-public-methods
     def _init_from_dense(
         self, dense, dtype=None, device=None, usm_type=None, sycl_queue=None
     ):
-        # Normalize usm_ndarray to dpnp.ndarray for uniform internal ops.
-        # device/usm_type/sycl_queue only take effect for host input
-        # (e.g. a numpy array); an already-device dense array keeps its
-        # own placement, matching dpnp.asarray's own contract.
+        # Normalize to dpnp.ndarray; moved/copied to the requested
+        # placement if given, otherwise the input placement is kept.
         dense = _dpnp.asarray(
             dense, device=device, usm_type=usm_type, sycl_queue=sycl_queue
         )
@@ -422,16 +420,15 @@ class csr_matrix(SparseABC):  # pylint: disable=too-many-public-methods
             dense = dense.astype(dtype, copy=False)
 
         nrows, ncols = dense.shape
-        q = dense.sycl_queue
 
         rows, cols = _dpnp.nonzero(dense)
         nnz = int(rows.shape[0])
 
         if nnz == 0:
-            self._data = _dpnp.empty(0, dtype=dense.dtype, sycl_queue=q)
-            self._indices = _dpnp.empty(0, dtype=_dpnp.int64, sycl_queue=q)
-            self._indptr = _dpnp.zeros(
-                nrows + 1, dtype=_dpnp.int64, sycl_queue=q
+            self._data = _dpnp.empty_like(dense, shape=0)
+            self._indices = _dpnp.empty_like(dense, shape=0, dtype=_dpnp.int64)
+            self._indptr = _dpnp.zeros_like(
+                dense, shape=nrows + 1, dtype=_dpnp.int64
             )
             self._shape = (nrows, ncols)
             self._has_sorted_indices = True
@@ -440,7 +437,7 @@ class csr_matrix(SparseABC):  # pylint: disable=too-many-public-methods
         values = dense[rows, cols]
         idx_dtype = _dpnp.int64
         row_counts = _dpnp.bincount(rows.astype(idx_dtype), minlength=nrows)
-        indptr = _dpnp.empty(nrows + 1, dtype=idx_dtype, sycl_queue=q)
+        indptr = _dpnp.empty_like(dense, shape=nrows + 1, dtype=idx_dtype)
         indptr[0] = 0
         indptr[1:] = _dpnp.cumsum(row_counts)
 
@@ -748,7 +745,7 @@ class csr_matrix(SparseABC):  # pylint: disable=too-many-public-methods
         """Convert to a dense dpnp 2-D array."""
         nrows = self._shape[0]
         q = self._data.sycl_queue
-        dense = _dpnp.zeros(self._shape, dtype=self.dtype, sycl_queue=q)
+        dense = _dpnp.zeros_like(self._data, shape=self._shape)
         if self.nnz == 0:
             return dense
 
