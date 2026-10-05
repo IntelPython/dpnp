@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import unittest
 
 import numpy
@@ -12,41 +14,9 @@ if cupy.tests.helper.is_scipy_available():
     import scipy.sparse.linalg
 
 
-class TestLinearOperatorSmoke(unittest.TestCase):
-    # Minimal operator-contract smoke tests kept unparametrized.
-
-    def test_matmul_dispatch(self):
-        # NOTE: dtype and all inputs use the device default float type
-        # (never hardcoded float64) so this runs on fp64-less devices.
-        dt = cupy.default_float_type()
-        n = 3
-        diag = cupy.asarray([1.0, 2.0, 3.0], dtype=dt)
-        A = cupy.scipy.sparse.linalg.LinearOperator(
-            (n, n),
-            matvec=lambda v: diag * v,
-            dtype=dt,
-        )
-        x = cupy.asarray([10.0, 20.0, 30.0], dtype=dt)
-        testing.assert_allclose(cupy.asnumpy(A @ x), [10.0, 40.0, 90.0])
-        testing.assert_allclose(cupy.asnumpy(A * x), [10.0, 40.0, 90.0])
-
-    def test_adjoint_returns_linear_operator(self):
-        dt = cupy.default_float_type()
-        n = 3
-        A = cupy.scipy.sparse.linalg.LinearOperator(
-            (n, n),
-            matvec=lambda v: v,
-            rmatvec=lambda v: v,
-            dtype=dt,
-        )
-        AH = A.H
-        assert isinstance(AH, cupy.scipy.sparse.linalg.LinearOperator)
-        assert AH.shape == (n, n)
-
-
 def _inner_cases(sp, A, inner_modification):
     # Mirror of upstream's _inner_cases, with the 'sparse' branch
-    # pinned to csr (dpnp has no coo/csc).
+    # pinned to csr (the only format dpnp implements).
     def mv(x):
         return A.dot(x)
 
@@ -57,9 +27,6 @@ def _inner_cases(sp, A, inner_modification):
 
     class BaseMatlike(linop_cls):
         def __init__(self):
-            # NOTE: go through __init__ (not bare attribute assignment
-            # like older upstream): scipy>=1.18 requires _xp set up
-            # there, and dpnp validates shape there too.
             super().__init__(dtype=A.dtype, shape=A.shape)
 
         def _adjoint(self):
@@ -119,8 +86,8 @@ def _generate_linear_operator(sp, A, outer_modification, inner_modification):
                 "class_matvec",
                 "class_matmat",
             ],
-            "M": [6],
-            "N": [7],
+            "M": [1, 6],
+            "N": [1, 7],
         }
     )
 )
@@ -136,12 +103,9 @@ class TestLinearOperator(unittest.TestCase):
         )
 
     def _make_pair(self):
-        # NOTE: dtype comes from a static parameterize grid (unlike
-        # for_dtypes, which filters unsupported dtypes itself), so
-        # 8-byte dtypes are skipped explicitly on fp64-less devices
-        # (CPU without fp64, some iGPUs) the same way the own-scope
-        # suite does.
-        if numpy.dtype(self.dtype).itemsize == 8 and not has_support_aspect64():
+        # dtype comes from parameterize (not for_dtypes), so skip
+        # float64/complex128 explicitly on fp64-less devices.
+        if numpy.dtype(self.dtype).char in "dD" and not has_support_aspect64():
             self.skipTest("fp64 is required")
         A_cpu = testing.shaped_random((self.M, self.N), numpy, self.dtype)
         A_gpu = cupy.asarray(A_cpu)
@@ -176,6 +140,11 @@ class TestLinearOperator(unittest.TestCase):
             shapes.insert(1, (self.N, 1))
         return shapes
 
+    # The `(N, 1)` case below is deprecated in SciPy 1.18, an error in 1.20.
+    # TODO: call `matmat` for it before allowing SciPy 1.20.
+    @pytest.mark.filterwarnings(
+        "ignore:Calling `matvec` on 'column vectors':FutureWarning"
+    )
     def test_matvec(self):
         if self._needs_csr_adjoint_skip():
             self.skipTest("csr-backed adjoint unsupported by dpnp")
@@ -203,6 +172,11 @@ class TestLinearOperator(unittest.TestCase):
             rtol=1e-6,
         )
 
+    # The `(M, 1)` case below is deprecated in SciPy 1.18, an error in 1.20.
+    # TODO: call `rmatmat` for it before allowing SciPy 1.20.
+    @pytest.mark.filterwarnings(
+        "ignore:Calling `rmatvec` on 'column vectors':FutureWarning"
+    )
     def test_rmatvec(self):
         if self.inner_modification == "sparse":
             self.skipTest("csr-backed adjoint unsupported by dpnp")
@@ -317,8 +291,10 @@ class TestCg(unittest.TestCase):
         b_gpu = cupy.asarray(b_cpu)
         x0_gpu = None if x0_cpu is None else cupy.asarray(x0_cpu)
         if self.use_linear_operator:
+            a_ref = scipy.sparse.linalg.aslinearoperator(a_ref)
             a_gpu = cupy.scipy.sparse.linalg.aslinearoperator(a_gpu)
             if m_gpu is not None:
+                m_ref = scipy.sparse.linalg.aslinearoperator(m_ref)
                 m_gpu = cupy.scipy.sparse.linalg.aslinearoperator(m_gpu)
         x_ref, info_ref = scipy.sparse.linalg.cg(
             a_ref, b_cpu, x0_cpu, M=m_ref, atol=atol
@@ -328,9 +304,7 @@ class TestCg(unittest.TestCase):
             a_gpu, b_gpu, x0=x0_gpu, M=m_gpu, atol=atol
         )
         assert info_dp == 0
-        testing.assert_allclose(
-            cupy.asnumpy(x_dp), x_ref, rtol=1e-5, atol=1e-5
-        )
+        testing.assert_allclose(cupy.asnumpy(x_dp), x_ref, rtol=1e-5, atol=1e-5)
 
     def _prep(self, dtype):
         a_cpu, m_cpu = self._make_matrix(dtype)
@@ -362,7 +336,7 @@ class TestCg(unittest.TestCase):
         )
         self._run_both(a_ref, b_cpu, x0_cpu, m_ref, a_gpu, m_gpu, atol)
 
-    @testing.with_requires("scipy>=1.12.0rc1")
+    @testing.with_requires("scipy")
     @testing.for_dtypes("fdFD")
     def test_empty(self, dtype):
         if not self._is_base_config():
@@ -442,7 +416,7 @@ class TestCg(unittest.TestCase):
     )
 )
 @testing.fix_random()
-@testing.with_requires("scipy>=1.4")
+@testing.with_requires("scipy")
 class TestGmres(unittest.TestCase):
     n = 30
     density = 0.2
@@ -460,13 +434,7 @@ class TestGmres(unittest.TestCase):
     def _make_matrix(self, dtype):
         dtype = numpy.dtype(dtype)
         shape = (self.n, self.n)
-        a = testing.shaped_random(
-            shape, numpy, dtype=dtype.char.lower(), scale=1
-        )
-        if dtype.char in "FD":
-            a = a + 1j * testing.shaped_random(
-                shape, numpy, dtype=dtype.char.lower(), scale=1
-            )
+        a = testing.shaped_random(shape, numpy, dtype=dtype, scale=1)
         mask = testing.shaped_random(shape, numpy, dtype="f", scale=1)
         a[mask > self.density] = 0
         diag = numpy.diag(
@@ -495,8 +463,10 @@ class TestGmres(unittest.TestCase):
         b_gpu = cupy.asarray(b_cpu)
         x0_gpu = None if x0_cpu is None else cupy.asarray(x0_cpu)
         if self.use_linear_operator:
+            a_ref = scipy.sparse.linalg.aslinearoperator(a_ref)
             a_gpu = cupy.scipy.sparse.linalg.aslinearoperator(a_gpu)
             if m_gpu is not None:
+                m_ref = scipy.sparse.linalg.aslinearoperator(m_ref)
                 m_gpu = cupy.scipy.sparse.linalg.aslinearoperator(m_gpu)
         x_ref, info_ref = scipy.sparse.linalg.gmres(
             a_ref, b_cpu, x0=x0_cpu, restart=self.restart, M=m_ref, atol=atol
@@ -506,9 +476,7 @@ class TestGmres(unittest.TestCase):
             a_gpu, b_gpu, x0=x0_gpu, restart=self.restart, M=m_gpu, atol=atol
         )
         assert info_dp == 0
-        testing.assert_allclose(
-            cupy.asnumpy(x_dp), x_ref, rtol=1e-5, atol=1e-5
-        )
+        testing.assert_allclose(cupy.asnumpy(x_dp), x_ref, rtol=1e-5, atol=1e-5)
 
     def _prep(self, dtype):
         a_cpu, m_cpu = self._make_matrix(dtype)
@@ -540,7 +508,7 @@ class TestGmres(unittest.TestCase):
         )
         self._run_both(a_ref, b_cpu, x0_cpu, m_ref, a_gpu, m_gpu, atol)
 
-    @testing.with_requires("scipy>=1.12.0rc1")
+    @testing.with_requires("scipy")
     @testing.for_dtypes("fdFD")
     def test_empty(self, dtype):
         if not self._is_base_config():
@@ -646,9 +614,7 @@ class TestMinres(unittest.TestCase):
         )
 
     def _float_dtype(self):
-        # NOTE: upstream hardcodes float64 (no dtype axis here); dpnp
-        # uses the device default float type instead, so this class
-        # also runs on fp32-only devices (no hardcoded float64 below).
+        # upstream builds a/b with shaped_random's default
         return numpy.dtype(cupy.default_float_type())
 
     def _make_matrix(self):
@@ -674,8 +640,10 @@ class TestMinres(unittest.TestCase):
         b_gpu = cupy.asarray(b_cpu)
         x0_gpu = None if x0_cpu is None else cupy.asarray(x0_cpu)
         if self.use_linear_operator:
+            a_ref = scipy.sparse.linalg.aslinearoperator(a_ref)
             a_gpu = cupy.scipy.sparse.linalg.aslinearoperator(a_gpu)
             if m_gpu is not None:
+                m_ref = scipy.sparse.linalg.aslinearoperator(m_ref)
                 m_gpu = cupy.scipy.sparse.linalg.aslinearoperator(m_gpu)
         # NOTE: no info assertion here (unlike cg/gmres above): the
         # random test matrices are often far from symmetric positive
@@ -687,9 +655,7 @@ class TestMinres(unittest.TestCase):
         x_dp, _ = cupy.scipy.sparse.linalg.minres(
             a_gpu, b_gpu, x0=x0_gpu, M=m_gpu, shift=self.shift
         )
-        testing.assert_allclose(
-            cupy.asnumpy(x_dp), x_ref, rtol=1e-5, atol=1e-5
-        )
+        testing.assert_allclose(cupy.asnumpy(x_dp), x_ref, rtol=1e-5, atol=1e-5)
 
     def _prep(self):
         a_cpu, m_cpu = self._make_matrix()

@@ -347,8 +347,8 @@ static sycl::event gemv_compute_impl(sycl::queue &exec_q,
             cache->optimized = true;
 
             return mkl_sparse::spmv(exec_q, mkl_trans, alpha, cache->view,
-                                     cache->A, cache->x, beta, cache->y, alg,
-                                     cache->descr, {ev_opt});
+                                    cache->A, cache->x, beta, cache->y, alg,
+                                    cache->descr, {ev_opt});
         }
 
         return mkl_sparse::spmv(exec_q, mkl_trans, alpha, cache->view, cache->A,

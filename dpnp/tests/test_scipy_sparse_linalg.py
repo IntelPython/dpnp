@@ -413,39 +413,36 @@ class TestLinearOperator:
         # expressions like `numpy_scalar * lo` route through __rmul__
         # instead of NumPy attempting (and failing) to broadcast lo.
         n = 3
-        lo = LinearOperator(
-            (n, n), matvec=lambda x: x, dtype=dpnp.float64
-        )
+        dt = dpnp.default_float_type()
+        lo = LinearOperator((n, n), matvec=lambda x: x, dtype=dt)
         assert getattr(lo, "__array_ufunc__", "missing") is None
 
     def test_numpy_scalar_times_linop_dispatches_to_rmul(self):
         n = 3
-        lo = LinearOperator(
-            (n, n), matvec=lambda x: x, dtype=dpnp.float64
-        )
+        dt = dpnp.default_float_type()
+        lo = LinearOperator((n, n), matvec=lambda x: x, dtype=dt)
         scaled = numpy.float64(2.0) * lo
         assert isinstance(scaled, LinearOperator)
-        x = dpnp.ones(n, dtype=dpnp.float64)
-        assert_allclose(
-            dpnp.asnumpy(scaled.matvec(x)), 2.0 * numpy.ones(n)
-        )
+        x = dpnp.ones(n, dtype=dt)
+        assert_allclose(dpnp.asnumpy(scaled.matvec(x)), 2.0 * numpy.ones(n))
 
     def test_subclass_matmat_only_accepts_column_vector(self):
         # Regression: base _matvec must not add a second axis when the
         # input is already a 2-D (N, 1) column (found via the CuPy-style
         # third-party parity suite).
         n = 4
-        a = dpnp.eye(n, dtype=dpnp.float64) * 2.0
+        dt = dpnp.default_float_type()
+        a = dpnp.eye(n, dtype=dt) * 2.0
 
         class MatmatOnly(LinearOperator):
             def __init__(self):
-                super().__init__(dtype=dpnp.float64, shape=(n, n))
+                super().__init__(dtype=dt, shape=(n, n))
 
             def _matmat(self, X):
                 return a @ X
 
         lo = MatmatOnly()
-        x_col = dpnp.ones((n, 1), dtype=dpnp.float64)
+        x_col = dpnp.ones((n, 1), dtype=dt)
         result = lo.matvec(x_col)
         assert result.shape == (n, 1)
         assert_allclose(dpnp.asnumpy(result), 2.0 * numpy.ones((n, 1)))
@@ -455,9 +452,8 @@ class TestLinearOperator:
         # (and its @ / * aliases) from silently host->device uploading
         # a numpy.ndarray.
         n = 4
-        lo = LinearOperator(
-            (n, n), matvec=lambda x: x, dtype=dpnp.float64
-        )
+        dt = dpnp.default_float_type()
+        lo = LinearOperator((n, n), matvec=lambda x: x, dtype=dt)
         host_vec = numpy.ones(n, dtype=numpy.float64)
         with pytest.raises(TypeError, match="numpy.ndarray"):
             lo.dot(host_vec)
@@ -1660,37 +1656,63 @@ class TestCsrMatrix:
             m.dot(x)
 
     def test_spmv_compute_rejects_nontrivial_alpha_beta(self):
-        # The backend keeps alpha/beta in a single cached slot per
-        # handle, so anything but 1.0/0.0 risks a torn read by an
-        # in-flight spmv and is rejected loudly instead.
+        # Single cached alpha/beta slot per handle: only 1.0/0.0 accepted.
         import dpctl.utils as dpu
 
         from dpnp.backend.extensions.sparse import _sparse_impl as si
 
         n = 4
-        m = csr_matrix(dpnp.eye(n, dtype=dpnp.float64))
+        dt = dpnp.default_float_type()
+        m = csr_matrix(dpnp.eye(n, dtype=dt))
         info = m._ensure_spmv_handle()
         assert info is not None
         _, handle, val_type_id, exec_q = info
         mgr = dpu.SequentialOrderManager[exec_q]
-        x = dpnp.ones(n, dtype=dpnp.float64)
-        y = dpnp.empty(n, dtype=dpnp.float64)
+        x = dpnp.ones(n, dtype=dt)
+        y = dpnp.empty(n, dtype=dt)
         x_u = dpnp.get_usm_ndarray(x)
         y_u = dpnp.get_usm_ndarray(y)
         depends = mgr.submitted_events
         with pytest.raises(ValueError, match="alpha=1.0"):
             si._sparse_gemv_compute(
-                exec_q, handle, val_type_id, 0, 2.0, x_u, 0.0, y_u,
-                n, n, depends,
+                exec_q,
+                handle,
+                val_type_id,
+                0,
+                2.0,
+                x_u,
+                0.0,
+                y_u,
+                n,
+                n,
+                depends,
             )
         with pytest.raises(ValueError, match="alpha=1.0"):
             si._sparse_gemv_compute(
-                exec_q, handle, val_type_id, 0, 1.0, x_u, 1.0, y_u,
-                n, n, depends,
+                exec_q,
+                handle,
+                val_type_id,
+                0,
+                1.0,
+                x_u,
+                1.0,
+                y_u,
+                n,
+                n,
+                depends,
             )
         _, comp_ev = si._sparse_gemv_compute(
-            exec_q, handle, val_type_id, 0, 1.0, x_u, 0.0, y_u,
-            n, n, depends,
+            exec_q,
+            handle,
+            val_type_id,
+            0,
+            1.0,
+            x_u,
+            0.0,
+            y_u,
+            n,
+            n,
+            depends,
         )
         comp_ev.wait()
         assert_allclose(dpnp.asnumpy(y), numpy.ones(n))
