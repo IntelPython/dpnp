@@ -1312,11 +1312,16 @@ def test_rfft_input_alignment(
 
     out: cupy.ndarray = cupy.fft.rfft(x) if ndim == 1 else cupy.fft.rfftn(x)
     expected: np.ndarray = np.fft.rfftn(np.ones(shape=shape, dtype=dtype))
+    # oneMKL f32 err in zero bins scales with DC value (prod(shape))
     testing.assert_allclose(
         actual=out,
         desired=expected,
         rtol=1e-5 if dtype is np.float32 else 1e-12,
-        atol=1e-3 if dtype is np.float32 else 1e-9,
+        atol=(
+            np.finfo(dtype).eps * math.prod(shape)
+            if dtype is np.float32
+            else 1e-9
+        ),
     )
     testing.assert_array_equal(
         actual=backing, desired=np.ones(shape=backing.shape, dtype=dtype)
