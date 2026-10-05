@@ -54,6 +54,7 @@ This release is compatible with NumPy 2.5.
 * Avoided a copy of `dpnp.einsum` result into C-order by building the product in the requested layout directly [#3069](https://github.com/IntelPython/dpnp/pull/3069)
 * Updated the implementation of `dpnp.putmask` by adding dedicated contiguous and strided SYCL kernels [#3014](https://github.com/IntelPython/dpnp/pull/3014)
 * Changed `dpnp.sort`, `dpnp.argsort`, and their `dpnp.ndarray`/`dpnp.tensor` counterparts to place `NaN` values last instead of first when sorting in descending order [#3066](https://github.com/IntelPython/dpnp/pull/3066)
+* Documented and made explicit support for `copy=None` ("copy only if needed") in `dpnp.nan_to_num` [#3083](https://github.com/IntelPython/dpnp/pull/3083)
 
 ### Deprecated
 
@@ -110,6 +111,9 @@ This release is compatible with NumPy 2.5.
 * Fixed the list of events the copy kernels of `dpnp.reshape`, `dpnp.tensor.reshape`, `dpnp.roll` and `dpnp.tensor.roll` wait on being padded with default-constructed events [#3072](https://github.com/IntelPython/dpnp/pull/3072)
 * Fixed `simplify_iteration_three_strides` and `simplify_iteration_four_strides` accumulating into their third and fourth output displacements without zeroing them first, which required the caller to initialize them [#3072](https://github.com/IntelPython/dpnp/pull/3072)
 * Fixed `dpnp.ndarray.flat` indexing and assignment edge cases, adding support for slices, ellipsis, and integer/boolean array indices [#3045](https://github.com/IntelPython/dpnp/pull/3045)
+* Fixed `dpnp.nanmedian` dropping kept dimensions of size 1, which produced a wrong result shape [#3081](https://github.com/IntelPython/dpnp/pull/3081)
+* Fixed incorrect results of `dpnp.tensor.vecdot` in some cases with strided outputs and of `dpnp.tensor` reductions, `dpnp.tensor.vecdot` and `dpnp.tensor.matmul` on large inputs with some data types [#3082](https://github.com/IntelPython/dpnp/pull/3082)
+* Fixed `dpnp.median` and `dpnp.nanmedian` raising a `ValueError` for a tuple `axis` when a kept dimension has size 0 [#3081](https://github.com/IntelPython/dpnp/pull/3081)
 
 ### Security
 
