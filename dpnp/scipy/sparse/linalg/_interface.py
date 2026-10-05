@@ -45,6 +45,7 @@ import warnings
 import numpy as _np
 
 import dpnp
+from dpnp.dpnp_utils import map_dtype_to_device
 
 from ..._lib._sparse import issparse
 
@@ -575,12 +576,13 @@ class _ProductLinearOperator(LinearOperator):
 
 class _ScaledLinearOperator(LinearOperator):
     def __init__(self, A, alpha):
-        # A bare Python scalar (e.g. ``2.5``) must promote weakly, like
-        # ``dpnp.result_type(A.dtype, 2.5)``, not strongly via its type
-        # (``dpnp.result_type(A.dtype, float)`` forces float64 / complex128
-        # even on an fp64-less device). dpnp arrays keep the strong path
-        # via their own ``.dtype``.
-        alpha_dtype = alpha if not hasattr(alpha, "dtype") else alpha.dtype
+        # Match `alpha * A.matvec(x)`: a Python scalar promotes weakly; a
+        # numpy scalar by its dtype mapped to the device (f8 -> f4 w/o fp64).
+        if hasattr(alpha, "dtype"):
+            dev = dpnp.get_normalized_queue_device().sycl_device
+            alpha_dtype = map_dtype_to_device(alpha.dtype, dev)
+        else:
+            alpha_dtype = alpha
         super().__init__(_get_dtype([A], [alpha_dtype]), A.shape)
         self.args = (A, alpha)
 

@@ -424,7 +424,10 @@ class TestLinearOperator:
         scaled = numpy.float64(2.0) * lo
         assert isinstance(scaled, LinearOperator)
         x = dpnp.ones(n, dtype=dt)
-        assert_allclose(dpnp.asnumpy(scaled.matvec(x)), 2.0 * numpy.ones(n))
+        res = scaled.matvec(x)
+        # declared dtype must match what matvec yields on this device
+        assert scaled.dtype == res.dtype
+        assert_allclose(dpnp.asnumpy(res), 2.0 * numpy.ones(n))
 
     def test_subclass_matmat_only_accepts_column_vector(self):
         # Regression: base _matvec must not add a second axis when the
