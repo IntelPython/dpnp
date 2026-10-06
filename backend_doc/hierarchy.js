@@ -130,6 +130,8 @@ var hierarchy =
     [ "statistics::sliding_window1d::Span< T, std::size_t >", "classstatistics_1_1sliding__window1d_1_1_span.html", [
       [ "statistics::sliding_window1d::PaddedSpan< T, SizeT >", "classstatistics_1_1sliding__window1d_1_1_padded_span.html", null ]
     ] ],
+    [ "dpnp::extensions::sparse::types::SparseGemvComputeTypeSupportFactory< Tv >", "structdpnp_1_1extensions_1_1sparse_1_1types_1_1_sparse_gemv_compute_type_support_factory.html", null ],
+    [ "dpnp::extensions::sparse::types::SparseGemvInitTypePairSupportFactory< Tv, Ti >", "structdpnp_1_1extensions_1_1sparse_1_1types_1_1_sparse_gemv_init_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::lapack::types::SyevdTypePairSupportFactory< T, RealT >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_syevd_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::blas::types::SyrkTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_syrk_type_pair_support_factory.html", null ],
     [ "ext::common::TableBuilder< FnT, SupportedTypes, Func >", "structext_1_1common_1_1_table_builder.html", null ],

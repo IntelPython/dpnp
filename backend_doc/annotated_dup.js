@@ -65,6 +65,12 @@ var annotated_dup =
             [ "TypeMapTwoResultsEntry", "structdpnp_1_1extensions_1_1py__internal_1_1type__dispatch_1_1_type_map_two_results_entry.html", null ]
           ] ]
         ] ],
+        [ "sparse", null, [
+          [ "types", null, [
+            [ "SparseGemvComputeTypeSupportFactory", "structdpnp_1_1extensions_1_1sparse_1_1types_1_1_sparse_gemv_compute_type_support_factory.html", null ],
+            [ "SparseGemvInitTypePairSupportFactory", "structdpnp_1_1extensions_1_1sparse_1_1types_1_1_sparse_gemv_init_type_pair_support_factory.html", null ]
+          ] ]
+        ] ],
         [ "window", null, [
           [ "Factory", "structdpnp_1_1extensions_1_1window_1_1_factory.html", null ]
         ] ]
