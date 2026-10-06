@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.scipy.sparse.csr\_matrix.format
+====================================
+
+.. currentmodule:: dpnp.scipy.sparse
+
+attribute
+
+.. autoattribute:: csr_matrix.format
