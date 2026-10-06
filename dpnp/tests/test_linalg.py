@@ -278,7 +278,7 @@ class TestCholesky:
 
 
 class TestCond:
-    _norms = [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
+    _norms = [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro", "nuc"]
 
     @pytest.mark.parametrize(
         "shape", [(0, 4, 4), (4, 0, 3, 3)], ids=["(0, 4, 4)", "(4, 0, 3, 3)"]
@@ -325,7 +325,7 @@ class TestCond:
         # NumPy does not raise LinAlgError on singular matrices.
         # It returns `inf`, `0`, or large/small finite values
         # depending on the norm and the matrix content.
-        # DPNP raises LinAlgError for 1, -1, inf, -inf, and 'fro'
+        # DPNP raises LinAlgError for 1, -1, inf, -inf, 'fro', and 'nuc'
         # due to use of gesv in the 2D case.
         # For [None, 2, -2], DPNP does not raise.
         if p in [None, 2, -2]:

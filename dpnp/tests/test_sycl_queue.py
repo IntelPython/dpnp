@@ -1619,7 +1619,7 @@ class TestLinAlgebra:
         assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
 
     @pytest.mark.parametrize(
-        "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
+        "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro", "nuc"]
     )
     def test_cond(self, device, p):
         a = generate_random_numpy_array((2, 4, 4))
