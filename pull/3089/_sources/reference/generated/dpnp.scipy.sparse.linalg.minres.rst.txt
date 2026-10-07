@@ -1,0 +1,10 @@
+﻿
+
+dpnp.scipy.sparse.linalg.minres
+===============================
+
+.. currentmodule:: dpnp.scipy.sparse.linalg
+
+
+
+.. autofunction:: minres
