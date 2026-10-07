@@ -1,0 +1,10 @@
+﻿
+
+dpnp.rsqrt
+==========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: rsqrt
