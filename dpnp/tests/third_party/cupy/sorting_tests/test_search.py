@@ -7,6 +7,7 @@ import dpnp as cupy
 
 # import cupy._core._accelerator as _acc
 # from cupy._core import _cub_reduction
+from dpnp.exceptions import USMAllocationError
 from dpnp.tests.helper import has_support_aspect64
 from dpnp.tests.third_party.cupy import testing
 
@@ -90,7 +91,10 @@ class TestSearch:
     @testing.slow
     # @pytest.mark.thread_unsafe(reason="allocation too large.")
     def test_argmax_int32_overflow(self):
-        a = cupy.arange(2**32 + 1, dtype=cupy.default_float_type())
+        try:
+            a = cupy.arange(2**32 + 1, dtype=cupy.default_float_type())
+        except USMAllocationError:
+            pytest.skip("Not enough GPU memory for the large array")
         assert a.argmax().item() == 2**32
 
     @testing.for_all_dtypes(no_complex=True)
@@ -170,7 +174,10 @@ class TestSearch:
     @testing.slow
     # @pytest.mark.thread_unsafe(reason="allocation too large.")
     def test_argmin_int32_overflow(self):
-        a = cupy.arange(2**32 + 1, dtype=cupy.default_float_type())
+        try:
+            a = cupy.arange(2**32 + 1, dtype=cupy.default_float_type())
+        except USMAllocationError:
+            pytest.skip("Not enough GPU memory for the large array")
         cupy.negative(a, out=a)
         assert a.argmin().item() == 2**32
 
