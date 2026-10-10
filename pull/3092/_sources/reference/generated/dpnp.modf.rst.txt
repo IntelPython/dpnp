@@ -1,0 +1,10 @@
+﻿
+
+dpnp.modf
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: modf

@@ -1,0 +1,10 @@
+﻿
+
+dpnp.minimum
+============
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: minimum
