@@ -1,0 +1,14 @@
+
+:orphan:
+
+
+dpnp.ndarray.ndim
+=================
+
+.. currentmodule:: dpnp
+
+
+property
+
+
+.. autoproperty:: ndarray.ndim
