@@ -29,13 +29,13 @@
 """Shared helpers and parameter axes for the dpnp ASV benchmarks."""
 
 import dpctl
-import numpy
 from asv_runner.benchmarks.mark import SkipNotImplemented
 
 import dpnp
 
 # Keyed by name, so ASV's tables stay readable.
-_EXECUTORS = {"dpnp": dpnp, "numpy": numpy}
+# dpnp only: NumPy timing can't change with dpnp. The axis keeps result names.
+_EXECUTORS = {"dpnp": dpnp}
 _EXECUTOR_NAMES = list(_EXECUTORS)
 
 # axes shared across multiple files
