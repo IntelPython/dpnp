@@ -2402,10 +2402,12 @@ def dpnp_pinv(a, rcond=None, hermitian=False, rtol=None):
 
     """
 
+    # dtype the SVD is computed in
+    res_type = _common_type(a)
+
     if rcond is None:
         if rtol is None:
-            dtype = dpnp.result_type(a.dtype, dpnp.default_float_type(a.device))
-            rcond = max(a.shape[-2:]) * dpnp.finfo(dtype).eps
+            rcond = max(a.shape[-2:]) * dpnp.finfo(res_type).eps
         else:
             rcond = rtol
     elif rtol is not None:
@@ -2414,7 +2416,7 @@ def dpnp_pinv(a, rcond=None, hermitian=False, rtol=None):
     if _is_empty_2d(a):
         m, n = a.shape[-2:]
         sh = a.shape[:-2] + (n, m)
-        return dpnp.empty_like(a, shape=sh)
+        return dpnp.empty_like(a, shape=sh, dtype=res_type)
 
     if dpnp.is_supported_array_type(rcond):
         # Check that `a` and `rcond` are allocated on the same device
