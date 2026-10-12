@@ -7,6 +7,7 @@ import dpnp as cupy
 from dpnp.tests.helper import (
     assert_dtype_allclose,
     has_support_aspect64,
+    numpy_version,
 )
 from dpnp.tests.third_party.cupy import testing
 from dpnp.tests.third_party.cupy.testing import _condition
@@ -247,6 +248,9 @@ class TestPinv(unittest.TestCase):
         if not isinstance(rcond, float):
             rcond = numpy.asarray(rcond)
         result_cpu = numpy.linalg.pinv(a_cpu, rcond=rcond)
+        if numpy_version() < "2.6.0" and a_cpu.dtype.kind in "biu":
+            # NumPy < 2.6.0 returns the input dtype for empty int/bool input
+            result_cpu = result_cpu.astype(numpy.float64)
         if not isinstance(rcond, float):
             rcond = cupy.asarray(rcond)
         result_gpu = cupy.linalg.pinv(a_gpu, rcond=rcond)
