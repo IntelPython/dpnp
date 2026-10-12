@@ -1,0 +1,10 @@
+﻿
+
+dpnp.i0
+=======
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: i0

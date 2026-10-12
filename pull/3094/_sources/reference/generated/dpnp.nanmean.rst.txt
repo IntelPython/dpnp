@@ -1,0 +1,10 @@
+﻿
+
+dpnp.nanmean
+============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: nanmean
