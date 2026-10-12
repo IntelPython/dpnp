@@ -56,6 +56,7 @@ This release is compatible with NumPy 2.5.
 * Updated the implementation of `dpnp.putmask` by adding dedicated contiguous and strided SYCL kernels [#3014](https://github.com/IntelPython/dpnp/pull/3014)
 * Changed `dpnp.sort`, `dpnp.argsort`, and their `dpnp.ndarray`/`dpnp.tensor` counterparts to place `NaN` values last instead of first when sorting in descending order [#3066](https://github.com/IntelPython/dpnp/pull/3066)
 * Documented and made explicit support for `copy=None` ("copy only if needed") in `dpnp.nan_to_num` [#3083](https://github.com/IntelPython/dpnp/pull/3083)
+* Changed `dpnp.linalg.pinv` to compute the default tolerance from the machine epsilon of the data type used for the computation, and to return a floating-point result for an empty integer or boolean array [#3090](https://github.com/IntelPython/dpnp/pull/3090)
 
 ### Deprecated
 
