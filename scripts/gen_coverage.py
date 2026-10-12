@@ -112,6 +112,19 @@ def parse_args():
         default="",
         type=str,
     )
+    p.add_argument(
+        "--skip-tensor-tests",
+        dest="run_tensor_tests",
+        action="store_false",
+        help="Skip running dpnp.tensor tests (run in a separate pytest session)",
+    )
+    p.add_argument(
+        "--tensor-cpp-coverage",
+        dest="tensor_cpp_coverage",
+        action="store_true",
+        help="Build dpnp.tensor pybind11 extensions with coverage "
+        "instrumentation and include them into C++ coverage report",
+    )
 
     # build relating options
     p.add_argument(
@@ -175,6 +188,10 @@ def main():
         verbose=args.verbose,
     )
     cmake_args.append("-DDPNP_GENERATE_COVERAGE=ON")
+    if args.tensor_cpp_coverage:
+        cmake_args.append(
+            "-DDPNP_TENSOR_GENERATE_COVERAGE_FOR_PYBIND11_EXTENSIONS=ON"
+        )
 
     env = os.environ.copy()
 
@@ -203,7 +220,6 @@ def main():
     install_editable(setup_dir, env)
 
     if args.run_pytest:
-        env["LLVM_PROFILE_FILE"] = "dpnp_pytest.profraw"
         pytest_cmd = [
             "pytest",
             "-q",
@@ -213,13 +229,38 @@ def main():
             "pyproject.toml",
             "--cov",
             "dpnp",
+        ]
+        cov_report = [
             "--cov-report=term-missing",
             "--cov-report=lcov:coverage-python.lcov",
-            "--pyargs",
-            "dpnp",
-            *args.pytest_opts.split(),
         ]
-        run(pytest_cmd, env=env, cwd=setup_dir)
+
+        # dpnp tests w/o tensor ones, those are run in a separate session
+        env["SKIP_TENSOR_TESTS"] = "1"
+        env["LLVM_PROFILE_FILE"] = "dpnp_pytest.profraw"
+        profraw_files = [env["LLVM_PROFILE_FILE"]]
+        run(
+            pytest_cmd
+            # report once, on the combined data of the last session
+            + (["--cov-report="] if args.run_tensor_tests else cov_report)
+            + ["--pyargs", "dpnp", *args.pytest_opts.split()],
+            env=env,
+            cwd=setup_dir,
+        )
+
+        if args.run_tensor_tests:
+            # separate session to limit peak memory, appends to coverage data
+            env["SKIP_TENSOR_TESTS"] = "0"
+            env["LLVM_PROFILE_FILE"] = "dpnp_tensor_pytest.profraw"
+            profraw_files.append(env["LLVM_PROFILE_FILE"])
+            run(
+                pytest_cmd
+                + ["--cov-append"]
+                + cov_report
+                + ["--pyargs", "dpnp.tests.tensor", *args.pytest_opts.split()],
+                env=env,
+                cwd=setup_dir,
+            )
 
         def find_objects():
             objects = []
@@ -227,11 +268,18 @@ def main():
             search_path = os.path.join(dpnp_path, "dpnp")
             for root, _, files in os.walk(search_path):
                 for file in files:
-                    if (
-                        file.endswith("_c.so")
-                        or root.find("extensions") != -1
+                    is_backend_obj = file.endswith("_c.so") or (
+                        root.find("extensions") != -1
                         and file.find("_impl.cpython") != -1
-                    ):
+                    )
+                    # tensor pybind11 extensions, e.g. _tensor_impl
+                    is_tensor_obj = (
+                        args.tensor_cpp_coverage
+                        and os.path.basename(root) == "tensor"
+                        and file.startswith("_tensor_")
+                        and file.find("_impl.cpython") != -1
+                    )
+                    if is_backend_obj or is_tensor_obj:
                         objects.extend(["-object", os.path.join(root, file)])
             return objects
 
@@ -244,7 +292,7 @@ def main():
                 os.path.join(bin_llvm, "llvm-profdata"),
                 "merge",
                 "-sparse",
-                env["LLVM_PROFILE_FILE"],
+                *profraw_files,
                 "-o",
                 instr_profile_fn,
             ]

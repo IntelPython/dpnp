@@ -11,7 +11,7 @@ jobs:
     name: Generate coverage and push to Coveralls.io
 
     runs-on: ubuntu-latest
-    timeout-minutes: 150
+    timeout-minutes: 180
 
     permissions:
       # Needed to cancel any previous runs that are not completed for a given workflow
@@ -123,7 +123,7 @@ jobs:
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
           shell: bash
-          timeout_minutes: 120
+          timeout_minutes: 150
           max_attempts: 5
           retry_on: error
           command: |
@@ -131,7 +131,6 @@ jobs:
             conda activate coverage
             [ -f /opt/intel/oneapi/setvars.sh ] && source /opt/intel/oneapi/setvars.sh
             git clean -fxd
-            export SKIP_TENSOR_TESTS=1
             python scripts/gen_coverage.py
 
       - name: Total number of coverage attempts
