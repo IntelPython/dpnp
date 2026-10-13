@@ -121,6 +121,7 @@ jobs:
       - name: Build dpnp with coverage
         timeout-minutes: 60
         run: |
+          [ -f /opt/intel/oneapi/setvars.sh ] && source /opt/intel/oneapi/setvars.sh
           python scripts/gen_coverage.py --stage build
 
       - name: Run dpnp tests with coverage
@@ -160,6 +161,7 @@ jobs:
 
       - name: Generate coverage reports
         run: |
+          [ -f /opt/intel/oneapi/setvars.sh ] && source /opt/intel/oneapi/setvars.sh
           python scripts/gen_coverage.py --stage report
 
       - name: Upload coverage data to coveralls.io
