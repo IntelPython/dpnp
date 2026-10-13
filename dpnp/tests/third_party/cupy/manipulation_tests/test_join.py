@@ -15,9 +15,29 @@ from dpnp.exceptions import AxisError
 from dpnp.tests.helper import has_support_aspect64
 from dpnp.tests.third_party.cupy import testing
 from dpnp.tests.third_party.cupy.testing._helper import skip_if_after_baseline
+from dpnp.tests.third_party.cupy.testing._protocol_helpers import (
+    DummyObjectWithCudaArrayInterface,
+    DummyObjectWithCuPyGetNDArray,
+)
 
 
 class TestJoin:
+
+    @pytest.mark.skip("CUDA array interface is not supported")
+    @pytest.mark.parametrize(
+        "wrapper",
+        [DummyObjectWithCuPyGetNDArray, DummyObjectWithCudaArrayInterface],
+    )
+    def test_concatenate_array_protocols(self, wrapper):
+        a = cupy.arange(3)
+        result = cupy.concatenate((a, wrapper(a)))
+        testing.assert_array_equal(result, [0, 1, 2, 0, 1, 2])
+
+    def test_concatenate_invalid_input(self):
+        with pytest.raises(
+            TypeError, match="An array must be any of supported type"
+        ):
+            cupy.concatenate((cupy.ones(2), 1.0))
 
     @testing.for_all_dtypes(name="dtype1")
     @testing.for_all_dtypes(name="dtype2")
