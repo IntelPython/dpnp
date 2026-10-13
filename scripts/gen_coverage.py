@@ -44,6 +44,12 @@ from _build_helper import (
     run,
 )
 
+# in the order they are run, see --stage option
+_STAGES = ("build", "dpnp-tests", "tensor-tests", "report")
+
+_DPNP_PROFRAW = "dpnp_pytest.profraw"
+_TENSOR_PROFRAW = "dpnp_tensor_pytest.profraw"
+
 
 def parse_args():
     p = argparse.ArgumentParser(description="Build dpnp and generate coverage")
@@ -116,14 +122,23 @@ def parse_args():
         "--skip-tensor-tests",
         dest="run_tensor_tests",
         action="store_false",
-        help="Skip running dpnp.tensor tests (run in a separate pytest session)",
+        help="Skip running dpnp.tensor tests (tensor-tests stage)",
     )
     p.add_argument(
         "--tensor-cpp-coverage",
         dest="tensor_cpp_coverage",
         action="store_true",
         help="Build dpnp.tensor pybind11 extensions with coverage "
-        "instrumentation and include them into C++ coverage report",
+        "instrumentation and include them into C++ coverage report "
+        "(pass to both build and report stages)",
+    )
+    p.add_argument(
+        "--stage",
+        dest="stages",
+        action="append",
+        choices=_STAGES,
+        help="Stage to run, can be repeated (default: all stages). "
+        "Allows to run and retry each stage in a separate CI step",
     )
 
     # build relating options
@@ -160,21 +175,7 @@ def find_bin_llvm(compiler):
     return bin_llvm
 
 
-def main():
-    is_linux = "linux" in sys.platform
-    if not is_linux:
-        err(f"{sys.platform} not supported", "gen_coverage")
-
-    args = parse_args()
-    setup_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-    c_compiler, cxx_compiler = resolve_compilers(
-        args.oneapi,
-        args.c_compiler,
-        args.cxx_compiler,
-        args.compiler_root,
-    )
-
+def build_dpnp(args, setup_dir, env, c_compiler, cxx_compiler):
     dpctl_cmake_dir = get_dpctl_cmake_dir()
     print(f"[gen_coverage] Found DPCTL CMake dir: {dpctl_cmake_dir}")
 
@@ -193,6 +194,167 @@ def main():
             "-DDPNP_TENSOR_GENERATE_COVERAGE_FOR_PYBIND11_EXTENSIONS=ON"
         )
 
+    log_cmake_args(cmake_args, "gen_coverage")
+
+    build_extension(
+        setup_dir,
+        env,
+        cmake_args,
+        cmake_executable=args.cmake_executable,
+        generator=args.generator,
+        build_type="Coverage",
+    )
+    install_editable(setup_dir, env)
+
+
+def run_pytest(args, setup_dir, env, tensor_tests):
+    run(
+        [
+            "pytest",
+            "-q",
+            "-ra",
+            "--disable-warnings",
+            "--cov-config",
+            "pyproject.toml",
+            "--cov",
+            "dpnp",
+            # reported by report stage, on the data of all sessions
+            "--cov-report=",
+            # tensor session appends to the data of dpnp one
+            *(["--cov-append"] if tensor_tests else []),
+            "--pyargs",
+            "dpnp.tests.tensor" if tensor_tests else "dpnp",
+            *args.pytest_opts.split(),
+        ],
+        env={
+            **env,
+            "SKIP_TENSOR_TESTS": "0" if tensor_tests else "1",
+            "LLVM_PROFILE_FILE": (
+                _TENSOR_PROFRAW if tensor_tests else _DPNP_PROFRAW
+            ),
+        },
+        cwd=setup_dir,
+    )
+
+
+def export_coverage(args, setup_dir, env, bin_llvm):
+    # python coverage of all test sessions
+    run(
+        ["coverage", "report", "-m", "--rcfile", "pyproject.toml"],
+        env=env,
+        cwd=setup_dir,
+    )
+    run(
+        [
+            "coverage",
+            "lcov",
+            "--rcfile",
+            "pyproject.toml",
+            "-o",
+            "coverage-python.lcov",
+        ],
+        env=env,
+        cwd=setup_dir,
+    )
+
+    expected_profraw_files = [_DPNP_PROFRAW]
+    if args.run_tensor_tests:
+        expected_profraw_files.append(_TENSOR_PROFRAW)
+
+    profraw_files = []
+    for fn in expected_profraw_files:
+        if os.path.exists(os.path.join(setup_dir, fn)):
+            profraw_files.append(fn)
+        else:
+            # e.g. the stage failed, report on the rest of data
+            print(f"[gen_coverage] Warning: {fn} not found, skipping it")
+    if not profraw_files:
+        err("no LLVM profile data found", "gen_coverage")
+
+    def find_objects():
+        objects = []
+        search_path = os.path.join(setup_dir, "dpnp")
+        for root, _, files in os.walk(search_path):
+            for file in files:
+                is_backend_obj = file.endswith("_c.so") or (
+                    root.find("extensions") != -1
+                    and file.find("_impl.cpython") != -1
+                )
+                # tensor pybind11 extensions, e.g. _tensor_impl
+                is_tensor_obj = (
+                    args.tensor_cpp_coverage
+                    and os.path.basename(root) == "tensor"
+                    and file.startswith("_tensor_")
+                    and file.find("_impl.cpython") != -1
+                )
+                if is_backend_obj or is_tensor_obj:
+                    objects.extend(["-object", os.path.join(root, file)])
+        return objects
+
+    objects = find_objects()
+    instr_profile_fn = "dpnp_pytest.profdata"
+
+    # generate instrumentation profile data
+    run(
+        [
+            os.path.join(bin_llvm, "llvm-profdata"),
+            "merge",
+            "-sparse",
+            *profraw_files,
+            "-o",
+            instr_profile_fn,
+        ],
+        cwd=setup_dir,
+    )
+
+    # export lcov
+    with open(os.path.join(setup_dir, "coverage-cpp.lcov"), "w") as fh:
+        subprocess.check_call(
+            [
+                os.path.join(bin_llvm, "llvm-cov"),
+                "export",
+                "-format=lcov",
+                "-ignore-filename-regex=/tmp/icpx*",
+                r"-ignore-filename-regex=.*/backend/kernels/elementwise_functions/.*\.hpp$",
+                r"-ignore-filename-regex=.*/backend/kernels/indexing/.*\.hpp$",
+                r"-ignore-filename-regex=.*/backend/kernels/statistics/.*\.hpp$",
+                r"-ignore-filename-regex=.*/backend/kernels/window/.*\.hpp$",
+                "-instr-profile=" + instr_profile_fn,
+            ]
+            + objects
+            + ["-sources", "dpnp"],
+            cwd=setup_dir,
+            env=env,
+            stdout=fh,
+        )
+
+    print("[gen_coverage] Coverage export is completed")
+
+
+def main():
+    is_linux = "linux" in sys.platform
+    if not is_linux:
+        err(f"{sys.platform} not supported", "gen_coverage")
+
+    args = parse_args()
+    setup_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    # keep the order of _STAGES, whatever the order of --stage options
+    stages = [
+        s
+        for s in _STAGES
+        if s in (args.stages or _STAGES)
+        and (args.run_pytest or s == "build")
+        and (args.run_tensor_tests or s != "tensor-tests")
+    ]
+
+    c_compiler, cxx_compiler = resolve_compilers(
+        args.oneapi,
+        args.c_compiler,
+        args.cxx_compiler,
+        args.compiler_root,
+    )
+
     env = os.environ.copy()
 
     if args.bin_llvm:
@@ -207,120 +369,27 @@ def main():
         env["PATH"] = ":".join((env.get("PATH", ""), bin_llvm))
         env["LLVM_TOOLS_HOME"] = bin_llvm
 
-    log_cmake_args(cmake_args, "gen_coverage")
+    if "build" in stages:
+        build_dpnp(args, setup_dir, env, c_compiler, cxx_compiler)
 
-    build_extension(
-        setup_dir,
-        env,
-        cmake_args,
-        cmake_executable=args.cmake_executable,
-        generator=args.generator,
-        build_type="Coverage",
-    )
-    install_editable(setup_dir, env)
+    if "dpnp-tests" in stages:
+        # start from scratch, as pytest-cov erases .coverage w/o --cov-append
+        for fn in (_DPNP_PROFRAW, _TENSOR_PROFRAW):
+            fn = os.path.join(setup_dir, fn)
+            if os.path.exists(fn):
+                os.remove(fn)
 
-    if args.run_pytest:
-        pytest_cmd = [
-            "pytest",
-            "-q",
-            "-ra",
-            "--disable-warnings",
-            "--cov-config",
-            "pyproject.toml",
-            "--cov",
-            "dpnp",
-        ]
-        cov_report = [
-            "--cov-report=term-missing",
-            "--cov-report=lcov:coverage-python.lcov",
-        ]
+        # dpnp tests w/o tensor ones, those are run by tensor-tests stage
+        run_pytest(args, setup_dir, env, tensor_tests=False)
 
-        # dpnp tests w/o tensor ones, those are run in a separate session
-        env["SKIP_TENSOR_TESTS"] = "1"
-        env["LLVM_PROFILE_FILE"] = "dpnp_pytest.profraw"
-        profraw_files = [env["LLVM_PROFILE_FILE"]]
-        run(
-            pytest_cmd
-            # report once, on the combined data of the last session
-            + (["--cov-report="] if args.run_tensor_tests else cov_report)
-            + ["--pyargs", "dpnp", *args.pytest_opts.split()],
-            env=env,
-            cwd=setup_dir,
-        )
+    if "tensor-tests" in stages:
+        # separate session to limit peak memory
+        run_pytest(args, setup_dir, env, tensor_tests=True)
 
-        if args.run_tensor_tests:
-            # separate session to limit peak memory, appends to coverage data
-            env["SKIP_TENSOR_TESTS"] = "0"
-            env["LLVM_PROFILE_FILE"] = "dpnp_tensor_pytest.profraw"
-            profraw_files.append(env["LLVM_PROFILE_FILE"])
-            run(
-                pytest_cmd
-                + ["--cov-append"]
-                + cov_report
-                + ["--pyargs", "dpnp.tests.tensor", *args.pytest_opts.split()],
-                env=env,
-                cwd=setup_dir,
-            )
+    if "report" in stages:
+        export_coverage(args, setup_dir, env, bin_llvm)
 
-        def find_objects():
-            objects = []
-            dpnp_path = os.getcwd()
-            search_path = os.path.join(dpnp_path, "dpnp")
-            for root, _, files in os.walk(search_path):
-                for file in files:
-                    is_backend_obj = file.endswith("_c.so") or (
-                        root.find("extensions") != -1
-                        and file.find("_impl.cpython") != -1
-                    )
-                    # tensor pybind11 extensions, e.g. _tensor_impl
-                    is_tensor_obj = (
-                        args.tensor_cpp_coverage
-                        and os.path.basename(root) == "tensor"
-                        and file.startswith("_tensor_")
-                        and file.find("_impl.cpython") != -1
-                    )
-                    if is_backend_obj or is_tensor_obj:
-                        objects.extend(["-object", os.path.join(root, file)])
-            return objects
-
-        objects = find_objects()
-        instr_profile_fn = "dpnp_pytest.profdata"
-
-        # generate instrumentation profile data
-        run(
-            [
-                os.path.join(bin_llvm, "llvm-profdata"),
-                "merge",
-                "-sparse",
-                *profraw_files,
-                "-o",
-                instr_profile_fn,
-            ]
-        )
-
-        # export lcov
-        with open("coverage-cpp.lcov", "w") as fh:
-            subprocess.check_call(
-                [
-                    os.path.join(bin_llvm, "llvm-cov"),
-                    "export",
-                    "-format=lcov",
-                    "-ignore-filename-regex=/tmp/icpx*",
-                    r"-ignore-filename-regex=.*/backend/kernels/elementwise_functions/.*\.hpp$",
-                    r"-ignore-filename-regex=.*/backend/kernels/indexing/.*\.hpp$",
-                    r"-ignore-filename-regex=.*/backend/kernels/statistics/.*\.hpp$",
-                    r"-ignore-filename-regex=.*/backend/kernels/window/.*\.hpp$",
-                    "-instr-profile=" + instr_profile_fn,
-                ]
-                + objects
-                + ["-sources", "dpnp"],
-                cwd=setup_dir,
-                env=env,
-                stdout=fh,
-            )
-
-        print("[gen_coverage] Coverage export is completed")
-    else:
+    if not args.run_pytest:
         print(
             "[gen_coverage] Skipping pytest and coverage collection "
             "(--skip-pytest)"
