@@ -56,9 +56,8 @@ def default_queue():
 
 
 def make_synchronizer(executor):
-    """Return a callable blocking until ``executor``'s work has finished."""
-    if executor != "dpnp":
-        return lambda result: None
+    """Return a callable blocking until dpnp's work has finished."""
+    # executor is always "dpnp"; still passed by the hashed setup methods
 
     def sync(result):
         # Some results are tuples, e.g. linalg.svd.
