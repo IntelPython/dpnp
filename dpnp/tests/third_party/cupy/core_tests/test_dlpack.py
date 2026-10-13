@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ctypes
+import sys
 
 import dpctl
 import numpy
@@ -15,6 +16,15 @@ ctypes.pythonapi.PyCapsule_GetPointer.argtypes = [
     ctypes.py_object,
     ctypes.c_char_p,
 ]
+
+
+def thread_unsafe_on_windows(func):
+    """Serialize CPU access to managed memory on Windows."""
+    if sys.platform == "win32":
+        return pytest.mark.thread_unsafe(
+            reason="CPU access to managed memory overlaps GPU work"
+        )(func)
+    return func
 
 
 # TODO: to roll back the changes once the issue with CUDA support is resolved for random
@@ -237,6 +247,7 @@ class TestNewDLPackConversion:
             arr.__dlpack__(dl_device=(9, 0), max_version=(1, 0))
 
     @pytest.mark.skip("numpy doesn't support kDLOneAPI device type")
+    # @thread_unsafe_on_windows
     def test_conversion_device_to_cpu(self):
         # NOTE: This defaults to the old unversioned, which is needed for
         #       NumPy 1.x support.
