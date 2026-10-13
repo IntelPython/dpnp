@@ -346,7 +346,7 @@ foreach(python_module_name ${_py_trgts})
     )
     target_link_options(
         ${python_module_name}
-        PRIVATE -fsycl-device-code-split=per_kernel
+        PRIVATE -fsycl-device-code-split=per_kernel -fno-sycl-id-queries-fit-in-int
     )
     if(DPNP_TENSOR_OFFLOAD_COMPRESS)
         target_link_options(${python_module_name} PRIVATE --offload-compress)
