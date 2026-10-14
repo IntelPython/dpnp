@@ -1,0 +1,10 @@
+﻿
+
+dpnp.kron
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: kron
