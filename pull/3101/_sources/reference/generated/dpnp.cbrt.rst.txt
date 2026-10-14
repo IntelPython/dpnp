@@ -1,0 +1,10 @@
+﻿
+
+dpnp.cbrt
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: cbrt
