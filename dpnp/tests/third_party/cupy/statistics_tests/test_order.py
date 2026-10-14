@@ -11,6 +11,8 @@ import dpnp as cupy
 # from cupy import cuda
 from dpnp.tests.third_party.cupy import testing
 
+# from cupy._statistics import order as order_module
+
 _all_methods = (
     "inverted_cdf",
     # 'averaged_inverted_cdf',      # TODO(takagi) Not implemented
@@ -49,6 +51,17 @@ def _fix_gamma(monkeypatch):
 
 def for_all_methods(name="method"):
     return pytest.mark.parametrize(name, _all_methods)
+
+
+@pytest.mark.skip("_get_percentile_weightnening_kernel() is not supported")
+def test_percentile_kernel_accepts_large_dimensions():
+    indices = cupy.array([0], dtype=cupy.float64)
+    a = cupy.broadcast_to(cupy.array([1], dtype=cupy.float64), (2**31,))
+    out = cupy.empty(1, dtype=cupy.float64)
+    order_module._get_percentile_weightnening_kernel()(
+        indices, a, 0, a.size, out
+    )
+    assert out[0] == 1
 
 
 @pytest.mark.skip("dpnp.quantile() is not implemented yet")

@@ -26,7 +26,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""Benchmarks for elementwise ufuncs, dpnp against NumPy.
+"""Benchmarks for dpnp elementwise ufuncs.
 
 The ufunc is a parameter, as in NumPy's own ``bench_ufunc.py``.
 """

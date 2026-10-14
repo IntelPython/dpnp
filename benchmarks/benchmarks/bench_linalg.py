@@ -26,7 +26,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""Benchmarks for matrix products and decompositions, dpnp against NumPy."""
+"""Benchmarks for dpnp matrix products and decompositions."""
 
 from ._utils import (
     _EXECUTOR_NAMES,

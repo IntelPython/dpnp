@@ -50,6 +50,7 @@ This release is compatible with NumPy 2.5.
 * Linked the `dpnp_backend_c` library against only the MKL SYCL domains it uses (`BLAS`, `RNG`, `VM`) [#3012](https://github.com/IntelPython/dpnp/pull/3012)
 * `dpnp` uses pybind11 3.1.0 [#3015](https://github.com/IntelPython/dpnp/pull/3015)
 * Reworked the ASV benchmarks and added end-to-end workload benchmarks derived from dpBench [#2996](https://github.com/IntelPython/dpnp/pull/2996)
+* Stopped timing NumPy in the ASV benchmarks, which now measure only dpnp [#3095](https://github.com/IntelPython/dpnp/pull/3095)
 * Reduced allocations in `dpnp.linalg.norm` by reusing the reduction result as the `sqrt` output buffer in the 2-norm and Frobenius-norm branches [#3062](https://github.com/IntelPython/dpnp/pull/3062)
 * Changed `dpnp.tensor.top_k` with `mode="largest"` to no longer return `NaN` values (or complex values with a `NaN` component) ahead of finite values, matching the `NaN`-last order of `dpnp.tensor.sort` [#3066](https://github.com/IntelPython/dpnp/pull/3066)
 * Avoided a copy of `dpnp.einsum` result into C-order by building the product in the requested layout directly [#3069](https://github.com/IntelPython/dpnp/pull/3069)
@@ -116,6 +117,7 @@ This release is compatible with NumPy 2.5.
 * Fixed `dpnp.nanmedian` dropping kept dimensions of size 1, which produced a wrong result shape [#3081](https://github.com/IntelPython/dpnp/pull/3081)
 * Fixed incorrect results of `dpnp.tensor.vecdot` in some cases with strided outputs and of `dpnp.tensor` reductions, `dpnp.tensor.vecdot` and `dpnp.tensor.matmul` on large inputs with some data types [#3082](https://github.com/IntelPython/dpnp/pull/3082)
 * Fixed `dpnp.median` and `dpnp.nanmedian` raising a `ValueError` for a tuple `axis` when a kept dimension has size 0 [#3081](https://github.com/IntelPython/dpnp/pull/3081)
+* Fixed a `RuntimeError` raised by `dpnp.tensor` kernels launched over more than `INT_MAX` work-items when built with DPC++ compiler 2026.2 or newer, by also passing `-fno-sycl-id-queries-fit-in-int` to the linker [#3089](https://github.com/IntelPython/dpnp/pull/3089)
 
 ### Security
 

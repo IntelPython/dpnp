@@ -100,7 +100,10 @@ function(build_dpnp_tensor_ext _trgt _src _dest)
     if(BUILD_DPNP_TENSOR_SYCL)
         add_sycl_to_target(TARGET ${_trgt} SOURCES ${_generated_src})
         target_compile_options(${_trgt} PRIVATE -fno-sycl-id-queries-fit-in-int)
-        target_link_options(${_trgt} PRIVATE -fsycl-device-code-split=per_kernel)
+        target_link_options(
+            ${_trgt}
+            PRIVATE -fsycl-device-code-split=per_kernel -fno-sycl-id-queries-fit-in-int
+        )
         if(DPNP_TENSOR_OFFLOAD_COMPRESS)
             target_link_options(${_trgt} PRIVATE --offload-compress)
         endif()
