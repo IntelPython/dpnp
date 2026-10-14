@@ -8,11 +8,23 @@ Performance benchmarks for [dpnp](https://github.com/IntelPython/dpnp) using
 | File | API | Benchmarks | Params | Sizes |
 |------|-----|------------|--------|-------|
 | `bench_dpbench.py` | `dpnp` (end-to-end workloads) | `BlackScholes`, `L2Norm`, `PairwiseDistance`, `Rambo`, `Gpairs` | `preset`, `precision` | dpBench presets `S`, `M16Gb`, `M`, `L` |
-| `bench_elementwise.py` | `dpnp` vs `numpy` | `Unary` (31 ufuncs), `Binary` (7 ufuncs) | `executor`, `ufunc`, `size`, `dtype` (float only) | 2^16, 2^20, 2^24 |
-| `bench_linalg.py` | `dpnp` vs `numpy` (`dot`, `matmul`, `inner`, `einsum`; contiguous and transposed) | `MatMul` | `executor`, `order`, `dtype` (float and int) | 16 to 1024 square |
-| `bench_linalg.py` | `dpnp.linalg` vs `numpy.linalg` (`det`, `norm`, `solve`, `svd`) | `Linalg` | `executor`, `order`, `dtype` (float only) | 16 to 1024 square |
-| `bench_random.py` | `dpnp.random` vs `numpy.random` | `Sample` (`random_sample`, `standard_normal`) | `executor`, `size` | 2^16, 2^20, 2^24 |
-| `bench_random.py` | `dpnp.random.RandomState` vs `numpy.random.default_rng` | `TypedSample` (uniform, normal) | `executor`, `size`, `dtype` (float only) | 2^16, 2^20, 2^24 |
+| `bench_elementwise.py` | `dpnp` ufuncs | `Unary` (31 ufuncs), `Binary` (7 ufuncs) | `executor`, `ufunc`, `size`, `dtype` (float only) | 2^16, 2^20, 2^24 |
+| `bench_linalg.py` | `dpnp` (`dot`, `matmul`, `inner`, `einsum`; contiguous and transposed) | `MatMul` | `executor`, `order`, `dtype` (float and int) | 16 to 1024 square |
+| `bench_linalg.py` | `dpnp.linalg` (`det`, `norm`, `solve`, `svd`) | `Linalg` | `executor`, `order`, `dtype` (float only) | 16 to 1024 square |
+| `bench_random.py` | `dpnp.random` | `Sample` (`random_sample`, `standard_normal`) | `executor`, `size` | 2^16, 2^20, 2^24 |
+| `bench_random.py` | `dpnp.random.RandomState` | `TypedSample` (uniform, normal) | `executor`, `size`, `dtype` (float only) | 2^16, 2^20, 2^24 |
+
+### NumPy is not timed
+
+The suites track dpnp's own performance from commit to commit, so only dpnp is
+timed. A NumPy point cannot move with a dpnp change, so it only adds run time,
+and its machine noise was reported as a dpnp regression.
+
+`executor` is kept as a single-value axis (`'dpnp'`) so result names such as
+`time_dot('dpnp', 64, 'float32')` match the recorded history. The `numpy`
+branches left in some `setup` methods are kept for the same reason: ASV
+versions a benchmark by the source of its `time_*` and `setup` methods, so
+editing them would make every result incomparable with the recorded baseline.
 
 ### dpBench workloads
 
@@ -70,16 +82,14 @@ declaration order.
 **Both precisions are benchmarked.** Devices without fp64 support (common on
 iGPUs) skip the `double` points via `SkipNotImplemented` rather than failing, so
 such a device still produces `single` results. The `float64` points of
-`bench_elementwise.py` and `bench_linalg.py` skip the same way for the `dpnp`
-executor; the `numpy` executor is unaffected. dpBench's own configs request
-`double` throughout, and that value is kept in each workload's `PRECISION` for
-reference.
+`bench_elementwise.py` and `bench_linalg.py` skip the same way. dpBench's own
+configs request `double` throughout, and that value is kept in each workload's
+`PRECISION` for reference.
 
-`bench_random.py`'s `Sample` skips its `dpnp` points without fp64: those
-functions take no `dtype`, so dpnp would return the device's default float
-against NumPy's `float64`. `TypedSample` covers the same two distributions
-through dpnp's `RandomState` and NumPy's `default_rng`, which do take a `dtype`,
-so `float32` is still compared there.
+`bench_random.py`'s `Sample` skips without fp64: those functions take no
+`dtype`, so the result dtype would depend on the device. `TypedSample` covers
+the same two distributions through dpnp's `RandomState`, which does take a
+`dtype`, so `float32` is still timed there.
 
 No benchmark module opens a SYCL queue at import time, so benchmark discovery
 and `asv check` work on a machine with no usable device; only `setup` needs one.
@@ -110,14 +120,11 @@ interpreter per benchmark and avoids this entirely.
 **Every timed body that runs dpnp work must block on it.** dpnp enqueues to a
 SYCL queue and returns before the kernel has run, so a body that does not block
 measures submission rather than execution. On a CPU device a 1024x1024 float32
-`dot` measured **0.3 ms** unsynchronized against **18 ms** synchronized -- which
-would have reported dpnp as far faster than NumPy's **10 ms** on work where it is
-in fact 1.7x slower.
+`dot` measured **0.3 ms** unsynchronized against **18 ms** synchronized.
 
 The dpBench workloads each end with `dpnp.synchronize_array_data`, and the
-comparison suites obtain a synchronizer from `_utils.make_synchronizer` in
-`setup` and pass every result through it (`self.sync(...)`). For the `numpy`
-executor the synchronizer does nothing.
+other suites obtain a synchronizer from `_utils.make_synchronizer` in `setup`
+and pass every result through it (`self.sync(...)`).
 
 ### First-call costs
 

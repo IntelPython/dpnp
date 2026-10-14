@@ -50,6 +50,7 @@ This release is compatible with NumPy 2.5.
 * Linked the `dpnp_backend_c` library against only the MKL SYCL domains it uses (`BLAS`, `RNG`, `VM`) [#3012](https://github.com/IntelPython/dpnp/pull/3012)
 * `dpnp` uses pybind11 3.1.0 [#3015](https://github.com/IntelPython/dpnp/pull/3015)
 * Reworked the ASV benchmarks and added end-to-end workload benchmarks derived from dpBench [#2996](https://github.com/IntelPython/dpnp/pull/2996)
+* Stopped timing NumPy in the ASV benchmarks, which now measure only dpnp [#3095](https://github.com/IntelPython/dpnp/pull/3095)
 * Reduced allocations in `dpnp.linalg.norm` by reusing the reduction result as the `sqrt` output buffer in the 2-norm and Frobenius-norm branches [#3062](https://github.com/IntelPython/dpnp/pull/3062)
 * Changed `dpnp.tensor.top_k` with `mode="largest"` to no longer return `NaN` values (or complex values with a `NaN` component) ahead of finite values, matching the `NaN`-last order of `dpnp.tensor.sort` [#3066](https://github.com/IntelPython/dpnp/pull/3066)
 * Avoided a copy of `dpnp.einsum` result into C-order by building the product in the requested layout directly [#3069](https://github.com/IntelPython/dpnp/pull/3069)
