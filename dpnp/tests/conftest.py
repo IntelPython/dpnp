@@ -178,14 +178,6 @@ def pytest_collection_modifyitems(config, items):
             if test_name == item_tbl:
                 item.add_marker(skip_mark)
 
-    # Handle the exclusion of tests marked as "slow"
-    selected_marker = config.getoption("markexpr")
-    if "not slow" in selected_marker:
-        skip_slow = pytest.mark.skip(reason="Skipping slow tests")
-        for item in items:
-            if "slow" in item.keywords:
-                item.add_marker(skip_slow)
-
 
 def pytest_runtest_teardown(item, nextitem):
     """
