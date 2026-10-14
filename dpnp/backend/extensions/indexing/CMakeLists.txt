@@ -96,7 +96,10 @@ else()
 endif()
 
 target_compile_options(${python_module_name} PUBLIC -fno-sycl-id-queries-fit-in-int)
-target_link_options(${python_module_name} PUBLIC -fsycl-device-code-split=per_kernel)
+target_link_options(
+    ${python_module_name}
+    PUBLIC -fsycl-device-code-split=per_kernel -fno-sycl-id-queries-fit-in-int
+)
 
 if(DPNP_GENERATE_COVERAGE)
     target_link_options(
