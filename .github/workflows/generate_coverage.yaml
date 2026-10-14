@@ -11,7 +11,7 @@ jobs:
     name: Generate coverage and push to Coveralls.io
 
     runs-on: ubuntu-latest
-    timeout-minutes: 150
+    timeout-minutes: 180
 
     permissions:
       # Needed to cancel any previous runs that are not completed for a given workflow
@@ -119,24 +119,50 @@ jobs:
           mamba list
 
       - name: Build dpnp with coverage
-        id: build_coverage
+        timeout-minutes: 60
+        run: |
+          [ -f /opt/intel/oneapi/setvars.sh ] && source /opt/intel/oneapi/setvars.sh
+          python scripts/gen_coverage.py --stage build
+
+      - name: Run dpnp tests with coverage
+        id: dpnp_tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
           shell: bash
-          timeout_minutes: 120
-          max_attempts: 5
+          timeout_minutes: 90
+          max_attempts: 2
           retry_on: error
           command: |
             . $CONDA/etc/profile.d/conda.sh
             conda activate coverage
             [ -f /opt/intel/oneapi/setvars.sh ] && source /opt/intel/oneapi/setvars.sh
-            git clean -fxd
-            export SKIP_TENSOR_TESTS=1
-            python scripts/gen_coverage.py
+            python scripts/gen_coverage.py --stage dpnp-tests
+
+      - name: Run dpnp.tensor tests with coverage
+        id: tensor_tests
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
+        with:
+          shell: bash
+          timeout_minutes: 30
+          max_attempts: 3
+          # also retry on timeout, the tests may hang
+          retry_on: any
+          command: |
+            . $CONDA/etc/profile.d/conda.sh
+            conda activate coverage
+            [ -f /opt/intel/oneapi/setvars.sh ] && source /opt/intel/oneapi/setvars.sh
+            python scripts/gen_coverage.py --stage tensor-tests
 
       - name: Total number of coverage attempts
+        if: ${{ !cancelled() }}
         run: |
-          echo "Total number of coverage attempts: ${{ steps.build_coverage.outputs.total_attempts }}"
+          echo "dpnp tests attempts: ${{ steps.dpnp_tests.outputs.total_attempts }}"
+          echo "dpnp.tensor tests attempts: ${{ steps.tensor_tests.outputs.total_attempts }}"
+
+      - name: Generate coverage reports
+        run: |
+          [ -f /opt/intel/oneapi/setvars.sh ] && source /opt/intel/oneapi/setvars.sh
+          python scripts/gen_coverage.py --stage report
 
       - name: Upload coverage data to coveralls.io
         uses: coverallsapp/github-action@8d6379e14d29928660c4ba802d8e85393440b329 # v2.3.8
