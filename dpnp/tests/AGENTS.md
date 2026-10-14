@@ -20,6 +20,7 @@
 - Error cases run on both libraries: parametrize over `xp` in `[dpnp, numpy]` so both must raise. Gate NumPy-version-dependent behaviour with `numpy_version()` (or `testing.with_requires` in CuPy tests).
 - Compute-follows-data error tests expect `(ValueError, ExecutionPlacementError)`: dpnp raises either, depending on the helper.
 - A new function is added to the matching parametrized lists in `test_sycl_queue.py` and `test_usm_type.py` (`test_1in_1out`, `test_2in_1out`, ...); elementwise ones also to `test_strides.py`.
+- A test that may exceed the device's maximum allocation size skips on `USMAllocationError` (from `dpnp.exceptions`), not `MemoryError`, which it does not derive from.
 - Markers are strict and only `slow` and `multi_gpu` are registered. Tests that need huge allocations are `@pytest.mark.slow`; they never run in CI by design.
 - Skip lists are for device- or backend-specific failures only; use the full parametrized node ID.
 - CI runs the installed package (`--pyargs dpnp.tests`), so a new test directory or data file needs a matching glob in `package_data` in `setup.py`, or CI silently skips it.
@@ -35,7 +36,7 @@ python -m pytest -ra dpnp/tests/test_mathematical.py                    # one fi
 SKIP_TENSOR_TESTS=1 python -m pytest -n auto -ra --pyargs dpnp.tests    # as CI; -n needs pytest-xdist
 python -m pytest -n auto -ra --pyargs dpnp.tests.tensor                  # tensor tests, a separate CI step
 python -m pytest -ra -m slow dpnp/tests/test_fft_gil.py                  # slow tests only
+python -m pytest -ra -m "slow or not slow" dpnp/tests/test_fft_gil.py     # all tests, slow included
 ```
-- `-m "slow or not slow"` still skips slow tests: `conftest.py` checks the `-m` expression for the substring `"not slow"`.
-- Env vars in `config.py` are read with `bool(os.getenv(...))`, so any non-empty value, including `0`, turns them on; only `SKIP_TENSOR_TESTS` is parsed as an integer.
+- Env flags in `config.py` are off when unset, empty, `0`, `false`, `no` or `off`; any other value turns them on.
 - `python -m dpctl -f` lists the available devices.
