@@ -4,6 +4,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
+from dpnp.exceptions import USMAllocationError
 from dpnp.tests.helper import has_support_aspect64
 from dpnp.tests.third_party.cupy import testing
 
@@ -138,7 +139,7 @@ class TestTriLargeDimensions(unittest.TestCase):
             out = cupy.tri(2**31 + 1, 1, k=0, dtype=cupy.uint8)
             assert out[0, 0] == 1
             assert out[-1, 0] == 1
-        except MemoryError:
+        except USMAllocationError:
             pytest.skip("out of memory in test.")
         finally:
             del out
@@ -152,7 +153,7 @@ class TestTriLargeDimensions(unittest.TestCase):
             out = cupy.tri(1, 2**31, k=2**31 - 1, dtype=cupy.uint8)
             assert out[0, 0] == 1
             assert out[0, -1] == 1
-        except MemoryError:
+        except USMAllocationError:
             pytest.skip("out of memory in test.")
         finally:
             del out

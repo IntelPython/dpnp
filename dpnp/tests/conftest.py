@@ -132,11 +132,6 @@ def pytest_collection_modifyitems(config, items):
     # global skip file, where gpu device is not supported
     test_exclude_file_gpu = os.path.join(test_path, "skipped_tests_gpu.tbl")
 
-    # global skip file, where gpu device with no fp64 support
-    test_exclude_file_gpu_no_fp64 = os.path.join(
-        test_path, "skipped_tests_gpu_no_fp64.tbl"
-    )
-
     # global skip file for cuda backend
     test_exclude_file_cuda = os.path.join(test_path, "skipped_tests_cuda.tbl")
 
@@ -161,10 +156,6 @@ def pytest_collection_modifyitems(config, items):
     print("")
     if is_gpu or os.getenv("DPNP_QUEUE_GPU") == "1":
         excluded_tests.extend(get_excluded_tests(test_exclude_file_gpu))
-        if not support_fp64:
-            excluded_tests.extend(
-                get_excluded_tests(test_exclude_file_gpu_no_fp64)
-            )
         if is_cuda:
             excluded_tests.extend(get_excluded_tests(test_exclude_file_cuda))
     else:
@@ -177,14 +168,6 @@ def pytest_collection_modifyitems(config, items):
             # exact match of the test name with items from excluded_list
             if test_name == item_tbl:
                 item.add_marker(skip_mark)
-
-    # Handle the exclusion of tests marked as "slow"
-    selected_marker = config.getoption("markexpr")
-    if "not slow" in selected_marker:
-        skip_slow = pytest.mark.skip(reason="Skipping slow tests")
-        for item in items:
-            if "slow" in item.keywords:
-                item.add_marker(skip_slow)
 
 
 def pytest_runtest_teardown(item, nextitem):
