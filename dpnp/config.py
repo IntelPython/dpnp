@@ -28,27 +28,11 @@
 
 
 import os
+import warnings
 
 __DPNP_ORIGIN__ = int(os.getenv("DPNP_ORIGIN", 0))
 """
 Explicitly use original host Python NumPy
-"""
-
-__DPNP_QUEUE_GPU__ = int(os.getenv("DPNP_QUEUE_GPU", 0))
-"""
-Explicitly use GPU for SYCL queue
-"""
-
-__DPNP_OUTPUT_NUMPY__ = int(os.getenv("DPNP_OUTPUT_NUMPY", 0))
-"""
-Explicitly use NumPy.ndarray as return type for creation functions
-"""
-
-__DPNP_OUTPUT_DPCTL_DEFAULT_SHARED__ = int(
-    os.getenv("DPNP_OUTPUT_DPCTL_DEFAULT_SHARED", 0)
-)
-"""
-Explicitly use SYCL shared memory parameter in DPCtl array constructor for creation functions
 """
 
 __DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__ = int(
@@ -57,3 +41,24 @@ __DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__ = int(
 """
 Trigger non-implemented exception when DPNP fallbacks on NumPy implementation
 """
+
+# settings that no longer have any effect, kept as deprecated attributes
+_DEPRECATED_SETTINGS = {
+    "__DPNP_QUEUE_GPU__": int(os.getenv("DPNP_QUEUE_GPU", 0)),
+    "__DPNP_OUTPUT_NUMPY__": int(os.getenv("DPNP_OUTPUT_NUMPY", 0)),
+    "__DPNP_OUTPUT_DPCTL_DEFAULT_SHARED__": int(
+        os.getenv("DPNP_OUTPUT_DPCTL_DEFAULT_SHARED", 0)
+    ),
+}
+
+
+def __getattr__(name):
+    if name in _DEPRECATED_SETTINGS:
+        warnings.warn(
+            f"`dpnp.config.{name}` is deprecated, and will be removed in a "
+            "future release. It has no effect.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return _DEPRECATED_SETTINGS[name]
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
