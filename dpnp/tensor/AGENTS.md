@@ -12,7 +12,6 @@
 ## Rules for Changes
 - `dpnp.tensor` follows the Array API standard, with no NumPy extensions; `dpnp` builds NumPy compatibility on top of it and also stays Array API conformant. Put NumPy-only behaviour in the `dpnp` layer unless the kernel itself is wrong.
 - A libtensor change also changes `dpnp`: run `dpnp.tests.tensor` and the affected `dpnp/tests/test_*.py`.
-- Many docstrings here still say `dpctl.tensor`; write `dpnp.tensor` in new code and don't copy the old name.
 - C++ rules are in `dpnp/backend/AGENTS.md`. libtensor files add a `/// \file` block after the license header.
 - New elementwise function: kernel in `libtensor/include/kernels/elementwise_functions/<name>.hpp`; `populate_<name>_dispatch_vectors` and `init_<name>` in `libtensor/source/elementwise_functions/<name>.cpp`; register it in `libtensor/source/elementwise_functions/elementwise_common.cpp`; list the source in `dpnp/tensor/CMakeLists.txt`; add the Python object to `_elementwise_funcs.py` and export it in `__init__.py`.
 - Tests in `dpnp/tests/tensor/` get a queue with `get_queue_or_skip()` and skip unsupported dtypes with `skip_if_dtype_not_supported(dt, q)` (`dpnp/tests/tensor/helper/`).

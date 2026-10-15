@@ -25,7 +25,7 @@
 - `dpnp.tensor` replaces `dpctl.tensor`, which no longer exists here; `SyclQueue`, `SyclDevice`, `dpctl.memory` and `SequentialOrderManager` still come from `dpctl`.
 
 ## Docstrings
-numpydoc, rendered by `doc/conf.py`. Model a new docstring on an existing function; `doc/docstring_template.py` is outdated.
+numpydoc, rendered by `doc/conf.py`. `doc/docstring_template.py` shows the layout; model a new docstring on an existing function.
 - Sections in the order `doc/conf.py` renders them: summary, ``For full documentation refer to :obj:`numpy.<name>`.``, Parameters, Returns, Raises, Warns, Warnings, Limitations, See Also, Notes, References, Examples.
 - Array parameters are typed `{dpnp.ndarray, usm_ndarray}`, optional ones `{None, dpnp.ndarray, usm_ndarray}, optional`; the return is `out : dpnp.ndarray`.
 - Every keyword with a default ends with a blank line and ``Default: ``<value>``.``

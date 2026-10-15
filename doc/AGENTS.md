@@ -9,6 +9,7 @@
 ## Rules for Changes
 - A new public function goes in the autosummary block of the matching `reference/<category>.rst`; ufuncs also go in `reference/ufunc.rst`, `ndarray` members in `reference/ndarray.rst`. These pages already list many NumPy names that dpnp lacks, so check before adding a duplicate.
 - A new namespace needs its own `reference/<name>.rst` and a toctree entry: in `reference/routines.rst` for NumPy namespaces (model: `reference/fft.rst`), in `reference/scipy.rst` for SciPy ones (model: `reference/scipy_linalg.rst`).
+- A page kept out of every toctree on purpose, such as a placeholder, is marked `:orphan:`, or Sphinx warns about it.
 - Move a deprecated function from its reference page to `reference/_deprecated.rst` (an orphan page that keeps its stub) and remove cross-links to it.
 - A new wrapper base class (not a subclass of the existing `DPNP*Func` classes) must be added to `conf.py` and `_can_document_member`, or autodoc skips its instances.
 - Update `quick_start_guide.rst` (and `README.md`) when build options or supported Python versions change, and `reference/array_api.rst` when the Array API version or the conforming namespaces change.
