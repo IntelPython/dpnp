@@ -49,16 +49,6 @@ if(_dpnp_sycl_targets)
     target_link_options(${python_module_name} PRIVATE ${_dpnp_sycl_target_link_options})
 endif()
 
-if(WIN32)
-    if(${CMAKE_VERSION} VERSION_LESS "3.27")
-        # this is a work-around for target_link_options inserting option after -link option, cause
-        # linker to ignore it.
-        set(CMAKE_CXX_LINK_FLAGS
-            "${CMAKE_CXX_LINK_FLAGS} -fsycl-device-code-split=per_kernel"
-        )
-    endif()
-endif()
-
 set_target_properties(
     ${python_module_name}
     PROPERTIES CMAKE_POSITION_INDEPENDENT_CODE ON
