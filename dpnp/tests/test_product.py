@@ -285,7 +285,7 @@ class TestDot:
         ib = dpnp.array(b)
 
         np_res_dtype = numpy.result_type(type(a), b)
-        out = numpy.empty(10, dtype=np_res_dtype)
+        out = numpy.zeros(10, dtype=np_res_dtype)
         dp_res_dtype = map_dtype_to_device(np_res_dtype, ib.sycl_device)
         dp_out = dpnp.array(out, dtype=dp_res_dtype)
         result = dpnp.dot(a, ib, out=dp_out)
@@ -1225,7 +1225,7 @@ class TestMatmul:
     )
     def test_syrk_out_order(self, order, out_order):
         a = generate_random_numpy_array((5, 4), order=order, low=-5, high=5)
-        out = numpy.empty((5, 5), dtype=a.dtype, order=out_order)
+        out = numpy.zeros((5, 5), dtype=a.dtype, order=out_order)
         ia, iout = dpnp.array(a), dpnp.array(out)
 
         expected = numpy.matmul(a, a.T, out=out)
@@ -2185,7 +2185,7 @@ class TestVecdot:
         a = numpy.arange(3)
         ia = dpnp.array(a)
 
-        out = numpy.empty(out_shape)
+        out = numpy.zeros(out_shape)
         iout = dpnp.array(out)
         result = dpnp.vecdot(ia, ia, out=iout)
         expected = numpy.vecdot(a, a, out=out)
