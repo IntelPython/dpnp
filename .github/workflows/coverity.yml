@@ -1,0 +1,200 @@
+name: Coverity Scan
+
+# Public static analysis via the free Coverity Scan service (scan.coverity.com,
+# operated by Black Duck). Coverity is a compiled-language analyzer: it must wrap
+# the real C/C++ build with `cov-build`, so this workflow installs oneAPI, builds
+# the SYCL extensions under capture, and uploads the result for analysis.
+#
+# One-time setup required before the first run:
+#   1. Register IntelPython/dpnp at https://scan.coverity.com/github
+#      (sign in with GitHub; the project name must match COVERITY_PROJECT below).
+#   2. Add two repository secrets (Settings -> Secrets and variables -> Actions):
+#        COVERITY_SCAN_TOKEN  - the project token from the Project Settings tab
+#        COVERITY_SCAN_EMAIL  - a maintainer email for build notifications
+#
+# dpnp is ~140K lines of C++/Cython, which puts it in the 100K-500K LOC free-tier
+# bucket: 21 builds/week, max 3/day. Running weekly plus on demand stays well
+# under that, and matters more here than for the smaller IntelPython projects
+# because a full dpnp build under cov-build takes hours.
+
+on:
+  schedule:
+    - cron: "0 1 * * 1"  # Mondays 01:00 UTC; well under the free build quota
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: coverity-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  COVERITY_PROJECT: IntelPython/dpnp
+  ONEAPI_ROOT: /opt/intel/oneapi
+
+jobs:
+  coverity-scan:
+    # Forks lack the COVERITY_SCAN_* secrets; only run on the canonical repo.
+    if: github.repository == 'IntelPython/dpnp'
+    runs-on: ubuntu-latest
+    # Backstop for the whole job. dpnp's own conda-package build budgets 90 min
+    # and Coverity's emit roughly doubles compile time, so this is deliberately
+    # close to the 6 h hard cap GitHub imposes on a job.
+    timeout-minutes: 350
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # versioneer needs the tags to compute the package version
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Add Intel repository
+        run: |
+          wget -qO- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB \
+            | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
+          echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" \
+            | sudo tee /etc/apt/sources.list.d/oneAPI.list
+          sudo apt-get update
+
+      - name: Install latest Intel OneAPI
+        # Same package set the coverage workflow uses: dpnp's CMakeLists requires
+        # IntelSYCL, MKL, TBB and oneDPL (libdpstd) to be found at configure time.
+        run: |
+          sudo apt-get install -y hwloc                     \
+                                  intel-oneapi-mkl          \
+                                  intel-oneapi-umf          \
+                                  intel-oneapi-mkl-devel    \
+                                  intel-oneapi-tbb-devel    \
+                                  intel-oneapi-libdpstd-devel \
+                                  intel-oneapi-compiler-dpcpp-cpp
+          sudo apt-get install -y ninja-build
+
+      - name: Setup Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
+          architecture: x64
+
+      - name: Install dpnp build dependencies
+        # Mirrors the build-time requirements in pyproject.toml. dpnp still uses
+        # classic scikit-build, so setup.py is the build entry point.
+        run: |
+          pip install cmake cython ninja numpy scikit-build setuptools wheel \
+                      "versioneer[toml]==0.29"
+
+      - name: Install dpctl
+        # dpctl must come from pip, not conda: the conda package has a runtime
+        # dependency on DPC++ RT, which would be resolved independently of the
+        # apt-installed compiler above and can end up newer than it. DPC++ only
+        # guarantees backwards compatibility, so that skew breaks the build.
+        run: pip install -r environments/dpctl_pkg.txt
+
+      - name: Report compiler version
+        run: |
+          source "${ONEAPI_ROOT}/setvars.sh"
+          icpx --version
+
+      - name: Download Coverity Build Tool
+        timeout-minutes: 15
+        env:
+          COVERITY_SCAN_TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
+        run: |
+          curl --location --no-progress-meter --fail-with-body \
+               --retry 5 --retry-connrefused --retry-delay 5 \
+               --data-urlencode "token=${COVERITY_SCAN_TOKEN}" \
+               --data-urlencode "project=${COVERITY_PROJECT}" \
+               --output cov-analysis.tar.gz \
+               https://scan.coverity.com/download/linux64
+          # An invalid token/project is answered with a small HTML error page and
+          # HTTP 200, not the multi-hundred-MB tarball, so --fail-with-body does
+          # not catch it. Fail loudly with a clear hint instead.
+          if [ "$(stat -c '%s' cov-analysis.tar.gz)" -lt 1000000 ]; then
+            echo "::error::Coverity build tool download failed. Verify the COVERITY_SCAN_TOKEN secret and that the registered project name matches '${COVERITY_PROJECT}'."
+            head -c 512 cov-analysis.tar.gz || true
+            exit 1
+          fi
+          mkdir -p cov-analysis
+          tar -xzf cov-analysis.tar.gz --strip 1 -C cov-analysis
+          echo "${PWD}/cov-analysis/bin" >> "$GITHUB_PATH"
+
+      - name: Configure Coverity for the DPC++ compiler
+        env:
+          # icx/icpx are not in Coverity's list of known compilers, so the
+          # clang-based templates below have to be accepted explicitly
+          COVERITY_UNSUPPORTED: 1
+        run: |
+          source "${ONEAPI_ROOT}/setvars.sh"
+          # Cython-generated sources and the pybind11 extensions go through
+          # icpx, the sysroot/driver probing bits still use gcc
+          cov-configure --gcc
+          cov-configure --template --comptype clangcc --compiler icx
+          cov-configure --template --comptype clangcxx --compiler icpx
+
+      - name: Build under cov-build
+        # dpnp has ~250 translation units, many of them template-heavy SYCL
+        # kernels, and cov-build compiles each one a second time with its own
+        # frontend. Cap the step so a wedged capture fails before the job
+        # timeout eats the whole 6 h budget.
+        timeout-minutes: 300
+        env:
+          COVERITY_UNSUPPORTED: 1
+        run: |
+          set -o pipefail
+          source "${ONEAPI_ROOT}/setvars.sh"
+          # Force a clean rebuild so icpx genuinely runs and Coverity can capture
+          # it. A stale build tree would skip compilation and yield "No files
+          # were emitted", which the upload rejects.
+          rm -rf _skbuild
+          # --skip-editable: the in-place build_ext already compiled everything
+          # Coverity needs to see, a pip install would only repeat it
+          cov-build --dir cov-int \
+              python scripts/build_locally.py --oneapi --skip-editable --verbose \
+              2>&1 | tee cov-build.log
+          if ! grep -qE "Emitted [1-9][0-9]* .*compilation unit" cov-build.log; then
+            echo "::error::Coverity captured 0 compilation units — the C++ build did not run under cov-build."
+            exit 1
+          fi
+          # Coverity's clang frontend does not necessarily parse every SYCL
+          # construct icpx accepts, and a partial capture still uploads happily.
+          # Surface the success rate so a drop in coverage is visible.
+          {
+            echo "### Coverity capture"
+            echo '```'
+            grep -E "Emitted .*compilation unit|are ready for analysis" cov-build.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload Coverity build log
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: coverity-build-log
+          path: |
+            cov-build.log
+            cov-int/build-log.txt
+          retention-days: 7
+          if-no-files-found: warn
+
+      - name: Submit results to Coverity Scan
+        timeout-minutes: 30
+        env:
+          COVERITY_SCAN_TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
+          COVERITY_SCAN_EMAIL: ${{ secrets.COVERITY_SCAN_EMAIL }}
+        run: |
+          tar -czf cov-int.tgz cov-int
+          # dpnp's emit database is far larger than the other IntelPython
+          # projects'; log the size because Scan rejects oversized submissions
+          # and the resulting error is otherwise opaque.
+          echo "Submitting $(du -h cov-int.tgz | cut -f1) of intermediate results"
+          curl --no-progress-meter --fail-with-body \
+               --retry 5 --retry-connrefused --retry-delay 5 \
+               --form token="${COVERITY_SCAN_TOKEN}" \
+               --form email="${COVERITY_SCAN_EMAIL}" \
+               --form file=@cov-int.tgz \
+               --form version="${GITHUB_SHA}" \
+               --form description="GitHub Actions ${GITHUB_REF_NAME} (run ${GITHUB_RUN_ID})" \
+               --form project="${COVERITY_PROJECT}" \
+               https://scan.coverity.com/builds
