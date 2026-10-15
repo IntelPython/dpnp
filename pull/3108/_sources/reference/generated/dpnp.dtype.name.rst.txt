@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.dtype.name
+===============
+
+.. currentmodule:: dpnp
+
+attribute
+
+.. autoattribute:: dtype.name

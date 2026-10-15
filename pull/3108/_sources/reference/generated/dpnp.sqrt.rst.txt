@@ -1,0 +1,10 @@
+﻿
+
+dpnp.sqrt
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: sqrt
