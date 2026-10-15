@@ -64,6 +64,7 @@ skbuild.setup(
             "tests/tensor/*.py",
             "tests/tensor/*/*.py",
             "tests/testing/*.py",
+            "tests/third_party/*.py",
             "tests/third_party/cupy/*.py",
             "tests/third_party/cupy/*/*.py",
             "tests/third_party/cupyx/*.py",
