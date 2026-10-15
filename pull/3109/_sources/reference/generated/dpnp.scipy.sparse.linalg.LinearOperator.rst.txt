@@ -1,0 +1,34 @@
+﻿dpnp.scipy.sparse.linalg.LinearOperator
+=======================================
+
+.. currentmodule:: dpnp.scipy.sparse.linalg
+
+.. autoclass:: LinearOperator
+
+   
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         LinearOperator.__call__
+         LinearOperator.adjoint
+         LinearOperator.dot
+         LinearOperator.matmat
+         LinearOperator.matvec
+         LinearOperator.rmatmat
+         LinearOperator.rmatvec
+         LinearOperator.transpose
+
+
+
+   
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         LinearOperator.H
+         LinearOperator.T
+         LinearOperator.ndim
+
