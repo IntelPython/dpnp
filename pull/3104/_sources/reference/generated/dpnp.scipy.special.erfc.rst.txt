@@ -1,0 +1,10 @@
+﻿
+
+dpnp.scipy.special.erfc
+=======================
+
+.. currentmodule:: dpnp.scipy.special
+
+
+
+.. autodata:: erfc
