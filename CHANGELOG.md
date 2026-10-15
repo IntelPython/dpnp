@@ -24,6 +24,7 @@ This release is compatible with NumPy 2.5.
 * Added `UsmNDArray_RemoveQueueRef` C API function to release a queue reference obtained from `UsmNDArray_GetQueueRef` [#3042](https://github.com/IntelPython/dpnp/pull/3042)
 * Added a `rattler-build`-compatible conda recipe (`conda-recipe/rattler_recipe.yaml`) alongside the existing `conda-build` recipe [#3031](https://github.com/IntelPython/dpnp/pull/3031)
 * Added support for the `"nuc"` (nuclear) norm in `dpnp.linalg.cond` [#3084](https://github.com/IntelPython/dpnp/pull/3084)
+* Added support for Python 3.15 [#3098](https://github.com/IntelPython/dpnp/pull/3098)
 
 ### Changed
 
