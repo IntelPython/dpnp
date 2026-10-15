@@ -14,7 +14,7 @@
 3. Register `init_<name>(m)` in `extensions/ufunc/elementwise_functions/common.cpp` and add the source to `_elementwise_sources` in `extensions/ufunc/CMakeLists.txt`.
 4. Wrap it in Python (see `dpnp/AGENTS.md`).
 
-A new extension copies an existing extension's `CMakeLists.txt` (there is no helper function), keeps `add_dependencies(<module> _usmarray)`, and is added with `add_subdirectory` in `dpnp/CMakeLists.txt`.
+A new extension's `CMakeLists.txt` lists its sources and calls `build_dpnp_pybind11_ext(<module> <install dir> SOURCES ... [INCLUDE_DIRS ...] [LARGE_RANGES])` from `dpnp/CMakeLists.txt`, which sets the options all extensions share; only oneMKL/oneMath linking stays in the extension. Add it with `add_subdirectory` in `dpnp/CMakeLists.txt`, and put an option every extension needs into the helper, not into one extension.
 
 ## Rules for Changes
 These also apply to `dpnp/tensor/libtensor/`.
@@ -26,7 +26,7 @@ These also apply to `dpnp/tensor/libtensor/`.
 - Guard double, complex<double> and half with `dpnp::tensor::type_utils::validate_type_for_device<T>(q)`; don't use double literals or casts in kernels that must run without fp64.
 - `blas`, `fft`, `lapack` and `sparse` build against either oneMKL or oneMath (`USE_ONEMATH`); `vm` is oneMKL-only and reports availability through `_is_available()`.
 - Release the GIL around blocking oneMKL calls (`py::gil_scoped_release`).
-- A module that may launch more than `INT_MAX` work-items needs `-fno-sycl-id-queries-fit-in-int` in both `target_compile_options` and `target_link_options` (DPC++ 2026.2 and later check it at link time).
+- An extension whose kernels may be launched over more than `INT_MAX` work-items passes `LARGE_RANGES` to `build_dpnp_pybind11_ext`, which adds `-fno-sycl-id-queries-fit-in-int` at compile and link time (DPC++ 2026.2 and later need it at link time). Outside the helper (`dpnp_backend_c`, `dpnp/tensor`) pass it to both `target_compile_options` and `target_link_options`.
 - clang-format 23 formats C++ (`.clang-format`: LLVM base, 4-space indent, 80 columns); gersemi formats CMake at 88 columns, except `cmake/Modules/`.
 
 ## Build
