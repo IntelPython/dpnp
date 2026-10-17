@@ -1,0 +1,10 @@
+﻿
+
+dpnp.sinh
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: sinh

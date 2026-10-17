@@ -1,0 +1,10 @@
+﻿
+
+dpnp.fmax
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: fmax
