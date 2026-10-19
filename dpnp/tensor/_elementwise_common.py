@@ -85,7 +85,7 @@ class UnaryElementwiseFunc:
                 sycl_dev - The :class:`dpctl.SyclDevice` where the function
                     evaluation is carried out.
             The function is invoked when the argument of the unary function
-            requires casting, e.g. the argument of `dpctl.tensor.log` is an
+            requires casting, e.g. the argument of `dpnp.tensor.log` is an
             array with integral data type.
         docs (str):
             Documentation string for the unary function.
@@ -142,7 +142,7 @@ class UnaryElementwiseFunc:
             sycl_dev - The :class:`dpctl.SyclDevice` where the function
                 evaluation is carried out.
         The function is invoked when the argument of the unary function
-        requires casting, e.g. the argument of `dpctl.tensor.log` is an
+        requires casting, e.g. the argument of `dpnp.tensor.log` is an
         array with integral data type.
         """
         return self.acceptance_fn_
@@ -166,7 +166,7 @@ class UnaryElementwiseFunc:
         :Example:
             .. code-block:: python
 
-                dpctl.tensor.sin.types
+                dpnp.tensor.sin.types
                 # Outputs: ['e->e', 'f->f', 'd->d', 'F->F', 'D->D']
         """
         types = self.types_
@@ -341,7 +341,7 @@ class BinaryElementwiseFunc:
                     evaluation is carried out.
             The function is only called when both arguments of the binary
             function require casting, e.g. both arguments of
-            `dpctl.tensor.logaddexp` are arrays with integral data type.
+            `dpnp.tensor.logaddexp` are arrays with integral data type.
     """
 
     def __init__(
@@ -413,7 +413,7 @@ class BinaryElementwiseFunc:
 
         The acceptance function is only invoked if both input arrays must be
         cast to intermediary data types, as would happen during call of
-        `dpctl.tensor.hypot` with both arrays being of integral data type.
+        `dpnp.tensor.hypot` with both arrays being of integral data type.
         """
         return self.acceptance_fn_
 
@@ -456,7 +456,7 @@ class BinaryElementwiseFunc:
         :Example:
             .. code-block:: python
 
-                dpctl.tensor.divide.types
+                dpnp.tensor.divide.types
                 # Outputs: ['ee->e', 'ff->f', 'fF->F', 'dd->d', 'dD->D',
                 #    'Ff->F', 'FF->F', 'Dd->D', 'DD->D']
         """

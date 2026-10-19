@@ -125,7 +125,7 @@ def _where_result_type(dt1, dt2, dev):
 
 def where(condition, x1, x2, /, *, order="K", out=None):
     """
-    Returns :class:`dpctl.tensor.usm_ndarray` with elements chosen
+    Returns :class:`dpnp.tensor.usm_ndarray` with elements chosen
     from ``x1`` or ``x2`` depending on ``condition``.
 
     Args:
