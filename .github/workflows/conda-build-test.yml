@@ -54,6 +54,8 @@ jobs:
             python_spec: '3.14.* *_cp314'
           # TODO: add free-threaded builds ('3.14.* *_cp314t') once a
           # free-threaded dpctl is available on conda-forge
+          # TODO: add Python 3.15 ('3.15.* *_cp315') once dpctl with
+          # Python 3.15 support is available on conda-forge
 
     env:
       build-conda-pkg-env: 'environments/build_conda_pkg.yml'
@@ -148,6 +150,8 @@ jobs:
             python_spec: '3.14.* *_cp314'
           # TODO: add free-threaded builds ('3.14.* *_cp314t') once a
           # free-threaded dpctl is available on conda-forge
+          # TODO: add Python 3.15 ('3.15.* *_cp315') once dpctl with
+          # Python 3.15 support is available on conda-forge
 
     env:
       dpnp-repo-path: './source'
