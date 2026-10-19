@@ -1509,6 +1509,14 @@ def test_repeat_arg_validation():
     with pytest.raises(ValueError):
         dpt.repeat(x, reps)
 
+    # u8 repeats above i8 max wrap to negative
+    reps = dpt.asarray(2**64 - 1, dtype="u8")
+    with pytest.raises(ValueError):
+        dpt.repeat(x, reps)
+    reps = dpt.asarray([1, 1, 2**64 - 1, 1, 1], dtype="u8")
+    with pytest.raises(ValueError):
+        dpt.repeat(x, reps)
+
     # repeats must broadcastable to axis size
     reps = dpt.arange(10, dtype="i8")
     with pytest.raises(ValueError):

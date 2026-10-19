@@ -638,8 +638,11 @@ def repeat(x, repeats, /, *, axis=None):
         if not dpt.can_cast(repeats.dtype, dpt.int64, casting="same_kind"):
             raise TypeError(
                 f"'repeats' data type {repeats.dtype} cannot be cast to "
-                "'int64' according to the casting rule ''safe.''"
+                "'int64' according to the casting rule ''same_kind.''"
             )
+        if repeats.dtype == dpt.uint64:
+            # cast first so values above int64 max wrap to negative
+            repeats = dpt.astype(repeats, dpt.int64)
         if repeats.size == 1:
             scalar = True
             # bring the single element to the host
