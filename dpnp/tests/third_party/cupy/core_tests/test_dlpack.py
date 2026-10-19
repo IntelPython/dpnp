@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import ctypes
+import sys
+
 import dpctl
 import numpy
 import pytest
@@ -7,6 +10,21 @@ import pytest
 import dpnp as cupy
 import dpnp.tensor._dlpack as dlp
 from dpnp.tests.third_party.cupy import testing
+
+ctypes.pythonapi.PyCapsule_GetPointer.restype = ctypes.c_void_p
+ctypes.pythonapi.PyCapsule_GetPointer.argtypes = [
+    ctypes.py_object,
+    ctypes.c_char_p,
+]
+
+
+def thread_unsafe_on_windows(func):
+    """Serialize CPU access to managed memory on Windows."""
+    if sys.platform == "win32":
+        return pytest.mark.thread_unsafe(
+            reason="CPU access to managed memory overlaps GPU work"
+        )(func)
+    return func
 
 
 # TODO: to roll back the changes once the issue with CUDA support is resolved for random
@@ -29,6 +47,32 @@ def _gen_array(dtype, alloc_q=None):
     return cupy.asarray(array, sycl_queue=alloc_q).astype(dtype)
 
 
+def _inspect_dlpack(capsule):
+    ptr = ctypes.pythonapi.PyCapsule_GetPointer(capsule, b"dltensor")
+    managed = ctypes.cast(ptr, ctypes.POINTER(DLManagedTensor)).contents
+    tensor = managed.dl_tensor
+
+    shape = [tensor.shape[i] for i in range(tensor.ndim)]
+    strides = None
+    if tensor.strides:
+        strides = [tensor.strides[i] for i in range(tensor.ndim)]
+
+    return {
+        "data": tensor.data,
+        "device_type": tensor.device.device_type,
+        "device_id": tensor.device.device_id,
+        "ndim": tensor.ndim,
+        "dtype": {
+            "code": tensor.dtype.code,
+            "bits": tensor.dtype.bits,
+            "lanes": tensor.dtype.lanes,
+        },
+        "shape": shape,
+        "strides": strides,
+        "byte_offset": tensor.byte_offset,
+    }
+
+
 class DLDummy:
     """Dummy object to wrap a __dlpack__ capsule, so we can use from_dlpack."""
 
@@ -41,6 +85,41 @@ class DLDummy:
 
     def __dlpack_device__(self):
         return self.device
+
+
+class DLDevice(ctypes.Structure):
+    _fields_ = [
+        ("device_type", ctypes.c_int32),
+        ("device_id", ctypes.c_int32),
+    ]
+
+
+class DLDataType(ctypes.Structure):
+    _fields_ = [
+        ("code", ctypes.c_uint8),
+        ("bits", ctypes.c_uint8),
+        ("lanes", ctypes.c_uint16),
+    ]
+
+
+class DLTensor(ctypes.Structure):
+    _fields_ = [
+        ("data", ctypes.c_void_p),
+        ("device", DLDevice),
+        ("ndim", ctypes.c_int32),
+        ("dtype", DLDataType),
+        ("shape", ctypes.POINTER(ctypes.c_int64)),
+        ("strides", ctypes.POINTER(ctypes.c_int64)),
+        ("byte_offset", ctypes.c_uint64),
+    ]
+
+
+class DLManagedTensor(ctypes.Structure):
+    _fields_ = [
+        ("dl_tensor", DLTensor),
+        ("manager_ctx", ctypes.c_void_p),
+        ("deleter", ctypes.c_void_p),
+    ]
 
 
 @pytest.mark.skip("toDlpack() and fromDlpack() are not supported")
@@ -168,6 +247,7 @@ class TestNewDLPackConversion:
             arr.__dlpack__(dl_device=(9, 0), max_version=(1, 0))
 
     @pytest.mark.skip("numpy doesn't support kDLOneAPI device type")
+    # @thread_unsafe_on_windows
     def test_conversion_device_to_cpu(self):
         # NOTE: This defaults to the old unversioned, which is needed for
         #       NumPy 1.x support.
@@ -295,3 +375,19 @@ class TestDLTensorMemory:
         assert "consumed multiple times" in str(e.value)
         for w in recwarn:
             assert issubclass(w.category, cupy.VisibleDeprecationWarning)
+
+
+class TestDLTensorContent:
+    @pytest.fixture(scope="class")
+    @classmethod
+    def configure(cls):
+        arr = _gen_array("uint32")
+        arr_flip = cupy.transpose(cupy.flip(arr, axis=1), (1, 0))
+        info = _inspect_dlpack(arr_flip.__dlpack__())
+        yield arr_flip, info
+
+    def test_strides(self, configure):
+        arr, dlpack_interface = configure
+        array_strides = tuple(s // arr.itemsize for s in arr.strides)
+        dlpack_strides = tuple(dlpack_interface["strides"])
+        assert array_strides == dlpack_strides

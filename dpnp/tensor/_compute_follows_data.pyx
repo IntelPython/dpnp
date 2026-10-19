@@ -53,7 +53,7 @@ class ExecutionPlacementError(Exception):
     Make sure that input arrays are associated with the same
     :class:`dpctl.SyclQueue`,
     or migrate data to the same :class:`dpctl.SyclQueue` using
-    :meth:`dpctl.tensor.usm_ndarray.to_device` method.
+    :meth:`dpnp.tensor.usm_ndarray.to_device` method.
     """
     pass
 
@@ -80,7 +80,7 @@ def get_execution_queue(qs, /):
     """
     if not isinstance(qs, (list, tuple)):
         raise TypeError(
-            "Expected a list or a tuple, got {}".format(type(qs))
+            f"Expected a list or a tuple, got {type(qs)}"
         )
     if len(qs) == 0:
         return None
@@ -114,7 +114,7 @@ def get_coerced_usm_type(usm_types, /):
     """
     if not isinstance(usm_types, (list, tuple)):
         raise TypeError(
-            "Expected a list or a tuple, got {}".format(type(usm_types))
+            f"Expected a list or a tuple, got {type(usm_types)}"
         )
     if len(usm_types) == 0:
         return None

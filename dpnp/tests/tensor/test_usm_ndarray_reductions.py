@@ -702,3 +702,28 @@ def test_count_nonzero(dt):
     res = dpt.count_nonzero(x)
     assert res == 7
     assert res.dtype == expected_dt
+
+
+def _tree_reduction_loop_size(dev):
+    # number of elements of a row above which the tree reductions reduce the
+    # partial results of the work-groups
+    wg = 4 * max(dev.sub_group_sizes)
+    max_wg = min(2048, dev.max_work_group_size // 2)
+    return 8 * wg * 8 * max_wg
+
+
+@pytest.mark.slow
+def test_tree_reductions_multiple_passes():
+    q = get_queue_or_skip()
+    n = _tree_reduction_loop_size(q.sycl_device) + 12345
+
+    x = dpt.zeros((3, n), dtype="i1", sycl_queue=q)
+    pos = [7, n - 5, n // 2]
+    for r, p in enumerate(pos):
+        x[r, p] = 1
+    assert dpt.asnumpy(dpt.argmax(x, axis=1)).tolist() == pos
+
+    x = dpt.ones((3, n), dtype="i1", sycl_queue=q)
+    for r, p in enumerate(pos):
+        x[r, p : p + r + 1] = 2
+    assert dpt.asnumpy(dpt.prod(x, axis=1)).tolist() == [2, 4, 8]

@@ -47,9 +47,7 @@ def _get_indexing_mode(name):
     try:
         return modes[name]
     except KeyError:
-        raise ValueError(
-            "`mode` must be `wrap` or `clip`." "Got `{}`.".format(name)
-        )
+        raise ValueError(f"`mode` must be `wrap` or `clip`. Got `{name}`.")
 
 
 def _range(sh_i, i, nd, q, usm_t, dt):
@@ -63,11 +61,11 @@ def extract(condition, arr):
 
     Returns the elements of an array that satisfies the condition.
 
-    If ``condition`` is boolean ``dpctl.tensor.extract`` is
+    If ``condition`` is boolean ``dpnp.tensor.extract`` is
     equivalent to ``arr[condition]``.
 
-    Note that ``dpctl.tensor.place`` does the opposite of
-    ``dpctl.tensor.extract``.
+    Note that ``dpnp.tensor.place`` does the opposite of
+    ``dpnp.tensor.extract``.
 
     Args:
        conditions (usm_ndarray):
@@ -135,7 +133,7 @@ def place(arr, mask, vals):
 
     Change elements of an array based on conditional and input values.
 
-    If ``mask`` is boolean ``dpctl.tensor.place`` is
+    If ``mask`` is boolean ``dpnp.tensor.place`` is
     equivalent to ``arr[condition] = vals``.
 
     Args:
@@ -272,13 +270,11 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(
-            "Expected instance of `dpt.usm_ndarray`, got `{}`.".format(type(x))
+            f"Expected instance of `dpt.usm_ndarray`, got `{type(x)}`."
         )
     if not isinstance(indices, dpt.usm_ndarray):
         raise TypeError(
-            "`indices` expected `dpt.usm_ndarray`, got `{}`.".format(
-                type(indices)
-            )
+            f"`indices` expected `dpt.usm_ndarray`, got `{type(indices)}`."
         )
     if isinstance(vals, dpt.usm_ndarray):
         queues_ = [x.sycl_queue, indices.sycl_queue, vals.sycl_queue]
@@ -287,14 +283,10 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
         queues_ = [x.sycl_queue, indices.sycl_queue]
         usm_types_ = [x.usm_type, indices.usm_type]
     if indices.ndim != 1:
-        raise ValueError(
-            "`indices` expected a 1D array, got `{}`".format(indices.ndim)
-        )
+        raise ValueError(f"`indices` expected a 1D array, got `{indices.ndim}`")
     if indices.dtype.kind not in "ui":
         raise IndexError(
-            "`indices` expected integer data type, got `{}`".format(
-                indices.dtype
-            )
+            f"`indices` expected integer data type, got `{indices.dtype}`"
         )
     exec_q = dpt.get_execution_queue(queues_)
     if exec_q is None:
@@ -307,9 +299,7 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
     if axis is None:
         if x_ndim > 1:
             raise ValueError(
-                "`axis` cannot be `None` for array of dimension `{}`".format(
-                    x_ndim
-                )
+                f"`axis` cannot be `None` for array of dimension `{x_ndim}`"
             )
         axis = 0
 
@@ -469,25 +459,19 @@ def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(
-            "Expected instance of `dpt.usm_ndarray`, got `{}`.".format(type(x))
+            f"Expected instance of `dpt.usm_ndarray`, got `{type(x)}`."
         )
 
     if not isinstance(indices, dpt.usm_ndarray):
         raise TypeError(
-            "`indices` expected `dpt.usm_ndarray`, got `{}`.".format(
-                type(indices)
-            )
+            f"`indices` expected `dpt.usm_ndarray`, got `{type(indices)}`."
         )
     if indices.dtype.kind not in "ui":
         raise IndexError(
-            "`indices` expected integer data type, got `{}`".format(
-                indices.dtype
-            )
+            f"`indices` expected integer data type, got `{indices.dtype}`"
         )
     if indices.ndim != 1:
-        raise ValueError(
-            "`indices` expected a 1D array, got `{}`".format(indices.ndim)
-        )
+        raise ValueError(f"`indices` expected a 1D array, got `{indices.ndim}`")
     exec_q = dpt.get_execution_queue([x.sycl_queue, indices.sycl_queue])
     if exec_q is None:
         raise dpt.ExecutionPlacementError
@@ -499,9 +483,7 @@ def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
     if axis is None:
         if x_ndim > 1:
             raise ValueError(
-                "`axis` cannot be `None` for array of dimension `{}`".format(
-                    x_ndim
-                )
+                f"`axis` cannot be `None` for array of dimension `{x_ndim}`"
             )
         axis = 0
 

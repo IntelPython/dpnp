@@ -1,8 +1,5 @@
-# cython: language_level=3
-# cython: linetrace=True
-# -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016, Intel Corporation
+# Copyright (c) 2026, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -29,30 +26,44 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""Module Backend (Indexing part)
+"""Sparse base class and predicate, mirroring scipy/_lib/_sparse.py."""
 
-This module contains interface functions between C backend layer
-and the rest of the library
+from abc import ABC
 
-"""
+__all__ = ["SparseABC", "issparse"]
 
-# NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
 
-__all__ += [
-    "dpnp_putmask",
-]
+# pylint: disable-next=too-few-public-methods
+class SparseABC(ABC):
+    """Abstract base for all dpnp.scipy.sparse format classes."""
 
-cpdef dpnp_putmask(
-    utils.dpnp_descriptor arr,
-    utils.dpnp_descriptor mask,
-    utils.dpnp_descriptor values,
-):
-    cdef int values_size = values.size
 
-    mask_flatiter = mask.get_pyobj().flat
-    arr_flatiter = arr.get_pyobj().flat
-    values_flatiter = values.get_pyobj().flat
+def issparse(x):
+    """
+    Determine whether `x` is a dpnp sparse matrix type.
 
-    for i in range(arr.size):
-        if mask_flatiter[i]:
-            arr_flatiter[i] = values_flatiter[i % values_size]
+    For full documentation refer to :obj:`scipy.sparse.issparse`.
+
+    Parameters
+    ----------
+    x : object
+        Object to check for being a dpnp sparse matrix.
+
+    Returns
+    -------
+    out : bool
+        ``True`` if `x` is a dpnp sparse matrix, ``False`` otherwise.
+
+    Examples
+    --------
+    >>> import dpnp
+    >>> from dpnp.scipy.sparse import csr_matrix, issparse
+    >>> issparse(csr_matrix(dpnp.eye(3)))
+    True
+    >>> issparse(dpnp.eye(3))
+    False
+    >>> issparse(5)
+    False
+
+    """
+    return isinstance(x, SparseABC)

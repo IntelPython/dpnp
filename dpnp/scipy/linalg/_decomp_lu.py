@@ -95,9 +95,6 @@ def lu(
 
     Returns
     -------
-    The tuple ``(p, l, u)`` is returned if ``permute_l`` is ``False``
-    (default), else the tuple ``(pl, u)`` is returned, where:
-
     p : (..., M, M) dpnp.ndarray or (..., M) dpnp.ndarray
         Permutation matrix or permutation indices.
         If `p_indices` is ``False`` (default), a permutation matrix.
@@ -116,6 +113,9 @@ def lu(
 
     Notes
     -----
+    The tuple ``(p, l, u)`` is returned if `permute_l` is ``False`` (default),
+    else the tuple ``(pl, u)`` is returned.
+
     Permutation matrices are costly since they are nothing but row reorder of
     ``L`` and hence indices are strongly recommended to be used instead if the
     permutation is required. The relation in the 2D case then becomes simply

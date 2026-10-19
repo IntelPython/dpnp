@@ -606,6 +606,7 @@ int simplify_iteration_three_strides(const int nd,
 {
     disp1 = StridesTy(0);
     disp2 = StridesTy(0);
+    disp3 = StridesTy(0);
     if (nd < 2)
         return nd;
 
@@ -770,6 +771,8 @@ int simplify_iteration_four_strides(const int nd,
 {
     disp1 = StridesTy(0);
     disp2 = StridesTy(0);
+    disp3 = StridesTy(0);
+    disp4 = StridesTy(0);
     if (nd < 2)
         return nd;
 

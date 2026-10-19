@@ -304,9 +304,7 @@ def get_usm_allocations(objects):
 
     if not isinstance(objects, (list, tuple)):
         raise TypeError(
-            "Expected a list or a tuple, got {}".format(
-                type(objects)
-            )
+            f"Expected a list or a tuple, got {type(objects)}"
         )
 
     if len(objects) == 0:
@@ -517,11 +515,8 @@ cdef tuple get_common_usm_allocation(
     if common_usm_type is None:
         raise ValueError(
             "could not recognize common USM type "
-            "for inputs of USM types {} and {}"
-            "".format(
-                array1_obj.usm_type,
-                array2_obj.usm_type,
-            )
+            f"for inputs of USM types {array1_obj.usm_type} "
+            f"and {array2_obj.usm_type}"
         )
 
     common_sycl_queue = get_execution_queue(
@@ -530,11 +525,8 @@ cdef tuple get_common_usm_allocation(
     if common_sycl_queue is None:
         raise ValueError(
             "could not recognize common SYCL queue "
-            "for inputs in SYCL queues {} and {}"
-            "".format(
-                array1_obj.sycl_queue,
-                array2_obj.sycl_queue,
-            )
+            f"for inputs in SYCL queues {array1_obj.sycl_queue} "
+            f"and {array2_obj.sycl_queue}"
         )
 
     return (
@@ -682,8 +674,7 @@ cdef class dpnp_descriptor:
 
         raise TypeError(
             "expected either dpnp.tensor.usm_ndarray "
-            "or dpnp.dpnp_array.dpnp_array, got {}"
-            "".format(type(self.origin_pyobj))
+            f"or dpnp.dpnp_array.dpnp_array, got {type(self.origin_pyobj)}"
         )
 
     cdef void * get_data(self):

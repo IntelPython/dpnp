@@ -1028,3 +1028,109 @@ def test_matmul_out_appended_axes():
     out = dpt.empty((), dtype="i4")
     dpt.matmul(x1, x2, out=out)
     assert out == n1
+
+
+@pytest.mark.slow
+def test_vecdot_tree_multiple_passes_broadcast():
+    q = get_queue_or_skip()
+    dev = q.sycl_device
+    # number of elements above which the partial results of the work-groups
+    # are reduced
+    wg = 4 * max(dev.sub_group_sizes)
+    max_wg = min(2048, dev.max_work_group_size // 2)
+    n = 8 * wg * 8 * max_wg + 999
+
+    x1 = dpt.zeros((3, n), dtype="i1", sycl_queue=q)
+    for r in range(3):
+        x1[r, n - 1 - r :] = 1
+    # a broadcast x2 makes the strides of the operands differ from those of
+    # the result
+    x2 = dpt.ones(n, dtype="i1", sycl_queue=q)
+    res = dpt.vecdot(x1, x2)
+    assert dpt.asnumpy(res).tolist() == [1, 2, 3]
+
+
+@pytest.mark.parametrize("dt", ["c8", "c16"])
+def test_vecdot_tree_broadcast(dt):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dt, q)
+
+    n = 100000
+    x1 = dpt.ones((3, n), dtype=dt, sycl_queue=q)
+    x1 *= dpt.asarray([[1], [2], [3]], dtype=dt, sycl_queue=q)
+    x2 = dpt.ones(n, dtype=dt, sycl_queue=q)
+    res = dpt.vecdot(x1, x2)
+    assert dpt.asnumpy(res).tolist() == [n, 2 * n, 3 * n]
+
+
+def _gemm_batch_tree_loop_k(dev):
+    # inner dimension size above which the tree reductions of batched gemm
+    # reduce the partial results
+    wg = 4 * max(dev.sub_group_sizes)
+    max_wg = min(2048, dev.max_work_group_size // 2)
+    return 256 * 4 * wg * 4 * max_wg
+
+
+def _skip_if_too_large(dev, alloc_nbytes):
+    if max(alloc_nbytes) > dev.max_mem_alloc_size:
+        pytest.skip("Allocation exceeds the device's maximum allocation size")
+    if sum(alloc_nbytes) > dev.global_mem_size // 4:
+        pytest.skip("Not enough device memory")
+
+
+@pytest.mark.slow
+def test_matmul_tree_multiple_passes_strided():
+    q = get_queue_or_skip()
+    dev = q.sycl_device
+    k = _gemm_batch_tree_loop_k(dev) + 999
+    _skip_if_too_large(dev, [k])
+
+    x1 = dpt.zeros((1, 1, k), dtype="i1", sycl_queue=q)
+    x1[..., k - 3 :] = 1
+    # a broadcast x2 makes the strided implementation be used
+    x2 = dpt.broadcast_to(
+        dpt.asarray([1, 2], dtype="i1", sycl_queue=q), (2, k, 2)
+    )
+    res = dpt.matmul(x1, x2)
+    assert dpt.asnumpy(res).tolist() == [[[3, 6]], [[3, 6]]]
+
+
+@pytest.mark.slow
+def test_matmul_tree_multiple_passes_contig():
+    q = get_queue_or_skip()
+    dev = q.sycl_device
+    k = _gemm_batch_tree_loop_k(dev) + 999
+    _skip_if_too_large(dev, [2 * k, k])
+
+    x1 = dpt.zeros((1, 2, k), dtype="i1", sycl_queue=q)
+    for r in range(2):
+        x1[0, r, k - 1 - r :] = 1
+    x2 = dpt.ones((1, k, 1), dtype="i1", sycl_queue=q)
+    res = dpt.matmul(x1, x2)
+    assert dpt.asnumpy(res).tolist() == [[[1], [2]]]
+
+
+def test_matmul_tree_broadcast_batch_x2():
+    q = get_queue_or_skip()
+    dev = q.sycl_device
+    # inner dimension size above which batched gemm reduces the partial
+    # results with multiple work-groups
+    max_wg = min(2048, dev.max_work_group_size // 2)
+    k = 256 * 4 * max_wg + 999
+
+    x1 = dpt.zeros((2, 1, k), dtype="i1", sycl_queue=q)
+    x1[0, :, k - 3 :] = 1
+    x1[1, :, k - 2 :] = 1
+    # x2 is broadcast along the batch dimension
+    x2 = dpt.broadcast_to(
+        dpt.asarray([1, 2], dtype="i1", sycl_queue=q), (2, k, 2)
+    )
+    res = dpt.matmul(x1, x2)
+    assert dpt.asnumpy(res).tolist() == [[[3, 6]], [[2, 4]]]
+
+    # a broadcast x1 keeps a non-broadcast x2 on the strided implementation
+    x1 = dpt.broadcast_to(x1[:1], (2, 1, k))
+    x2 = dpt.ones((2, k, 2), dtype="i1", sycl_queue=q)
+    x2[1] = 2
+    res = dpt.matmul(x1, x2)
+    assert dpt.asnumpy(res).tolist() == [[[3, 3]], [[6, 6]]]

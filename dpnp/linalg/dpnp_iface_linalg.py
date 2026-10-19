@@ -171,7 +171,7 @@ def cond(x, p=None):
     ----------
     x : {dpnp.ndarray, usm_ndarray}
         The matrix whose condition number is sought.
-    p : {None, 1, -1, 2, -2, inf, -inf, "fro"}, optional
+    p : {None, 1, -1, 2, -2, inf, -inf, "fro", "nuc"}, optional
         Order of the norm used in the condition number computation:
 
         =====  ============================
@@ -179,6 +179,7 @@ def cond(x, p=None):
         =====  ============================
         None   2-norm
         'fro'  Frobenius norm
+        'nuc'  nuclear norm
         inf    max(sum(abs(x), axis=1))
         -inf   min(sum(abs(x), axis=1))
         1      max(sum(abs(x), axis=0))
@@ -188,7 +189,8 @@ def cond(x, p=None):
         =====  ============================
 
         ``inf`` means the :obj:`dpnp.inf` object, and the Frobenius norm is
-        the root-of-sum-of-squares norm.
+        the root-of-sum-of-squares norm. The nuclear norm is the sum of the
+        singular values.
 
         Default: ``None``.
 
@@ -204,9 +206,9 @@ def cond(x, p=None):
     Notes
     -----
     This function will raise :class:`dpnp.linalg.LinAlgError` on singular input
-    when using any of the norm: ``1``, ``-1``, ``inf``, ``-inf``, or ``'fro'``.
-    In contrast, :obj:`numpy.linalg.cond` will fill the result array with
-    ``inf`` values for each 2D batch in the input array that is singular
+    when using any of the norm: ``1``, ``-1``, ``inf``, ``-inf``, ``'fro'``, or
+    ``'nuc'``. In contrast, :obj:`numpy.linalg.cond` will fill the result array
+    with ``inf`` values for each 2D batch in the input array that is singular
     when using these norms.
 
     Examples
@@ -221,6 +223,8 @@ def cond(x, p=None):
     array(1.41421356)
     >>> np.linalg.cond(a, 'fro')
     array(3.16227766)
+    >>> np.linalg.cond(a, 'nuc')
+    array(9.24264069)
     >>> np.linalg.cond(a, np.inf)
     array(2.)
     >>> np.linalg.cond(a, -np.inf)
@@ -468,8 +472,6 @@ def eig(a):
 
     Returns
     -------
-    A namedtuple with the following attributes:
-
     eigenvalues : (..., M) dpnp.ndarray
         The eigenvalues, each repeated according to its multiplicity.
         The eigenvalues are not necessarily ordered. The resulting array is
@@ -481,8 +483,8 @@ def eig(a):
         ``eigenvectors[:,i]`` is the eigenvector corresponding to the
         eigenvalue ``eigenvalues[i]``.
 
-    Note
-    ----
+    Notes
+    -----
     Since there is no proper OneMKL LAPACK function, DPNP will calculate
     through a fallback on NumPy call.
 
@@ -584,8 +586,6 @@ def eigh(a, UPLO="L"):
 
     Returns
     -------
-    A namedtuple with the following attributes:
-
     eigenvalues : (..., M) dpnp.ndarray
         The eigenvalues in ascending order, each repeated according to its
         multiplicity.
@@ -645,8 +645,8 @@ def eigvals(a):
         They are not necessarily ordered, nor are they necessarily
         real for real matrices.
 
-    Note
-    ----
+    Notes
+    -----
     Since there is no proper OneMKL LAPACK function, DPNP will calculate
     through a fallback on NumPy call.
 
@@ -1591,9 +1591,6 @@ def qr(a, mode="reduced"):
 
     Returns
     -------
-    When mode is "reduced" or "complete", the result will be a namedtuple with
-    the attributes `Q` and `R`:
-
     Q : dpnp.ndarray of float or complex, optional
         A matrix with orthonormal columns.
         When mode is ``"complete"`` the result is an orthogonal/unitary matrix
@@ -1608,6 +1605,12 @@ def qr(a, mode="reduced"):
         The array `h` contains the Householder reflectors that generate `Q`
         along with `R`. The `tau` array contains scaling factors for the
         reflectors.
+
+    Notes
+    -----
+    When `mode` is ``"reduced"`` or ``"complete"``, the result is a namedtuple
+    with the attributes `Q` and `R`. When `mode` is ``"raw"``, it returns
+    ``(h, tau)``.
 
     Examples
     --------
@@ -1749,9 +1752,6 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
 
     Returns
     -------
-    When `compute_uv` is ``True``, the result is a namedtuple with the
-    following attribute names:
-
     U : { (…, M, M), (…, M, K) } dpnp.ndarray
         Unitary matrix, where M is the number of rows of the input array `a`.
         The shape of the matrix `U` depends on the value of `full_matrices`.
@@ -1768,6 +1768,12 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
         If `full_matrices` is ``True``, `Vh` has the shape (…, N, N).
         If `full_matrices` is ``False``, `Vh` has the shape (…, K, N).
         If `compute_uv` is ``False``, neither `U` or `Vh` are computed.
+
+    Notes
+    -----
+    When `compute_uv` is ``True``, the result is a namedtuple with the
+    attribute names `U`, `S`, and `Vh`. When `compute_uv` is ``False``, only
+    the singular values `S` are returned.
 
     Examples
     --------
@@ -1895,8 +1901,6 @@ def slogdet(a):
 
     Returns
     -------
-    A namedtuple with the following attributes:
-
     sign : (...) dpnp.ndarray
         A number representing the sign of the determinant. For a real matrix,
         this is 1, 0, or -1. For a complex matrix, this is a complex number

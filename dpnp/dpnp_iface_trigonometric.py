@@ -907,8 +907,8 @@ def cumlogsumexp(
     :obj:`dpnp.logsumexp` : Logarithm of the sum of elements of the inputs,
                             element-wise.
 
-    Note
-    ----
+    Notes
+    -----
     This function is equivalent of `numpy.logaddexp.accumulate`.
 
     Examples
@@ -1889,8 +1889,8 @@ def logsumexp(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
     :obj:`dpnp.cumlogsumexp` : Cumulative the natural logarithm of the sum of
         elements in the input array.
 
-    Note
-    ----
+    Notes
+    -----
     This function is equivalent of `numpy.logaddexp.reduce`.
 
     Examples
@@ -2171,8 +2171,8 @@ def reduce_hypot(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
     --------
     :obj:`dpnp.hypot` : Calculates :math:`\sqrt{x1^2 + x2^2}`, element-wise.
 
-    Note
-    ----
+    Notes
+    -----
     This function is equivalent of `numpy.hypot.reduce`.
 
     Examples

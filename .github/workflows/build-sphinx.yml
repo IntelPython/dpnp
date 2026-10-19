@@ -57,7 +57,7 @@ jobs:
           echo "$GITHUB_CONTEXT"
 
       - name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
+        uses: jlumbroso/free-disk-space@ceedf095f4ec1a097402bc6bd80831f2e1a6fde6 # v2.0.0
         with:
           docker-images: false
 
@@ -112,7 +112,7 @@ jobs:
       - name: Setup miniconda
         id: setup_miniconda
         continue-on-error: true
-        uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
+        uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -122,7 +122,7 @@ jobs:
 
       - name: ReSetup miniconda
         if: steps.setup_miniconda.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
+        uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -198,7 +198,7 @@ jobs:
       # Upload artifact for fork PRs
       - name: Upload docs artifact (Fork PRs)
         if: env.GH_EVENT_PR_OPEN == 'true' && steps.check_fork.outputs.is_fork == 'true'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: pr-${{ github.event.number }}-docs
           path: ${{ env.PUBLISH_DIR }}

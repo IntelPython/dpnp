@@ -179,6 +179,39 @@ def test_top_k_1d_smallest(dtype, n):
     assert dpt.all(s.indices == expected_inds), (s.indices, expected_inds)
 
 
+@pytest.mark.parametrize("dtype", ["f2", "f4", "f8", "c8", "c16"])
+@pytest.mark.parametrize("mode", ["largest", "smallest"])
+def test_top_k_nan(dtype, mode):
+    # NaNs (and complex values with a NaN component) are ordered to the end
+    # for both modes, so top_k excludes them until k reaches the NaN region
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    is_complex = dtype in ("c8", "c16")
+    nan = complex(dpt.nan, dpt.nan) if is_complex else dpt.nan
+
+    def has_nan(a):
+        if is_complex:
+            return dpt.any(dpt.isnan(dpt.real(a)) | dpt.isnan(dpt.imag(a)))
+        return dpt.any(dpt.isnan(a))
+
+    # 5 distinct finite values followed by 2 NaNs, then rolled to interleave
+    x = dpt.roll(dpt.asarray([3, 1, 5, 2, 4, nan, nan], dtype=dtype), 3)
+
+    # k within the finite region: NaNs are excluded from the result
+    r = dpt.top_k(x, 3, mode=mode)
+    assert not has_nan(r.values)
+    assert dpt.all(r.values == x[r.indices])
+    extreme = [5, 4, 3] if mode == "largest" else [1, 2, 3]
+    expected = dpt.asarray(extreme, dtype=dtype)
+    assert dpt.all(dpt.sort(r.values) == dpt.sort(expected))
+
+    # k reaching into the NaN region: the 2 NaNs are ordered last
+    r = dpt.top_k(x, 7, mode=mode)
+    assert has_nan(r.values[-2:])
+    assert not has_nan(r.values[:5])
+
+
 @pytest.mark.parametrize(
     "dtype",
     [

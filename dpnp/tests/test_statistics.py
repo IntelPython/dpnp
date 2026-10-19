@@ -944,6 +944,17 @@ class TestMedian:
         expected = numpy.median(a, axis=axis)
         assert_dtype_allclose(result, expected)
 
+    @with_requires("numpy>=2.5.4")
+    @pytest.mark.usefixtures("suppress_mean_empty_slice_numpy_warnings")
+    @pytest.mark.parametrize("keepdims", [False, True])
+    def test_empty_kept_dim(self, keepdims):
+        a = numpy.empty((0, 3, 4))
+        ia = dpnp.array(a)
+
+        result = dpnp.median(ia, axis=(1, 2), keepdims=keepdims)
+        expected = numpy.median(a, axis=(1, 2), keepdims=keepdims)
+        assert_dtype_allclose(result, expected)
+
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize(
         "axis, out_shape", [(0, (3,)), (1, (2,)), ((0, 1), ())]

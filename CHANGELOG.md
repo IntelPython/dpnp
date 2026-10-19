@@ -18,9 +18,12 @@ This release is compatible with NumPy 2.5.
 * Added implementation of `dpnp.lib.stride_tricks.as_strided` [#2991](https://github.com/IntelPython/dpnp/pull/2991)
 * Added `dpnp.tensor.broadcast_shapes` to align with the 2025.12 version of the Python array API [#3009](https://github.com/IntelPython/dpnp/pull/3009)
 * Added support for free-threaded Python builds [gh-3026](https://github.com/IntelPython/dpnp/pull/3026)
+* Added implementation of `dpnp.scipy.sparse.linalg import LinearOperator, cg, gmres, minres` [#2841](https://github.com/IntelPython/dpnp/pull/2841)
 * Added `dpnp.broadcast` class implementation [#2901](https://github.com/IntelPython/dpnp/pull/2901)
 * Added the `ndmax` keyword to `dpnp.array` for compatibility with NumPy [#3044](https://github.com/IntelPython/dpnp/pull/3044)
 * Added `UsmNDArray_RemoveQueueRef` C API function to release a queue reference obtained from `UsmNDArray_GetQueueRef` [#3042](https://github.com/IntelPython/dpnp/pull/3042)
+* Added a `rattler-build`-compatible conda recipe (`conda-recipe/rattler_recipe.yaml`) alongside the existing `conda-build` recipe [#3031](https://github.com/IntelPython/dpnp/pull/3031)
+* Added support for the `"nuc"` (nuclear) norm in `dpnp.linalg.cond` [#3084](https://github.com/IntelPython/dpnp/pull/3084)
 
 ### Changed
 
@@ -47,7 +50,14 @@ This release is compatible with NumPy 2.5.
 * Linked the `dpnp_backend_c` library against only the MKL SYCL domains it uses (`BLAS`, `RNG`, `VM`) [#3012](https://github.com/IntelPython/dpnp/pull/3012)
 * `dpnp` uses pybind11 3.1.0 [#3015](https://github.com/IntelPython/dpnp/pull/3015)
 * Reworked the ASV benchmarks and added end-to-end workload benchmarks derived from dpBench [#2996](https://github.com/IntelPython/dpnp/pull/2996)
+* Stopped timing NumPy in the ASV benchmarks, which now measure only dpnp [#3095](https://github.com/IntelPython/dpnp/pull/3095)
 * Reduced allocations in `dpnp.linalg.norm` by reusing the reduction result as the `sqrt` output buffer in the 2-norm and Frobenius-norm branches [#3062](https://github.com/IntelPython/dpnp/pull/3062)
+* Changed `dpnp.tensor.top_k` with `mode="largest"` to no longer return `NaN` values (or complex values with a `NaN` component) ahead of finite values, matching the `NaN`-last order of `dpnp.tensor.sort` [#3066](https://github.com/IntelPython/dpnp/pull/3066)
+* Avoided a copy of `dpnp.einsum` result into C-order by building the product in the requested layout directly [#3069](https://github.com/IntelPython/dpnp/pull/3069)
+* Updated the implementation of `dpnp.putmask` by adding dedicated contiguous and strided SYCL kernels [#3014](https://github.com/IntelPython/dpnp/pull/3014)
+* Changed `dpnp.sort`, `dpnp.argsort`, and their `dpnp.ndarray`/`dpnp.tensor` counterparts to place `NaN` values last instead of first when sorting in descending order [#3066](https://github.com/IntelPython/dpnp/pull/3066)
+* Documented and made explicit support for `copy=None` ("copy only if needed") in `dpnp.nan_to_num` [#3083](https://github.com/IntelPython/dpnp/pull/3083)
+* Changed `dpnp.linalg.pinv` to compute the default tolerance from the machine epsilon of the data type used for the computation, and to return a floating-point result for an empty integer or boolean array [#3090](https://github.com/IntelPython/dpnp/pull/3090)
 
 ### Deprecated
 
@@ -99,6 +109,16 @@ This release is compatible with NumPy 2.5.
 * Fixed `dpnp.cumsum`, `dpnp.cumprod`, and their `nan`/`cumulative_*` variants (including `dpnp.tensor.cumulative_sum`/`cumulative_prod`) silently returning incorrect results when accumulating along an axis of an array with more than one row [#3063](https://github.com/IntelPython/dpnp/pull/3063)
 * Fixed `dpnp.einsum` returning a result whose memory layout differs from NumPy for the default `order="K"`, and ignoring `out` and `order` for a contraction over a size-0 dimension [#3058](https://github.com/IntelPython/dpnp/pull/3058)
 * Fixed operations on a boolean array whose bytes are not `0x00`/`0x01` [#3055](https://github.com/IntelPython/dpnp/pull/3055)
+* Fixed the `dpnp.ndarray` constructor returning a view at the wrong address [#3068](https://github.com/IntelPython/dpnp/pull/3068)
+* Fixed the strided kernel of `dpnp.full` and `dpnp.tensor.full` not waiting on the events passed to the binding [#3072](https://github.com/IntelPython/dpnp/pull/3072)
+* Fixed the list of events the copy kernels of `dpnp.reshape`, `dpnp.tensor.reshape`, `dpnp.roll` and `dpnp.tensor.roll` wait on being padded with default-constructed events [#3072](https://github.com/IntelPython/dpnp/pull/3072)
+* Fixed `simplify_iteration_three_strides` and `simplify_iteration_four_strides` accumulating into their third and fourth output displacements without zeroing them first, which required the caller to initialize them [#3072](https://github.com/IntelPython/dpnp/pull/3072)
+* Fixed `dpnp.ndarray.flat` indexing and assignment edge cases, adding support for slices, ellipsis, and integer/boolean array indices [#3045](https://github.com/IntelPython/dpnp/pull/3045)
+* Fixed `dpnp.nanmedian` dropping kept dimensions of size 1, which produced a wrong result shape [#3081](https://github.com/IntelPython/dpnp/pull/3081)
+* Fixed incorrect results of `dpnp.tensor.vecdot` in some cases with strided outputs and of `dpnp.tensor` reductions, `dpnp.tensor.vecdot` and `dpnp.tensor.matmul` on large inputs with some data types [#3082](https://github.com/IntelPython/dpnp/pull/3082)
+* Fixed `dpnp.median` and `dpnp.nanmedian` raising a `ValueError` for a tuple `axis` when a kept dimension has size 0 [#3081](https://github.com/IntelPython/dpnp/pull/3081)
+* Fixed a `RuntimeError` raised by `dpnp.tensor` kernels launched over more than `INT_MAX` work-items when built with DPC++ compiler 2026.2 or newer, by also passing `-fno-sycl-id-queries-fit-in-int` to the linker [#3089](https://github.com/IntelPython/dpnp/pull/3089)
+* Fixed `dpnp.__all__` missing `ndarray` and `__array_namespace_info__` and listing `mean`, `median` and `min` twice [#3100](https://github.com/IntelPython/dpnp/pull/3100)
 
 ### Security
 

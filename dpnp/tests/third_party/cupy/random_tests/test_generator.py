@@ -21,6 +21,15 @@ from . import common_distributions
 pytest.skip("random.generator() is not supported yet", allow_module_level=True)
 
 
+def test_get_indices_preserves_uint64_cumsum_values():
+    sentinel = numpy.iinfo(numpy.uint64).max
+    csum = cupy.array([2**32 + 1, 2**32 + 1], dtype=cupy.uint64)
+    indices = cupy.full(2, sentinel, dtype=cupy.uint64)
+    _generator.RandomState._kernel_get_indices(csum, indices, size=csum.size)
+    assert indices[0] == 0
+    assert indices[1] == sentinel
+
+
 def numpy_cupy_equal_continuous_distribution(significance_level, name="xp"):
     """Decorator that tests the distributions of NumPy samples and CuPy ones.
 

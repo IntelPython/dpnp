@@ -67,7 +67,7 @@ class DPNPErf(DPNPUnaryFunc):
             mkl_impl_fn=mkl_impl_fn,
         )
 
-    def __call__(self, x, /, out=None):
+    def __call__(self, x, /, out=None):  # pylint: disable=arguments-differ
         return super().__call__(x, out=out)
 
 

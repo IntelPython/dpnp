@@ -20,6 +20,7 @@ from .helper import (
     generate_random_numpy_array,
     get_all_dtypes,
     get_float_complex_dtypes,
+    get_integer_dtypes,
     get_integer_float_dtypes,
     has_support_aspect64,
     numpy_version,
@@ -278,7 +279,7 @@ class TestCholesky:
 
 
 class TestCond:
-    _norms = [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
+    _norms = [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro", "nuc"]
 
     @pytest.mark.parametrize(
         "shape", [(0, 4, 4), (4, 0, 3, 3)], ids=["(0, 4, 4)", "(4, 0, 3, 3)"]
@@ -325,7 +326,7 @@ class TestCond:
         # NumPy does not raise LinAlgError on singular matrices.
         # It returns `inf`, `0`, or large/small finite values
         # depending on the norm and the matrix content.
-        # DPNP raises LinAlgError for 1, -1, inf, -inf, and 'fro'
+        # DPNP raises LinAlgError for 1, -1, inf, -inf, 'fro', and 'nuc'
         # due to use of gesv in the 2D case.
         # For [None, 2, -2], DPNP does not raise.
         if p in [None, 2, -2]:
@@ -4370,7 +4371,29 @@ class TestPinv:
         result = dpnp.linalg.pinv(a_dp, rtol=1e-15)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @testing.with_requires("numpy>=2.0")
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_pinv_rtol_none(self, dtype):
+        # singular value 1e-9 is cut off for single precision only
+        a = numpy.diag([1.0, 1e-9]).astype(dtype)
+        a_dp = dpnp.array(a)
+
+        expected = numpy.linalg.pinv(a, rtol=None)
+        result = dpnp.linalg.pinv(a_dp, rtol=None)
+        assert_dtype_allclose(result, expected)
+
+    @testing.with_requires("numpy>=2.0")
+    @pytest.mark.parametrize("dtype", get_integer_dtypes() + [dpnp.bool])
+    def test_pinv_rtol_none_non_inexact(self, dtype):
+        a = numpy.array([[1, 2, 3], [4, 1, 1], [2, 3, 1]]).astype(dtype)
+        a_dp = dpnp.array(a)
+
+        # NumPy < 2.6.0 raises ValueError for non-inexact input
+        expected = numpy.linalg.pinv(a.astype(numpy.float64), rtol=None)
+        result = dpnp.linalg.pinv(a_dp, rtol=None)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize(
         "shape",
         [(0, 0), (0, 2), (2, 0), (2, 0, 3), (2, 3, 0), (0, 2, 3)],
@@ -4388,6 +4411,9 @@ class TestPinv:
         a_dp = dpnp.array(a)
 
         B = numpy.linalg.pinv(a)
+        if numpy_version() < "2.6.0" and a.dtype.kind in "biu":
+            # NumPy < 2.6.0 returns the input dtype for empty int/bool input
+            B = B.astype(numpy.float64)
         B_dp = dpnp.linalg.pinv(a_dp)
 
         assert_dtype_allclose(B_dp, B)

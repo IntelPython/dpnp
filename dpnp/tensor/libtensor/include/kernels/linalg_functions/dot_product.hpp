@@ -1089,8 +1089,9 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
                     InputIndexerT, ResIndexerT>;
             using ReductionIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
 
-            const InputIndexerT inp_indexer{/* size */ batches,
-                                            /* step */ reduction_groups_};
+            const InputIndexerT inp_indexer{
+                /* size */ batches,
+                /* step */ remaining_reduction_nelems};
             static constexpr ResIndexerT res_iter_indexer{};
 
             const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
@@ -1124,7 +1125,7 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
         const ResIndexerT res_iter_indexer{
             batch_nd, batch_res_offset,
             /* shape */ batch_shape_and_strides,
-            /* strides */ batch_shape_and_strides + 2 * batch_nd};
+            /* strides */ batch_shape_and_strides + 3 * batch_nd};
 
         const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
                                                           res_iter_indexer};
@@ -1328,8 +1329,9 @@ sycl::event
                     InputIndexerT, ResIndexerT>;
             using ReductionIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
 
-            const InputIndexerT inp_indexer{/* size */ batches,
-                                            /* step */ reduction_groups_};
+            const InputIndexerT inp_indexer{
+                /* size */ batches,
+                /* step */ remaining_reduction_nelems};
             static constexpr ResIndexerT res_iter_indexer{};
 
             const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,

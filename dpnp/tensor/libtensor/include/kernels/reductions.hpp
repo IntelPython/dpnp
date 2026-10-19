@@ -1327,8 +1327,9 @@ sycl::event reduction_over_group_temps_strided_impl(
                 using ReductionIndexerT =
                     dpnp::tensor::offset_utils::NoOpIndexer;
 
-                const InputIndexerT inp_indexer{/* size */ iter_nelems,
-                                                /* step */ reduction_groups_};
+                const InputIndexerT inp_indexer{
+                    /* size */ iter_nelems,
+                    /* step */ remaining_reduction_nelems};
                 static constexpr ResIndexerT res_iter_indexer{};
 
                 const InputOutputIterIndexerT in_out_iter_indexer{
@@ -1561,8 +1562,9 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
                     InputIndexerT, ResIndexerT>;
             using ReductionIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
 
-            const InputIndexerT inp_indexer{/* size */ iter_nelems,
-                                            /* step */ reduction_groups_};
+            const InputIndexerT inp_indexer{
+                /* size */ iter_nelems,
+                /* step */ remaining_reduction_nelems};
             static constexpr ResIndexerT res_iter_indexer{};
 
             const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
@@ -1793,8 +1795,9 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
                     InputIndexerT, ResIndexerT>;
             using ReductionIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
 
-            const InputIndexerT inp_indexer{/* size */ iter_nelems,
-                                            /* step */ reduction_groups_};
+            const InputIndexerT inp_indexer{
+                /* size */ iter_nelems,
+                /* step */ remaining_reduction_nelems};
             static constexpr ResIndexerT res_iter_indexer{};
 
             const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
@@ -2698,8 +2701,9 @@ sycl::event search_over_group_temps_strided_impl(
                     InputIndexerT, ResIndexerT>;
             using ReductionIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
 
-            const InputIndexerT inp_indexer{/* size */ iter_nelems,
-                                            /* step */ reduction_groups_};
+            const InputIndexerT inp_indexer{
+                /* size */ iter_nelems,
+                /* step */ remaining_reduction_nelems};
             static constexpr ResIndexerT res_iter_indexer{};
 
             const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
@@ -2973,8 +2977,9 @@ sycl::event search_axis1_over_group_temps_contig_impl(
                     InputIndexerT, ResIndexerT>;
             using ReductionIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
 
-            const InputIndexerT inp_indexer{/* size */ iter_nelems,
-                                            /* step */ reduction_groups_};
+            const InputIndexerT inp_indexer{
+                /* size */ iter_nelems,
+                /* step */ remaining_reduction_nelems};
             static constexpr ResIndexerT res_iter_indexer{};
 
             const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
@@ -3240,8 +3245,9 @@ sycl::event search_axis0_over_group_temps_contig_impl(
                     InputIndexerT, ResIndexerT>;
             using ReductionIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
 
-            const InputIndexerT inp_indexer{/* size */ iter_nelems,
-                                            /* step */ reduction_groups_};
+            const InputIndexerT inp_indexer{
+                /* size */ iter_nelems,
+                /* step */ remaining_reduction_nelems};
             static constexpr ResIndexerT res_iter_indexer{};
 
             const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,

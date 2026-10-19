@@ -208,8 +208,8 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
             )
         else:
             raise IndexError(
-                "Index {0} is out of range for axes 0 with "
-                "size {1}".format(ind, shape[0]))
+                f"Index {ind} is out of range for axes 0 with "
+                f"size {shape[0]}")
     elif isinstance(ind, (ndarray, usm_ndarray)):
         return (shape, strides, offset, (ind,), 0)
     elif isinstance(ind, tuple):
@@ -273,8 +273,8 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
         if axes_referenced > len(shape):
             raise IndexError(
                 "too many indices for an array, array is "
-                "{0}-dimensional, but {1} were indexed".format(
-                    len(shape), axes_referenced))
+                f"{len(shape)}-dimensional, but "
+                f"{axes_referenced} were indexed")
         if ellipses_count:
             ellipses_count = len(shape) - axes_referenced
         new_shape_len = (newaxis_count + ellipses_count
@@ -335,8 +335,8 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
                             0 <= ind_i < shape[k] or -shape[k] <= ind_i < 0
                         ):
                             raise IndexError(
-                                "Index {0} is out of range for axes "
-                                "{1} with size {2}".format(ind_i, k, shape[k])
+                                f"Index {ind_i} is out of range for axes "
+                                f"{k} with size {shape[k]}"
                             )
                     new_advanced_ind.append(ind_i)
                     k_new = k + 1
@@ -359,8 +359,8 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
                         k = k_new
                     else:
                         raise IndexError(
-                            "Index {0} is out of range for axes "
-                            "{1} with size {2}".format(ind_i, k, shape[k])
+                            f"Index {ind_i} is out of range for axes "
+                            f"{k} with size {shape[k]}"
                         )
             elif isinstance(ind_i, (ndarray, usm_ndarray)):
                 if not array_streak:

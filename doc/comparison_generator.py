@@ -38,21 +38,21 @@ def import_mod(mod, cls):
     obj = importlib.import_module(mod)
     if cls:
         obj = getattr(obj, cls)
-        return obj, ":meth:`{}.{}.{{}}`".format(mod, cls)
+        return obj, f":meth:`{mod}.{cls}.{{}}`"
     else:
         # ufunc is not a function
-        return obj, ":obj:`{}.{{}}`".format(mod)
+        return obj, f":obj:`{mod}.{{}}`"
 
 
 def generate_totals(base_mod, ref_mods, base_type, ref_types, cls):
     all_types = [base_type] + ref_types
-    header = ", ".join("**{} Total**".format(t) for t in all_types)
-    header = "   {}".format(header)
+    header = ", ".join(f"**{t} Total**" for t in all_types)
+    header = f"   {header}"
 
     totals = calc_totals(base_mod, ref_mods, cls)
 
     cells = ", ".join(str(t) for t in totals)
-    total = "   {}".format(cells)
+    total = f"   {cells}"
 
     return [header, total]
 
@@ -79,14 +79,12 @@ def generate_comparison_rst(base_mod, ref_mods, base_type, ref_types, cls):
             ref_cells.append(ref_cell)
 
         cells = ", ".join([base_cell] + ref_cells)
-        line = "   {}".format(cells)
+        line = f"   {cells}"
         rows.append(line)
 
     totals = generate_totals(base_mod, ref_mods, base_type, ref_types, cls)
 
-    return (
-        [".. csv-table::", "   :header: {}".format(header), ""] + rows + totals
-    )
+    return [".. csv-table::", f"   :header: {header}", ""] + rows + totals
 
 
 def section(header, base_mod, ref_mods, base_type, ref_types, cls=None):
@@ -111,15 +109,15 @@ def generate_totals_numbers(header, base_mod, ref_mods, cls=None):
     totals = [header] + calc_totals(base_mod, ref_mods, cls)
 
     cells = ", ".join(str(t) for t in totals)
-    total = "   {}".format(cells)
+    total = f"   {cells}"
 
     return total, counter_funcs
 
 
 def generate_table_numbers(base_mod, ref_mods, base_type, ref_types, cls=None):
     all_types = ["Name"] + [base_type] + ref_types
-    header = ", ".join("**{}**".format(t) for t in all_types)
-    header = "   {}".format(header)
+    header = ", ".join(f"**{t}**" for t in all_types)
+    header = f"   {header}"
 
     rows = []
     counters_funcs = []
@@ -131,7 +129,7 @@ def generate_table_numbers(base_mod, ref_mods, base_type, ref_types, cls=None):
     totals.append(totals_)
     counters_funcs.append(counters_funcs_)
     cells = ", ".join(str(t) for t in totals)
-    total = "   {}".format(cells)
+    total = f"   {cells}"
     rows.append(total)
 
     totals = []
@@ -141,7 +139,7 @@ def generate_table_numbers(base_mod, ref_mods, base_type, ref_types, cls=None):
     totals.append(totals_)
     counters_funcs.append(counters_funcs_)
     cells = ", ".join(str(t) for t in totals)
-    total = "   {}".format(cells)
+    total = f"   {cells}"
     rows.append(total)
 
     totals = []
@@ -153,7 +151,7 @@ def generate_table_numbers(base_mod, ref_mods, base_type, ref_types, cls=None):
     totals.append(totals_)
     counters_funcs.append(counters_funcs_)
     cells = ", ".join(str(t) for t in totals)
-    total = "   {}".format(cells)
+    total = f"   {cells}"
     rows.append(total)
 
     totals = []
@@ -165,7 +163,7 @@ def generate_table_numbers(base_mod, ref_mods, base_type, ref_types, cls=None):
     totals.append(totals_)
     counters_funcs.append(counters_funcs_)
     cells = ", ".join(str(t) for t in totals)
-    total = "   {}".format(cells)
+    total = f"   {cells}"
     rows.append(total)
 
     totals = []
@@ -177,7 +175,7 @@ def generate_table_numbers(base_mod, ref_mods, base_type, ref_types, cls=None):
     totals.append(totals_)
     counters_funcs.append(counters_funcs_)
     cells = ", ".join(str(t) for t in totals)
-    total = "   {}".format(cells)
+    total = f"   {cells}"
     rows.append(total)
 
     counter_functions = []
@@ -185,11 +183,11 @@ def generate_table_numbers(base_mod, ref_mods, base_type, ref_types, cls=None):
         counter = 0
         for j in range(len(counters_funcs)):
             counter += counters_funcs[j][i]
-        counter_functions.append("{}".format(counter))
+        counter_functions.append(f"{counter}")
 
     summary = ["Total"] + counter_functions
     cells = ", ".join(str(t) for t in summary)
-    summary_total = "   {}".format(cells)
+    summary_total = f"   {cells}"
     rows.append(summary_total)
 
     comparison_rst = [".. csv-table::", ""] + [header] + rows
@@ -207,7 +205,7 @@ def generate():
 
         ref_mods += ["dpnp"]
         ref_types += ["DPNP"]
-        ref_vers = ["DPNP(v{})".format(dpnp.__version__)]
+        ref_vers = [f"DPNP(v{dpnp.__version__})"]
     except ImportError as err:
         print(f"DOCBUILD: Can't load DPNP module with error={err}")
 
@@ -216,7 +214,7 @@ def generate():
 
         ref_mods += ["cupy"]
         ref_types += ["CuPy"]
-        ref_vers += ["CuPy(v{})".format(cupy.__version__)]
+        ref_vers += [f"CuPy(v{cupy.__version__})"]
     except ImportError as err:
         print(f"DOCBUILD: Can't load CuPy module with error={err}")
 
@@ -225,12 +223,12 @@ def generate():
 
         base_mod = "numpy"  # TODO: Why string?
         base_type = "NumPy"
-        base_ver = "{}(v{})".format(base_type, numpy.__version__)
+        base_ver = f"{base_type}(v{numpy.__version__})"
     except ImportError as err:
         print(f"DOCBUILD: Can't load {base_type} module with error={err}")
 
     header = " / ".join([base_ver] + ref_vers) + " APIs"
-    buf = ["**{}**".format(header), ""]
+    buf = [f"**{header}**", ""]
 
     buf += generate_table_numbers(base_mod, ref_mods, base_type, ref_types)
     buf += section("Module-Level", base_mod, ref_mods, base_type, ref_types)

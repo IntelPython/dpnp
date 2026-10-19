@@ -44,7 +44,10 @@ skbuild.setup(
         "dpnp.memory",
         "dpnp.random",
         "dpnp.scipy",
+        "dpnp.scipy._lib",
         "dpnp.scipy.linalg",
+        "dpnp.scipy.sparse",
+        "dpnp.scipy.sparse.linalg",
         "dpnp.scipy.special",
     ],
     package_data={
@@ -61,6 +64,7 @@ skbuild.setup(
             "tests/tensor/*.py",
             "tests/tensor/*/*.py",
             "tests/testing/*.py",
+            "tests/third_party/*.py",
             "tests/third_party/cupy/*.py",
             "tests/third_party/cupy/*/*.py",
             "tests/third_party/cupyx/*.py",

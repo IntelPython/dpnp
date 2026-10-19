@@ -257,7 +257,7 @@ def einsum(
         The calculation based on the Einstein summation convention.
 
     See Also
-    -------
+    --------
     :obj:`dpnp.einsum_path` : Evaluates the lowest cost contraction order
                               for an einsum expression.
     :obj:`dpnp.dot` : Returns the dot product of two arrays.

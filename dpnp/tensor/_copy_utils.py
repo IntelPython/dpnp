@@ -45,7 +45,7 @@ from ._type_utils import _dtype_supported_by_device_impl
 
 __doc__ = (
     "Implementation module for copy- and cast- operations on "
-    ":class:`dpctl.tensor.usm_ndarray`."
+    ":class:`dpnp.tensor.usm_ndarray`."
 )
 
 int32_t_max = 1 + np.iinfo(np.int32).max
@@ -102,7 +102,7 @@ def _copy_from_numpy(np_ary, usm_type="device", sycl_queue=None):
 
 
 def _copy_from_numpy_into(dst, np_ary):
-    """Copies `np_ary` into `dst` of type :class:`dpctl.tensor.usm_ndarray"""
+    """Copies `np_ary` into `dst` of type :class:`dpnp.tensor.usm_ndarray"""
     if not isinstance(np_ary, np.ndarray):
         raise TypeError(f"Expected numpy.ndarray, got {type(np_ary)}")
     if not isinstance(dst, dpt.usm_ndarray):
@@ -547,7 +547,7 @@ def from_numpy(np_ary, /, *, device=None, usm_type="device", sycl_queue=None):
     """
     from_numpy(arg, device=None, usm_type="device", sycl_queue=None)
 
-    Creates :class:`dpctl.tensor.usm_ndarray` from instance of
+    Creates :class:`dpnp.tensor.usm_ndarray` from instance of
     :class:`numpy.ndarray`.
 
     Args:
@@ -558,7 +558,7 @@ def from_numpy(np_ary, /, *, device=None, usm_type="device", sycl_queue=None):
             a filter selector string, an instance of
             :class:`dpctl.SyclDevice`, an instance of
             :class:`dpctl.SyclQueue`, or an instance of
-            :class:`dpctl.tensor.Device`. If the value is ``None``,
+            :class:`dpnp.tensor.Device`. If the value is ``None``,
             returned array is created on the default-selected device.
             Default: ``None``
         usm_type (str): The requested USM allocation type for the
@@ -586,7 +586,7 @@ def to_numpy(usm_ary, /):
     """
     to_numpy(usm_ary)
 
-    Copies content of :class:`dpctl.tensor.usm_ndarray` instance ``usm_ary``
+    Copies content of :class:`dpnp.tensor.usm_ndarray` instance ``usm_ary``
     into :class:`numpy.ndarray` instance of the same shape and same data type.
 
     Args:
@@ -604,7 +604,7 @@ def asnumpy(usm_ary, order="K"):
     """
     asnumpy(usm_ary, order="K")
 
-    Copies content of :class:`dpctl.tensor.usm_ndarray` instance ``usm_ary``
+    Copies content of :class:`dpnp.tensor.usm_ndarray` instance ``usm_ary``
     into :class:`numpy.ndarray` instance of the same shape and same data
     type.
 
@@ -988,7 +988,7 @@ def _empty_like_triple_orderK(X1, X2, X3, dt, res_shape, usm_type, dev):
 def copy(usm_ary, /, *, order="K"):
     """copy(ary, order="K")
 
-    Creates a copy of given instance of :class:`dpctl.tensor.usm_ndarray`.
+    Creates a copy of given instance of :class:`dpnp.tensor.usm_ndarray`.
 
     Args:
         ary (usm_ndarray):
@@ -1061,7 +1061,7 @@ def astype(
     """astype(array, new_dtype, order="K", casting="unsafe", \
             copy=True, device=None)
 
-    Returns a copy of the :class:`dpctl.tensor.usm_ndarray`, cast to a
+    Returns a copy of the :class:`dpnp.tensor.usm_ndarray`, cast to a
     specified type.
 
     Args:
@@ -1086,7 +1086,7 @@ def astype(
             a filter selector string, an instance of
             :class:`dpctl.SyclDevice`, an instance of
             :class:`dpctl.SyclQueue`, or an instance of
-            :class:`dpctl.tensor.Device`. If the value is `None`,
+            :class:`dpnp.tensor.Device`. If the value is `None`,
             returned array is created on the same device as `array`.
             Default: `None`.
 

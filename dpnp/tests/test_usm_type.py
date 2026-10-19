@@ -988,6 +988,24 @@ def test_take(func, usm_type_x, usm_type_ind):
     assert z.usm_type == dpt.get_coerced_usm_type([usm_type_x, usm_type_ind])
 
 
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types)
+def test_flat(usm_type_x, usm_type_y):
+    x = dpnp.arange(6, usm_type=usm_type_x)
+    y = dpnp.array([0, 2, 4], usm_type=usm_type_y)
+
+    # a basic-index (slice) result keeps the array's usm type
+    assert x.flat[1:4].usm_type == usm_type_x
+
+    # an advanced-index (array) result coerces the usm types
+    z = x.flat[y]
+    assert z.usm_type == dpt.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+    # setitem updates the array in place, keeping its usm type
+    x.flat[y] = dpnp.arange(3, usm_type=usm_type_y)
+    assert x.usm_type == usm_type_x
+
+
 @pytest.mark.parametrize(
     "data, ind, axis",
     [
@@ -1429,7 +1447,7 @@ class TestLinAlgebra:
         assert x.usm_type == result.usm_type
 
     @pytest.mark.parametrize(
-        "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
+        "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro", "nuc"]
     )
     def test_cond(self, usm_type, p):
         a = generate_random_numpy_array((2, 4, 4), seed_value=42)
