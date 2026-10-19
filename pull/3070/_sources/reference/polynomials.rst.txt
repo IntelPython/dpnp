@@ -1,3 +1,7 @@
+:orphan:
+
+.. Not in any toctree until dpnp implements the polynomial routines.
+
 .. currentmodule:: dpnp
 
 Polynomials

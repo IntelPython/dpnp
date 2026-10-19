@@ -114,6 +114,8 @@ var hierarchy =
     [ "dpnp::extensions::fft::PrecisionType< prec >", "structdpnp_1_1extensions_1_1fft_1_1_precision_type.html", null ],
     [ "dpnp::extensions::fft::PrecisionType< mkl_dft::precision::DOUBLE >", "structdpnp_1_1extensions_1_1fft_1_1_precision_type_3_01mkl__dft_1_1precision_1_1_d_o_u_b_l_e_01_4.html", null ],
     [ "dpnp::extensions::fft::PrecisionType< mkl_dft::precision::SINGLE >", "structdpnp_1_1extensions_1_1fft_1_1_precision_type_3_01mkl__dft_1_1precision_1_1_s_i_n_g_l_e_01_4.html", null ],
+    [ "dpnp::kernels::putmask::PutMaskContigFunctor< T, vec_sz, n_vecs, enable_sg_loadstore >", "structdpnp_1_1kernels_1_1putmask_1_1_put_mask_contig_functor.html", null ],
+    [ "dpnp::kernels::putmask::PutMaskStridedFunctor< T, TwoOffsets_IndexerT >", "structdpnp_1_1kernels_1_1putmask_1_1_put_mask_strided_functor.html", null ],
     [ "dpnp::kernels::radians::RadiansFunctor< argT, resT >", "structdpnp_1_1kernels_1_1radians_1_1_radians_functor.html", null ],
     [ "dpnp::extensions::fft::ScaleType< prec, dom, is_forward >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type.html", null ],
     [ "dpnp::extensions::fft::ScaleType< prec, mkl_dft::domain::COMPLEX, is_fwd >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01prec_00_01mkl__dft_1_1domain_1_1_c_o_m_p_l_e_x_00_01is__fwd_01_4.html", null ],
@@ -128,6 +130,8 @@ var hierarchy =
     [ "statistics::sliding_window1d::Span< T, std::size_t >", "classstatistics_1_1sliding__window1d_1_1_span.html", [
       [ "statistics::sliding_window1d::PaddedSpan< T, SizeT >", "classstatistics_1_1sliding__window1d_1_1_padded_span.html", null ]
     ] ],
+    [ "dpnp::extensions::sparse::types::SparseGemvComputeTypeSupportFactory< Tv >", "structdpnp_1_1extensions_1_1sparse_1_1types_1_1_sparse_gemv_compute_type_support_factory.html", null ],
+    [ "dpnp::extensions::sparse::types::SparseGemvInitTypePairSupportFactory< Tv, Ti >", "structdpnp_1_1extensions_1_1sparse_1_1types_1_1_sparse_gemv_init_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::lapack::types::SyevdTypePairSupportFactory< T, RealT >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_syevd_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::blas::types::SyrkTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_syrk_type_pair_support_factory.html", null ],
     [ "ext::common::TableBuilder< FnT, SupportedTypes, Func >", "structext_1_1common_1_1_table_builder.html", null ],

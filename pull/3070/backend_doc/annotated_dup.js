@@ -65,6 +65,12 @@ var annotated_dup =
             [ "TypeMapTwoResultsEntry", "structdpnp_1_1extensions_1_1py__internal_1_1type__dispatch_1_1_type_map_two_results_entry.html", null ]
           ] ]
         ] ],
+        [ "sparse", null, [
+          [ "types", null, [
+            [ "SparseGemvComputeTypeSupportFactory", "structdpnp_1_1extensions_1_1sparse_1_1types_1_1_sparse_gemv_compute_type_support_factory.html", null ],
+            [ "SparseGemvInitTypePairSupportFactory", "structdpnp_1_1extensions_1_1sparse_1_1types_1_1_sparse_gemv_init_type_pair_support_factory.html", null ]
+          ] ]
+        ] ],
         [ "window", null, [
           [ "Factory", "structdpnp_1_1extensions_1_1window_1_1_factory.html", null ]
         ] ]
@@ -157,6 +163,10 @@ var annotated_dup =
         [ "nan_to_num", null, [
           [ "NanToNumContigFunctor", "structdpnp_1_1kernels_1_1nan__to__num_1_1_nan_to_num_contig_functor.html", null ],
           [ "NanToNumFunctor", "structdpnp_1_1kernels_1_1nan__to__num_1_1_nan_to_num_functor.html", null ]
+        ] ],
+        [ "putmask", null, [
+          [ "PutMaskContigFunctor", "structdpnp_1_1kernels_1_1putmask_1_1_put_mask_contig_functor.html", null ],
+          [ "PutMaskStridedFunctor", "structdpnp_1_1kernels_1_1putmask_1_1_put_mask_strided_functor.html", null ]
         ] ],
         [ "radians", null, [
           [ "RadiansFunctor", "structdpnp_1_1kernels_1_1radians_1_1_radians_functor.html", null ]
