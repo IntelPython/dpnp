@@ -40,7 +40,7 @@ from ._type_utils import _supported_dtype, _to_device_supported_dtype
 
 __doc__ = (
     "Implementation module for array manipulation "
-    "functions in :module:`dpctl.tensor`"
+    "functions in :mod:`dpnp.tensor`"
 )
 
 
@@ -220,7 +220,7 @@ def _concat_axis_None(arrays):
 def broadcast_arrays(*args):
     """broadcast_arrays(*arrays)
 
-    Broadcasts one or more :class:`dpctl.tensor.usm_ndarrays` against
+    Broadcasts one or more :class:`dpnp.tensor.usm_ndarray` objects against
     one another.
 
     Args:
@@ -278,7 +278,7 @@ def broadcast_to(X, /, shape):
     """broadcast_to(x, shape)
 
     Broadcast an array to a new `shape`; returns the broadcasted
-    :class:`dpctl.tensor.usm_ndarray` as a view.
+    :class:`dpnp.tensor.usm_ndarray` as a view.
 
     Args:
         x (usm_ndarray): input array

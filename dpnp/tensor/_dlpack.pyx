@@ -147,15 +147,15 @@ cdef extern from "dlpack/dlpack.h" nogil:
 def get_build_dlpack_version():
     """
     Returns a tuple of integers representing the `major` and `minor`
-    version of DLPack :module:`dpctl.tensor` was built with.
+    version of DLPack :mod:`dpnp.tensor` was built with.
     This tuple can be passed as the `max_version` argument to
-    `__dlpack__` to guarantee module:`dpctl.tensor` can properly
+    `__dlpack__` to guarantee module:`dpnp.tensor` can properly
     consume capsule.
 
     Returns:
         Tuple[int, int]
             A tuple of integers representing the `major` and `minor`
-            version of DLPack used to build :module:`dpctl.tensor`.
+            version of DLPack used to build :mod:`dpnp.tensor`.
     """
     return (DLPACK_MAJOR_VERSION, DLPACK_MINOR_VERSION)
 
@@ -256,10 +256,10 @@ cpdef to_dlpack_capsule(usm_ndarray usm_ary):
 
     Constructs named Python capsule object referencing
     instance of ``DLManagedTensor`` from
-    :class:`dpctl.tensor.usm_ndarray` instance.
+    :class:`dpnp.tensor.usm_ndarray` instance.
 
     Args:
-        usm_ary: An instance of :class:`dpctl.tensor.usm_ndarray`
+        usm_ary: An instance of :class:`dpnp.tensor.usm_ndarray`
     Returns:
         A new capsule with name ``"dltensor"`` that contains
         a pointer to ``DLManagedTensor`` struct.
@@ -376,10 +376,10 @@ cpdef to_dlpack_versioned_capsule(usm_ndarray usm_ary, bint copied):
 
     Constructs named Python capsule object referencing
     instance of ``DLManagedTensorVersioned`` from
-    :class:`dpctl.tensor.usm_ndarray` instance.
+    :class:`dpnp.tensor.usm_ndarray` instance.
 
     Args:
-        usm_ary: An instance of :class:`dpctl.tensor.usm_ndarray`
+        usm_ary: An instance of :class:`dpnp.tensor.usm_ndarray`
         copied: A bint representing whether the data was previously
             copied in order to set the flags with the is-copied
             bitmask.
@@ -753,7 +753,7 @@ cpdef object from_dlpack_capsule(object py_caps):
     """
     from_dlpack_capsule(py_caps)
 
-    Reconstructs instance of :class:`dpctl.tensor.usm_ndarray` from
+    Reconstructs instance of :class:`dpnp.tensor.usm_ndarray` from
     named Python capsule object referencing instance of ``DLManagedTensor``
     without copy. The instance forms a view in the memory of the tensor.
 
@@ -762,7 +762,7 @@ cpdef object from_dlpack_capsule(object py_caps):
             Python capsule with name ``"dltensor"`` expected to reference
             an instance of ``DLManagedTensor`` struct.
     Returns:
-        Instance of :class:`dpctl.tensor.usm_ndarray` with a view into
+        Instance of :class:`dpnp.tensor.usm_ndarray` with a view into
         memory of the tensor. Capsule is renamed to ``"used_dltensor"``
         upon success.
     Raises:
@@ -997,7 +997,7 @@ cdef object _create_device(object device, object dl_device):
 def from_dlpack(x, /, *, device=None, copy=None):
     """from_dlpack(x, /, *, device=None, copy=None)
 
-    Constructs :class:`dpctl.tensor.usm_ndarray` or :class:`numpy.ndarray`
+    Constructs :class:`dpnp.tensor.usm_ndarray` or :class:`numpy.ndarray`
     instance from a Python object ``x`` that implements ``__dlpack__`` protocol.
 
     Args:
@@ -1007,7 +1007,7 @@ def from_dlpack(x, /, *, device=None, copy=None):
         device (
             Optional[str, :class:`dpctl.SyclDevice`,
             :class:`dpctl.SyclQueue`,
-            :class:`dpctl.tensor.Device`,
+            :class:`dpnp.tensor.Device`,
             tuple([:class:`enum.IntEnum`, int])])
         ):
             Device where the output array is to be placed. ``device`` keyword
@@ -1023,14 +1023,14 @@ def from_dlpack(x, /, *, device=None, copy=None):
                 a non-partitioned SYCL device.
             * :class:`dpctl.SyclQueue`
                 implies SYCL device targeted by the SYCL queue.
-            * :class:`dpctl.tensor.Device`
+            * :class:`dpnp.tensor.Device`
                 implies SYCL device `device.sycl_queue`. The `Device` object
-                is obtained via :attr:`dpctl.tensor.usm_ndarray.device`.
+                is obtained via :attr:`dpnp.tensor.usm_ndarray.device`.
             * ``(device_type, device_id)``
                2-tuple matching the format of the output of the
                ``__dlpack_device__`` method: an integer enumerator representing
                the device type followed by an integer representing the index of
-               the device. The only supported :class:`dpctl.tensor.DLDeviceType`
+               the device. The only supported :class:`dpnp.tensor.DLDeviceType`
                device types are ``"kDLCPU"`` and ``"kDLOneAPI"``.
 
             Default: ``None``.
@@ -1057,17 +1057,17 @@ def from_dlpack(x, /, *, device=None, copy=None):
             The type of the returned object
             depends on where the data backing up input object ``x`` resides.
             If it resides in a USM allocation on a SYCL device, the
-            type :class:`dpctl.tensor.usm_ndarray` is returned, otherwise if it
+            type :class:`dpnp.tensor.usm_ndarray` is returned, otherwise if it
             resides on ``"kDLCPU"`` device the type is :class:`numpy.ndarray`,
             and otherwise an exception is raised.
 
             .. note::
 
-                If the return type is :class:`dpctl.tensor.usm_ndarray`, the
+                If the return type is :class:`dpnp.tensor.usm_ndarray`, the
                 associated SYCL queue is derived from the ``device`` keyword.
                 When ``device`` keyword value has type :class:`dpctl.SyclQueue`,
                 the explicit queue instance is used, when ``device`` keyword
-                value has type :class:`dpctl.tensor.Device`, the
+                value has type :class:`dpnp.tensor.Device`, the
                 ``device.sycl_queue`` is used. In all other cases, the cached
                 SYCL queue corresponding to the implied SYCL device is used.
 
