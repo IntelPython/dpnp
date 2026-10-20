@@ -12,6 +12,8 @@ Decompositions
    :toctree: generated/
    :nosignatures:
 
+   cho_factor
+   cho_solve
    lu
    lu_factor
    lu_solve
