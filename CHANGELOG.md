@@ -59,6 +59,7 @@ This release is compatible with NumPy 2.5.
 * Changed `dpnp.sort`, `dpnp.argsort`, and their `dpnp.ndarray`/`dpnp.tensor` counterparts to place `NaN` values last instead of first when sorting in descending order [#3066](https://github.com/IntelPython/dpnp/pull/3066)
 * Documented and made explicit support for `copy=None` ("copy only if needed") in `dpnp.nan_to_num` [#3083](https://github.com/IntelPython/dpnp/pull/3083)
 * Changed `dpnp.linalg.pinv` to compute the default tolerance from the machine epsilon of the data type used for the computation, and to return a floating-point result for an empty integer or boolean array [#3090](https://github.com/IntelPython/dpnp/pull/3090)
+* Avoided a full-size copy of a broadcast input in `dpnp.nansum`, `dpnp.nanprod`, `dpnp.nancumsum` and `dpnp.nancumprod` by replacing `NaN` values only in the distinct elements of the input [#3108](https://github.com/IntelPython/dpnp/pull/3108)
 
 ### Deprecated
 

@@ -114,6 +114,23 @@ class TestNanCumSumProd:
         # Array API indicates that the behavior is unspecified
         assert_dtype_allclose(result, expected, check_shape=False)
 
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    @pytest.mark.parametrize("axis", [None, 0, 1, 2])
+    @pytest.mark.parametrize(
+        "shape", [(1, 3, 4), (2, 1, 4), (2, 3, 1), (1, 3, 1)]
+    )
+    def test_broadcast(self, func, shape, axis, dtype):
+        # positive values avoid cancellation in the cumulative sums
+        a = generate_random_numpy_array(shape, dtype=dtype, low=1)
+        a.flat[::3] = numpy.nan
+        ia = dpnp.array(a)
+
+        a = numpy.broadcast_to(a, (2, 3, 4))
+        ia = dpnp.broadcast_to(ia, (2, 3, 4))
+        result = getattr(dpnp, func)(ia, axis=axis)
+        expected = getattr(numpy, func)(a, axis=axis)
+        assert_dtype_allclose(result, expected)
+
     @pytest.mark.parametrize("axis", [None, 0, 1])
     def test_empty(self, func, axis):
         a = numpy.zeros((0, 3))
@@ -539,6 +556,23 @@ class TestNanProdSum:
         result = getattr(dpnp, func)(ia, axis=axis, keepdims=keepdims)
 
         assert_allclose(result, expected, rtol=1e-5)
+
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    @pytest.mark.parametrize("axis", [None, 0, 1, 2, (0, 2)])
+    @pytest.mark.parametrize(
+        "shape", [(1, 3, 4), (2, 1, 4), (2, 3, 1), (1, 3, 1)]
+    )
+    def test_broadcast(self, func, shape, axis, dtype):
+        # positive values avoid cancellation in the sums
+        a = generate_random_numpy_array(shape, dtype=dtype, low=1)
+        a.flat[::3] = numpy.nan
+        ia = dpnp.array(a)
+
+        a = numpy.broadcast_to(a, (2, 3, 4))
+        ia = dpnp.broadcast_to(ia, (2, 3, 4))
+        result = getattr(dpnp, func)(ia, axis=axis)
+        expected = getattr(numpy, func)(a, axis=axis)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_complex_warning")
     @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
