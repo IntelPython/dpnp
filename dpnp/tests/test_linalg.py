@@ -143,6 +143,339 @@ def test_usm_ndarray_linearalgebra_batch(func):
     assert isinstance(result, dpnp.ndarray)
 
 
+def _make_hpd_np(shape, dtype, order="C"):
+    """Random Hermitian positive-definite matrix (or a batch of them)."""
+    a = generate_random_numpy_array(shape, dtype, low=-1, high=1)
+    n = shape[-1]
+    a = a @ numpy.swapaxes(a, -1, -2).conj() + n * numpy.eye(n, dtype=dtype)
+    return numpy.array(a, order=order)
+
+
+def _tri(a, lower):
+    xp = numpy if isinstance(a, numpy.ndarray) else dpnp
+    return xp.tril(a) if lower else xp.triu(a)
+
+
+def _other_tri(a, lower):
+    xp = numpy if isinstance(a, numpy.ndarray) else dpnp
+    return xp.triu(a, k=1) if lower else xp.tril(a, k=-1)
+
+
+def _cholesky_np(a, lower):
+    l_np = numpy.linalg.cholesky(a)
+    return l_np if lower else numpy.swapaxes(l_np, -1, -2).conj()
+
+
+class TestChoFactor:
+    @pytest.mark.parametrize("shape", [(1, 1), (2, 2), (3, 3), (5, 5)])
+    @pytest.mark.parametrize("lower", [True, False])
+    @pytest.mark.parametrize("order", ["C", "F"])
+    @pytest.mark.parametrize("dtype", ALL_DTYPES_NO_BOOL)
+    def test_cho_factor(self, shape, lower, order, dtype):
+        a_np = _make_hpd_np(shape, dtype, order)
+        a_dp = dpnp.array(a_np, order=order)
+
+        c, low = dpnp.scipy.linalg.cho_factor(a_dp, lower=lower)
+        assert low is lower
+        assert c.flags.c_contiguous
+
+        expected = _cholesky_np(a_np, lower)
+        assert_dtype_allclose(
+            _tri(c, lower), expected, check_only_type_kind=True
+        )
+        assert (_other_tri(c, lower) == 0).all()
+
+    @pytest.mark.parametrize("shape", [(1, 1, 1), (2, 3, 3), (3, 2, 4, 4)])
+    @pytest.mark.parametrize("lower", [True, False])
+    @pytest.mark.parametrize("order", ["C", "F"])
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_batched(self, shape, lower, order, dtype):
+        a_np = _make_hpd_np(shape, dtype, order)
+        a_dp = dpnp.array(a_np, order=order)
+
+        c, low = dpnp.scipy.linalg.cho_factor(a_dp, lower=lower)
+        assert low is lower
+        assert c.shape == shape
+
+        expected = _cholesky_np(a_np, lower)
+        assert_dtype_allclose(_tri(c, lower), expected)
+        assert (_other_tri(c, lower) == 0).all()
+
+    @pytest.mark.parametrize("lower", [True, False])
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_unused_triangle_ignored(self, lower, dtype):
+        a_np = _make_hpd_np((4, 4), dtype)
+        expected = _cholesky_np(a_np, lower)
+
+        # only the selected triangle has to be referenced
+        a_np[
+            numpy.triu_indices(4, 1) if lower else numpy.tril_indices(4, -1)
+        ] = numpy.nan
+        a_dp = dpnp.array(a_np)
+
+        c, _ = dpnp.scipy.linalg.cho_factor(
+            a_dp, lower=lower, check_finite=False
+        )
+        assert_dtype_allclose(_tri(c, lower), expected)
+
+    @pytest.mark.parametrize("lower", [True, False])
+    @pytest.mark.parametrize("order", ["C", "F"])
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_overwrite_inplace(self, lower, order, dtype):
+        a_np = _make_hpd_np((4, 4), dtype, order)
+        a_dp = dpnp.array(a_np, order=order)
+
+        c, _ = dpnp.scipy.linalg.cho_factor(a_dp, lower=lower, overwrite_a=True)
+        assert c is a_dp
+
+        assert_dtype_allclose(_tri(c, lower), _cholesky_np(a_np, lower))
+        # the other triangle keeps the input data
+        assert_array_equal(_other_tri(c, lower), _other_tri(a_np, lower))
+
+    @pytest.mark.parametrize("case", ["int", "batched", "strided"])
+    def test_overwrite_copy(self, case):
+        if case == "int":
+            a_dp = dpnp.array([[4, 2], [2, 3]], dtype=dpnp.int32)
+        elif case == "batched":
+            a_dp = dpnp.ones((2, 2, 2)) + dpnp.eye(2)
+        else:
+            a_dp = (dpnp.ones((4, 4)) + 4 * dpnp.eye(4))[::2, ::2]
+        a_orig = a_dp.copy()
+
+        c, _ = dpnp.scipy.linalg.cho_factor(a_dp, overwrite_a=True)
+        assert c is not a_dp
+        assert_array_equal(a_dp, a_orig)
+
+    def test_overwrite_read_only(self):
+        a_dp = dpnp.array([[4.0, 2.0], [2.0, 3.0]])
+        a_dp.flags["W"] = False
+        a_orig = a_dp.copy()
+
+        c, _ = dpnp.scipy.linalg.cho_factor(a_dp, overwrite_a=True)
+        assert c is not a_dp
+        assert_array_equal(a_dp, a_orig)
+
+    @pytest.mark.parametrize("shape", [(0, 0), (2, 0, 0), (0, 2, 2)])
+    def test_empty(self, shape):
+        a_dp = dpnp.empty(shape)
+        c, low = dpnp.scipy.linalg.cho_factor(a_dp)
+        assert c.shape == shape
+        assert c.dtype == dpnp.default_float_type(sycl_queue=a_dp.sycl_queue)
+        assert low is False
+
+    def test_not_positive_definite(self):
+        a_dp = dpnp.array([[1.0, 2.0], [2.0, 1.0]])
+        assert_raises(
+            dpnp.linalg.LinAlgError, dpnp.scipy.linalg.cho_factor, a_dp
+        )
+
+        # failing matrix first: on a WSL Arrow Lake iGPU, single-precision
+        # potrf_batch was seen to miss failures at odd batch indices
+        a_dp = dpnp.stack([-dpnp.eye(3), dpnp.eye(3), dpnp.eye(3)])
+        assert_raises(
+            dpnp.linalg.LinAlgError, dpnp.scipy.linalg.cho_factor, a_dp
+        )
+
+    @pytest.mark.parametrize("bad", [numpy.inf, -numpy.inf, numpy.nan])
+    def test_check_finite_raises(self, bad):
+        a_dp = dpnp.array([[4.0, 2.0], [2.0, bad]])
+        assert_raises(ValueError, dpnp.scipy.linalg.cho_factor, a_dp)
+
+    def test_errors(self):
+        a_dp = dpnp.ones((2, 3))
+        assert_raises(ValueError, dpnp.scipy.linalg.cho_factor, a_dp)
+
+        a_dp = dpnp.ones(3)
+        assert_raises(
+            dpnp.linalg.LinAlgError, dpnp.scipy.linalg.cho_factor, a_dp
+        )
+
+        a_np = numpy.eye(2)
+        assert_raises(TypeError, dpnp.scipy.linalg.cho_factor, a_np)
+
+
+class TestChoSolve:
+    @pytest.mark.parametrize("n", [1, 2, 3, 5])
+    @pytest.mark.parametrize("rhs_cols", [None, 1, 3])
+    @pytest.mark.parametrize("lower", [True, False])
+    @pytest.mark.parametrize("order", ["C", "F"])
+    @pytest.mark.parametrize("dtype", ALL_DTYPES_NO_BOOL)
+    def test_cho_solve(self, n, rhs_cols, lower, order, dtype):
+        a_np = _make_hpd_np((n, n), dtype)
+        b_shape = (n,) if rhs_cols is None else (n, rhs_cols)
+        b_np = generate_random_numpy_array(b_shape, dtype, order)
+
+        c, low = dpnp.scipy.linalg.cho_factor(dpnp.array(a_np), lower=lower)
+        # exercise both C- and F-contiguous factors
+        c = dpnp.array(c, order=order)
+        b_dp = dpnp.array(b_np, order=order)
+
+        x = dpnp.scipy.linalg.cho_solve((c, low), b_dp)
+        assert x.shape == b_shape
+        assert_array_equal(b_dp, b_np)
+
+        expected = numpy.linalg.solve(a_np, b_np)
+        assert_dtype_allclose(x, expected, check_only_type_kind=True)
+
+    @pytest.mark.parametrize("lower", [True, False])
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_cholesky_factor(self, lower, dtype):
+        a_np = _make_hpd_np((4, 4), dtype)
+        b_np = generate_random_numpy_array((4, 2), dtype)
+
+        # a factor with zeroed other triangle, e.g. from dpnp.linalg.cholesky
+        c = dpnp.linalg.cholesky(dpnp.array(a_np), upper=not lower)
+        x = dpnp.scipy.linalg.cho_solve((c, lower), dpnp.array(b_np))
+
+        assert_dtype_allclose(x, numpy.linalg.solve(a_np, b_np))
+
+    @pytest.mark.parametrize("c_dtype", get_float_complex_dtypes())
+    @pytest.mark.parametrize("b_dtype", ALL_DTYPES_NO_BOOL)
+    def test_mixed_dtypes(self, c_dtype, b_dtype):
+        a_np = _make_hpd_np((3, 3), c_dtype)
+        b_np = generate_random_numpy_array((3, 2), b_dtype)
+
+        c, low = dpnp.scipy.linalg.cho_factor(dpnp.array(a_np))
+        x = dpnp.scipy.linalg.cho_solve((c, low), dpnp.array(b_np))
+
+        # the accuracy is limited by the precision of the factor
+        tol = 10 * numpy.finfo(c_dtype).resolution
+        expected = numpy.linalg.solve(a_np, b_np)
+        assert_allclose(x, expected, rtol=tol, atol=tol)
+
+    @pytest.mark.parametrize("order", ["C", "F"])
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_overwrite_inplace(self, order, dtype):
+        a_np = _make_hpd_np((3, 3), dtype)
+        b_np = generate_random_numpy_array((3, 2), dtype)
+
+        c, low = dpnp.scipy.linalg.cho_factor(dpnp.array(a_np))
+        c = dpnp.array(c, order=order)
+        b_dp = dpnp.array(b_np, order="F")
+
+        x = dpnp.scipy.linalg.cho_solve((c, low), b_dp, overwrite_b=True)
+        assert x is b_dp
+        assert_dtype_allclose(x, numpy.linalg.solve(a_np, b_np))
+
+    @pytest.mark.parametrize("case", ["C-contig", "int", "strided"])
+    def test_overwrite_copy(self, case):
+        if case == "C-contig":
+            b_dp = dpnp.ones((3, 2), order="C")
+        elif case == "int":
+            b_dp = dpnp.ones((3, 2), dtype=dpnp.int32, order="F")
+        else:
+            b_dp = dpnp.ones((6, 2), order="F")[::2]
+
+        c, low = dpnp.scipy.linalg.cho_factor(4 * dpnp.eye(3))
+        b_orig = b_dp.copy()
+
+        x = dpnp.scipy.linalg.cho_solve((c, low), b_dp, overwrite_b=True)
+        assert x is not b_dp
+        assert_array_equal(b_dp, b_orig)
+        assert_allclose(x, b_orig / 4)
+
+    def test_overwrite_read_only(self):
+        c, low = dpnp.scipy.linalg.cho_factor(4 * dpnp.eye(2))
+        b_dp = dpnp.ones(2)
+        b_dp.flags["W"] = False
+
+        x = dpnp.scipy.linalg.cho_solve((c, low), b_dp, overwrite_b=True)
+        assert x is not b_dp
+        assert_allclose(x, numpy.full(2, 0.25))
+
+    @pytest.mark.parametrize(
+        "c_shape, b_shape",
+        [
+            ((1, 2, 2), (2,)),
+            ((2, 4, 4), (4,)),
+            ((2, 4, 4), (4, 3)),
+            ((2, 4, 4), (2, 4, 1)),
+            ((2, 4, 4), (1, 4, 3)),
+            ((2, 3, 4, 4), (1, 3, 4, 2)),
+            ((2, 3, 4, 4), (2, 1, 4, 2)),
+            ((3, 4, 4), (1, 1, 4, 2)),
+            ((4, 4), (2, 4, 3)),
+            ((4, 4), (2, 3, 4, 1)),
+        ],
+    )
+    @pytest.mark.parametrize("lower", [True, False])
+    @pytest.mark.parametrize("order", ["C", "F"])
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_batched(self, c_shape, b_shape, lower, order, dtype):
+        a_np = _make_hpd_np(c_shape, dtype)
+        b_np = generate_random_numpy_array(b_shape, dtype, order)
+
+        c, low = dpnp.scipy.linalg.cho_factor(dpnp.array(a_np), lower=lower)
+        c = dpnp.array(c, order=order)
+        b_dp = dpnp.array(b_np, order=order)
+
+        x = dpnp.scipy.linalg.cho_solve((c, low), b_dp)
+
+        if b_np.ndim == 1:
+            b_exp = numpy.broadcast_to(b_np, c_shape[:-1])[..., None]
+            expected = numpy.linalg.solve(a_np, b_exp)[..., 0]
+        else:
+            expected = numpy.linalg.solve(a_np, b_np)
+        assert x.shape == expected.shape
+        assert_dtype_allclose(x, expected)
+        assert_array_equal(b_dp, b_np)
+
+    @pytest.mark.parametrize(
+        "c_shape, b_shape, x_shape",
+        [
+            ((0, 0), (0,), (0,)),
+            ((0, 0), (0, 2), (0, 2)),
+            ((2, 2), (2, 0), (2, 0)),
+            ((2, 0, 0), (0,), (2, 0)),
+            ((0, 2, 2), (2,), (0, 2)),
+            ((2, 2, 2), (2, 2, 0), (2, 2, 0)),
+        ],
+    )
+    def test_empty(self, c_shape, b_shape, x_shape):
+        c = dpnp.empty(c_shape)
+        b = dpnp.empty(b_shape)
+
+        x = dpnp.scipy.linalg.cho_solve((c, False), b)
+        assert x.shape == x_shape
+        assert x.dtype == dpnp.default_float_type(sycl_queue=c.sycl_queue)
+
+    @pytest.mark.parametrize("bad", [numpy.inf, -numpy.inf, numpy.nan])
+    def test_check_finite_raises(self, bad):
+        c, low = dpnp.scipy.linalg.cho_factor(4 * dpnp.eye(2))
+        b_dp = dpnp.array([1.0, bad])
+        assert_raises(ValueError, dpnp.scipy.linalg.cho_solve, (c, low), b_dp)
+
+        # unlike CuPy and like SciPy, the whole `c` is checked
+        c[1, 0] = bad
+        assert_raises(
+            ValueError, dpnp.scipy.linalg.cho_solve, (c, low), dpnp.ones(2)
+        )
+
+    def test_errors(self):
+        c = dpnp.eye(3)
+        assert_raises(
+            ValueError, dpnp.scipy.linalg.cho_solve, (c, False), dpnp.ones(2)
+        )
+        assert_raises(
+            ValueError,
+            dpnp.scipy.linalg.cho_solve,
+            (dpnp.ones((2, 3, 3)), False),
+            dpnp.ones((2, 2, 1)),
+        )
+        assert_raises(
+            ValueError,
+            dpnp.scipy.linalg.cho_solve,
+            (dpnp.ones((3, 2)), False),
+            dpnp.ones(3),
+        )
+        assert_raises(
+            TypeError,
+            dpnp.scipy.linalg.cho_solve,
+            (numpy.eye(2), False),
+            dpnp.ones(2),
+        )
+
+
 class TestCholesky:
     @pytest.mark.parametrize(
         "array",
