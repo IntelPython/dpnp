@@ -14,8 +14,8 @@
     </script>
     <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="API Reference" href="reference/index.html"><link rel="prev" title="Overview" href="overview.html">
 
-    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>Quick Start Guide - Data Parallel Extension for NumPy (dpnp) 0.21.0dev14 documentation</title>
+    <!-- Generated with Sphinx 9.1.1 and Furo 2025.12.19 -->
+        <title>Quick Start Guide - Data Parallel Extension for NumPy (dpnp) 0.21.0dev15 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -173,7 +173,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev14 documentation</div></a>
+      <a href="index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev15 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -194,7 +194,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev14 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev15 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -1078,8 +1078,8 @@ Follow device driver installation instructions to complete the step.</p>
 </section>
 <section id="python-interpreter">
 <h2>Python Interpreter<a class="headerlink" href="#python-interpreter" title="Link to this heading">¶</a></h2>
-<p>You will need Python 3.10, 3.11, 3.12, 3.13 or 3.14 installed on your system. If you
-do not have one yet the easiest way to do that is to install
+<p>You will need Python 3.10, 3.11, 3.12, 3.13, 3.14 or 3.15 installed on your system.
+If you do not have one yet the easiest way to do that is to install
 <a class="reference external" href="https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-for-python.html">Intel Distribution for Python*</a>. It installs all essential Python numerical
 and machine learning packages optimized for the Intel hardware, including
 Data Parallel Extension for NumPy*.
@@ -1148,15 +1148,15 @@ conda<span class="w"> </span>activate<span class="w"> </span>build-env
 </div>
 <p>To build and install the package on Linux OS, run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>setup.py<span class="w"> </span>build_ext<span class="w"> </span>--inplace<span class="w"> </span>--<span class="w"> </span>-G<span class="w"> </span>Ninja<span class="w"> </span>-DCMAKE_C_COMPILER:PATH<span class="o">=</span>icx<span class="w"> </span>-DCMAKE_CXX_COMPILER:PATH<span class="o">=</span>icpx
-python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="w"> </span>--no-build-isolation
 </pre></div>
 </div>
 <p>To build and install the package on Windows OS, run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>setup.py<span class="w"> </span>build_ext<span class="w"> </span>--inplace<span class="w"> </span>--<span class="w"> </span>-G<span class="w"> </span>Ninja<span class="w"> </span>-DCMAKE_C_COMPILER:PATH<span class="o">=</span>icx<span class="w"> </span>-DCMAKE_CXX_COMPILER:PATH<span class="o">=</span>icx
-python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="w"> </span>--no-build-isolation
 </pre></div>
 </div>
-<p>Alternatively, to develop on Linux OS, you can use the driver script:</p>
+<p>Alternatively, to develop on Linux or Windows OS, you can use the driver script:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py
 </pre></div>
 </div>
@@ -1212,6 +1212,9 @@ one architecture can be specified at a time.</p>
 <p>This will print names like <code class="docutils literal notranslate"><span class="pre">gfx90a</span></code>, <code class="docutils literal notranslate"><span class="pre">gfx1030</span></code>, etc.
 You can then use one of them as the argument to <code class="docutils literal notranslate"><span class="pre">--target-hip</span></code>.</p>
 <p>For example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py<span class="w"> </span>--target-hip<span class="o">=</span>gfx90a
+</pre></div>
+</div>
 </section>
 <section id="multi-target-build">
 <h4>Multi-target build<a class="headerlink" href="#multi-target-build" title="Link to this heading">¶</a></h4>
@@ -1240,9 +1243,13 @@ python<span class="w"> </span>-m<span class="w"> </span>dpnp<span class="w"> </s
 </section>
 <section id="testing">
 <h2>Testing<a class="headerlink" href="#testing" title="Link to this heading">¶</a></h2>
-<p>If you want to execute the scope of Python test suites which are available
-by the source, you will need to run a command as below:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>-s<span class="w"> </span>tests
+<p>To run the test suite from the source tree, after building the package as
+described above, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>dpnp/tests
+</pre></div>
+</div>
+<p>To run the tests of an installed <code class="docutils literal notranslate"><span class="pre">dpnp</span></code> package, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>--pyargs<span class="w"> </span>dpnp.tests
 </pre></div>
 </div>
 </section>
@@ -1376,7 +1383,7 @@ by the source, you will need to run a command as below:</p>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=b472db20"></script>
+</div><script src="_static/documentation_options.js?v=100a5f39"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
