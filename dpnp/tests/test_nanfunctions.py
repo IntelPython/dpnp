@@ -615,7 +615,7 @@ class TestNanProdSum:
             getattr(dpnp, func)(ia, axis=0, out=iout)
 
         # incorrect shape for out
-        iout = dpnp.array(numpy.empty((2, 3)))
+        iout = dpnp.empty((2, 3))
         with pytest.raises(ValueError):
             getattr(dpnp, func)(ia, axis=0, out=iout)
 

@@ -39,7 +39,7 @@ from ._tensor_impl import (
     _unravel_index,
 )
 
-__doc__ = "Implementation module for :func:`dpctl.tensor.reshape`."
+__doc__ = "Implementation module for :func:`dpnp.tensor.reshape`."
 
 
 def _make_unit_indexes(shape):
