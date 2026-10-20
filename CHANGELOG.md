@@ -119,6 +119,7 @@ This release is compatible with NumPy 2.5.
 * Fixed incorrect results of `dpnp.tensor.vecdot` in some cases with strided outputs and of `dpnp.tensor` reductions, `dpnp.tensor.vecdot` and `dpnp.tensor.matmul` on large inputs with some data types [#3082](https://github.com/IntelPython/dpnp/pull/3082)
 * Fixed `dpnp.median` and `dpnp.nanmedian` raising a `ValueError` for a tuple `axis` when a kept dimension has size 0 [#3081](https://github.com/IntelPython/dpnp/pull/3081)
 * Fixed a `RuntimeError` raised by `dpnp.tensor` kernels launched over more than `INT_MAX` work-items when built with DPC++ compiler 2026.2 or newer, by also passing `-fno-sycl-id-queries-fit-in-int` to the linker [#3089](https://github.com/IntelPython/dpnp/pull/3089)
+* Fixed `dpnp.__all__` missing `ndarray` and `__array_namespace_info__` and listing `mean`, `median` and `min` twice [#3100](https://github.com/IntelPython/dpnp/pull/3100)
 
 ### Security
 
