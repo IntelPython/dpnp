@@ -1113,6 +1113,10 @@
 <span class="sd">    the `val` value, and return the copy. If `a` is not of inexact type,</span>
 <span class="sd">    do nothing and return `a`.</span>
 
+<span class="sd">    If `a` is a broadcast view, only its distinct elements are copied and</span>
+<span class="sd">    the copy is broadcast back to the shape of `a`, so the result must only</span>
+<span class="sd">    be read.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
@@ -1129,10 +1133,17 @@
 <span class="sd">    """</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">inexact</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">inexact</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">a</span>
+
+    <span class="n">repeated</span> <span class="o">=</span> <span class="p">[</span><span class="n">st</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">sh</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">sh</span><span class="p">,</span> <span class="n">st</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">strides</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">repeated</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">nan</span><span class="o">=</span><span class="n">val</span><span class="p">,</span> <span class="n">posinf</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">neginf</span><span class="o">=-</span><span class="n">dpnp</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">a</span>
+    <span class="c1"># a zero-stride axis repeats the same elements, keep one of them</span>
+    <span class="n">base</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">r</span> <span class="k">else</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">repeated</span><span class="p">)]</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">nan</span><span class="o">=</span><span class="n">val</span><span class="p">,</span> <span class="n">posinf</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">neginf</span><span class="o">=-</span><span class="n">dpnp</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_replace_nan</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
