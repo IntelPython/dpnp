@@ -370,6 +370,7 @@ def _batched_cho_solve(c, lower, b, res_type, res_usm_type, exec_q):
     _manager = dpu.SequentialOrderManager[exec_q]
 
     c = dpnp.reshape(c, (batch_size, n, n))
+    c_is_complex = dpnp.issubdtype(c.dtype, dpnp.complexfloating)
     c = dpnp.astype(c, res_type, copy=False)
 
     # oneMKL expects each factor in column-major order: (n, n, batch)
@@ -380,8 +381,7 @@ def _batched_cho_solve(c, lower, b, res_type, res_usm_type, exec_q):
         # pass C-contiguous factors transposed, see `dpnp_cho_solve`
         c = dpnp.ascontiguousarray(c)
         c_f = dpnp.transpose(c, (2, 1, 0))
-        uplo = int(not lower)
-        conj = dpnp.issubdtype(res_type, dpnp.complexfloating)
+        uplo, conj = int(not lower), c_is_complex
 
     # the solves overwrite `b`: copy it to (n, nrhs, batch) layout
     b_h = dpnp.empty(
@@ -669,13 +669,15 @@ def dpnp_cho_solve(c, lower, b, overwrite_b=False, check_finite=True):
 
     # oneMKL is column-major: an F-contiguous `c` is used as is, otherwise
     # `c.T` is passed with flipped `uplo`, so the solves are with conj(A)
-    # for complex dtypes and `b` and the solution have to be conjugated
+    # for a complex factor and `b` and the solution have to be conjugated
+    # (a real factor cast to a complex type needs none)
+    c_is_complex = dpnp.issubdtype(c.dtype, dpnp.complexfloating)
     c = dpnp.astype(c, res_type, copy=False)
     if c.flags.f_contiguous:
         c_f, uplo, conj = c, int(lower), False
     else:
         c_f, uplo = dpnp.ascontiguousarray(c).T, int(not lower)
-        conj = dpnp.issubdtype(res_type, dpnp.complexfloating)
+        conj = c_is_complex
 
     # SciPy-compatible behavior
     # Copy is required if:

@@ -20,6 +20,7 @@ from .helper import (
     generate_random_numpy_array,
     get_all_dtypes,
     get_float_complex_dtypes,
+    get_float_dtypes,
     get_integer_dtypes,
     get_integer_float_dtypes,
     has_support_aspect64,
@@ -357,6 +358,25 @@ class TestChoSolve:
         tol = 10 * numpy.finfo(c_dtype).resolution
         expected = numpy.linalg.solve(a_np, b_np)
         assert_allclose(x, expected, rtol=tol, atol=tol)
+
+    @pytest.mark.parametrize("c_shape", [(4, 4), (2, 4, 4)])
+    @pytest.mark.parametrize("order", ["C", "F"])
+    @pytest.mark.parametrize("overwrite_b", [True, False])
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    def test_real_factor_complex_rhs(self, c_shape, order, overwrite_b, dtype):
+        # a real factor needs no conjugation even for a complex result
+        b_dtype = numpy.result_type(dtype, numpy.complex64)
+        a_np = _make_hpd_np(c_shape, dtype)
+        b_np = generate_random_numpy_array(c_shape[:-1] + (2,), b_dtype)
+
+        c, low = dpnp.scipy.linalg.cho_factor(dpnp.array(a_np))
+        c = dpnp.array(c, order=order)
+        b_dp = dpnp.array(b_np, order="F")
+
+        x = dpnp.scipy.linalg.cho_solve((c, low), b_dp, overwrite_b=overwrite_b)
+        if overwrite_b and len(c_shape) == 2:
+            assert x is b_dp
+        assert_dtype_allclose(x, numpy.linalg.solve(a_np, b_np))
 
     @pytest.mark.parametrize("order", ["C", "F"])
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
