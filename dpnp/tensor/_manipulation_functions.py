@@ -642,8 +642,6 @@ def repeat(x, repeats, /, *, axis=None):
             )
         err_msg = "`repeats` elements must be positive"
         if repeats.dtype == dpt.uint64:
-            # u8 is never negative, so a value negative after the cast was
-            # above i8 max: reuse the sign check with a matching message
             repeats = dpt.astype(repeats, dpt.int64)
             err_msg = "`repeats` elements must not exceed the int64 maximum"
         if repeats.size == 1:
