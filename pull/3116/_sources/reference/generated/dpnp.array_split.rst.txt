@@ -1,0 +1,10 @@
+﻿
+
+dpnp.array\_split
+=================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: array_split
