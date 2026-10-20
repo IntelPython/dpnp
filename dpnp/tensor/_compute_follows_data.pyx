@@ -53,7 +53,7 @@ class ExecutionPlacementError(Exception):
     Make sure that input arrays are associated with the same
     :class:`dpctl.SyclQueue`,
     or migrate data to the same :class:`dpctl.SyclQueue` using
-    :meth:`dpctl.tensor.usm_ndarray.to_device` method.
+    :meth:`dpnp.tensor.usm_ndarray.to_device` method.
     """
     pass
 

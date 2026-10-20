@@ -34,29 +34,24 @@ from dpnp.dpnp_algo cimport shape_type_c
 from dpnp.dpnp_algo.dpnp_algo cimport DPNPFuncType
 
 
+# Throw exception ValueError if 'param' is not 'expected'
 cpdef checker_throw_value_error(function_name, param_name, param, expected)
-""" Throw exception ValueError if 'param' is not 'expected'
-
-"""
 
 
+# Throw exception TypeError if 'given_type' type is not supported
 cpdef checker_throw_type_error(function_name, given_type)
-""" Throw exception TypeError if 'given_type' type is not supported
-
-"""
 
 
+# This function needs to redirect particular computation cases to original
+# backend
+#
+# Parameters:
+#     input1: One of the input parameter of the API function
+#     compute_size: Some amount of total compute size of the task
+# Return:
+#     True - computations are better to be executed on original backend
+#     False - it is better to use this SW to compute
 cpdef cpp_bool use_origin_backend(input1=*, size_t compute_size=*)
-"""
-This function needs to redirect particular computation cases to original backend
-
-Parameters:
-    input1: One of the input parameter of the API function
-    compute_size: Some amount of total compute size of the task
-Return:
-    True - computations are better to be executed on original backend
-    False - it is better to use this SW to compute
-"""
 
 
 cpdef tuple _object_to_tuple(object obj)
@@ -73,17 +68,13 @@ cdef class dpnp_descriptor:
 
     cdef void * get_data(self)
 
+# Create output dpnp_descriptor based on shape, type and 'out' parameters
 cdef dpnp_descriptor create_output_descriptor(shape_type_c output_shape,
                                               DPNPFuncType c_type,
                                               dpnp_descriptor requested_out,
                                               device=*,
                                               usm_type=*,
                                               sycl_queue=*)
-"""
-Create output dpnp_descriptor based on shape, type and 'out' parameters
-"""
 
+# Get common USM allocation in the form of (sycl_device, usm_type, sycl_queue)
 cdef tuple get_common_usm_allocation(dpnp_descriptor x1, dpnp_descriptor x2)
-"""
-Get common USM allocation in the form of (sycl_device, usm_type, sycl_queue)
-"""

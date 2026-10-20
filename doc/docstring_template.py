@@ -28,80 +28,75 @@
 # *****************************************************************************
 
 """
-This is template that should be used when writing docstrings in the project.
+Template for docstrings of dpnp functions.
 
-According to this template docstrings should consist of below sections:
-1. Short description.
-2. Link to related functionality in `numpy` for full documentation.
-3. Limitations is a special section that should describe:
-   - the limited functionality relative to `numpy` (exception raised)
-   - cases when the functionality will be executed sequentially on CPU
-     (fallback to `numpy`)
-   - list of supported data types for input array
-4. See Also
-5. Notes, optional
-6. Examples
+Docstrings use the numpydoc format and are rendered by ``doc/conf.py``. They
+consist of the sections below, in this order; skip the ones that don't apply:
 
-Recommendations:
-1. Short description
-   maybe partially taken/combined from `numpy` and `cupy` docstrings.
-2. Limitations basically should be described according to the code,
-   paying attention to raised exceptions and fallback to `numpy`.
-3. See Also may include links to similar functionality in `dpnp`
-   with short description.
+1. Short (one-line) description.
+2. Link to the reference function: ``For full documentation refer to
+   :obj:`numpy.func`.`` (or ``:obj:`scipy...``` for ``dpnp.scipy``).
+3. Parameters. Array inputs are typed ``{dpnp.ndarray, usm_ndarray}``. Every
+   keyword with a default ends with a blank line and ``Default: ``value``.``.
+4. Returns, typically ``out : dpnp.ndarray``.
+5. Raises, Warns, Warnings.
+6. Limitations: what is not supported compared to the reference function and
+   the exception raised for it, usually ``NotImplementedError``.
+7. See Also: related dpnp functions, each with a short description.
+8. Notes, References.
+9. Examples, starting with ``>>> import dpnp as np``.
 
-   In case of only one link better to use one-line section:
-   .. seealso:: :func:`numpy.func` short description.
-
-4. Examples maybe partially taken from `numpy` docstrings
-   with some modifications, ex:
-
-   >>> import dpnp as np
-   >>> a = np.array([0, 1, 2])
-   >>> a  # prints unclear result <DPNP DParray:...
-
-   So the array may be printed through iterating:
-
-   >>> [i for i in a]
-   [0, 1, 2]
-
-`dpnp.array` contains a good example of docstring.
+Use an existing function, e.g. :obj:`dpnp.cbrt`, as a model, and copy the
+`device`, `usm_type` and `sycl_queue` parameter descriptions from an array
+creation function such as :obj:`dpnp.empty`.
 
 """
 
 
-def func(a, b=None, c=True):
+def func(a, /, out=None, *, order="K", where=True):
     """
     Short (one-line) description.
 
     For full documentation refer to :obj:`numpy.func`.
 
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        Output array to populate. Array must have the correct shape and the
+        expected data type.
+
+        Default: ``None``.
+    order : {None, "C", "F", "A", "K"}, optional
+        Memory layout of the newly output array, if parameter `out` is
+        ``None``.
+
+        Default: ``"K"``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        An array containing the result.
+
     Limitations
     -----------
-    Some limitations in comparison to baseline, ex:
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-    Parameter `c` is supported only with default value ``True``.
-    Otherwise the function will be executed sequentially on CPU.
+    Parameter `where` is supported only with default value ``True``.
+    Otherwise ``NotImplementedError`` exception will be raised.
 
     See Also
     --------
-    :obj:`dpnp.func2` : Short (one-line) description of the function `dpnp.func2`.
-    :obj:`dpnp.func3` : Short (one-line) description of the function `dpnp.func3`.
+    :obj:`dpnp.func2` : Short (one-line) description of `dpnp.func2`.
 
     Notes
     -----
-    Some notes if required.
+    Some notes, if needed.
 
     Examples
     --------
-    Some examples, ex:
-
     >>> import dpnp as np
     >>> a = np.array([0, 1, 2])
-    >>> b = np.array([2, 1, 0])
-    >>> x = np.func(a, b=b, c=True)
-    >>> [i for i in x]
-    [2, 2, 2]
+    >>> np.func(a)
+    array([0, 1, 2])
 
     """
-    pass

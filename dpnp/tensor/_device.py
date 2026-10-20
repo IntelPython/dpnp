@@ -42,7 +42,7 @@ class Device:
 
     This is a wrapper around :class:`dpctl.SyclQueue` with custom
     formatting. The class does not have public constructor,
-    but a class method :meth:`dpctl.tensor.Device.create_device` to construct
+    but a class method :meth:`dpnp.tensor.Device.create_device` to construct
     it from `device` keyword argument in Array-API functions.
 
     Instance can be queried for ``sycl_queue``, ``sycl_context``,
@@ -150,7 +150,7 @@ def normalize_queue_device(sycl_queue=None, device=None):
     """normalize_queue_device(sycl_queue=None, device=None)
 
     Utility to process exclusive keyword arguments 'device'
-    and 'sycl_queue' in functions of `dpctl.tensor`.
+    and 'sycl_queue' in functions of `dpnp.tensor`.
 
     Args:
         sycl_queue (:class:`dpctl.SyclQueue`, optional):
@@ -160,7 +160,7 @@ def normalize_queue_device(sycl_queue=None, device=None):
             from `device` keyword, or use default queue.
             Default: None
         device (string, :class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue,
-            :class:`dpctl.tensor.Device`, optional):
+            :class:`dpnp.tensor.Device`, optional):
             array-API keyword indicating non-partitioned SYCL device
             where array is allocated.
 

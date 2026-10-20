@@ -25,7 +25,9 @@ jobs:
     timeout-minutes: 15
 
     permissions:
+      # Needed to push the branch with the updated pins
       contents: write
+      # Needed to open a pull request from that branch
       pull-requests: write
 
     env:
