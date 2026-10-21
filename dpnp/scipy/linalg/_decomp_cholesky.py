@@ -39,6 +39,8 @@ It contains:
 
 """
 
+import numpy
+
 import dpnp
 from dpnp.linalg.dpnp_utils_linalg import assert_stacked_2d
 
@@ -46,6 +48,20 @@ from ._utils import (
     dpnp_cho_factor,
     dpnp_cho_solve,
 )
+
+
+def _lower_to_bool(lower):
+    """Convert `lower` to bool, also accepting an array of equal values."""
+
+    if dpnp.is_supported_array_type(lower):
+        lower = dpnp.asnumpy(lower)
+    if isinstance(lower, numpy.ndarray) and lower.size != 1:
+        if lower.size == 0:
+            return False
+        if not (lower == lower.flat[0]).all():
+            raise ValueError("All values of `lower` must be equal.")
+        lower = lower.flat[0]
+    return bool(lower)
 
 
 def cho_factor(a, lower=False, overwrite_a=False, check_finite=True):
@@ -164,7 +180,8 @@ def cho_solve(c_and_lower, b, overwrite_b=False, check_finite=True):
     ----------
     (c, lower) : tuple, ({dpnp.ndarray, usm_ndarray}, bool)
         Cholesky factorization of `A` (..., M, M), as given by
-        :obj:`dpnp.scipy.linalg.cho_factor`.
+        :obj:`dpnp.scipy.linalg.cho_factor`. `lower` can also be an array
+        whose values are all equal.
     b : {(M,), (..., M, K)} {dpnp.ndarray, usm_ndarray}
         Right-hand side.
     overwrite_b : bool, optional
@@ -215,7 +232,7 @@ def cho_solve(c_and_lower, b, overwrite_b=False, check_finite=True):
 
     return dpnp_cho_solve(
         c,
-        bool(lower),
+        _lower_to_bool(lower),
         b,
         overwrite_b=overwrite_b,
         check_finite=check_finite,
