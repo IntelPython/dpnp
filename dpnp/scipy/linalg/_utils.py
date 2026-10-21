@@ -367,8 +367,6 @@ def _batched_cho_solve(c, lower, b, res_type, res_usm_type, exec_q):
     nrhs = b.shape[-1] if b_ndim_orig > 1 else 1
     batch_size = c.size // (n * n)
 
-    _manager = dpu.SequentialOrderManager[exec_q]
-
     c = dpnp.reshape(c, (batch_size, n, n))
     c_is_complex = dpnp.issubdtype(c.dtype, dpnp.complexfloating)
     c = dpnp.astype(c, res_type, copy=False)
@@ -392,9 +390,9 @@ def _batched_cho_solve(c, lower, b, res_type, res_usm_type, exec_q):
         sycl_queue=exec_q,
     )
     b_src = dpnp.reshape(b, (batch_size, n, nrhs))
-    _copy_rhs(b_src, dpnp.moveaxis(b_h, -1, 0), conj, exec_q, _manager)
+    _copy_rhs(b_src, dpnp.moveaxis(b_h, -1, 0), conj, exec_q)
 
-    _cho_solve_trsm(c_f, b_h, uplo, exec_q, _manager)
+    _cho_solve_trsm(c_f, b_h, uplo, exec_q)
 
     if conj:
         dpnp.conj(b_h, out=b_h)
@@ -403,7 +401,7 @@ def _batched_cho_solve(c, lower, b, res_type, res_usm_type, exec_q):
     return dpnp.moveaxis(b_h, -1, 0).reshape(b.shape)
 
 
-def _cho_solve_trsm(c_f, b_f, uplo, exec_q, _manager):
+def _cho_solve_trsm(c_f, b_f, uplo, exec_q):
     """
     Solve ``A X = B`` in place of `b_f` given the Cholesky factors `c_f`.
 
@@ -415,6 +413,7 @@ def _cho_solve_trsm(c_f, b_f, uplo, exec_q, _manager):
 
     # A = F^H F for an upper factor F and A = F F^H for a lower one
     # (oneapi::mkl::uplo: upper=0, lower=1; trans_op: 0=N, 2=C)
+    _manager = dpu.SequentialOrderManager[exec_q]
     c_usm = dpnp.get_usm_ndarray(c_f)
     for trans_op in (2, 0) if uplo == 0 else (0, 2):
         # Call the BLAS extension function _trsm_batch
@@ -430,7 +429,7 @@ def _cho_solve_trsm(c_f, b_f, uplo, exec_q, _manager):
         _manager.add_event_pair(ht_ev, trsm_ev)
 
 
-def _copy_rhs(src, dst, conj, exec_q, _manager):
+def _copy_rhs(src, dst, conj, exec_q):
     """Copy `src` into `dst`, conjugating it if `conj` is ``True``."""
 
     if conj and src.dtype == dst.dtype:
@@ -438,6 +437,7 @@ def _copy_rhs(src, dst, conj, exec_q, _manager):
         dpnp.conj(src, out=dst)
         return
 
+    _manager = dpu.SequentialOrderManager[exec_q]
     ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
         src=dpnp.get_usm_ndarray(src),
         dst=dst.get_array(),
@@ -689,7 +689,7 @@ def dpnp_cho_solve(c, lower, b, overwrite_b=False, check_finite=True):
         b_h = dpnp.empty_like(
             b, order="F", dtype=res_type, usm_type=res_usm_type
         )
-        _copy_rhs(b, b_h, conj, exec_q, _manager)
+        _copy_rhs(b, b_h, conj, exec_q)
     else:
         # input is suitable for in-place modification
         b_h = b

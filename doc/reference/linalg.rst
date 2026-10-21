@@ -43,7 +43,6 @@ Decompositions
 
    linalg.cholesky
    linalg.qr
-   linalg.lu_factor
    linalg.svd
    linalg.svdvals
 
@@ -86,7 +85,6 @@ Solving linear equations
    linalg.solve
    linalg.tensorsolve
    linalg.lstsq
-   linalg.lu_solve
    linalg.inv
    linalg.pinv
    linalg.tensorinv
