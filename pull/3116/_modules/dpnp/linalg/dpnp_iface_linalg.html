@@ -1195,6 +1195,12 @@
 <span class="sd">    L : (..., M, M) dpnp.ndarray</span>
 <span class="sd">        Lower or upper-triangular Cholesky factor of `a`.</span>
 
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.scipy.linalg.cho_factor` : Cholesky decomposition of a matrix,</span>
+<span class="sd">                                          to use in</span>
+<span class="sd">                                          :obj:`dpnp.scipy.linalg.cho_solve`.</span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
@@ -1213,8 +1219,8 @@
 <span class="sd">    The upper-triangular Cholesky factor can also be obtained:</span>
 
 <span class="sd">    &gt;&gt;&gt; np.linalg.cholesky(A, upper=True)</span>
-<span class="sd">    array([[ 1.+0.j, -0.-2.j],</span>
-<span class="sd">           [ 0.+0.j,  1.+0.j]]</span>
+<span class="sd">    array([[1., 2.],</span>
+<span class="sd">           [0., 1.]])</span>
 
 <span class="sd">    """</span>
 
