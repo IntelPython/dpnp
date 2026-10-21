@@ -7,6 +7,7 @@ import pytest
 
 import dpnp as cupy
 import dpnp as cupyx
+from dpnp.tests.helper import has_support_aspect64
 from dpnp.tests.third_party.cupy import testing
 
 # from cupyx import cusolver
@@ -157,7 +158,9 @@ class TestChosolve(unittest.TestCase):
         )
 
     @testing.for_dtypes("fdFD")
-    @testing.numpy_cupy_allclose(atol=1e-5, contiguous_check=False)
+    @testing.numpy_cupy_allclose(
+        atol=1e-5, contiguous_check=False, type_check=has_support_aspect64()
+    )
     def test_chosolve(self, xp, dtype):
 
         # if (len(self.shape) > 2 and
