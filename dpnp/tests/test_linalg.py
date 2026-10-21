@@ -455,6 +455,53 @@ class TestChoSolve:
         assert_dtype_allclose(x, expected)
         assert_array_equal(b_dp, b_np)
 
+    # few columns are folded into one solve, many use a shared factor
+    @pytest.mark.parametrize("b_shape", [(2, 3, 4, 2), (3, 4, 8)])
+    @pytest.mark.parametrize("order", ["C", "F"])
+    @pytest.mark.parametrize("c_dtype", get_float_complex_dtypes())
+    @pytest.mark.parametrize("b_dtype", get_float_complex_dtypes())
+    def test_2d_factor_batched_rhs(self, b_shape, order, c_dtype, b_dtype):
+        # a 2-D factor is not broadcast to the RHS batch
+        a_np = _make_hpd_np((4, 4), c_dtype)
+        b_np = generate_random_numpy_array(b_shape, b_dtype)
+
+        c, low = dpnp.scipy.linalg.cho_factor(dpnp.array(a_np))
+        c = dpnp.array(c, order=order)
+        b_dp = dpnp.array(b_np)
+
+        x = dpnp.scipy.linalg.cho_solve((c, low), b_dp)
+        assert x.shape == b_np.shape
+        assert_array_equal(b_dp, b_np)
+
+        tol = 10 * numpy.finfo(c_dtype).resolution
+        expected = numpy.linalg.solve(a_np, b_np)
+        assert_allclose(x, expected, rtol=tol, atol=tol)
+
+    @pytest.mark.parametrize("lower", [True, False])
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_lower_array(self, lower, xp):
+        # SciPy >= 1.18 returns `lower` tiled to the batch shape
+        dtype = dpnp.default_float_type()
+        a_np = _make_hpd_np((3, 4, 4), dtype)
+        b_np = generate_random_numpy_array((3, 4, 2), dtype)
+
+        c, _ = dpnp.scipy.linalg.cho_factor(dpnp.array(a_np), lower=lower)
+        expected = numpy.linalg.solve(a_np, b_np)
+        for low in [
+            xp.asarray(lower),
+            xp.full(3, lower),
+            xp.full((3, 1), lower),
+        ]:
+            x = dpnp.scipy.linalg.cho_solve((c, low), dpnp.array(b_np))
+            assert_dtype_allclose(x, expected)
+
+    def test_lower_array_errors(self):
+        c, _ = dpnp.scipy.linalg.cho_factor(4 * dpnp.ones((2, 1, 1)))
+        low = numpy.array([True, False])
+        assert_raises(
+            ValueError, dpnp.scipy.linalg.cho_solve, (c, low), dpnp.ones(1)
+        )
+
     @pytest.mark.parametrize(
         "c_shape, b_shape, x_shape",
         [

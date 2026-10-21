@@ -356,6 +356,7 @@ def _batched_cho_solve(c, lower, b, res_type, res_usm_type, exec_q):
     """Solve a batched equation system given Cholesky factors."""
 
     b_ndim_orig = b.ndim
+    c_2d = c if c.ndim == 2 else None
     c, b = _align_lu_solve_broadcast(c, b, name="c")
 
     if b.size == 0:
@@ -367,19 +368,33 @@ def _batched_cho_solve(c, lower, b, res_type, res_usm_type, exec_q):
     nrhs = b.shape[-1] if b_ndim_orig > 1 else 1
     batch_size = c.size // (n * n)
 
-    c = dpnp.reshape(c, (batch_size, n, n))
-    c_is_complex = dpnp.issubdtype(c.dtype, dpnp.complexfloating)
-    c = dpnp.astype(c, res_type, copy=False)
-
-    # oneMKL expects each factor in column-major order: (n, n, batch)
-    c_f = dpnp.transpose(c, (1, 2, 0))
-    if c_f.flags.f_contiguous:
-        uplo, conj = int(lower), False
+    if c_2d is not None:
+        # a single factor is not broadcast: fold the batch into the RHS
+        # columns for one potrs call, except for a real type on GPU and
+        # a small batch, where oneMKL potrs slows down above 16 columns
+        # and the factor is shared by the batch in trsm_batch (stride 0)
+        c_f, uplo, conj = _cho_factor_f(c_2d, lower, res_type)
+        fold = not (
+            exec_q.sycl_device.is_gpu
+            and not dpnp.issubdtype(res_type, dpnp.complexfloating)
+            and 16 < batch_size * nrhs
+            and batch_size <= 32
+        )
     else:
-        # pass C-contiguous factors transposed, see `dpnp_cho_solve`
-        c = dpnp.ascontiguousarray(c)
-        c_f = dpnp.transpose(c, (2, 1, 0))
-        uplo, conj = int(not lower), c_is_complex
+        fold = False
+        c = dpnp.reshape(c, (batch_size, n, n))
+        c_is_complex = dpnp.issubdtype(c.dtype, dpnp.complexfloating)
+        c = dpnp.astype(c, res_type, copy=False)
+
+        # oneMKL expects each factor in column-major order: (n, n, batch)
+        c_f = dpnp.transpose(c, (1, 2, 0))
+        if c_f.flags.f_contiguous:
+            uplo, conj = int(lower), False
+        else:
+            # pass C-contiguous factors transposed, see `dpnp_cho_solve`
+            c = dpnp.ascontiguousarray(c)
+            c_f = dpnp.transpose(c, (2, 1, 0))
+            uplo, conj = int(not lower), c_is_complex
 
     # the solves overwrite `b`: copy it to (n, nrhs, batch) layout
     b_h = dpnp.empty(
@@ -392,7 +407,10 @@ def _batched_cho_solve(c, lower, b, res_type, res_usm_type, exec_q):
     b_src = dpnp.reshape(b, (batch_size, n, nrhs))
     _copy_rhs(b_src, dpnp.moveaxis(b_h, -1, 0), conj, exec_q)
 
-    _cho_solve_trsm(c_f, b_h, uplo, exec_q)
+    if fold:
+        _potrs(c_f, dpnp.reshape(b_h, (n, -1), order="F"), uplo, exec_q)
+    else:
+        _cho_solve_trsm(c_f, b_h, uplo, exec_q)
 
     if conj:
         dpnp.conj(b_h, out=b_h)
@@ -405,7 +423,8 @@ def _cho_solve_trsm(c_f, b_f, uplo, exec_q):
     """
     Solve ``A X = B`` in place of `b_f` given the Cholesky factors `c_f`.
 
-    `c_f` is a (n, n, batch) and `b_f` a (n, nrhs, batch) F-contiguous array.
+    `c_f` is a (n, n, batch) or a shared (n, n) and `b_f` a (n, nrhs, batch)
+    F-contiguous array.
     Two batched triangular solves are used, since oneMKL potrs_batch is much
     slower.
 
@@ -427,6 +446,41 @@ def _cho_solve_trsm(c_f, b_f, uplo, exec_q):
             depends=_manager.submitted_events,
         )
         _manager.add_event_pair(ht_ev, trsm_ev)
+
+
+def _cho_factor_f(c, lower, res_type):
+    """
+    Return a 2-D factor `c` in the layout expected by oneMKL potrs and trsm.
+
+    oneMKL is column-major: an F-contiguous `c` is used as is, otherwise
+    `c.T` is passed with flipped `uplo`, so the solves are with conj(A)
+    for a complex factor and the RHS and the solution have to be conjugated
+    (a real factor cast to a complex type needs none).
+
+    """
+
+    c_is_complex = dpnp.issubdtype(c.dtype, dpnp.complexfloating)
+    c = dpnp.astype(c, res_type, copy=False)
+    if c.flags.f_contiguous:
+        return c, int(lower), False
+    return dpnp.ascontiguousarray(c).T, int(not lower), c_is_complex
+
+
+def _potrs(c_f, b_f, uplo, exec_q):
+    """Solve ``A X = B`` in place of the F-contiguous `b_f` with potrs."""
+
+    # Call the LAPACK extension function _potrs
+    # to solve the system of linear equations with a Cholesky-factored
+    # coefficient matrix, with multiple right-hand sides.
+    _manager = dpu.SequentialOrderManager[exec_q]
+    ht_ev, potrs_ev = li._potrs(
+        exec_q,
+        dpnp.get_usm_ndarray(c_f),
+        dpnp.get_usm_ndarray(b_f),
+        uplo,
+        depends=_manager.submitted_events,
+    )
+    _manager.add_event_pair(ht_ev, potrs_ev)
 
 
 def _copy_rhs(src, dst, conj, exec_q):
@@ -648,9 +702,10 @@ def dpnp_cho_solve(c, lower, b, overwrite_b=False, check_finite=True):
     res_type = _common_type(c, b)
 
     if check_finite:
-        if not dpnp.isfinite(c).all():
-            raise ValueError("array must not contain infs or NaNs")
-        if not dpnp.isfinite(b).all():
+        # submit both checks before waiting for the first result
+        c_is_finite = dpnp.isfinite(c).all()
+        b_is_finite = dpnp.isfinite(b).all()
+        if not (c_is_finite and b_is_finite):
             raise ValueError("array must not contain infs or NaNs")
 
     if c.ndim > 2 or b.ndim > 2:
@@ -665,19 +720,7 @@ def dpnp_cho_solve(c, lower, b, overwrite_b=False, check_finite=True):
     if b.size == 0:
         return dpnp.empty_like(b, dtype=res_type, usm_type=res_usm_type)
 
-    _manager = dpu.SequentialOrderManager[exec_q]
-
-    # oneMKL is column-major: an F-contiguous `c` is used as is, otherwise
-    # `c.T` is passed with flipped `uplo`, so the solves are with conj(A)
-    # for a complex factor and `b` and the solution have to be conjugated
-    # (a real factor cast to a complex type needs none)
-    c_is_complex = dpnp.issubdtype(c.dtype, dpnp.complexfloating)
-    c = dpnp.astype(c, res_type, copy=False)
-    if c.flags.f_contiguous:
-        c_f, uplo, conj = c, int(lower), False
-    else:
-        c_f, uplo = dpnp.ascontiguousarray(c).T, int(not lower)
-        conj = c_is_complex
+    c_f, uplo, conj = _cho_factor_f(c, lower, res_type)
 
     # SciPy-compatible behavior
     # Copy is required if:
@@ -696,17 +739,7 @@ def dpnp_cho_solve(c, lower, b, overwrite_b=False, check_finite=True):
         if conj:
             dpnp.conj(b_h, out=b_h)
 
-    # Call the LAPACK extension function _potrs
-    # to solve the system of linear equations with a Cholesky-factored
-    # coefficient matrix, with multiple right-hand sides.
-    ht_ev, potrs_ev = li._potrs(
-        exec_q,
-        dpnp.get_usm_ndarray(c_f),
-        dpnp.get_usm_ndarray(b_h),
-        uplo,
-        depends=_manager.submitted_events,
-    )
-    _manager.add_event_pair(ht_ev, potrs_ev)
+    _potrs(c_f, b_h, uplo, exec_q)
 
     if conj:
         dpnp.conj(b_h, out=b_h)

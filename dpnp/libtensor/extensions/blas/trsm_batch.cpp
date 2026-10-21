@@ -149,11 +149,12 @@ std::pair<sycl::event, sycl::event>
     const int a_nd = matrixA.get_ndim();
     const int b_nd = matrixB.get_ndim();
 
-    // batch is the last dimension: (m, m, batch) and (m, n, batch)
-    if (a_nd != 3 || b_nd != 3) {
+    // batch is the last dimension: (m, m, batch) and (m, n, batch),
+    // a 2-D (m, m) matrix A is shared by all right-hand sides
+    if ((a_nd != 2 && a_nd != 3) || b_nd != 3) {
         throw py::value_error(
             "The triangular and right-hand sides arrays must be "
-            "3-dimensional, but got ndim=" +
+            "2- or 3-dimensional and 3-dimensional, but got ndim=" +
             std::to_string(a_nd) + " and ndim=" + std::to_string(b_nd) + ".");
     }
     if (trans_op < 0 || trans_op > 2) {
@@ -170,7 +171,7 @@ std::pair<sycl::event, sycl::event>
                               std::to_string(a_shape[0]) + ", " +
                               std::to_string(a_shape[1]) + ") in batch");
     }
-    if (a_shape[0] != b_shape[0] || a_shape[2] != b_shape[2]) {
+    if (a_shape[0] != b_shape[0] || (a_nd == 3 && a_shape[2] != b_shape[2])) {
         throw py::value_error("The shapes of the triangular and right-hand "
                               "sides arrays are incompatible.");
     }
@@ -215,11 +216,12 @@ std::pair<sycl::event, sycl::event>
 
     const std::int64_t m = a_shape[0];
     const std::int64_t n = b_shape[1];
-    const std::int64_t batch_size = a_shape[2];
+    const std::int64_t batch_size = b_shape[2];
 
     const std::int64_t lda = std::max<std::int64_t>(1, m);
     const std::int64_t ldb = std::max<std::int64_t>(1, m);
-    const std::int64_t stride_a = m * m;
+    // stride 0 reuses the shared matrix A for each batch element
+    const std::int64_t stride_a = (a_nd == 2) ? 0 : m * m;
     const std::int64_t stride_b = m * n;
 
     const oneapi::mkl::uplo uplo_val =

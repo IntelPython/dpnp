@@ -167,7 +167,8 @@ PYBIND11_MODULE(_blas_impl, m, py::mod_gil_not_used())
     {
         m.def("_trsm_batch", &blas_ns::trsm_batch,
               "Call `trsm_batch` from oneMKL BLAS library to solve "
-              "op(A) X = B for a batch of triangular matrices A. "
+              "op(A) X = B for a batch of triangular matrices A "
+              "(a 2-D A is shared by the batch). "
               "trans_op picks op(A): 0=N, 1=T, 2=C.",
               py::arg("sycl_queue"), py::arg("matrixA"), py::arg("matrixB"),
               py::arg("upper_lower"), py::arg("trans_op") = 0,
