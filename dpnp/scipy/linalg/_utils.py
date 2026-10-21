@@ -426,7 +426,7 @@ def _cho_solve_trsm(c_f, b_f, uplo, exec_q):
     `c_f` is a (n, n, batch) or a shared (n, n) and `b_f` a (n, nrhs, batch)
     F-contiguous array.
     Two batched triangular solves are used, since oneMKL potrs_batch is much
-    slower.
+    slower (see MKLD-20341).
 
     """
 
