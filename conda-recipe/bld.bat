@@ -16,20 +16,6 @@ FOR %%V IN (17.0.0 17 18.0.0 18 19.0.0 19 20.0.0 20 21.0.0 21 22.0.0 22) DO @(
   )
 )
 
-set "PATCHED_CMAKE_VERSION=3.26"
-set "PLATFORM_DIR=%PREFIX%\Library\share\cmake-%PATCHED_CMAKE_VERSION%\Modules\Platform"
-set "FN=Windows-IntelLLVM.cmake"
-
-rem Save the original file, and copy patched file to
-rem fix the issue with IntelLLVM integration with cmake on Windows
-if EXIST "%PLATFORM_DIR%" (
-  dir "%PLATFORM_DIR%\%FN%"
-  copy /Y "%PLATFORM_DIR%\%FN%" .
-  if errorlevel 1 exit 1
-  copy /Y ".github\workflows\Windows-IntelLLVM_%PATCHED_CMAKE_VERSION%.cmake" "%PLATFORM_DIR%\%FN%"
-  if errorlevel 1 exit 1
-)
-
 set "CC=icx"
 set "CXX=icx"
 

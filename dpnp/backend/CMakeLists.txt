@@ -101,10 +101,7 @@ target_include_directories(
 target_link_libraries(dpnp_backend_library INTERFACE ${_trgt})
 
 if(DPNP_WITH_REDIST)
-    set_target_properties(
-        ${python_module_name}
-        PROPERTIES INSTALL_RPATH "$ORIGIN/../../../"
-    )
+    set_target_properties(${_trgt} PROPERTIES INSTALL_RPATH "$ORIGIN/../../../")
 endif()
 
 if(DPNP_BACKEND_TESTS)
