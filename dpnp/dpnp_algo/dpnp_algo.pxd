@@ -97,8 +97,6 @@ cdef extern from "dpnp_iface_fptr.hpp":
     ) except +
 
 
-"""
-Internal functions
-"""
+# Internal functions
 cdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype)
 cdef dpnp_DPNPFuncType_to_dtype(size_t type)

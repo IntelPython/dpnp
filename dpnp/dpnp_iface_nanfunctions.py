@@ -53,6 +53,10 @@ def _replace_nan_no_mask(a, val):
     the `val` value, and return the copy. If `a` is not of inexact type,
     do nothing and return `a`.
 
+    If `a` is a broadcast view, only its distinct elements are copied and
+    the copy is broadcast back to the shape of `a`, so the result must only
+    be read.
+
     Parameters
     ----------
     a : {dpnp.ndarray, usm_ndarray}
@@ -69,10 +73,17 @@ def _replace_nan_no_mask(a, val):
     """
 
     dpnp.check_supported_arrays_type(a)
-    if dpnp.issubdtype(a.dtype, dpnp.inexact):
+    if not dpnp.issubdtype(a.dtype, dpnp.inexact):
+        return a
+
+    repeated = [st == 0 and sh > 1 for sh, st in zip(a.shape, a.strides)]
+    if not any(repeated):
         return dpnp.nan_to_num(a, nan=val, posinf=dpnp.inf, neginf=-dpnp.inf)
 
-    return a
+    # a zero-stride axis repeats the same elements, keep one of them
+    base = a[tuple(slice(0, 1) if r else slice(None) for r in repeated)]
+    res = dpnp.nan_to_num(base, nan=val, posinf=dpnp.inf, neginf=-dpnp.inf)
+    return dpnp.broadcast_to(res, a.shape)
 
 
 def _replace_nan(a, val):
