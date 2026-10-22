@@ -30,7 +30,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.12', '3.13']
+        python: ['3.13']
         os: [ubuntu-latest, windows-2022]
         include:
           - python: '3.14'
@@ -45,6 +45,14 @@ jobs:
           - python: '3.14'
             os: windows-2022
             python_spec: '3.14.* *_cp314t'
+          - python: '3.15'
+            os: ubuntu-latest
+            python_spec: '3.15.* *_cp315'
+          - python: '3.15'
+            os: windows-2022
+            python_spec: '3.15.* *_cp315'
+          # TODO: add free-threaded builds ('3.15.* *_cp315t') once NumPy and
+          # dpctl cp315t builds are available
 
     permissions:
       # Needed to cancel any previous runs that are not completed for a given workflow
@@ -152,7 +160,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.12', '3.13']
+        python: ['3.13']
         os: [ubuntu-latest]
         include:
           - python: '3.14'
@@ -161,6 +169,11 @@ jobs:
           - python: '3.14'
             os: ubuntu-latest
             python_spec: '3.14.* *_cp314t'
+          - python: '3.15'
+            os: ubuntu-latest
+            python_spec: '3.15.* *_cp315'
+          # TODO: add free-threaded builds ('3.15.* *_cp315t') once NumPy and
+          # dpctl cp315t builds are available
 
     env:
       dpnp-repo-path: '${{ github.workspace }}/source/'
@@ -430,7 +443,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.12', '3.13']
+        python: ['3.13']
         os: [windows-2022]
         include:
           - python: '3.14'
@@ -439,6 +452,11 @@ jobs:
           - python: '3.14'
             os: windows-2022
             python_spec: '3.14.* *_cp314t'
+          - python: '3.15'
+            os: windows-2022
+            python_spec: '3.15.* *_cp315'
+          # TODO: add free-threaded builds ('3.15.* *_cp315t') once NumPy and
+          # dpctl cp315t builds are available
 
     env:
       dpnp-repo-path: '${{ github.workspace }}\source'
@@ -612,7 +630,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.12', '3.13']
+        python: ['3.13']
         os: [ubuntu-latest, windows-2022]
         include:
           - python: '3.14'
@@ -627,6 +645,14 @@ jobs:
           - python: '3.14'
             os: windows-2022
             python_spec: '3.14.* *_cp314t'
+          - python: '3.15'
+            os: ubuntu-latest
+            python_spec: '3.15.* *_cp315'
+          - python: '3.15'
+            os: windows-2022
+            python_spec: '3.15.* *_cp315'
+          # TODO: add free-threaded builds ('3.15.* *_cp315t') once NumPy and
+          # dpctl cp315t builds are available
 
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
