@@ -28,6 +28,8 @@
 
 
 import os
+import sys
+import types
 import warnings
 
 __DPNP_ORIGIN__ = int(os.getenv("DPNP_ORIGIN", 0))
@@ -42,23 +44,46 @@ __DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__ = int(
 Trigger non-implemented exception when DPNP fallbacks on NumPy implementation
 """
 
-# settings that no longer have any effect, kept as deprecated attributes
+# settings that no longer have any effect: attribute name -> env var name
 _DEPRECATED_SETTINGS = {
-    "__DPNP_QUEUE_GPU__": int(os.getenv("DPNP_QUEUE_GPU", 0)),
-    "__DPNP_OUTPUT_NUMPY__": int(os.getenv("DPNP_OUTPUT_NUMPY", 0)),
-    "__DPNP_OUTPUT_DPCTL_DEFAULT_SHARED__": int(
-        os.getenv("DPNP_OUTPUT_DPCTL_DEFAULT_SHARED", 0)
-    ),
+    "__DPNP_QUEUE_GPU__": "DPNP_QUEUE_GPU",
+    "__DPNP_OUTPUT_NUMPY__": "DPNP_OUTPUT_NUMPY",
+    "__DPNP_OUTPUT_DPCTL_DEFAULT_SHARED__": "DPNP_OUTPUT_DPCTL_DEFAULT_SHARED",
 }
+
+# values assigned to deprecated settings after import
+_deprecated_values = {}
+
+
+def _warn_deprecated(name):
+    warnings.warn(
+        f"`dpnp.config.{name}` is deprecated, and will be removed in a "
+        "future release. It has no effect.",
+        DeprecationWarning,
+        stacklevel=3,
+    )
 
 
 def __getattr__(name):
     if name in _DEPRECATED_SETTINGS:
-        warnings.warn(
-            f"`dpnp.config.{name}` is deprecated, and will be removed in a "
-            "future release. It has no effect.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return _DEPRECATED_SETTINGS[name]
+        _warn_deprecated(name)
+        if name in _deprecated_values:
+            return _deprecated_values[name]
+        # parse lazily, so a bad env value can't break `import dpnp`
+        return int(os.getenv(_DEPRECATED_SETTINGS[name], 0))
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+class _ConfigModule(types.ModuleType):
+    """Warn also on assignment to a deprecated setting."""
+
+    def __setattr__(self, name, value):
+        if name in _DEPRECATED_SETTINGS:
+            _warn_deprecated(name)
+            # keep it out of the module dict, so reads still warn
+            _deprecated_values[name] = value
+        else:
+            super().__setattr__(name, value)
+
+
+sys.modules[__name__].__class__ = _ConfigModule

@@ -159,7 +159,7 @@ def pytest_collection_modifyitems(config, items):
     print(f"NumPy version: {numpy.__version__}, location: {numpy}")
     print(f"Python version: {sys.version}")
     print("")
-    if is_gpu or os.getenv("DPNP_QUEUE_GPU") == "1":
+    if is_gpu:
         excluded_tests.extend(get_excluded_tests(test_exclude_file_gpu))
         if not support_fp64:
             excluded_tests.extend(
