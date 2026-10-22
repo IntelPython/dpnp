@@ -665,7 +665,7 @@ class TestHistogramdd:
         )
         return [
             y,
-        ] + [e for e in bin_edges]
+        ] + [*bin_edges]
 
 
 class TestHistogramddErrors(unittest.TestCase):
