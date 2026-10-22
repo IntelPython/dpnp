@@ -24,6 +24,7 @@ This release is compatible with NumPy 2.5.
 * Added `UsmNDArray_RemoveQueueRef` C API function to release a queue reference obtained from `UsmNDArray_GetQueueRef` [#3042](https://github.com/IntelPython/dpnp/pull/3042)
 * Added a `rattler-build`-compatible conda recipe (`conda-recipe/rattler_recipe.yaml`) alongside the existing `conda-build` recipe [#3031](https://github.com/IntelPython/dpnp/pull/3031)
 * Added support for the `"nuc"` (nuclear) norm in `dpnp.linalg.cond` [#3084](https://github.com/IntelPython/dpnp/pull/3084)
+* Added support for Python 3.15 [#3098](https://github.com/IntelPython/dpnp/pull/3098)
 
 ### Changed
 
@@ -58,6 +59,7 @@ This release is compatible with NumPy 2.5.
 * Changed `dpnp.sort`, `dpnp.argsort`, and their `dpnp.ndarray`/`dpnp.tensor` counterparts to place `NaN` values last instead of first when sorting in descending order [#3066](https://github.com/IntelPython/dpnp/pull/3066)
 * Documented and made explicit support for `copy=None` ("copy only if needed") in `dpnp.nan_to_num` [#3083](https://github.com/IntelPython/dpnp/pull/3083)
 * Changed `dpnp.linalg.pinv` to compute the default tolerance from the machine epsilon of the data type used for the computation, and to return a floating-point result for an empty integer or boolean array [#3090](https://github.com/IntelPython/dpnp/pull/3090)
+* Avoided a full-size copy of a broadcast input in `dpnp.nansum`, `dpnp.nanprod`, `dpnp.nancumsum` and `dpnp.nancumprod` by replacing `NaN` values only in the distinct elements of the input [#3108](https://github.com/IntelPython/dpnp/pull/3108)
 
 ### Deprecated
 
@@ -118,6 +120,8 @@ This release is compatible with NumPy 2.5.
 * Fixed incorrect results of `dpnp.tensor.vecdot` in some cases with strided outputs and of `dpnp.tensor` reductions, `dpnp.tensor.vecdot` and `dpnp.tensor.matmul` on large inputs with some data types [#3082](https://github.com/IntelPython/dpnp/pull/3082)
 * Fixed `dpnp.median` and `dpnp.nanmedian` raising a `ValueError` for a tuple `axis` when a kept dimension has size 0 [#3081](https://github.com/IntelPython/dpnp/pull/3081)
 * Fixed a `RuntimeError` raised by `dpnp.tensor` kernels launched over more than `INT_MAX` work-items when built with DPC++ compiler 2026.2 or newer, by also passing `-fno-sycl-id-queries-fit-in-int` to the linker [#3089](https://github.com/IntelPython/dpnp/pull/3089)
+* Fixed `dpnp.__all__` missing `ndarray` and `__array_namespace_info__` and listing `mean`, `median` and `min` twice [#3100](https://github.com/IntelPython/dpnp/pull/3100)
+* Fixed `dpnp.repeat` and `dpnp.tensor.repeat` silently returning wrong results for `uint64` repeats above the `int64` maximum [#3115](https://github.com/IntelPython/dpnp/pull/3115)
 
 ### Security
 

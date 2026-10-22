@@ -591,7 +591,7 @@ from .dpnp_iface import (
 __all__ = ["__array_namespace_info__", "ndarray"]
 
 # Data types
-__all__ = [
+__all__ += [
     "bool",
     "bool_",
     "byte",
@@ -920,9 +920,6 @@ __all__ += [
     "logaddexp2",
     "logsumexp",
     "maximum",
-    "mean",
-    "median",
-    "min",
     "minimum",
     "mod",
     "modf",

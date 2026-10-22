@@ -143,12 +143,12 @@ class Info:
         Returns a dictionary of default data types for ``device``.
 
         Args:
-            device (Optional[:class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue`, :class:`dpctl.tensor.Device`, str]):
+            device (Optional[:class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue`, :class:`dpnp.tensor.Device`, str]):
                 array API concept of device used in getting default data types.
                 ``device`` can be ``None`` (in which case the default device
                 is used), an instance of :class:`dpctl.SyclDevice`, an instance
-                of :class:`dpctl.SyclQueue`, a :class:`dpctl.tensor.Device`
-                object returned by :attr:`dpctl.tensor.usm_ndarray.device`, or
+                of :class:`dpctl.SyclQueue`, a :class:`dpnp.tensor.Device`
+                object returned by :attr:`dpnp.tensor.usm_ndarray.device`, or
                 a filter selector string.
                 Default: ``None``.
 
@@ -181,12 +181,12 @@ class Info:
         specification.
 
         Args:
-            device (Optional[:class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue`, :class:`dpctl.tensor.Device`, str]):
+            device (Optional[:class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue`, :class:`dpnp.tensor.Device`, str]):
                 array API concept of device used in getting default data types.
                 ``device`` can be ``None`` (in which case the default device is
                 used), an instance of :class:`dpctl.SyclDevice`, an instance of
-                :class:`dpctl.SyclQueue`, a :class:`dpctl.tensor.Device`
-                object returned by :attr:`dpctl.tensor.usm_ndarray.device`, or
+                :class:`dpctl.SyclQueue`, a :class:`dpnp.tensor.Device`
+                object returned by :attr:`dpnp.tensor.usm_ndarray.device`, or
                 a filter selector string.
                 Default: ``None``.
 
