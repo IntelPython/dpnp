@@ -1304,6 +1304,17 @@ class TestMinres:
         assert info == 0
 
     @pytest.mark.skipif(not has_support_aspect64(), reason="fp64 is required")
+    def test_minres_x0_null_space(self):
+        # Large x0 in null(A) with a tiny b: ||A||*||x||*eps >= ||r0||
+        # by ~2**27, so the eps stopping test (istop=3) is always hit
+        ia = dpnp.array([[1.0, 0.0], [0.0, 0.0]])
+        ib = dpnp.full(2, 2.0**-40)
+        x0 = dpnp.array([0.0, 2.0**40])
+        x, info = minres(ia, ib, x0=x0)
+        assert info == 0
+        assert_allclose(x.asnumpy(), [2.0**-40, 2.0**40])
+
+    @pytest.mark.skipif(not has_support_aspect64(), reason="fp64 is required")
     def test_minres_errors(self):
         # Mirrors test_cg_errors / test_gmres_errors. minres does not
         # accept atol or callback_type, so those are not exercised.
