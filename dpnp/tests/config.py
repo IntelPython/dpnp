@@ -12,6 +12,7 @@ float16_types = _getenv_bool("DPNP_TEST_FLOAT_16")
 complex_types = _getenv_bool("DPNP_TEST_COMPLEX_TYPES")
 bool_types = _getenv_bool("DPNP_TEST_BOOL_TYPES")
 skip_tensor_tests = _getenv_bool("SKIP_TENSOR_TESTS")
+queue_gpu = _getenv_bool("DPNP_QUEUE_GPU")
 
 
 infra_warnings_enable = _getenv_bool("DPNP_INFRA_WARNINGS_ENABLE")

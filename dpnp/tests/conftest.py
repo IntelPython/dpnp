@@ -143,7 +143,7 @@ def pytest_collection_modifyitems(config, items):
 
     print("")
     print(
-        f"DPNP Test scope includes all integer dtypes: {bool(dtype_config.all_int_types)}"
+        f"DPNP Test scope includes all integer dtypes: {dtype_config.all_int_types}"
     )
     print(f"DPNP current device ID: 0x{get_dev_id(dev):04X}")
     print(f"DPNP current device is CPU: {is_cpu}")
@@ -154,7 +154,7 @@ def pytest_collection_modifyitems(config, items):
     print(f"NumPy version: {numpy.__version__}, location: {numpy}")
     print(f"Python version: {sys.version}")
     print("")
-    if is_gpu or os.getenv("DPNP_QUEUE_GPU") == "1":
+    if is_gpu or dtype_config.queue_gpu:
         excluded_tests.extend(get_excluded_tests(test_exclude_file_gpu))
         if is_cuda:
             excluded_tests.extend(get_excluded_tests(test_exclude_file_cuda))
