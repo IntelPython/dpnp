@@ -38,7 +38,7 @@ from dpctl.utils import SequentialOrderManager
 import dpnp.tensor as dpt
 import dpnp.tensor._tensor_impl as ti
 
-__doc__ = "Print functions for :class:`dpctl.tensor.usm_ndarray`."
+__doc__ = "Print functions for :class:`dpnp.tensor.usm_ndarray`."
 
 _default_print_options = {
     "linewidth": 75,
@@ -166,7 +166,7 @@ def set_print_options(
                       precision=None, floatmode=None, suppress=None,
                       nanstr=None, infstr=None, sign=None, numpy=False)
 
-    Set options for printing :class:`dpctl.tensor.usm_ndarray` class.
+    Set options for printing :class:`dpnp.tensor.usm_ndarray` class.
 
     Args:
         linewidth (int, optional):
@@ -250,7 +250,7 @@ def get_print_options():
     """get_print_options()
 
     Returns a copy of current options for printing
-    :class:`dpctl.tensor.usm_ndarray` class.
+    :class:`dpnp.tensor.usm_ndarray` class.
 
     Returns:
         dict: dictionary with array
@@ -352,7 +352,7 @@ def usm_ndarray_str(
                     suffix="")
 
     Returns a string representing the elements of a
-    :class:`dpctl.tensor.usm_ndarray`.
+    :class:`dpnp.tensor.usm_ndarray`.
 
     Args:
         x (usm_ndarray):
@@ -465,7 +465,7 @@ def usm_ndarray_repr(
                      suppress=None, prefix="")
 
     Returns a formatted string representing the elements
-    of a :class:`dpctl.tensor.usm_ndarray` and its data type,
+    of a :class:`dpnp.tensor.usm_ndarray` and its data type,
     if not a default type.
 
     Args:

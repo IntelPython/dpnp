@@ -61,11 +61,11 @@ def extract(condition, arr):
 
     Returns the elements of an array that satisfies the condition.
 
-    If ``condition`` is boolean ``dpctl.tensor.extract`` is
+    If ``condition`` is boolean ``dpnp.tensor.extract`` is
     equivalent to ``arr[condition]``.
 
-    Note that ``dpctl.tensor.place`` does the opposite of
-    ``dpctl.tensor.extract``.
+    Note that ``dpnp.tensor.place`` does the opposite of
+    ``dpnp.tensor.extract``.
 
     Args:
        conditions (usm_ndarray):
@@ -133,7 +133,7 @@ def place(arr, mask, vals):
 
     Change elements of an array based on conditional and input values.
 
-    If ``mask`` is boolean ``dpctl.tensor.place`` is
+    If ``mask`` is boolean ``dpnp.tensor.place`` is
     equivalent to ``arr[condition] = vals``.
 
     Args:
