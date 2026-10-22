@@ -40,7 +40,6 @@ extend-ignore =
 per-file-ignores =
     __init__.py: E402, F401
     dpnp/dpnp_algo/__init__.py: F401
-    dpnp/dpnp_algo/__init__.py: F401
     dpnp/fft/__init__.py: F401
     dpnp/linalg/__init__.py: F401
     dpnp/random/__init__.py: F401

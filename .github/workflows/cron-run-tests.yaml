@@ -38,7 +38,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.12', '3.13']
+        python: ['3.13']
         runner: [ubuntu-latest, windows-2022]
         include:
           - python: '3.14'
@@ -53,6 +53,14 @@ jobs:
           - python: '3.14'
             runner: windows-2022
             python_spec: '3.14.* *_cp314t'
+          - python: '3.15'
+            runner: ubuntu-latest
+            python_spec: '3.15.* *_cp315'
+          - python: '3.15'
+            runner: windows-2022
+            python_spec: '3.15.* *_cp315'
+          # TODO: add free-threaded builds ('3.15.* *_cp315t') once NumPy and
+          # dpctl cp315t builds are available
 
     env:
       python-install-spec: "python ${{ matrix.python_spec || format('{0}.*', matrix.python) }}"
