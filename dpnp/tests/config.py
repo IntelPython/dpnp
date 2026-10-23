@@ -1,13 +1,21 @@
 import os
 
-all_int_types = bool(os.getenv("DPNP_TEST_ALL_INT_TYPES", 0))
-float16_types = bool(os.getenv("DPNP_TEST_FLOAT_16", 0))
-complex_types = bool(os.getenv("DPNP_TEST_COMPLEX_TYPES", 0))
-bool_types = bool(os.getenv("DPNP_TEST_BOOL_TYPES", 0))
-skip_tensor_tests = bool(int(os.getenv("SKIP_TENSOR_TESTS", 0)))
+
+def _getenv_bool(name):
+    # unset, empty, "0", "false", "no" and "off" mean disabled
+    value = os.getenv(name, "").strip().lower()
+    return value not in ("", "0", "false", "no", "off")
 
 
-infra_warnings_enable = bool(os.getenv("DPNP_INFRA_WARNINGS_ENABLE", 0))
+all_int_types = _getenv_bool("DPNP_TEST_ALL_INT_TYPES")
+float16_types = _getenv_bool("DPNP_TEST_FLOAT_16")
+complex_types = _getenv_bool("DPNP_TEST_COMPLEX_TYPES")
+bool_types = _getenv_bool("DPNP_TEST_BOOL_TYPES")
+skip_tensor_tests = _getenv_bool("SKIP_TENSOR_TESTS")
+queue_gpu = _getenv_bool("DPNP_QUEUE_GPU")
+
+
+infra_warnings_enable = _getenv_bool("DPNP_INFRA_WARNINGS_ENABLE")
 infra_warnings_directory = os.getenv("DPNP_INFRA_WARNINGS_DIRECTORY", None)
 infra_warnings_events_artifact = os.getenv(
     "DPNP_INFRA_WARNINGS_EVENTS_ARTIFACT",
