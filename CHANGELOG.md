@@ -70,6 +70,7 @@ This release requires DPC++ compiler 2026.1.1 or newer and `dpctl` 0.23.0 or new
 ### Deprecated
 
 * Deprecated setting the shape via the `shape` attribute of `dpnp.ndarray` and `dpnp.tensor.usm_ndarray`. Use `dpnp.reshape`/`dpnp.tensor.reshape` (or the `reshape` method) instead [#2967](https://github.com/IntelPython/dpnp/pull/2967)
+* Deprecated `dpnp.config.__DPNP_QUEUE_GPU__`, `dpnp.config.__DPNP_OUTPUT_NUMPY__` and `dpnp.config.__DPNP_OUTPUT_DPCTL_DEFAULT_SHARED__`, which have no effect; reading or setting them now emits a `DeprecationWarning` [#3107](https://github.com/IntelPython/dpnp/pull/3107)
 
 ### Removed
 
