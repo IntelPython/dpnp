@@ -1739,6 +1739,39 @@ class TestLinAlgebra:
         assert_sycl_queue_equal(result.sycl_queue, a.sycl_queue)
         assert_sycl_queue_equal(result.sycl_queue, b.sycl_queue)
 
+    @pytest.mark.parametrize(
+        "data",
+        [
+            [[4.0, 2.0], [2.0, 3.0]],
+            numpy.empty((0, 0)),
+            [[[4.0, 2.0], [2.0, 3.0]]],
+            numpy.empty((1, 0, 0)),
+        ],
+    )
+    def test_cho_factor(self, data, device):
+        a = dpnp.array(data, device=device)
+        c, _ = dpnp.scipy.linalg.cho_factor(a)
+        assert_sycl_queue_equal(c.sycl_queue, a.sycl_queue)
+
+    @pytest.mark.parametrize(
+        "a_data, b_data",
+        [
+            ([[4.0, 2.0], [2.0, 3.0]], [1.0, 2.0]),
+            ([[4.0, 2.0], [2.0, 3.0]], numpy.empty((2, 0))),
+            ([[[4.0, 2.0], [2.0, 3.0]]], [1.0, 2.0]),
+            ([[[4.0, 2.0], [2.0, 3.0]]], numpy.empty((1, 2, 0))),
+        ],
+    )
+    def test_cho_solve(self, a_data, b_data, device):
+        a = dpnp.array(a_data, device=device)
+        c, low = dpnp.scipy.linalg.cho_factor(a)
+        b = dpnp.array(b_data, device=device)
+
+        result = dpnp.scipy.linalg.cho_solve((c, low), b)
+
+        assert_sycl_queue_equal(result.sycl_queue, a.sycl_queue)
+        assert_sycl_queue_equal(result.sycl_queue, b.sycl_queue)
+
     @pytest.mark.parametrize("n", [-1, 0, 1, 2, 3])
     def test_matrix_power(self, n, device):
         x = dpnp.array([[1.0, 2.0], [3.0, 5.0]], device=device)
