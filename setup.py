@@ -69,6 +69,7 @@ skbuild.setup(
             "tests/third_party/cupy/*/*.py",
             "tests/third_party/cupyx/*.py",
             "tests/third_party/cupyx/*/*.py",
+            "tests/third_party/cupyx/*/*/*.py",
         ],
     },
     include_package_data=False,

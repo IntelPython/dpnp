@@ -625,7 +625,10 @@ class TestMinres(unittest.TestCase):
         a[mask > self.density] = 0
         m = None
         if self.M == "jacobi":
-            m = numpy.diag(1.0 / numpy.diag(a))
+            # NOTE: at this density diag(a) is mostly zero, so upstream's
+            # 1/diag(a) is inf and both sides return NaN; use 1 there.
+            d = numpy.diag(a)
+            m = numpy.diag(1.0 / numpy.where(d == 0, 1, d))
         return a, m
 
     def _make_normalized_vector(self):
