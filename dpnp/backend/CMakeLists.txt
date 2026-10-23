@@ -70,7 +70,11 @@ endif()
 #   target_compile_definitions(${_trgt} PRIVATE _WIN=1)
 # endif()
 
-target_link_options(${_trgt} PUBLIC -fsycl-device-code-split=per_kernel)
+target_compile_options(${_trgt} PUBLIC -fno-sycl-id-queries-fit-in-int)
+target_link_options(
+    ${_trgt}
+    PUBLIC -fsycl-device-code-split=per_kernel -fno-sycl-id-queries-fit-in-int
+)
 
 if(DPNP_GENERATE_COVERAGE)
     target_link_options(${_trgt} PRIVATE -fprofile-instr-generate -fcoverage-mapping)

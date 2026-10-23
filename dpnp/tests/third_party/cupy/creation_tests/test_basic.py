@@ -78,7 +78,7 @@ class TestBasic:
         assert (a == 123).all()
         # Free huge memory for slow test
         del a
-        cupy.get_default_memory_pool().free_all_blocks()
+        # cupy.get_default_memory_pool().free_all_blocks()
 
     @testing.slow
     # thread_unsafe marker requires pytest-run-parallel, not used by dpnp
@@ -89,7 +89,7 @@ class TestBasic:
         assert (a == 0).all()
         # Free huge memory for slow test
         del a
-        cupy.get_default_memory_pool().free_all_blocks()
+        # cupy.get_default_memory_pool().free_all_blocks()
 
     @testing.for_orders("CFAK")
     @testing.for_all_dtypes()

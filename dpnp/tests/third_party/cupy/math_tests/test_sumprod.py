@@ -11,7 +11,7 @@ import dpnp as cupy
 # import cupy._core._accelerator as _acc
 # import cupy.cuda.cutensor
 # from cupy._core import _cub_reduction
-from dpnp.exceptions import AxisError
+from dpnp.exceptions import AxisError, USMAllocationError
 from dpnp.tests.helper import (
     has_support_aspect16,
     has_support_aspect64,
@@ -496,7 +496,7 @@ class TestReductionSizeOverInt32Max:
                     testing.assert_array_equal(
                         a.argmax(axis), cupy.full(p.shape, 0)
                     )
-        except MemoryError:
+        except USMAllocationError:
             pytest.skip("out of memory in test.")
 
     @pytest.mark.parametrize("dtype", [numpy.int8, numpy.int32, numpy.float32])
@@ -513,7 +513,7 @@ class TestReductionSizeOverInt32Max:
                 testing.assert_allclose(float(out[-1]), expected, rtol=2e-4)
             else:
                 assert int(out[-1]) == expected
-        except MemoryError:
+        except USMAllocationError:
             pytest.skip("out of memory in test.")
 
     @pytest.mark.parametrize("dtype", [numpy.int8, numpy.int32, numpy.float32])
@@ -526,7 +526,7 @@ class TestReductionSizeOverInt32Max:
             a[-1] = 3
             out = a.cumprod()
             assert out[-1] == 6  # product of array
-        except MemoryError:
+        except USMAllocationError:
             pytest.skip("out of memory in test.")
 
 
@@ -1035,7 +1035,7 @@ class TestBatchScanSizeOverInt32Max:
             a[:, 0] = 1
             a[:, -1] = 1
             cupy.cumsum(a, axis=1, out=a)
-        except MemoryError:
+        except USMAllocationError:
             pytest.skip("out of memory in test.")
         # leading 1 plus trailing 1: 1 everywhere, last column is 2
         n_cols = a.shape[1]
@@ -1047,7 +1047,7 @@ class TestBatchScanSizeOverInt32Max:
             a = cupy.ones(shape, dtype=numpy.uint8)
             a[:, 0] = 2
             cupy.cumprod(a, axis=1, out=a)
-        except MemoryError:
+        except USMAllocationError:
             pytest.skip("out of memory in test.")
         # a leading 2 followed by ones gives 2 everywhere
         self._spot_check(a, lambda col: 2)
