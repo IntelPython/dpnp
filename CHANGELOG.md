@@ -7,8 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.21.0] - 2026-MM-DD
 
 This release achieves 100% compliance with Python Array API specification (revision [2025.12](https://data-apis.org/array-api/2025.12/)).
-This release is compatible with NumPy 2.5.
+This release is compatible with NumPy 2.5.4.
 This release adds support for Python 3.15 and for free-threaded Python builds.
+It introduces the `dpnp.scipy.sparse` namespace with a `csr_matrix` class and the `cg`, `gmres` and `minres` iterative solvers in `dpnp.scipy.sparse.linalg`.
+To align with NumPy 2.5 and the Python array API, several functions now return tuples instead of lists, and `dpnp.row_stack` and the support for 2-element vectors in `dpnp.cross` are removed.
+This release requires DPC++ compiler 2026.1.1 or newer and `dpctl` 0.23.0 or newer.
 
 ### Added
 
@@ -19,7 +22,7 @@ This release adds support for Python 3.15 and for free-threaded Python builds.
 * Added implementation of `dpnp.lib.stride_tricks.as_strided` [#2991](https://github.com/IntelPython/dpnp/pull/2991)
 * Added `dpnp.tensor.broadcast_shapes` to align with the 2025.12 version of the Python array API [#3009](https://github.com/IntelPython/dpnp/pull/3009)
 * Added support for free-threaded Python builds [#3026](https://github.com/IntelPython/dpnp/pull/3026)
-* Added implementation of `dpnp.scipy.sparse.linalg.LinearOperator`, `dpnp.scipy.sparse.linalg.cg`, `dpnp.scipy.sparse.linalg.gmres` and `dpnp.scipy.sparse.linalg.minres` [#2841](https://github.com/IntelPython/dpnp/pull/2841)
+* Added the `dpnp.scipy.sparse` namespace with `dpnp.scipy.sparse.csr_matrix` and `dpnp.scipy.sparse.issparse`, and implementation of `dpnp.scipy.sparse.linalg.LinearOperator`, `dpnp.scipy.sparse.linalg.aslinearoperator`, `dpnp.scipy.sparse.linalg.cg`, `dpnp.scipy.sparse.linalg.gmres` and `dpnp.scipy.sparse.linalg.minres` [#2841](https://github.com/IntelPython/dpnp/pull/2841)
 * Added `dpnp.broadcast` class implementation [#2901](https://github.com/IntelPython/dpnp/pull/2901)
 * Added the `ndmax` keyword to `dpnp.array` for compatibility with NumPy [#3044](https://github.com/IntelPython/dpnp/pull/3044)
 * Added `UsmNDArray_RemoveQueueRef` C API function to release a queue reference obtained from `UsmNDArray_GetQueueRef` [#3042](https://github.com/IntelPython/dpnp/pull/3042)
