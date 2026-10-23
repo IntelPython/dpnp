@@ -1,5 +1,5 @@
 pyenchant==3.3.0
 sphinx-copybutton==0.5.2
 sphinx-design==0.7.0
-sphinxcontrib-googleanalytics==0.5
+sphinxcontrib-googleanalytics==0.6
 sphinxcontrib-spelling==8.0.2
