@@ -124,6 +124,7 @@ This release is compatible with NumPy 2.5.
 * Fixed `dpnp.repeat` and `dpnp.tensor.repeat` silently returning wrong results for `uint64` repeats above the `int64` maximum [#3115](https://github.com/IntelPython/dpnp/pull/3115)
 * Fixed importing `dpnp.scipy.sparse` re-enabling the GIL on free-threaded Python builds, because its pybind11 extension did not declare free-threading support [#3101](https://github.com/IntelPython/dpnp/pull/3101)
 * Fixed the CuPy-based `dpnp.scipy` tests under `dpnp/tests/third_party/cupyx/scipy_tests/` missing from the `dpnp` package, so they never ran against an installed package [#3102](https://github.com/IntelPython/dpnp/pull/3102)
+* Fixed a `RuntimeError` raised by kernels of the `blas`, `statistics`, `ufunc` and `window` extensions and of the legacy backend launched over more than `INT_MAX` work-items when built with DPC++ compiler 2026.2 or newer [#3104](https://github.com/IntelPython/dpnp/pull/3104)
 
 ### Security
 
