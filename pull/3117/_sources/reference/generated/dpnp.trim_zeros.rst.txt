@@ -1,0 +1,10 @@
+﻿
+
+dpnp.trim\_zeros
+================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: trim_zeros
