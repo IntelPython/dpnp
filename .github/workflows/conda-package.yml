@@ -10,6 +10,8 @@ permissions:
   contents: read
 
 env:
+  # Pinned: Miniforge3 26.9.4-0 fails 'conda init' on Windows runners
+  miniforge-version: '26.7.2-1'
   package-name: dpnp
   # Follow oneAPI installation instruction for conda, since intel channel is not longer available
   # channels-list: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
@@ -208,7 +210,7 @@ jobs:
         continue-on-error: true
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.create-conda-channel-env }}
@@ -218,7 +220,7 @@ jobs:
         if: steps.setup_miniconda.outcome == 'failure'
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.create-conda-channel-env }}
@@ -363,7 +365,7 @@ jobs:
         continue-on-error: true
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.examples-conda-pkg-env }}
@@ -373,7 +375,7 @@ jobs:
         if: steps.setup_miniconda.outcome == 'failure'
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.examples-conda-pkg-env }}
@@ -497,7 +499,7 @@ jobs:
         continue-on-error: true
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.create-conda-channel-env }}
@@ -507,7 +509,7 @@ jobs:
         if: steps.setup_miniconda.outcome == 'failure'
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.create-conda-channel-env }}
@@ -692,7 +694,7 @@ jobs:
         continue-on-error: true
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.upload-conda-pkg-env }}
@@ -702,7 +704,7 @@ jobs:
         if: steps.setup_miniconda.outcome == 'failure'
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.upload-conda-pkg-env }}
@@ -774,7 +776,7 @@ jobs:
         continue-on-error: true
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.create-conda-channel-env }}
@@ -784,7 +786,7 @@ jobs:
         if: steps.setup_miniconda.outcome == 'failure'
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.create-conda-channel-env }}
@@ -925,7 +927,7 @@ jobs:
         continue-on-error: true
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.cleanup-conda-pkg-env }}
@@ -935,7 +937,7 @@ jobs:
         if: steps.setup_miniconda.outcome == 'failure'
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.cleanup-conda-pkg-env }}
