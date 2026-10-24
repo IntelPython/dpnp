@@ -2163,7 +2163,6 @@ def fromstring(
         A string containing the data.
     dtype : {None, str, dtype object}, optional
         The data type of the array.
-        For binary input data, the data must be in exactly this format.
         If ``None``, uses a default floating point data type for the device on
         which the returned array is allocated.
 
@@ -2175,7 +2174,7 @@ def fromstring(
         Default: ``-1``.
     sep : str
         The string separating numbers in the data; extra whitespace between
-        elements is also ignored.
+        elements is also ignored. This cannot be an empty string.
     device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
         `device` can be ``None``, a oneAPI filter selector string, an instance
