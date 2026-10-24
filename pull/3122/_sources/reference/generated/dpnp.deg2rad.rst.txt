@@ -1,0 +1,10 @@
+﻿
+
+dpnp.deg2rad
+============
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: deg2rad
