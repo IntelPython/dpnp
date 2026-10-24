@@ -1921,22 +1921,26 @@ def fromfunction(
     """
     Construct an array by executing a function over each coordinate.
 
-    The resulting array therefore has a value ``fn(x, y, z)`` at
-    coordinate ``(x, y, z)``.
+    The function is called once with one coordinate array for each dimension
+    of `shape` instead of once per coordinate.
+
+    For functions that operate elementwise on array arguments, the resulting
+    array has a value ``fn(x, y, z)`` at coordinate ``(x, y, z)``.
 
     For full documentation refer to :obj:`numpy.fromfunction`.
 
     Parameters
     ----------
     function : callable
-        The function is called with N parameters, where N is the rank of
-        `shape`. Each parameter represents the coordinates of the array varying
+        The function is called once with N coordinate arrays as parameters,
+        where N is the length of `shape`. Each array represents the coordinates
         along a specific axis. For example, if `shape` were ``(2, 2)``, then
         the parameters would be ``array([[0, 0], [1, 1]])`` and
         ``array([[0, 1], [0, 1]])``.
     shape : (N,) tuple of ints
-        Shape of the output array, which also determines the shape of
-        the coordinate arrays passed to `function`.
+        Shape of the coordinate arrays passed to `function`. The shape of the
+        output is determined by the value returned by `function` and may be
+        different from `shape`.
     dtype : {None, str, dtype object}, optional
         Data-type of the coordinate arrays passed to `function`.
         If ``None``, uses a default floating point data type for the device on
@@ -1980,6 +1984,12 @@ def fromfunction(
     -----
     This uses :obj:`numpy.fromfunction` and coerces the result to a DPNP array.
     Keywords other than `dtype` and `like` are passed to `function`.
+
+    .. warning::
+        `shape` determines the shape of the coordinate arrays passed to
+        `function`. It does not enforce that the function returns a result
+        with that shape. If `function` returns a scalar, the result is
+        a zero-dimensional array rather than an array with the given `shape`.
 
     See also
     --------
