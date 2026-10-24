@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.ndarray.trace
+==================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: ndarray.trace
