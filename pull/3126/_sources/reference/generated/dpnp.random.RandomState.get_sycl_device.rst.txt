@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.random.RandomState.get\_sycl\_device
+=========================================
+
+.. currentmodule:: dpnp.random
+
+method
+
+.. automethod:: RandomState.get_sycl_device
