@@ -19,7 +19,9 @@ jobs:
   install-compiler:
     name: Build with nightly build of DPC++ toolchain
 
-    runs-on: ubuntu-latest
+    # TODO: back to ubuntu-latest once intel/llvm#23618 is fixed
+    # (nightly ld.lld needs libxml2.so.2, missing on ubuntu-26.04)
+    runs-on: ubuntu-24.04
     timeout-minutes: 120
 
     defaults:
