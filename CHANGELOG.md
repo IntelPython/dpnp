@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.22.0] - 2027-MM-DD
+
+### Added
+
+### Changed
+
+### Deprecated
+
+* Deprecated `dpnp.dot` and `dpnp.ndarray.dot` when `a.ndim >= 2` and `b.ndim > 2`, which place the leading dimensions of `b` in the middle of the result; use `dpnp.tensordot(a, b, axes=(-1, -2))` or `dpnp.matmul` instead [#3124](https://github.com/IntelPython/dpnp/pull/3124)
+
+### Removed
+
+### Fixed
+
+### Security
+
 ## [0.21.0] - 2026-MM-DD
 
 This release achieves 100% compliance with Python Array API specification (revision [2025.12](https://data-apis.org/array-api/2025.12/)).
