@@ -1,0 +1,10 @@
+﻿
+
+dpnp.fromiter
+=============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: fromiter
