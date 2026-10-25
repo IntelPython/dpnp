@@ -573,6 +573,16 @@ def append(arr, values, axis=None):
         `append` does not occur in-place: a new array is allocated and
         filled. If `axis` is ``None``, `out` is a flattened array.
 
+    Warnings
+    --------
+    When `axis` is ``None``, a Python numeric scalar in `values` is converted
+    to an array before the result dtype is chosen, so it can upcast `arr`
+    (e.g. appending ``1`` to an ``int8`` array gives ``int64``). This is
+    deprecated: a future release will use the Python scalar promotion rules
+    and keep ``int8``. A ``FutureWarning`` is emitted when the result dtype
+    will change. Wrap the scalar in a list to keep the current result, or
+    convert it to an array of the desired dtype.
+
     See Also
     --------
     :obj:`dpnp.insert` : Insert elements into an array.
@@ -602,6 +612,11 @@ def append(arr, values, axis=None):
     """
 
     dpnp.check_supported_arrays_type(arr)
+
+    # only exact Python int/float/complex are weak (not bool, numpy scalars)
+    is_pyscalar = axis is None and type(values) in (int, float, complex)
+    future_dtype = dpnp.result_type(arr, values) if is_pyscalar else None
+
     if not dpnp.is_supported_array_type(values):
         values = dpnp.array(
             values, usm_type=arr.usm_type, sycl_queue=arr.sycl_queue
@@ -613,7 +628,22 @@ def append(arr, values, axis=None):
         if values.ndim != 1:
             values = dpnp.ravel(values)
         axis = 0
-    return dpnp.concatenate((arr, values), axis=axis)
+    res = dpnp.concatenate((arr, values), axis=axis)
+
+    if is_pyscalar and res.dtype != future_dtype:
+        # deprecated in dpnp 0.22.0, following NumPy 2.6
+        warnings.warn(
+            "dpnp.append converted Python numeric scalars to arrays before "
+            f"choosing the result dtype, producing dtype {res.dtype}. This "
+            "behavior will change in a future release, these inputs will use "
+            f"dtype {future_dtype}, which may round values differently or "
+            "raise an error. Wrap the scalar in a list to keep the current "
+            "result, or convert it to an array of dtype "
+            f"{str(future_dtype)!r} for the future behavior.",
+            FutureWarning,
+            stacklevel=2,
+        )
+    return res
 
 
 def array_split(ary, indices_or_sections, axis=0):
