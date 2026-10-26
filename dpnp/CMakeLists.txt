@@ -188,6 +188,81 @@ function(build_dpnp_cython_ext_with_backend _trgt _src _dest)
     target_link_libraries(${_trgt} PRIVATE dpnp_backend_library)
 endfunction()
 
+# Builds a pybind11 extension of dpnp/backend/extensions with the options all of
+# them share. INCLUDE_DIRS come before the common include directories, and
+# LARGE_RANGES is for modules whose kernels can be launched over more than
+# INT_MAX work-items.
+function(build_dpnp_pybind11_ext _trgt _dest)
+    cmake_parse_arguments(PARSE_ARGV 2 _arg "LARGE_RANGES" "" "SOURCES;INCLUDE_DIRS")
+
+    pybind11_add_module(${_trgt} MODULE ${_arg_SOURCES})
+    add_sycl_to_target(TARGET ${_trgt} SOURCES ${_arg_SOURCES})
+
+    # Ensure Cython modules build first so _usmarray.h exists
+    add_dependencies(${_trgt} _usmarray)
+
+    if(_dpnp_sycl_targets)
+        # make fat binary
+        target_compile_options(${_trgt} PRIVATE ${_dpnp_sycl_target_compile_options})
+        target_link_options(${_trgt} PRIVATE ${_dpnp_sycl_target_link_options})
+    endif()
+
+    set_target_properties(${_trgt} PROPERTIES CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+    target_include_directories(
+        ${_trgt}
+        PRIVATE
+            ${_arg_INCLUDE_DIRS}
+            ${CMAKE_SOURCE_DIR}/dpnp/include
+            ${CMAKE_SOURCE_DIR}/dpnp/tensor/libtensor/include
+    )
+
+    # treat below headers as system to suppress the warnings there during the build
+    target_include_directories(
+        ${_trgt}
+        SYSTEM
+        PRIVATE
+            ${SYCL_INCLUDE_DIR}
+            ${Dpctl_INCLUDE_DIRS}
+            ${CMAKE_BINARY_DIR} # For generated Cython headers
+    )
+
+    if(WIN32)
+        target_compile_options(
+            ${_trgt}
+            PRIVATE /clang:-fno-approx-func /clang:-fno-finite-math-only
+        )
+    else()
+        target_compile_options(${_trgt} PRIVATE -fno-approx-func -fno-finite-math-only)
+    endif()
+
+    if(_arg_LARGE_RANGES)
+        target_compile_options(${_trgt} PUBLIC -fno-sycl-id-queries-fit-in-int)
+    endif()
+
+    target_link_options(${_trgt} PUBLIC -fsycl-device-code-split=per_kernel)
+    if(_arg_LARGE_RANGES)
+        # DPC++ 2026.2 records the ID range at link time, so pass it there too
+        target_link_options(${_trgt} PUBLIC -fno-sycl-id-queries-fit-in-int)
+    endif()
+
+    if(DPNP_GENERATE_COVERAGE)
+        target_link_options(
+            ${_trgt}
+            PRIVATE -fprofile-instr-generate -fcoverage-mapping
+        )
+    endif()
+
+    if(DPNP_WITH_REDIST)
+        set_target_properties(
+            ${_trgt}
+            PROPERTIES INSTALL_RPATH "$ORIGIN/../../../../../../"
+        )
+    endif()
+
+    install(TARGETS ${_trgt} DESTINATION ${_dest})
+endfunction()
+
 add_subdirectory(tensor)
 
 add_subdirectory(backend)
