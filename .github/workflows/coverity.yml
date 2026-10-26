@@ -124,17 +124,36 @@ jobs:
           echo "${PWD}/cov-analysis/bin" >> "$GITHUB_PATH"
 
       - name: Configure Coverity for the DPC++ compiler
-        env:
-          # icx/icpx are not in Coverity's list of known compilers, so the
-          # clang-based templates below have to be accepted explicitly
-          COVERITY_UNSUPPORTED: 1
         run: |
           source "${ONEAPI_ROOT}/setvars.sh"
           # Cython-generated sources and the pybind11 extensions go through
           # icpx, the sysroot/driver probing bits still use gcc
           cov-configure --gcc
-          cov-configure --template --comptype clangcc --compiler icx
-          cov-configure --template --comptype clangcxx --compiler icpx
+          # Register icx/icpx with Coverity's native Intel oneAPI compiler type.
+          # The generic clangcc/clangcxx templates parse <sycl/sycl.hpp> without
+          # SYCL mode and fail on device-only builtins (__ocl_sampler_t,
+          # __ocl_image2d_ro_t, ...): dpctl's scan with that setup captures only
+          # 46% of its units, and nearly all of dpnp's sources include SYCL.
+          # intel_oneapi_icx is current; intel_icx:linux is the older spelling
+          # the Scan build tool still ships (what mkl_umath's scan resolves to).
+          comptypes="$(cov-configure --list-compiler-types | cut -d, -f1)"
+          comptype=""
+          for candidate in intel_oneapi_icx intel_oneapi_icx:linux intel_icx:linux; do
+            if grep -qxF "${candidate}" <<< "${comptypes}"; then
+              comptype="${candidate}"
+              break
+            fi
+          done
+          if [ -z "${comptype}" ]; then
+            echo "::error::No Intel oneAPI compiler type in this cov-analysis; refusing to fall back to the generic Clang configuration."
+            exit 1
+          fi
+          echo "Using Coverity compiler type: ${comptype}"
+          # With --template, --compiler takes a bare executable name; capture
+          # matches on the name of the spawned executable, so this also covers
+          # the absolute icx/icpx paths CMake resolves.
+          cov-configure --template --comptype "${comptype}" --compiler icx
+          cov-configure --template --comptype "${comptype}" --compiler icpx
 
       - name: Build under cov-build
         # dpnp has ~250 translation units, many of them template-heavy SYCL
@@ -142,33 +161,29 @@ jobs:
         # frontend. Cap the step so a wedged capture fails before the job
         # timeout eats the whole 6 h budget.
         timeout-minutes: 300
-        env:
-          COVERITY_UNSUPPORTED: 1
         run: |
           set -o pipefail
           source "${ONEAPI_ROOT}/setvars.sh"
-          # Force a clean rebuild so icpx genuinely runs and Coverity can capture
-          # it. A stale build tree would skip compilation and yield "No files
-          # were emitted", which the upload rejects.
-          rm -rf _skbuild
           # --skip-editable: the in-place build_ext already compiled everything
           # Coverity needs to see, a pip install would only repeat it
           cov-build --dir cov-int \
               python scripts/build_locally.py --oneapi --skip-editable --verbose \
               2>&1 | tee cov-build.log
-          if ! grep -qE "Emitted [1-9][0-9]* .*compilation unit" cov-build.log; then
-            echo "::error::Coverity captured 0 compilation units — the C++ build did not run under cov-build."
-            exit 1
-          fi
-          # Coverity's clang frontend does not necessarily parse every SYCL
-          # construct icpx accepts, and a partial capture still uploads happily.
-          # Surface the success rate so a drop in coverage is visible.
           {
             echo "### Coverity capture"
             echo '```'
-            grep -E "Emitted .*compilation unit|are ready for analysis" cov-build.log
+            grep -E "Emitted .*compilation unit|are ready for analysis" cov-build.log || true
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+          # A partial capture still uploads happily and uses up a scan, so
+          # require most of the C/C++ units rather than just a non-zero count.
+          # `|| true` because a no-match grep would otherwise trip pipefail and
+          # end the step before the error below is printed.
+          pct="$(grep -oP 'Emitted [0-9]+ C/C\+\+ compilation units? \(\K[0-9]+(?=%\))' cov-build.log | tail -1 || true)"
+          if [ -z "${pct}" ] || [ "${pct}" -lt 85 ]; then
+            echo "::error::Coverity captured only ${pct:-0}% of C/C++ compilation units."
+            exit 1
+          fi
 
       - name: Upload Coverity build log
         if: always()
