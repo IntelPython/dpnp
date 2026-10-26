@@ -133,7 +133,9 @@ jobs:
           # The generic clangcc/clangcxx templates parse <sycl/sycl.hpp> without
           # SYCL mode and fail on device-only builtins (__ocl_sampler_t,
           # __ocl_image2d_ro_t, ...): dpctl's scan with that setup captures only
-          # 46% of its units, and nearly all of dpnp's sources include SYCL.
+          # 9 of its 30 sources, and nearly all of dpnp's sources include SYCL.
+          # The native type emits each SYCL source twice, as a host pass and a
+          # spir64 device pass; see the capture check below for the latter.
           # intel_oneapi_icx is current; intel_icx:linux is the older spelling
           # the Scan build tool still ships (what mkl_umath's scan resolves to).
           comptypes="$(cov-configure --list-compiler-types | cut -d, -f1)"
@@ -176,12 +178,31 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
           # A partial capture still uploads happily and uses up a scan, so
-          # require most of the C/C++ units rather than just a non-zero count.
+          # require every project source to be emitted. This is checked per
+          # source rather than via the "Emitted N (P%)" total because that
+          # total also counts the spir64 device passes, which the Scan build
+          # tool's emitter cannot parse (it trips over and then crashes in the
+          # SPIR-V builtin headers), capping P near 50% for dpnp. The host
+          # pass of each source is what gets analyzed. CMake's own try-compile
+          # probes under CMakeFiles/ are not project code and often fail.
           # `|| true` because a no-match grep would otherwise trip pipefail and
-          # end the step before the error below is printed.
-          pct="$(grep -oP 'Emitted [0-9]+ C/C\+\+ compilation units? \(\K[0-9]+(?=%\))' cov-build.log | tail -1 || true)"
-          if [ -z "${pct}" ] || [ "${pct}" -lt 85 ]; then
-            echo "::error::Coverity captured only ${pct:-0}% of C/C++ compilation units."
+          # end the step before the errors below are printed.
+          log=cov-int/build-log.txt
+          compiled="$(grep -oP '\[STATUS\] Compiling \K\S+' "${log}" | grep -F "${GITHUB_WORKSPACE}/" | grep -vF /CMakeFiles/ | sort -u || true)"
+          # Unanchored: parallel compiles can splice another unit's output onto
+          # the same line of the log.
+          emitted="$(grep -oP "Emit for file '\K[^']+(?=' \(TU [0-9]+\) complete\.)" "${log}" | sort -u || true)"
+          missing="$(comm -23 <(echo "${compiled}") <(echo "${emitted}"))"
+          total="$(grep -c . <<< "${compiled}" || true)"
+          nmissing="$(grep -c . <<< "${missing}" || true)"
+          echo "Coverity emitted $(( total - nmissing )) of ${total} project sources" | tee -a "$GITHUB_STEP_SUMMARY"
+          if [ "${total}" -eq 0 ]; then
+            echo "::error::No project sources were compiled under cov-build."
+            exit 1
+          fi
+          if [ "${nmissing}" -gt 0 ]; then
+            echo "${missing}"
+            echo "::error::Coverity did not emit ${nmissing} of ${total} project sources (listed above)."
             exit 1
           fi
 
@@ -197,6 +218,9 @@ jobs:
           if-no-files-found: warn
 
       - name: Submit results to Coverity Scan
+        # Scan keeps only the latest build, so a run dispatched on a feature
+        # branch would replace master's results; such runs stop after capture.
+        if: github.ref == 'refs/heads/master'
         timeout-minutes: 30
         env:
           COVERITY_SCAN_TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
