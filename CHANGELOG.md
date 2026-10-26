@@ -74,7 +74,7 @@ This release requires DPC++ compiler 2026.1.1 or newer and `dpctl` 0.23.0 or new
 
 ### Removed
 
-* Removed support for arrays of 2-dimensional vectors in `dpnp.cross`, which now requires (arrays of) 3-dimensional vectors and raises `ValueError` otherwise [#2950](https://github.com/IntelPython/dpnp/pull/2950)
+* Removed support for arrays of 2-element vectors in `dpnp.cross`, which now requires (arrays of) 3-element vectors and raises `ValueError` otherwise [#2950](https://github.com/IntelPython/dpnp/pull/2950)
 * Removed `dpnp.row_stack` in favor of `dpnp.vstack` [#2957](https://github.com/IntelPython/dpnp/pull/2957)
 * Removed all references to the unimplemented `dpnp.ndarray.resize` method from the documentation [#2989](https://github.com/IntelPython/dpnp/pull/2989)
 * Removed an obsolete oneAPI 2021.x workaround from the Windows conda build script that manually prepended `BUILD_PREFIX` paths onto the `LIB` and `INCLUDE` [#3013](https://github.com/IntelPython/dpnp/pull/3013)
