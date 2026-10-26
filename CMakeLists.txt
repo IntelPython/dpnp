@@ -27,7 +27,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-cmake_minimum_required(VERSION 3.21...3.27 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.27 FATAL_ERROR)
 
 project(
     dpnp

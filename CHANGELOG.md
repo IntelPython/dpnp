@@ -133,6 +133,7 @@ This release requires DPC++ compiler 2026.1.1 or newer and `dpctl` 0.23.0 or new
 * Fixed importing `dpnp.scipy.sparse` re-enabling the GIL on free-threaded Python builds, because its pybind11 extension did not declare free-threading support [#3101](https://github.com/IntelPython/dpnp/pull/3101)
 * Fixed the CuPy-based `dpnp.scipy` tests under `dpnp/tests/third_party/cupyx/scipy_tests/` missing from the `dpnp` package, so they never ran against an installed package [#3102](https://github.com/IntelPython/dpnp/pull/3102)
 * Fixed a `RuntimeError` raised by kernels of the `blas`, `statistics`, `ufunc` and `window` extensions and of the legacy backend launched over more than `INT_MAX` work-items when built with DPC++ compiler 2026.2 or newer [#3104](https://github.com/IntelPython/dpnp/pull/3104)
+* Fixed the Linux conda build producing a wheel with an invalid `manylinux___x86_64` platform tag when the `conda` CLI is not on `PATH` [#3126](https://github.com/IntelPython/dpnp/pull/3126)
 
 
 ## [0.20.0] - 2026-04-22
