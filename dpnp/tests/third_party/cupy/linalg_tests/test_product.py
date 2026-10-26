@@ -8,6 +8,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
+from dpnp.exceptions import USMAllocationError
 from dpnp.tests.helper import has_support_aspect64
 from dpnp.tests.third_party.cupy import testing
 from dpnp.tests.third_party.cupy.testing._helper import skip_if_after_baseline
@@ -561,7 +562,7 @@ def test_integer_tensordot_large_indexing():
         try:
             a = cupy.zeros((2, k), dtype=cupy.uint8)
             b = cupy.zeros((k, m), dtype=cupy.uint8)
-        except MemoryError:
+        except USMAllocationError:
             pytest.skip("out of memory in test.")
 
         # Select the second row, which is zero. The overflowing bound clamps

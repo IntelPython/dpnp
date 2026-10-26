@@ -64,6 +64,7 @@ This release is compatible with NumPy 2.5.
 ### Deprecated
 
 * Deprecated setting the shape via the `shape` attribute of `dpnp.ndarray` and `dpnp.tensor.usm_ndarray`. Use `dpnp.reshape`/`dpnp.tensor.reshape` (or the `reshape` method) instead [#2967](https://github.com/IntelPython/dpnp/pull/2967)
+* Deprecated `dpnp.config.__DPNP_QUEUE_GPU__`, `dpnp.config.__DPNP_OUTPUT_NUMPY__` and `dpnp.config.__DPNP_OUTPUT_DPCTL_DEFAULT_SHARED__`, which have no effect; reading or setting them now emits a `DeprecationWarning` [#3107](https://github.com/IntelPython/dpnp/pull/3107)
 
 ### Removed
 
@@ -125,6 +126,7 @@ This release is compatible with NumPy 2.5.
 * Fixed importing `dpnp.scipy.sparse` re-enabling the GIL on free-threaded Python builds, because its pybind11 extension did not declare free-threading support [#3101](https://github.com/IntelPython/dpnp/pull/3101)
 * Fixed the CuPy-based `dpnp.scipy` tests under `dpnp/tests/third_party/cupyx/scipy_tests/` missing from the `dpnp` package, so they never ran against an installed package [#3102](https://github.com/IntelPython/dpnp/pull/3102)
 * Fixed a `RuntimeError` raised by kernels of the `blas`, `statistics`, `ufunc` and `window` extensions and of the legacy backend launched over more than `INT_MAX` work-items when built with DPC++ compiler 2026.2 or newer [#3104](https://github.com/IntelPython/dpnp/pull/3104)
+* Fixed the Linux conda build producing a wheel with an invalid `manylinux___x86_64` platform tag when the `conda` CLI is not on `PATH` [#3126](https://github.com/IntelPython/dpnp/pull/3126)
 
 ### Security
 

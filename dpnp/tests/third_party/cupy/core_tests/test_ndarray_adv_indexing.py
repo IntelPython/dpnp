@@ -6,6 +6,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
+from dpnp.exceptions import USMAllocationError
 from dpnp.tests.third_party.cupy import testing
 
 
@@ -986,7 +987,7 @@ class TestHugeArrays:
             arr[idx, :] = cupy.array([[3], [3], [3]], dtype=cupy.int8)
             # Check 3 got written (order may not be strictly guaranteed)
             assert arr.sum() == 2**30 * 3
-        except MemoryError:
+        except USMAllocationError:
             pytest.skip("out of memory in test.")
 
     @testing.slow
@@ -1003,7 +1004,7 @@ class TestHugeArrays:
             testing.assert_array_equal(res[0, -1], [1, 2])
             testing.assert_array_equal(res[1, 0], [3, 4])
             testing.assert_array_equal(res[1, -1], [3, 4])
-        except MemoryError:
+        except USMAllocationError:
             pytest.skip("out of memory in test.")
         finally:
             del res, indices, arr
@@ -1020,7 +1021,7 @@ class TestHugeArrays:
             res = arr.take(1, axis=0)
             assert res[0] == 2
             assert res[-1] == 2
-        except MemoryError:
+        except USMAllocationError:
             pytest.skip("out of memory in test.")
         finally:
             del res, arr
@@ -1034,5 +1035,5 @@ class TestHugeArrays:
             res = choices[1, :].choose(choices)
             # sanity check, we mostly care about it not crashing.
             assert res.sum() == 2**31
-        except MemoryError:
+        except USMAllocationError:
             pytest.skip("out of memory in test.")
