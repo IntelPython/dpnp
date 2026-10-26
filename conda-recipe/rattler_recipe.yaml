@@ -4,7 +4,7 @@ context:
   max_compiler_and_mkl_version: ${{ env.get("MAX_BUILD_CMPL_MKL_VERSION", default="2027.0a0") }}
   required_compiler_version: ${{ env.get("MIN_BUILD_CMPL_VERSION", default="2026.1.1") }}
   required_mkl_version: "2026.0"
-  required_dpctl_version: 0.23.0dev0
+  required_dpctl_version: 0.23.0
 
 package:
   name: dpnp
