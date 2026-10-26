@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.21.0] - 2026-MM-DD
+## [0.21.0] - 2026-10-26
 
 This release achieves 100% compliance with Python Array API specification (revision [2025.12](https://data-apis.org/array-api/2025.12/)).
 This release is compatible with NumPy 2.5.4.
