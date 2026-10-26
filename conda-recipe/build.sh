@@ -12,8 +12,15 @@ export ICPXCFG
 ICXCFG="$(pwd)/icpx_for_conda.cfg"
 export ICXCFG
 
-read -r GLIBC_MAJOR GLIBC_MINOR <<<"$(conda list '^sysroot_linux-64$' \
-    | tail -n 1 | awk '{print $2}' | grep -oP '\d+' | head -n 2 | tr '\n' ' ')"
+# Get sysroot glibc version from the build env metadata (no conda CLI needed)
+SYSROOT_META=("${BUILD_PREFIX}"/conda-meta/sysroot_linux-64-*.json)
+if [[ "${SYSROOT_META[0]##*/}" =~ ^sysroot_linux-64-([0-9]+)\.([0-9]+) ]]; then
+    GLIBC_MAJOR="${BASH_REMATCH[1]}"
+    GLIBC_MINOR="${BASH_REMATCH[2]}"
+else
+    echo "Error: unable to detect sysroot_linux-64 version in ${BUILD_PREFIX}" >&2
+    exit 1
+fi
 
 if [ -e "_skbuild" ]; then
     ${PYTHON} setup.py clean --all
