@@ -1,0 +1,10 @@
+﻿
+
+dpnp.mask\_indices
+==================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: mask_indices
