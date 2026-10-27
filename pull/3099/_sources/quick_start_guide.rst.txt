@@ -24,8 +24,8 @@ Follow device driver installation instructions to complete the step.
 Python Interpreter
 ==================
 
-You will need Python 3.10, 3.11, 3.12, 3.13 or 3.14 installed on your system. If you
-do not have one yet the easiest way to do that is to install
+You will need Python 3.10, 3.11, 3.12, 3.13, 3.14 or 3.15 installed on your system.
+If you do not have one yet the easiest way to do that is to install
 `Intel Distribution for Python*`_. It installs all essential Python numerical
 and machine learning packages optimized for the Intel hardware, including
 Data Parallel Extension for NumPy*.
@@ -113,16 +113,16 @@ To build and install the package on Linux OS, run:
 .. code-block:: bash
 
     python setup.py build_ext --inplace -- -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx
-    python -m pip install -e .
+    python -m pip install -e . --no-build-isolation
 
 To build and install the package on Windows OS, run:
 
 .. code-block:: bash
 
     python setup.py build_ext --inplace -- -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icx
-    python -m pip install -e .
+    python -m pip install -e . --no-build-isolation
 
-Alternatively, to develop on Linux OS, you can use the driver script:
+Alternatively, to develop on Linux or Windows OS, you can use the driver script:
 
 .. code-block:: bash
 
@@ -200,6 +200,7 @@ You can then use one of them as the argument to ``--target-hip``.
 For example:
 
 .. code-block:: bash
+
     python scripts/build_locally.py --target-hip=gfx90a
 
 Multi-target build
@@ -235,12 +236,18 @@ These options are useful when building pybind11 extensions that use
 Testing
 =======
 
-If you want to execute the scope of Python test suites which are available
-by the source, you will need to run a command as below:
+To run the test suite from the source tree, after building the package as
+described above, run:
 
 .. code-block:: bash
 
-    pytest -s tests
+    python -m pytest dpnp/tests
+
+To run the tests of an installed ``dpnp`` package, run:
+
+.. code-block:: bash
+
+    python -m pytest --pyargs dpnp.tests
 
 Examples
 ========

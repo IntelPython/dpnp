@@ -16,21 +16,7 @@ API reference of the Data Parallel Extension for NumPy*
    ndarray
    ufunc
    routines
-   special
    scipy
-   sparse
-   ndimage
-   generic
-   memory
-   cuda
-   memoize
-   kernel
-   optimize
-   interoperability
-   testing
-   prof
-   environment
    dtypes_table
    comparison
-   misc
    array_api
