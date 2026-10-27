@@ -1,7 +1,7 @@
 {% set max_compiler_and_mkl_version = environ.get("MAX_BUILD_CMPL_MKL_VERSION", "2027.0a0") %}
 {% set required_compiler_version = environ.get("MIN_BUILD_CMPL_VERSION", "2026.1.1") %}
 {% set required_mkl_version = "2026.0" %}
-{% set required_dpctl_version = "0.23.0dev0" %}
+{% set required_dpctl_version = "0.23.0" %}
 
 {# DPNP does not support a compiler older than 2026.0, so reject any #}
 {# MIN_BUILD_CMPL_VERSION override below that by calling an undefined macro. #}
