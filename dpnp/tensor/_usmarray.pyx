@@ -301,7 +301,7 @@ cdef class usm_ndarray:
     instance of :class:`dpctl.memory.MemoryUSMShared`,
     :class:`dpctl.memory.MemoryUSMDevice`, or
     :class:`dpctl.memory.MemoryUSMHost`; ``buffer`` can also be
-    another :class:`dpctl.tensor.usm_ndarray` instance, in which case its
+    another :class:`dpnp.tensor.usm_ndarray` instance, in which case its
     underlying ``MemoryUSM*`` buffer is used.
     """
 
@@ -859,7 +859,7 @@ cdef class usm_ndarray:
     @property
     def flags(self):
         """
-        Returns :class:`dpctl.tensor._flags.Flags` object.
+        Returns :class:`dpnp.tensor._flags.Flags` object.
         """
         return _flags.Flags(self, self.flags_)
 
@@ -935,7 +935,7 @@ cdef class usm_ndarray:
     @property
     def device(self):
         """
-        Returns :class:`dpctl.tensor.Device` object representing
+        Returns :class:`dpnp.tensor.Device` object representing
         residence of the array data.
 
         The ``Device`` object represents Array API notion of the
@@ -1137,8 +1137,8 @@ cdef class usm_ndarray:
                 It can be a oneAPI filter selector string,
                 an instance of :class:`dpctl.SyclDevice` corresponding to a
                 non-partitioned SYCL device, an instance of
-                :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device`
-                object returned by :attr:`dpctl.tensor.usm_ndarray.device`.
+                :class:`dpctl.SyclQueue`, or a :class:`dpnp.tensor.Device`
+                object returned by :attr:`dpnp.tensor.usm_ndarray.device`.
             stream (:class:`dpctl.SyclQueue`, optional):
                 Execution queue to synchronize with. If ``None``,
                 synchronization is not performed.
@@ -1420,7 +1420,7 @@ cdef class usm_ndarray:
         allocated, or the non-partitioned parent device of the allocation
         device.
 
-        See :class:`dpctl.tensor.DLDeviceType` for a list of devices supported
+        See :class:`dpnp.tensor.DLDeviceType` for a list of devices supported
         by the DLPack protocol.
 
         Raises:

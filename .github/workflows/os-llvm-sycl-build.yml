@@ -19,7 +19,9 @@ jobs:
   install-compiler:
     name: Build with nightly build of DPC++ toolchain
 
-    runs-on: ubuntu-latest
+    # TODO: back to ubuntu-latest once intel/llvm#23618 is fixed
+    # (nightly ld.lld needs libxml2.so.2, missing on ubuntu-26.04)
+    runs-on: ubuntu-24.04
     timeout-minutes: 120
 
     defaults:
@@ -28,14 +30,29 @@ jobs:
 
     env:
       DOWNLOAD_URL_PREFIX: https://github.com/intel/llvm/releases/download
-      DRIVER_PATH: 2026-WW28
-      OCLCPUEXP_FN: oclcpuexp-2026.22.6.1.17_160000_rel.tar.gz
-      TBB_URL: https://github.com/uxlfoundation/oneTBB/releases/download/v2023.1.0/
-      TBB_INSTALL_DIR: oneapi-tbb-2023.1.0
-      TBB_FN: oneapi-tbb-2023.1.0-lin.tgz
       dpctl-repo-path: '${{ github.workspace }}/dpctl'
 
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Load pinned SYCL build deps
+        env:
+          PINS: .github/sycl-build-deps.env
+        run: |
+          set -euo pipefail
+          # Export only the expected keys.
+          VARS=$(grep -E '^(DRIVER_PATH|OCLCPUEXP_FN|TBB_URL|TBB_INSTALL_DIR|TBB_FN)=' "${PINS}" || true)
+          if [[ $(wc -l <<< "${VARS}") -ne 5 ]]; then
+              echo "::error::expected 5 pins in ${PINS}, got:"
+              echo "${VARS}"
+              exit 1
+          fi
+          echo "${VARS}" | tee -a "${GITHUB_ENV}"
+
       - name: Install hwloc
         run: sudo apt install hwloc
 
@@ -102,12 +119,6 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.14'
-
-      - name: Checkout repo
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-          fetch-depth: 0
 
       - name: Checkout dpctl repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

@@ -137,6 +137,7 @@ class TestRepeatNdarrayRepeats:
             numpy.uint8,
             numpy.uint16,
             numpy.uint32,
+            numpy.uint64,
         ]
     ]
 )
@@ -146,7 +147,11 @@ class TestRepeatNdarrayRepsDtype:
     @testing.numpy_cupy_array_equal()
     def test_repeat(self, xp):
         x = testing.shaped_arange((4,), xp)
-        return xp.repeat(x, xp.array([1, 2, 3, 4], dtype=self.rep_dtype), 0)
+        repeats = xp.array([1, 2, 3, 4], dtype=self.rep_dtype)
+        if xp is numpy and testing.numpy_satisfies("<2.6.0.dev0"):
+            # NumPy < 2.6 rejects uint64 repeats even when values fit intp.
+            repeats = repeats.astype(numpy.intp)
+        return xp.repeat(x, repeats, 0)
 
 
 @testing.parameterize(
@@ -241,17 +246,15 @@ class TestRepeatNdarrayErrors:
             cupy.repeat(cupy.arange(3), cupy.array([-1, 1, 2]))
 
     def test_float_dtype_matches_numpy(self):
-        # Both NumPy and CuPy raise TypeError for unsafe cast
+        # Floating-point repeats cannot be cast to intp with same_kind.
         for xp in (numpy, cupy):
             with pytest.raises(TypeError):
                 xp.repeat(xp.arange(3), xp.array([1.0, 1.0, 1.0]), 0)
 
-    @pytest.mark.skip("dpnp accepts uint64 repeats, unlike numpy")
-    def test_uint64_matches_numpy(self):
-        # Both reject uint64 (unsigned → signed is unsafe)
-        for xp in (numpy, cupy):
-            with pytest.raises(TypeError):
-                xp.repeat(xp.arange(3), xp.array([1, 2, 3], dtype=numpy.uint64))
+    @pytest.mark.parametrize("repeats", [[2**64 - 1], [1, 2**64 - 1, 1]])
+    def test_uint64_overflow(self, repeats):
+        with pytest.raises(ValueError, match="int64 maximum"):
+            cupy.repeat(cupy.arange(3), cupy.array(repeats, dtype=numpy.uint64))
 
     def test_ndim_gt1_matches_numpy(self):
         for xp in (numpy, cupy):

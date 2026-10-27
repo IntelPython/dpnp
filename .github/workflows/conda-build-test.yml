@@ -24,6 +24,8 @@ permissions:
   contents: read
 
 env:
+  # Pinned: Miniforge3 26.9.4-0 fails 'conda init' on Windows runners
+  miniforge-version: '26.7.2-1'
   package-name: dpnp
   module-name: dpnp
   ver-script-part1: "import json; f = open('version.json', 'r'); j = json.load(f); f.close(); "
@@ -54,6 +56,8 @@ jobs:
             python_spec: '3.14.* *_cp314'
           # TODO: add free-threaded builds ('3.14.* *_cp314t') once a
           # free-threaded dpctl is available on conda-forge
+          # TODO: add Python 3.15 ('3.15.* *_cp315') once dpctl with
+          # Python 3.15 support is available on conda-forge
 
     env:
       build-conda-pkg-env: 'environments/build_conda_pkg.yml'
@@ -73,7 +77,7 @@ jobs:
         continue-on-error: true
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.build-conda-pkg-env }}
@@ -83,7 +87,7 @@ jobs:
         if: steps.setup_miniconda.outcome == 'failure'
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.build-conda-pkg-env }}
@@ -122,7 +126,7 @@ jobs:
           conda-build --no-test --python "$PYTHON_CONDA_SPEC" --numpy 2.0 $CHANNELS_LIST "$RECIPE_DIR"
 
       - name: Upload artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ${{ env.package-name }} ${{ runner.os }} Python ${{ env.python-label }}
           path: ${{ env.CONDA_BLD }}${{ env.package-name }}-*.conda
@@ -148,6 +152,8 @@ jobs:
             python_spec: '3.14.* *_cp314'
           # TODO: add free-threaded builds ('3.14.* *_cp314t') once a
           # free-threaded dpctl is available on conda-forge
+          # TODO: add Python 3.15 ('3.15.* *_cp315') once dpctl with
+          # Python 3.15 support is available on conda-forge
 
     env:
       dpnp-repo-path: './source'
@@ -173,7 +179,7 @@ jobs:
           path: ${{ env.dpnp-repo-path }}
 
       - name: Download artifact
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: ${{ env.package-name }} ${{ runner.os }} Python ${{ env.python-label }}
           path: ${{ env.pkg-path-in-channel }}
@@ -183,7 +189,7 @@ jobs:
         continue-on-error: true
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.create-conda-channel-env }}
@@ -193,7 +199,7 @@ jobs:
         if: steps.setup_miniconda.outcome == 'failure'
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.create-conda-channel-env }}

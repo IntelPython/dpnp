@@ -4,6 +4,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
+from dpnp.exceptions import USMAllocationError
 from dpnp.tests.third_party.cupy import testing
 
 pytest.skip(
@@ -71,7 +72,7 @@ class TestPacking:
             a[-1] = 1
             packed = cupy.packbits(a, bitorder=bitorder)
             assert packed[-1] == expected
-        except MemoryError:
+        except USMAllocationError:
             pytest.skip("out of memory in test.")
         finally:
             del packed, a
