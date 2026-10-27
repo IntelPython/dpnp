@@ -853,6 +853,238 @@ class TestMaxMin:
             getattr(dpnp, func)(ia, initial=6)
 
 
+class TestMinMax:
+    @pytest.mark.parametrize("axis", [None, 0, 1, -1, 2, -2, (1, 2), (0, -2)])
+    @pytest.mark.parametrize("keepdims", [False, True])
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    def test_basic(self, axis, keepdims, dtype):
+        a = generate_random_numpy_array((4, 4, 6, 8), dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = dpnp.minmax(ia, axis=axis, keepdims=keepdims)
+        assert isinstance(result, tuple) and len(result) == 2
+        expected = numpy.min(a, axis=axis, keepdims=keepdims)
+        assert_dtype_allclose(result[0], expected)
+        expected = numpy.max(a, axis=axis, keepdims=keepdims)
+        assert_dtype_allclose(result[1], expected)
+
+    # sequential, one work-group and several work-groups per reduction
+    @pytest.mark.parametrize("n", [7, 1000, 100_000])
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    def test_size(self, n, dtype):
+        a = generate_random_numpy_array((3, n), dtype=dtype)
+        ia = dpnp.array(a)
+
+        for x, ix in [(a, ia), (a[:, ::-2], ia[:, ::-2])]:
+            for axis in [None, 0, 1]:
+                result = dpnp.minmax(ix, axis=axis)
+                assert_dtype_allclose(result[0], numpy.min(x, axis=axis))
+                assert_dtype_allclose(result[1], numpy.max(x, axis=axis))
+
+    # several passes over partial results
+    @pytest.mark.parametrize("dtype", [dpnp.int8, dpnp.float32])
+    def test_large(self, dtype):
+        a = generate_random_numpy_array(6_000_000, dtype=dtype)
+        a[123] = -100
+        a[-5] = 100
+        ia = dpnp.array(a)
+
+        result = dpnp.minmax(ia)
+        assert_dtype_allclose(result[0], numpy.min(a))
+        assert_dtype_allclose(result[1], numpy.max(a))
+
+    @pytest.mark.parametrize("order", ["C", "F"])
+    @pytest.mark.parametrize("axis", [None, 0, 1, 2, (0, 2), (1, 2)])
+    def test_layout(self, order, axis):
+        a = generate_random_numpy_array((7, 300, 6), order=order)
+        ia = dpnp.array(a, order=order)
+
+        for x, ix in [(a, ia), (a[::2, ::-3], ia[::2, ::-3])]:
+            result = dpnp.minmax(ix, axis=axis)
+            assert_dtype_allclose(result[0], numpy.min(x, axis=axis))
+            assert_dtype_allclose(result[1], numpy.max(x, axis=axis))
+
+    @pytest.mark.parametrize("keepdims", [False, True])
+    def test_out_strided(self, keepdims):
+        a = generate_random_numpy_array((5, 600, 7), dtype=dpnp.int32)
+        ia = dpnp.array(a)
+        exp_min = numpy.min(a, axis=1, keepdims=keepdims)
+        exp_max = numpy.max(a, axis=1, keepdims=keepdims)
+
+        # both outputs with different strides
+        out_min = dpnp.empty((5, 14), dtype=ia.dtype)[:, ::2]
+        out_max = dpnp.empty((7, 5), dtype=ia.dtype).T
+        if keepdims:
+            out_min, out_max = out_min[:, None], out_max[:, None]
+
+        result = dpnp.minmax(
+            ia, axis=1, keepdims=keepdims, out=(out_min, out_max)
+        )
+        assert result[0] is out_min and result[1] is out_max
+        assert_array_equal(result[0], exp_min)
+        assert_array_equal(result[1], exp_max)
+
+    @with_requires("numpy>=2.6.0.dev0")
+    @pytest.mark.parametrize("axis", [None, 0, 1, (0, 1)])
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    def test_numpy(self, axis, dtype):
+        a = generate_random_numpy_array((3, 4), dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = dpnp.minmax(ia, axis)
+        expected = numpy.minmax(a, axis)
+        assert_dtype_allclose(result[0], expected[0])
+        assert_dtype_allclose(result[1], expected[1])
+
+    @pytest.mark.parametrize("axis", [None, 0, 1])
+    @pytest.mark.parametrize("shape", [(4, 5), (3, 1000), (3, 100_000)])
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_nan(self, axis, shape, dtype):
+        a = generate_random_numpy_array(shape, dtype=dtype)
+        a[0, 1] = numpy.inf
+        a[0, -2] = -numpy.inf
+        a[1, 2] = a[-1, -1] = numpy.nan
+        ia = dpnp.array(a)
+
+        result = dpnp.minmax(ia, axis=axis)
+        assert_dtype_allclose(result[0], numpy.min(a, axis=axis))
+        assert_dtype_allclose(result[1], numpy.max(a, axis=axis))
+
+    def test_0d(self):
+        ia = dpnp.array(3)
+        result = dpnp.minmax(ia)
+        assert_array_equal(result[0], 3)
+        assert_array_equal(result[1], 3)
+
+    def test_usm_ndarray(self):
+        a = numpy.array([[3, 1, 2], [5, 0, 4]])
+        ia = dpt.asarray(a)
+
+        res_min, res_max = dpnp.minmax(ia, axis=1)
+        assert isinstance(res_min, dpnp.ndarray)
+        assert isinstance(res_max, dpnp.ndarray)
+        assert_array_equal(res_min, numpy.min(a, axis=1))
+        assert_array_equal(res_max, numpy.max(a, axis=1))
+
+    def test_out(self):
+        a = numpy.arange(12, dtype=numpy.float32).reshape((2, 2, 3))
+        ia = dpnp.array(a)
+        exp_min, exp_max = numpy.min(a, axis=0), numpy.max(a, axis=0)
+
+        # out is a tuple of dpnp_array
+        out = (dpnp.empty_like(ia[0]), dpnp.empty_like(ia[0]))
+        result = dpnp.minmax(ia, axis=0, out=out)
+        assert result[0] is out[0] and result[1] is out[1]
+        assert_allclose(result[0], exp_min)
+        assert_allclose(result[1], exp_max)
+
+        # out is a tuple of usm_ndarray
+        dpt_out = dpt.empty((2, 3), dtype=ia.dtype)
+        out = (dpt_out, dpt.empty_like(dpt_out))
+        result = dpnp.minmax(ia, axis=0, out=out)
+        assert result[0].get_array() is out[0]
+        assert result[1].get_array() is out[1]
+        assert_allclose(result[0], exp_min)
+        assert_allclose(result[1], exp_max)
+
+        # out has None entry
+        out_max = dpnp.empty_like(ia[0])
+        result = dpnp.minmax(ia, axis=0, out=(None, out_max))
+        assert result[1] is out_max
+        assert_allclose(result[0], exp_min)
+        assert_allclose(result[1], exp_max)
+
+    def test_out_dtype(self):
+        a = numpy.arange(12, dtype=numpy.float32).reshape((3, 4)) - 2.5
+        ia = dpnp.array(a)
+
+        out = (dpnp.empty(4, dtype=dpnp.int32), dpnp.empty(4, dtype="i2"))
+        result = dpnp.minmax(ia, axis=0, out=out)
+        assert result[0] is out[0] and result[1] is out[1]
+
+        expected = numpy.min(a, axis=0, out=numpy.empty(4, dtype=numpy.int32))
+        assert_dtype_allclose(result[0], expected)
+        expected = numpy.max(a, axis=0, out=numpy.empty(4, dtype="i2"))
+        assert_dtype_allclose(result[1], expected)
+
+    @pytest.mark.parametrize("idx", [0, 1])
+    def test_out_overlap_input(self, idx):
+        # the 1st row holds the maximum of some columns
+        a = numpy.array([[5, 1, 9, 3], [1, 7, 0, 2], [2, 3, 4, 8]])
+        ia = dpnp.array(a)
+        exp_min, exp_max = numpy.min(a, axis=0), numpy.max(a, axis=0)
+
+        out = [None, None]
+        out[idx] = ia[0]
+        result = dpnp.minmax(ia, axis=0, out=tuple(out))
+        assert result[idx] is out[idx]
+        assert_array_equal(result[0], exp_min)
+        assert_array_equal(result[1], exp_max)
+
+    def test_out_error(self):
+        ia = dpnp.arange(12).reshape((3, 4))
+        out = dpnp.empty(4, dtype=ia.dtype)
+
+        # out is not a tuple
+        with pytest.raises(TypeError, match="must be a tuple"):
+            dpnp.minmax(ia, axis=0, out=out)
+        with pytest.raises(TypeError, match="must be a tuple"):
+            dpnp.minmax(ia, axis=0, out=[out, dpnp.empty_like(out)])
+
+        # out has incorrect number of entries
+        with pytest.raises(ValueError, match="exactly two entries"):
+            dpnp.minmax(ia, axis=0, out=(out,))
+        with pytest.raises(ValueError, match="exactly two entries"):
+            dpnp.minmax(ia, axis=0, out=(out, None, None))
+
+        # out entry is numpy array
+        with pytest.raises(TypeError):
+            dpnp.minmax(ia, axis=0, out=(numpy.empty(4), None))
+        with pytest.raises(TypeError):
+            dpnp.minmax(ia, axis=0, out=(None, numpy.empty(4)))
+
+        # out entry has incorrect shape
+        with pytest.raises(ValueError):
+            dpnp.minmax(ia, axis=0, out=(dpnp.empty(3), None))
+        with pytest.raises(ValueError):
+            dpnp.minmax(ia, axis=0, out=(None, dpnp.empty(3)))
+
+        # out entries overlap
+        with pytest.raises(ValueError, match="cannot overlap"):
+            dpnp.minmax(ia, axis=0, out=(out, out))
+        buf = dpnp.empty(6, dtype=ia.dtype)
+        with pytest.raises(ValueError, match="cannot overlap"):
+            dpnp.minmax(ia, axis=0, out=(buf[:4], buf[2:]))
+
+    @pytest.mark.parametrize("axis", [None, 0])
+    def test_empty_error(self, axis):
+        ia = dpnp.empty((0, 3))
+        with pytest.raises(ValueError):
+            dpnp.minmax(ia, axis=axis)
+
+    def test_empty(self):
+        a = numpy.empty((0, 3), dtype=numpy.float32)
+        ia = dpnp.array(a)
+
+        result = dpnp.minmax(ia, axis=1)
+        assert_dtype_allclose(result[0], numpy.min(a, axis=1))
+        assert_dtype_allclose(result[1], numpy.max(a, axis=1))
+
+    def test_error(self):
+        ia = dpnp.arange(5)
+        # where is not supported
+        with pytest.raises(NotImplementedError):
+            dpnp.minmax(ia, where=False)
+
+        # initial is not supported
+        with pytest.raises(NotImplementedError):
+            dpnp.minmax(ia, initial=6)
+
+        # input is numpy array
+        with pytest.raises(TypeError):
+            dpnp.minmax(numpy.arange(5))
+
+
 class TestMean:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("axis", [None, 0, 1, (0, 1)])

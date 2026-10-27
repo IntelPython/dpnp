@@ -50,6 +50,7 @@ import dpnp
 import dpnp.backend.extensions.statistics._statistics_impl as statistics_ext
 import dpnp.tensor as dpt
 import dpnp.tensor._tensor_elementwise_impl as ti
+import dpnp.tensor._tensor_impl as dti
 
 from .dpnp_utils import get_usm_allocations
 from .dpnp_utils.dpnp_utils_common import (
@@ -59,6 +60,7 @@ from .dpnp_utils.dpnp_utils_common import (
 from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
 from .dpnp_utils.dpnp_utils_statistics import dpnp_cov, dpnp_median
 from .tensor._numpy_helper import normalize_axis_index
+from .tensor._reduction import _minmax as dpt_minmax
 
 
 def _count_reduce_items(arr, axis, where=True):
@@ -1406,6 +1408,127 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
         a.dtype,
         axis=axis,
         keepdims=keepdims,
+    )
+
+
+def minmax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
+    """
+    Return the minimum and maximum of an array or along an axis.
+
+    This is equivalent to ``(dpnp.min(a, ...), dpnp.max(a, ...))`` but computes
+    both the minimum and the maximum in a single pass over `a`.
+
+    For full documentation refer to :obj:`numpy.minmax`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    axis : {None, int or tuple of ints}, optional
+        Axis or axes along which to operate. By default, flattened input is
+        used. If this is a tuple of integers, the minimum and the maximum are
+        selected over multiple axes, instead of a single axis or all the axes
+        as before.
+
+        Default: ``None``.
+    out : {None, tuple of None, dpnp.ndarray or usm_ndarray}, optional
+        A tuple ``(min, max)`` of two arrays in which to place the result.
+        Each array must be of the same shape and buffer length as the expected
+        output. A ``None`` entry means that a new array is allocated for that
+        result.
+
+        Default: ``None``.
+    keepdims : {None, bool}, optional
+        If this is set to ``True``, the axes which are reduced are left in the
+        result as dimensions with size one. With this option, the result will
+        broadcast correctly against the input array.
+
+        Default: ``False``.
+
+    Returns
+    -------
+    out : tuple of dpnp.ndarray
+        A tuple ``(min, max)`` holding the minimum and maximum of `a`. If
+        `axis` is ``None``, the results are zero-dimensional arrays. If `axis`
+        is an integer, the results are arrays of dimension ``a.ndim - 1``. If
+        `axis` is a tuple, the results are arrays of dimension
+        ``a.ndim - len(axis)``.
+
+    Limitations
+    -----------
+    Parameters `where`, and `initial` are only supported with their default
+    values. Otherwise ``NotImplementedError`` exception will be raised.
+
+    See Also
+    --------
+    :obj:`dpnp.min` : Return the minimum of an array.
+    :obj:`dpnp.max` : Return the maximum of an array.
+    :obj:`dpnp.ptp` : Range of values (maximum - minimum) along an axis.
+    :obj:`dpnp.nanmin` : The minimum value of an array along a given axis,
+                         ignores NaNs.
+    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis,
+                         ignores NaNs.
+
+    Notes
+    -----
+    NaN values are propagated, that is if at least one item is NaN, the
+    corresponding output value will be NaN as well. To ignore NaN values
+    use :obj:`dpnp.nanmin` and :obj:`dpnp.nanmax`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.arange(4).reshape((2, 2))
+    >>> a
+    array([[0, 1],
+           [2, 3]])
+    >>> np.minmax(a)            # min and max of the flattened array
+    (array(0), array(3))
+
+    >>> np.minmax(a, axis=0)    # along the first axis
+    (array([0, 1]), array([2, 3]))
+    >>> np.minmax(a, axis=1)    # along the second axis
+    (array([0, 2]), array([1, 3]))
+
+    >>> b = np.arange(5, dtype=float)
+    >>> b[2] = np.nan
+    >>> np.minmax(b)
+    (array(nan), array(nan))
+
+    """
+
+    dpnp.check_limitations(initial=initial, where=where)
+    usm_a = dpnp.get_usm_ndarray(a)
+
+    if out is None:
+        out = (None, None)
+    elif not isinstance(out, tuple):
+        raise TypeError("'out' must be a tuple of arrays")
+    elif len(out) != 2:
+        raise ValueError("'out' tuple must have exactly two entries")
+
+    if all(res is not None for res in out):
+        dpnp.check_supported_arrays_type(*out)
+        # pylint: disable=protected-access
+        if dti._array_overlap(*map(dpnp.get_usm_ndarray, out)):
+            raise ValueError("Output arrays cannot overlap")
+
+    usm_out = []
+    for res in out:
+        if res is not None:
+            dpnp.check_supported_arrays_type(res)
+            # the result is computed in the data type of `a`
+            if res.dtype != a.dtype:
+                res = dpnp.astype(res, a.dtype, copy=False)
+            res = dpnp.get_usm_ndarray(res)
+        usm_out.append(res)
+
+    usm_res = dpt_minmax(
+        usm_a, axis=axis, keepdims=keepdims, out=tuple(usm_out)
+    )
+    return tuple(
+        dpnp.get_result_array(x, res, casting="unsafe")
+        for x, res in zip(usm_res, out)
     )
 
 

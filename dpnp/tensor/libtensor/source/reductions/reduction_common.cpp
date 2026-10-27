@@ -42,6 +42,7 @@
 #include "logsumexp.hpp"
 #include "max.hpp"
 #include "min.hpp"
+#include "minmax.hpp"
 #include "prod.hpp"
 #include "reduce_hypot.hpp"
 #include "sum.hpp"
@@ -61,6 +62,7 @@ void init_reduction_functions(py::module_ m)
     init_logsumexp(m);
     init_max(m);
     init_min(m);
+    init_minmax(m);
     init_prod(m);
     init_reduce_hypot(m);
     init_sum(m);

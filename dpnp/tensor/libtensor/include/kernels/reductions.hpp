@@ -3315,4 +3315,711 @@ sycl::event search_axis0_over_group_temps_contig_impl(
     }
 }
 
+/* ============ Fused minimum and maximum reduction ============ */
+
+template <typename argT,
+          typename MinOpT,
+          typename MaxOpT,
+          typename InputOutputIterIndexerT,
+          typename InputRedIndexerT>
+struct SequentialMinMaxReduction
+{
+private:
+    const argT *inp_ = nullptr;
+    argT *out_min_ = nullptr;
+    argT *out_max_ = nullptr;
+    argT min_identity_;
+    argT max_identity_;
+    InputOutputIterIndexerT inp_out_iter_indexer_;
+    InputRedIndexerT inp_reduced_dims_indexer_;
+    std::size_t reduction_max_gid_ = 0;
+
+public:
+    SequentialMinMaxReduction(
+        const argT *inp,
+        argT *res_min,
+        argT *res_max,
+        const argT &min_identity_val,
+        const argT &max_identity_val,
+        const InputOutputIterIndexerT &arg_res_iter_indexer,
+        const InputRedIndexerT &arg_reduced_dims_indexer,
+        std::size_t reduction_size)
+        : inp_(inp), out_min_(res_min), out_max_(res_max),
+          min_identity_(min_identity_val), max_identity_(max_identity_val),
+          inp_out_iter_indexer_(arg_res_iter_indexer),
+          inp_reduced_dims_indexer_(arg_reduced_dims_indexer),
+          reduction_max_gid_(reduction_size)
+    {
+    }
+
+    void operator()(sycl::id<1> id) const
+    {
+        auto const &inp_out_iter_offsets_ = inp_out_iter_indexer_(id[0]);
+        const ssize_t &inp_iter_offset =
+            inp_out_iter_offsets_.get_first_offset();
+        const ssize_t &out_min_iter_offset =
+            inp_out_iter_offsets_.get_second_offset();
+        const ssize_t &out_max_iter_offset =
+            inp_out_iter_offsets_.get_third_offset();
+
+        const MinOpT min_op{};
+        const MaxOpT max_op{};
+
+        argT red_min(min_identity_);
+        argT red_max(max_identity_);
+        for (std::size_t m = 0; m < reduction_max_gid_; ++m) {
+            const ssize_t inp_reduction_offset = inp_reduced_dims_indexer_(m);
+            const ssize_t inp_offset = inp_iter_offset + inp_reduction_offset;
+
+            const argT val = normalize_bool(inp_[inp_offset]);
+            red_min = min_op(red_min, val);
+            red_max = max_op(red_max, val);
+        }
+
+        out_min_[out_min_iter_offset] = red_min;
+        out_max_[out_max_iter_offset] = red_max;
+    }
+};
+
+template <typename T>
+using is_real_floating = std::bool_constant<std::is_floating_point_v<T> ||
+                                            std::is_same_v<T, sycl::half>>;
+
+/* @brief Reduces both extrema over a work-group with SYCL group algorithms */
+template <typename argT, typename MinOpT, typename MaxOpT>
+struct MinMaxGroupReducer
+{
+    template <typename GroupT>
+    void operator()(const GroupT &wg, argT &red_min, argT &red_max) const
+    {
+        if constexpr (std::is_same_v<argT, bool>) {
+            red_min = sycl::all_of_group(wg, red_min);
+            red_max = sycl::any_of_group(wg, red_max);
+        }
+        else if constexpr (is_real_floating<argT>::value) {
+            // a NaN reaches both extrema of a work-item
+            if (sycl::any_of_group(wg, std::isnan(red_min))) {
+                // propagate the NaN of the first work-item having one
+                const std::uint32_t lid = wg.get_local_linear_id();
+                const std::uint32_t wgs = wg.get_local_linear_range();
+                const std::uint32_t nan_lid =
+                    sycl::reduce_over_group(wg, std::isnan(red_min) ? lid : wgs,
+                                            sycl::minimum<std::uint32_t>());
+                red_min = sycl::group_broadcast(wg, red_min, nan_lid);
+                red_max = sycl::group_broadcast(wg, red_max, nan_lid);
+            }
+            else {
+                red_min =
+                    sycl::reduce_over_group(wg, red_min, sycl::minimum<argT>());
+                red_max =
+                    sycl::reduce_over_group(wg, red_max, sycl::maximum<argT>());
+            }
+        }
+        else {
+            red_min = sycl::reduce_over_group(wg, red_min, MinOpT());
+            red_max = sycl::reduce_over_group(wg, red_max, MaxOpT());
+        }
+    }
+};
+
+/* @brief Whether MinMaxGroupReducer supports the type */
+template <typename argT, typename MinOpT, typename MaxOpT>
+struct can_use_minmax_group_reducer
+{
+    static constexpr bool value =
+        std::is_same_v<argT, bool> ||
+        (is_real_floating<argT>::value &&
+         can_use_reduce_over_group<sycl::minimum<argT>, argT>::value &&
+         can_use_reduce_over_group<sycl::maximum<argT>, argT>::value) ||
+        (can_use_reduce_over_group<MinOpT, argT>::value &&
+         can_use_reduce_over_group<MaxOpT, argT>::value);
+};
+
+/* @brief Reduces both extrema over a work-group with
+ * custom_reduce_over_group */
+template <typename argT, typename MinOpT, typename MaxOpT, typename SlmT>
+struct CustomMinMaxGroupReducer
+{
+private:
+    SlmT local_mem_;
+
+public:
+    CustomMinMaxGroupReducer(const SlmT &local_mem) : local_mem_(local_mem) {}
+
+    template <typename GroupT>
+    void operator()(const GroupT &wg, argT &red_min, argT &red_max) const
+    {
+        red_min =
+            su_ns::custom_reduce_over_group(wg, local_mem_, red_min, MinOpT());
+        // local memory is reused for the maximum
+        sycl::group_barrier(wg, sycl::memory_scope::work_group);
+        red_max =
+            su_ns::custom_reduce_over_group(wg, local_mem_, red_max, MaxOpT());
+    }
+};
+
+/*
+  When First is true, the input is read once to update both extrema.
+  Otherwise, the partial minima and maxima of a previous pass are reduced.
+*/
+template <typename argT,
+          typename MinOpT,
+          typename MaxOpT,
+          typename InputOutputIterIndexerT,
+          typename InputRedIndexerT,
+          typename GroupReducerT,
+          bool First>
+struct MinMaxReductionOverGroupFunctor
+{
+private:
+    const argT *inp_min_ = nullptr;
+    const argT *inp_max_ = nullptr;
+    argT *out_min_ = nullptr;
+    argT *out_max_ = nullptr;
+    argT min_identity_;
+    argT max_identity_;
+    InputOutputIterIndexerT inp_out_iter_indexer_;
+    InputRedIndexerT inp_reduced_dims_indexer_;
+    GroupReducerT group_reducer_;
+    std::size_t reduction_max_gid_ = 0;
+    std::size_t iter_gws_ = 1;
+    std::size_t reductions_per_wi = 16;
+
+public:
+    MinMaxReductionOverGroupFunctor(
+        const argT *inp_min,
+        const argT *inp_max,
+        argT *res_min,
+        argT *res_max,
+        const argT &min_identity_val,
+        const argT &max_identity_val,
+        const InputOutputIterIndexerT &arg_res_iter_indexer,
+        const InputRedIndexerT &arg_reduced_dims_indexer,
+        const GroupReducerT &group_reducer,
+        std::size_t reduction_size,
+        std::size_t iteration_size,
+        std::size_t reduction_size_per_wi)
+        : inp_min_(inp_min), inp_max_(inp_max), out_min_(res_min),
+          out_max_(res_max), min_identity_(min_identity_val),
+          max_identity_(max_identity_val),
+          inp_out_iter_indexer_(arg_res_iter_indexer),
+          inp_reduced_dims_indexer_(arg_reduced_dims_indexer),
+          group_reducer_(group_reducer), reduction_max_gid_(reduction_size),
+          iter_gws_(iteration_size), reductions_per_wi(reduction_size_per_wi)
+    {
+    }
+
+    void operator()(sycl::nd_item<1> it) const
+    {
+        const std::size_t reduction_lid = it.get_local_id(0);
+        const std::size_t wg =
+            it.get_local_range(0); //   0 <= reduction_lid < wg
+
+        const std::size_t iter_gid = it.get_group(0) % iter_gws_;
+        const std::size_t reduction_batch_id = it.get_group(0) / iter_gws_;
+        const std::size_t n_reduction_groups =
+            it.get_group_range(0) / iter_gws_;
+
+        // work-items operates over input with indices
+        //   inp_data_id = reduction_batch_id * wg * reductions_per_wi + m * wg
+        //   + reduction_lid
+        // for 0 <= m < reductions_per_wi
+
+        const auto &inp_out_iter_offsets_ = inp_out_iter_indexer_(iter_gid);
+        const auto &inp_iter_offset = inp_out_iter_offsets_.get_first_offset();
+        const auto &out_min_iter_offset =
+            inp_out_iter_offsets_.get_second_offset();
+        const auto &out_max_iter_offset =
+            inp_out_iter_offsets_.get_third_offset();
+
+        const MinOpT min_op{};
+        const MaxOpT max_op{};
+
+        argT red_min(min_identity_);
+        argT red_max(max_identity_);
+        std::size_t arg_reduce_gid0 =
+            reduction_lid + reduction_batch_id * wg * reductions_per_wi;
+        for (std::size_t m = 0; m < reductions_per_wi; ++m) {
+            std::size_t arg_reduce_gid = arg_reduce_gid0 + m * wg;
+
+            if (arg_reduce_gid < reduction_max_gid_) {
+                auto inp_reduction_offset =
+                    inp_reduced_dims_indexer_(arg_reduce_gid);
+                auto inp_offset = inp_iter_offset + inp_reduction_offset;
+
+                if constexpr (First) {
+                    const argT val = normalize_bool(inp_min_[inp_offset]);
+                    red_min = min_op(red_min, val);
+                    red_max = max_op(red_max, val);
+                }
+                else {
+                    red_min = min_op(red_min, inp_min_[inp_offset]);
+                    red_max = max_op(red_max, inp_max_[inp_offset]);
+                }
+            }
+        }
+
+        auto work_group = it.get_group();
+        group_reducer_(work_group, red_min, red_max);
+
+        if (work_group.leader()) {
+            // each group writes to a different memory location
+            out_min_[out_min_iter_offset * n_reduction_groups +
+                     reduction_batch_id] = red_min;
+            out_max_[out_max_iter_offset * n_reduction_groups +
+                     reduction_batch_id] = red_max;
+        }
+    }
+};
+
+template <typename T1, typename T2, typename T3, typename T4, typename T5>
+class minmax_seq_krn;
+
+template <typename T1,
+          typename T2,
+          typename T3,
+          typename T4,
+          typename T5,
+          typename T6,
+          bool b1>
+class minmax_over_group_krn;
+
+template <typename argTy,
+          typename MinOpT,
+          typename MaxOpT,
+          typename InputOutputIterIndexerT,
+          typename ReductionIndexerT,
+          bool First>
+sycl::event
+    submit_minmax_reduction(sycl::queue &exec_q,
+                            const argTy *arg_min,
+                            const argTy *arg_max,
+                            argTy *res_min,
+                            argTy *res_max,
+                            std::size_t wg,
+                            std::size_t iter_nelems,
+                            std::size_t reduction_nelems,
+                            std::size_t reductions_per_wi,
+                            std::size_t reduction_groups,
+                            const InputOutputIterIndexerT &in_out_iter_indexer,
+                            const ReductionIndexerT &reduction_indexer,
+                            const std::vector<sycl::event> &depends)
+{
+    static constexpr argTy min_identity_val =
+        su_ns::Identity<MinOpT, argTy>::value;
+    static constexpr argTy max_identity_val =
+        su_ns::Identity<MaxOpT, argTy>::value;
+
+    sycl::event red_ev = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+
+        auto globalRange = sycl::range<1>{iter_nelems * reduction_groups * wg};
+        auto localRange = sycl::range<1>{wg};
+        auto ndRange = sycl::nd_range<1>(globalRange, localRange);
+
+        if constexpr (can_use_minmax_group_reducer<argTy, MinOpT,
+                                                   MaxOpT>::value) {
+            using GroupReducerT = MinMaxGroupReducer<argTy, MinOpT, MaxOpT>;
+            using KernelName = class minmax_over_group_krn<
+                argTy, MinOpT, MaxOpT, InputOutputIterIndexerT,
+                ReductionIndexerT, GroupReducerT, First>;
+
+            cgh.parallel_for<KernelName>(
+                ndRange,
+                MinMaxReductionOverGroupFunctor<
+                    argTy, MinOpT, MaxOpT, InputOutputIterIndexerT,
+                    ReductionIndexerT, GroupReducerT, First>(
+                    arg_min, arg_max, res_min, res_max, min_identity_val,
+                    max_identity_val, in_out_iter_indexer, reduction_indexer,
+                    GroupReducerT{}, reduction_nelems, iter_nelems,
+                    reductions_per_wi));
+        }
+        else {
+            using SlmT = sycl::local_accessor<argTy, 1>;
+            SlmT local_memory = SlmT(localRange, cgh);
+
+            using GroupReducerT =
+                CustomMinMaxGroupReducer<argTy, MinOpT, MaxOpT, SlmT>;
+            using KernelName = class minmax_over_group_krn<
+                argTy, MinOpT, MaxOpT, InputOutputIterIndexerT,
+                ReductionIndexerT, GroupReducerT, First>;
+
+            cgh.parallel_for<KernelName>(
+                ndRange,
+                MinMaxReductionOverGroupFunctor<
+                    argTy, MinOpT, MaxOpT, InputOutputIterIndexerT,
+                    ReductionIndexerT, GroupReducerT, First>(
+                    arg_min, arg_max, res_min, res_max, min_identity_val,
+                    max_identity_val, in_out_iter_indexer, reduction_indexer,
+                    GroupReducerT{local_memory}, reduction_nelems, iter_nelems,
+                    reductions_per_wi));
+        }
+    });
+    return red_ev;
+}
+
+/*
+  Computes the minimum and the maximum in one pass over the input:
+  `inp_iter_indexer` maps an iteration index to the offset of its reduction
+  in the input, `res_min_iter_indexer` and `res_max_iter_indexer` map it to
+  the offsets of its results, and `reduction_indexer` maps a reduction index
+  to an input offset relative to the iteration offset.
+*/
+template <typename argTy,
+          typename MinOpT,
+          typename MaxOpT,
+          typename InputIterIndexerT,
+          typename ResIterIndexerT,
+          typename ReductionIndexerT>
+sycl::event
+    minmax_over_group_temps_impl(sycl::queue &exec_q,
+                                 std::size_t iter_nelems,
+                                 std::size_t reduction_nelems,
+                                 const argTy *arg_tp,
+                                 argTy *res_min_tp,
+                                 argTy *res_max_tp,
+                                 const InputIterIndexerT &inp_iter_indexer,
+                                 const ResIterIndexerT &res_min_iter_indexer,
+                                 const ResIterIndexerT &res_max_iter_indexer,
+                                 const ReductionIndexerT &reduction_indexer,
+                                 const std::vector<sycl::event> &depends)
+{
+    using dpnp::tensor::offset_utils::NoOpIndexer;
+    using dpnp::tensor::offset_utils::Strided1DIndexer;
+    using dpnp::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
+
+    using ResInputOutputIterIndexerT =
+        ThreeOffsets_CombinedIndexer<InputIterIndexerT, ResIterIndexerT,
+                                     ResIterIndexerT>;
+    const ResInputOutputIterIndexerT res_in_out_iter_indexer{
+        inp_iter_indexer, res_min_iter_indexer, res_max_iter_indexer};
+
+    const sycl::device &d = exec_q.get_device();
+    const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
+    std::size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
+
+    if (reduction_nelems < wg) {
+        static constexpr argTy min_identity_val =
+            su_ns::Identity<MinOpT, argTy>::value;
+        static constexpr argTy max_identity_val =
+            su_ns::Identity<MaxOpT, argTy>::value;
+
+        sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(depends);
+
+            using KernelName = class minmax_seq_krn<argTy, MinOpT, MaxOpT,
+                                                    ResInputOutputIterIndexerT,
+                                                    ReductionIndexerT>;
+
+            cgh.parallel_for<KernelName>(
+                sycl::range<1>(iter_nelems),
+                SequentialMinMaxReduction<argTy, MinOpT, MaxOpT,
+                                          ResInputOutputIterIndexerT,
+                                          ReductionIndexerT>(
+                    arg_tp, res_min_tp, res_max_tp, min_identity_val,
+                    max_identity_val, res_in_out_iter_indexer,
+                    reduction_indexer, reduction_nelems));
+        });
+
+        return comp_ev;
+    }
+
+    static constexpr std::size_t preferred_reductions_per_wi = 8;
+    // prevents running out of resources on CPU
+    std::size_t max_wg = reduction_detail::get_work_group_size(d);
+
+    if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
+        // Perform reduction using one 1 work-group per iteration,
+        // can output directly to res
+
+        if (iter_nelems == 1) {
+            // increase GPU occupancy
+            wg = max_wg;
+        }
+        std::size_t reductions_per_wi =
+            std::max<std::size_t>(1, (reduction_nelems + wg - 1) / wg);
+
+        std::size_t reduction_groups =
+            (reduction_nelems + reductions_per_wi * wg - 1) /
+            (reductions_per_wi * wg);
+        assert(reduction_groups == 1);
+
+        sycl::event comp_ev =
+            submit_minmax_reduction<argTy, MinOpT, MaxOpT,
+                                    ResInputOutputIterIndexerT,
+                                    ReductionIndexerT, true>(
+                exec_q, arg_tp, arg_tp, res_min_tp, res_max_tp, wg, iter_nelems,
+                reduction_nelems, reductions_per_wi, reduction_groups,
+                res_in_out_iter_indexer, reduction_indexer, depends);
+
+        return comp_ev;
+    }
+
+    // more than one work-groups is needed, requires temporaries
+    std::size_t reduction_groups =
+        (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
+        (preferred_reductions_per_wi * wg);
+    assert(reduction_groups > 1);
+
+    std::size_t second_iter_reduction_groups_ =
+        (reduction_groups + preferred_reductions_per_wi * wg - 1) /
+        (preferred_reductions_per_wi * wg);
+
+    // partial minima are followed by partial maxima
+    const std::size_t tmp_alloc_size =
+        iter_nelems * (reduction_groups + second_iter_reduction_groups_);
+    auto tmp_owner = dpnp::tensor::alloc_utils::smart_malloc_device<argTy>(
+        2 * tmp_alloc_size, exec_q);
+
+    argTy *min_tmp = tmp_owner.get();
+    argTy *min_tmp2 = min_tmp + reduction_groups * iter_nelems;
+    argTy *max_tmp = min_tmp + tmp_alloc_size;
+    argTy *max_tmp2 = max_tmp + reduction_groups * iter_nelems;
+
+    sycl::event first_reduction_ev;
+    {
+        using InputOutputIterIndexerT =
+            ThreeOffsets_CombinedIndexer<InputIterIndexerT, NoOpIndexer,
+                                         NoOpIndexer>;
+
+        static constexpr NoOpIndexer noop_tmp_indexer{};
+        const InputOutputIterIndexerT in_out_iter_indexer{
+            inp_iter_indexer, noop_tmp_indexer, noop_tmp_indexer};
+
+        first_reduction_ev = submit_minmax_reduction<argTy, MinOpT, MaxOpT,
+                                                     InputOutputIterIndexerT,
+                                                     ReductionIndexerT, true>(
+            exec_q, arg_tp, arg_tp, min_tmp, max_tmp, wg, iter_nelems,
+            reduction_nelems, preferred_reductions_per_wi, reduction_groups,
+            in_out_iter_indexer, reduction_indexer, depends);
+    }
+
+    std::size_t remaining_reduction_nelems = reduction_groups;
+    sycl::event dependent_ev = first_reduction_ev;
+
+    using TmpReductionIndexerT = NoOpIndexer;
+    static constexpr TmpReductionIndexerT tmp_reduction_indexer{};
+
+    while (remaining_reduction_nelems > preferred_reductions_per_wi * max_wg) {
+        std::size_t reduction_groups_ = (remaining_reduction_nelems +
+                                         preferred_reductions_per_wi * wg - 1) /
+                                        (preferred_reductions_per_wi * wg);
+        assert(reduction_groups_ > 1);
+
+        // keep reducing
+        using InputOutputIterIndexerT =
+            ThreeOffsets_CombinedIndexer<Strided1DIndexer, NoOpIndexer,
+                                         NoOpIndexer>;
+
+        static constexpr NoOpIndexer noop_tmp_indexer{};
+        const InputOutputIterIndexerT in_out_iter_indexer{
+            Strided1DIndexer{/* size */ iter_nelems,
+                             /* step */ remaining_reduction_nelems},
+            noop_tmp_indexer, noop_tmp_indexer};
+
+        sycl::event partial_reduction_ev =
+            submit_minmax_reduction<argTy, MinOpT, MaxOpT,
+                                    InputOutputIterIndexerT,
+                                    TmpReductionIndexerT, false>(
+                exec_q, min_tmp, max_tmp, min_tmp2, max_tmp2, wg, iter_nelems,
+                remaining_reduction_nelems, preferred_reductions_per_wi,
+                reduction_groups_, in_out_iter_indexer, tmp_reduction_indexer,
+                {dependent_ev});
+
+        remaining_reduction_nelems = reduction_groups_;
+        std::swap(min_tmp, min_tmp2);
+        std::swap(max_tmp, max_tmp2);
+        dependent_ev = std::move(partial_reduction_ev);
+    }
+
+    // final reduction to res
+    using InputOutputIterIndexerT =
+        ThreeOffsets_CombinedIndexer<Strided1DIndexer, ResIterIndexerT,
+                                     ResIterIndexerT>;
+
+    const InputOutputIterIndexerT in_out_iter_indexer{
+        Strided1DIndexer{/* size */ iter_nelems,
+                         /* step */ remaining_reduction_nelems},
+        res_min_iter_indexer, res_max_iter_indexer};
+
+    wg = max_wg;
+    std::size_t reductions_per_wi =
+        std::max<std::size_t>(1, (remaining_reduction_nelems + wg - 1) / wg);
+
+    reduction_groups =
+        (remaining_reduction_nelems + reductions_per_wi * wg - 1) /
+        (reductions_per_wi * wg);
+    assert(reduction_groups == 1);
+
+    sycl::event final_reduction_ev =
+        submit_minmax_reduction<argTy, MinOpT, MaxOpT, InputOutputIterIndexerT,
+                                TmpReductionIndexerT, false>(
+            exec_q, min_tmp, max_tmp, res_min_tp, res_max_tp, wg, iter_nelems,
+            remaining_reduction_nelems, reductions_per_wi, reduction_groups,
+            in_out_iter_indexer, tmp_reduction_indexer, {dependent_ev});
+
+    sycl::event cleanup_host_task_event =
+        dpnp::tensor::alloc_utils::async_smart_free(
+            exec_q, {final_reduction_ev}, tmp_owner);
+
+    // FIXME: do not return host-task event
+    //   Instead collect all host-tasks to a list
+
+    return cleanup_host_task_event;
+}
+
+typedef sycl::event (*minmax_strided_impl_fn_ptr)(
+    sycl::queue &,
+    std::size_t,
+    std::size_t,
+    const char *,
+    char *,
+    char *,
+    int,
+    const ssize_t *,
+    ssize_t,
+    ssize_t,
+    ssize_t,
+    int,
+    const ssize_t *,
+    ssize_t,
+    const std::vector<sycl::event> &);
+
+template <typename argTy, typename MinOpT, typename MaxOpT>
+sycl::event minmax_over_group_temps_strided_impl(
+    sycl::queue &exec_q,
+    std::size_t iter_nelems,      // number of reductions    (num. of rows in a
+                                  // matrix when reducing over rows)
+    std::size_t reduction_nelems, // size of each reduction  (length of rows,
+                                  // i.e. number of columns)
+    const char *arg_cp,
+    char *res_min_cp,
+    char *res_max_cp,
+    int iter_nd,
+    // shape, input strides, minimum strides, maximum strides
+    const ssize_t *iter_shape_and_strides,
+    ssize_t iter_arg_offset,
+    ssize_t iter_res_min_offset,
+    ssize_t iter_res_max_offset,
+    int red_nd,
+    const ssize_t *reduction_shape_stride,
+    ssize_t reduction_arg_offset,
+    const std::vector<sycl::event> &depends)
+{
+    using dpnp::tensor::offset_utils::StridedIndexer;
+    using dpnp::tensor::offset_utils::UnpackedStridedIndexer;
+
+    const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp);
+    argTy *res_min_tp = reinterpret_cast<argTy *>(res_min_cp);
+    argTy *res_max_tp = reinterpret_cast<argTy *>(res_max_cp);
+
+    // Only 2*iter_nd entries describing shape and strides of iterated
+    // dimensions of input array from iter_shape_and_strides are going
+    // to be accessed by inp_iter_indexer
+    const StridedIndexer inp_iter_indexer{iter_nd, iter_arg_offset,
+                                          iter_shape_and_strides};
+    const UnpackedStridedIndexer res_min_iter_indexer{
+        iter_nd, iter_res_min_offset,
+        /* shape */ iter_shape_and_strides,
+        /* strides */ iter_shape_and_strides + 2 * iter_nd};
+    const UnpackedStridedIndexer res_max_iter_indexer{
+        iter_nd, iter_res_max_offset,
+        /* shape */ iter_shape_and_strides,
+        /* strides */ iter_shape_and_strides + 3 * iter_nd};
+    const StridedIndexer reduction_indexer{red_nd, reduction_arg_offset,
+                                           reduction_shape_stride};
+
+    return minmax_over_group_temps_impl<argTy, MinOpT, MaxOpT>(
+        exec_q, iter_nelems, reduction_nelems, arg_tp, res_min_tp, res_max_tp,
+        inp_iter_indexer, res_min_iter_indexer, res_max_iter_indexer,
+        reduction_indexer, depends);
+}
+
+typedef sycl::event (*minmax_contig_impl_fn_ptr)(
+    sycl::queue &,
+    std::size_t,
+    std::size_t,
+    const char *,
+    char *,
+    char *,
+    ssize_t,
+    ssize_t,
+    ssize_t,
+    ssize_t,
+    const std::vector<sycl::event> &);
+
+template <typename argTy, typename MinOpT, typename MaxOpT>
+sycl::event minmax_axis1_over_group_temps_contig_impl(
+    sycl::queue &exec_q,
+    std::size_t iter_nelems,      // number of reductions    (num. of rows in a
+                                  // matrix when reducing over rows)
+    std::size_t reduction_nelems, // size of each reduction  (length of rows,
+                                  // i.e. number of columns)
+    const char *arg_cp,
+    char *res_min_cp,
+    char *res_max_cp,
+    ssize_t iter_arg_offset,
+    ssize_t iter_res_min_offset,
+    ssize_t iter_res_max_offset,
+    ssize_t reduction_arg_offset,
+    const std::vector<sycl::event> &depends)
+{
+    using dpnp::tensor::offset_utils::NoOpIndexer;
+    using dpnp::tensor::offset_utils::Strided1DIndexer;
+
+    const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp) +
+                          iter_arg_offset + reduction_arg_offset;
+    argTy *res_min_tp =
+        reinterpret_cast<argTy *>(res_min_cp) + iter_res_min_offset;
+    argTy *res_max_tp =
+        reinterpret_cast<argTy *>(res_max_cp) + iter_res_max_offset;
+
+    const Strided1DIndexer rows_indexer{/* size */ iter_nelems,
+                                        /* step */ reduction_nelems};
+    static constexpr NoOpIndexer result_indexer{};
+    static constexpr NoOpIndexer reduction_indexer{};
+
+    return minmax_over_group_temps_impl<argTy, MinOpT, MaxOpT>(
+        exec_q, iter_nelems, reduction_nelems, arg_tp, res_min_tp, res_max_tp,
+        rows_indexer, result_indexer, result_indexer, reduction_indexer,
+        depends);
+}
+
+template <typename argTy, typename MinOpT, typename MaxOpT>
+sycl::event minmax_axis0_over_group_temps_contig_impl(
+    sycl::queue &exec_q,
+    std::size_t iter_nelems,      // number of reductions    (num. of cols in a
+                                  // matrix when reducing over cols)
+    std::size_t reduction_nelems, // size of each reduction  (length of cols,
+                                  // i.e. number of rows)
+    const char *arg_cp,
+    char *res_min_cp,
+    char *res_max_cp,
+    ssize_t iter_arg_offset,
+    ssize_t iter_res_min_offset,
+    ssize_t iter_res_max_offset,
+    ssize_t reduction_arg_offset,
+    const std::vector<sycl::event> &depends)
+{
+    using dpnp::tensor::offset_utils::NoOpIndexer;
+    using dpnp::tensor::offset_utils::Strided1DIndexer;
+
+    const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp) +
+                          iter_arg_offset + reduction_arg_offset;
+    argTy *res_min_tp =
+        reinterpret_cast<argTy *>(res_min_cp) + iter_res_min_offset;
+    argTy *res_max_tp =
+        reinterpret_cast<argTy *>(res_max_cp) + iter_res_max_offset;
+
+    static constexpr NoOpIndexer columns_indexer{};
+    static constexpr NoOpIndexer result_indexer{};
+    const Strided1DIndexer reduction_indexer{/* size */ reduction_nelems,
+                                             /* step */ iter_nelems};
+
+    return minmax_over_group_temps_impl<argTy, MinOpT, MaxOpT>(
+        exec_q, iter_nelems, reduction_nelems, arg_tp, res_min_tp, res_max_tp,
+        columns_indexer, result_indexer, result_indexer, reduction_indexer,
+        depends);
+}
+
 } // namespace dpnp::tensor::kernels

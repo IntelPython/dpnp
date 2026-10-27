@@ -208,6 +208,8 @@ Extrema finding
    fmin
    nanmin
 
+   minmax
+
 
 Miscellaneous
 -------------
