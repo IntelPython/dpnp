@@ -41,16 +41,6 @@ set(DPNP_SRC
 
 set(_trgt "dpnp_backend_c")
 
-if(WIN32)
-    if(${CMAKE_VERSION} VERSION_LESS "3.27")
-        # this is a work-around for target_link_options inserting option after -link option, cause
-        # linker to ignore it.
-        set(CMAKE_CXX_LINK_FLAGS
-            "${CMAKE_CXX_LINK_FLAGS} -fsycl-device-code-split=per_kernel"
-        )
-    endif()
-endif()
-
 add_library(${_trgt} SHARED ${DPNP_SRC})
 set_target_properties(${_trgt} PROPERTIES CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -111,10 +101,7 @@ target_include_directories(
 target_link_libraries(dpnp_backend_library INTERFACE ${_trgt})
 
 if(DPNP_WITH_REDIST)
-    set_target_properties(
-        ${python_module_name}
-        PROPERTIES INSTALL_RPATH "$ORIGIN/../../../"
-    )
+    set_target_properties(${_trgt} PROPERTIES INSTALL_RPATH "$ORIGIN/../../../")
 endif()
 
 if(DPNP_BACKEND_TESTS)

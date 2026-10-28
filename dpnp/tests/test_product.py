@@ -236,7 +236,7 @@ class TestDot:
             ((4,), (4, 2)),
             ((5, 4, 3), (3,)),
             ((4,), (5, 4, 3)),
-            ((5, 3, 4), (6, 4, 2)),
+            ((5, 3, 4), (4, 2)),
         ],
         ids=[
             "0d_1d",
@@ -248,7 +248,7 @@ class TestDot:
             "1d_2d",
             "3d_1d",
             "1d_3d",
-            "3d_3d",
+            "3d_2d",
         ],
     )
     def test_basic(self, dtype, shape1, shape2):
@@ -307,7 +307,7 @@ class TestDot:
             ((4,), (4, 2), (2,)),
             ((5, 4, 3), (3,), (5, 4)),
             ((4,), (5, 4, 3), (5, 3)),
-            ((5, 3, 4), (6, 4, 2), (5, 3, 6, 2)),
+            ((5, 3, 4), (4, 2), (5, 3, 2)),
         ],
         ids=[
             "0d_1d",
@@ -319,7 +319,7 @@ class TestDot:
             "1d_2d",
             "3d_1d",
             "1d_3d",
-            "3d_3d",
+            "3d_2d",
         ],
     )
     def test_out(self, dtype, shape1, shape2, out_shape):
@@ -394,9 +394,9 @@ class TestDot:
             ((3, 4), (4,), (3,)),
             ((5, 4, 3), (3,), (5, 4)),
             ((4,), (3, 4, 2), (3, 2)),
-            ((5, 3, 4), (6, 4, 2), (5, 3, 6, 2)),
+            ((5, 3, 4), (4, 2), (5, 3, 2)),
         ],
-        ids=["1d_1d", "2d_2d", "2d_1d", "3d_1d", "1d_3d", "3d_3d"],
+        ids=["1d_1d", "2d_2d", "2d_1d", "3d_1d", "1d_3d", "3d_2d"],
     )
     def test_out_error(self, shape1, shape2, out_shape):
         a = numpy.ones(shape1, dtype=numpy.int32)
@@ -429,6 +429,49 @@ class TestDot:
                 dpnp.dot(ia, ib, out=dp_out)
             with pytest.raises(ValueError):
                 numpy.dot(a, b, out=np_out)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize(
+        "shape1, shape2",
+        [((4, 3), (5, 3, 2)), ((5, 3, 4), (6, 4, 2))],
+        ids=["2d_3d", "3d_3d"],
+    )
+    def test_nd_deprecated(self, dtype, shape1, shape2):
+        a = generate_random_numpy_array(shape1, dtype, low=-5, high=5)
+        b = generate_random_numpy_array(shape2, dtype, low=-5, high=5)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        if numpy_version() >= "2.6.0.dev0":
+            with pytest.warns(DeprecationWarning, match="b.ndim > 2"):
+                expected = numpy.dot(a, b)
+        else:
+            expected = numpy.dot(a, b)
+
+        with pytest.warns(DeprecationWarning, match="b.ndim > 2"):
+            result = dpnp.dot(ia, ib)
+        assert_dtype_allclose(result, expected)
+
+        # ndarray
+        with pytest.warns(DeprecationWarning, match="b.ndim > 2"):
+            result = ia.dot(ib)
+        assert_dtype_allclose(result, expected)
+
+        dp_out = dpnp.empty(expected.shape, dtype=result.dtype)
+        with pytest.warns(DeprecationWarning, match="b.ndim > 2"):
+            result = dpnp.dot(ia, ib, out=dp_out)
+        assert result is dp_out
+        assert_dtype_allclose(result, expected)
+
+    def test_nd_deprecated_stacklevel(self):
+        # the warning points to the caller of the function and the method
+        ia = dpnp.ones((4, 3))
+        ib = dpnp.ones((5, 3, 2))
+
+        with pytest.warns(DeprecationWarning) as record:
+            dpnp.dot(ia, ib)
+            ia.dot(ib)
+        assert [w.filename for w in record] == [__file__] * 2
 
 
 class TestInner:

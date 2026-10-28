@@ -128,7 +128,22 @@ def test_usm_ndarray_linalg_batch(func, gen_kwargs, func_kwargs):
 # check linear algebra functions from dpnp
 # with multidimensional usm_ndarray as input
 @pytest.mark.parametrize(
-    "func", ["dot", "inner", "kron", "matmul", "outer", "tensordot", "vdot"]
+    "func",
+    [
+        # N-D dot is deprecated, the warning is checked in TestDot
+        pytest.param(
+            "dot",
+            marks=pytest.mark.filterwarnings(
+                "ignore:dpnp.dot received arrays:DeprecationWarning"
+            ),
+        ),
+        "inner",
+        "kron",
+        "matmul",
+        "outer",
+        "tensordot",
+        "vdot",
+    ],
 )
 def test_usm_ndarray_linearalgebra_batch(func):
     shape = (2, 2, 2, 2)
