@@ -123,6 +123,9 @@ class TestAppend(unittest.TestCase):
         scalar = xp.dtype(dtype1).type(10).item()
         return xp.append(scalar, xp.arange(20, dtype=dtype2))
 
+    @pytest.mark.filterwarnings(
+        "ignore:.*append converted Python numeric scalars:FutureWarning"
+    )
     @testing.for_all_dtypes_combination(
         names=["dtype1", "dtype2"], no_bool=True
     )

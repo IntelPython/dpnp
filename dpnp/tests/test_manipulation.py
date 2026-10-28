@@ -1,4 +1,5 @@
 import itertools
+import warnings
 
 import numpy
 import pytest
@@ -23,6 +24,7 @@ from .helper import (
     get_integer_float_dtypes,
     get_unsigned_dtypes,
     has_support_aspect64,
+    numpy_version,
 )
 from .tensor.helper import get_queue_or_skip
 from .third_party.cupy import testing
@@ -173,6 +175,59 @@ class TestAppend:
         expected = numpy.append(a, b, axis=1)
         result = dpnp.append(ia, ib, axis=1)
         assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize(
+        "dtype, scalar",
+        [("i1", 1), ("u1", 300), ("u1", -1), ("i2", 1), ("u4", 1), ("u8", 1)]
+        + [
+            # without fp64 an inexact arr keeps its dtype, so no warning there
+            pytest.param(
+                dt,
+                val,
+                marks=pytest.mark.skipif(
+                    not has_support_aspect64(), reason="fp64 required"
+                ),
+            )
+            for dt, val in [("f4", 1), ("f4", 1.5), ("c8", 1), ("c8", 1j)]
+        ],
+    )
+    def test_scalar_promotion_deprecated(self, dtype, scalar):
+        a = numpy.ones(3, dtype=dtype)
+        ia = dpnp.array(a)
+
+        msg = rf"append converted .* will use dtype {numpy.dtype(dtype)},"
+        with pytest.warns(FutureWarning, match=msg) as record:
+            result = dpnp.append(ia, scalar)
+        assert record[0].filename == __file__
+
+        if numpy_version() >= "2.6.0.dev0":
+            with pytest.warns(FutureWarning, match=msg) as record:
+                expected = numpy.append(a, scalar)
+        else:
+            expected = numpy.append(a, scalar)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "dtype, value",
+        [
+            ("i8", 1),
+            ("i1", 1.5),
+            ("i4", 1j),
+            ("i1", True),
+            ("i1", numpy.int64(1)),
+            ("f4", numpy.float64(1.5)),
+            ("i1", [1]),
+        ],
+    )
+    def test_scalar_promotion_not_deprecated(self, dtype, value):
+        a = numpy.ones(3, dtype=dtype)
+        ia = dpnp.array(a)
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", FutureWarning)
+            result = dpnp.append(ia, value)
+            expected = numpy.append(a, value)
+        assert_dtype_allclose(result, expected)
 
 
 class TestArraySplit:
