@@ -1077,7 +1077,6 @@
 <dt><strong>string</strong><span class="classifier">str</span></dt><dd><p>A string containing the data.</p>
 </dd>
 <dt><strong>dtype</strong><span class="classifier">{None, str, dtype object}, optional</span></dt><dd><p>The data type of the array.
-For binary input data, the data must be in exactly this format.
 If <code class="docutils literal notranslate"><span class="pre">None</span></code>, uses a default floating point data type for the device on
 which the returned array is allocated.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">float</span></code>.</p>
@@ -1087,7 +1086,7 @@ which the returned array is allocated.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">-1</span></code>.</p>
 </dd>
 <dt><strong>sep</strong><span class="classifier">str</span></dt><dd><p>The string separating numbers in the data; extra whitespace between
-elements is also ignored.</p>
+elements is also ignored. This cannot be an empty string.</p>
 </dd>
 <dt><strong>device</strong><span class="classifier">{None, string, SyclDevice, SyclQueue, Device}, optional</span></dt><dd><p>An array API concept of device where the output array is created.
 <cite>device</cite> can be <code class="docutils literal notranslate"><span class="pre">None</span></code>, a oneAPI filter selector string, an instance
