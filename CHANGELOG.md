@@ -4,10 +4,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.21.0] - 2026-MM-DD
+## [0.22.0] - YYYY-MM-DD
+
+### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+
+## [0.21.0] - 2026-10-27
 
 This release achieves 100% compliance with Python Array API specification (revision [2025.12](https://data-apis.org/array-api/2025.12/)).
-This release is compatible with NumPy 2.5.
+This release is compatible with NumPy 2.5.4.
+This release adds support for Python 3.15 and for free-threaded Python builds.
+It introduces the `dpnp.scipy.sparse` namespace with a `csr_matrix` class and the `cg`, `gmres` and `minres` iterative solvers in `dpnp.scipy.sparse.linalg`.
+To align with NumPy 2.5 and the Python array API, several functions now return tuples instead of lists, and `dpnp.row_stack` and the support for 2-element vectors in `dpnp.cross` are removed.
+This release requires DPC++ compiler 2026.1.1 or newer and `dpctl` 0.23.0 or newer.
 
 ### Added
 
@@ -17,8 +36,8 @@ This release is compatible with NumPy 2.5.
 * Added `dpnp-config.cmake` to make `find_package(Dpnp)` work out of the box, and an example which uses it [#2941](https://github.com/IntelPython/dpnp/pull/2941)
 * Added implementation of `dpnp.lib.stride_tricks.as_strided` [#2991](https://github.com/IntelPython/dpnp/pull/2991)
 * Added `dpnp.tensor.broadcast_shapes` to align with the 2025.12 version of the Python array API [#3009](https://github.com/IntelPython/dpnp/pull/3009)
-* Added support for free-threaded Python builds [gh-3026](https://github.com/IntelPython/dpnp/pull/3026)
-* Added implementation of `dpnp.scipy.sparse.linalg import LinearOperator, cg, gmres, minres` [#2841](https://github.com/IntelPython/dpnp/pull/2841)
+* Added support for free-threaded Python builds [#3026](https://github.com/IntelPython/dpnp/pull/3026)
+* Added the `dpnp.scipy.sparse` namespace with `dpnp.scipy.sparse.csr_matrix` and `dpnp.scipy.sparse.issparse`, and implementation of `dpnp.scipy.sparse.linalg.LinearOperator`, `dpnp.scipy.sparse.linalg.aslinearoperator`, `dpnp.scipy.sparse.linalg.cg`, `dpnp.scipy.sparse.linalg.gmres` and `dpnp.scipy.sparse.linalg.minres` [#2841](https://github.com/IntelPython/dpnp/pull/2841)
 * Added `dpnp.broadcast` class implementation [#2901](https://github.com/IntelPython/dpnp/pull/2901)
 * Added the `ndmax` keyword to `dpnp.array` for compatibility with NumPy [#3044](https://github.com/IntelPython/dpnp/pull/3044)
 * Added `UsmNDArray_RemoveQueueRef` C API function to release a queue reference obtained from `UsmNDArray_GetQueueRef` [#3042](https://github.com/IntelPython/dpnp/pull/3042)
@@ -41,6 +60,7 @@ This release is compatible with NumPy 2.5.
 * Changed `dpnp.atleast_1d`, `dpnp.atleast_2d`, `dpnp.atleast_3d`, and `dpnp.ogrid` to return a tuple of arrays instead of a list [#2965](https://github.com/IntelPython/dpnp/pull/2965)
 * Improved performance of `dpnp.fft` functions for complex strided input by avoiding oversized allocations and extra copies [#2939](https://github.com/IntelPython/dpnp/pull/2939)
 * Refreshed `dpnp` documentation styling with the Furo theme [#2934](https://github.com/IntelPython/dpnp/pull/2934)
+* Switched the API reference rendering in the documentation from `sphinx.ext.napoleon` to `numpydoc` [#3059](https://github.com/IntelPython/dpnp/pull/3059)
 * Updated Python Array API specification version supported to `2025.12` [#2899](https://github.com/IntelPython/dpnp/pull/2899)
 * Replaced references to the `dpnp.amax`/`dpnp.amin` aliases with the canonical `dpnp.max`/`dpnp.min` in docstrings and code internally [#2990](https://github.com/IntelPython/dpnp/pull/2990)
 * Aligned the signature of `dpnp.tensor.expand_dims` with the Python array API by making `axis` a required argument [#2988](https://github.com/IntelPython/dpnp/pull/2988)
@@ -48,6 +68,7 @@ This release is compatible with NumPy 2.5.
 * Replaced the deprecated `nd_item::barrier()` member calls in the `accumulators` and `gemm` kernels with the SYCL 2020 `sycl::group_barrier()` free function [#3006](https://github.com/IntelPython/dpnp/pull/3006)
 * Changed `dpnp.broadcast_arrays` and `dpnp.tensor.broadcast_arrays` to return a tuple instead of a list, aligning with the 2025.12 Python array API spec [#2944](https://github.com/IntelPython/dpnp/pull/2944)
 * Bumped the default minimum required DPC++ compiler version to `2026.1.1` and migrated to the OpenCL ICD loader from the conda-forge `ocl-icd-system` (Linux) and `khronos-opencl-icd-loader` (Windows) packages [#2905](https://github.com/IntelPython/dpnp/pull/2905)
+* Bumped the minimum required `dpctl` version to `0.23.0` [#2948](https://github.com/IntelPython/dpnp/pull/2948)
 * Linked the `dpnp_backend_c` library against only the MKL SYCL domains it uses (`BLAS`, `RNG`, `VM`) [#3012](https://github.com/IntelPython/dpnp/pull/3012)
 * `dpnp` uses pybind11 3.1.0 [#3015](https://github.com/IntelPython/dpnp/pull/3015)
 * Reworked the ASV benchmarks and added end-to-end workload benchmarks derived from dpBench [#2996](https://github.com/IntelPython/dpnp/pull/2996)
@@ -68,13 +89,14 @@ This release is compatible with NumPy 2.5.
 
 ### Removed
 
-* Removed support for arrays of 2-dimensional vectors in `dpnp.cross`, which now requires (arrays of) 3-dimensional vectors and raises `ValueError` otherwise [#2950](https://github.com/IntelPython/dpnp/pull/2950)
-* Removed `dpnp.row_stack` in favor of `dpnp.vstack` [#2956](https://github.com/IntelPython/dpnp/pull/2956)
+* Removed support for arrays of 2-element vectors in `dpnp.cross`, which now requires (arrays of) 3-element vectors and raises `ValueError` otherwise [#2950](https://github.com/IntelPython/dpnp/pull/2950)
+* Removed `dpnp.row_stack` in favor of `dpnp.vstack` [#2957](https://github.com/IntelPython/dpnp/pull/2957)
 * Removed all references to the unimplemented `dpnp.ndarray.resize` method from the documentation [#2989](https://github.com/IntelPython/dpnp/pull/2989)
 * Removed an obsolete oneAPI 2021.x workaround from the Windows conda build script that manually prepended `BUILD_PREFIX` paths onto the `LIB` and `INCLUDE` [#3013](https://github.com/IntelPython/dpnp/pull/3013)
 
 ### Fixed
 
+* Fixed a crash at process exit on Windows when `dpnp` is built with oneMKL 2026.0, caused by the destructor of the oneMKL `mt19937` random number engine running while the library is being unloaded [#2871](https://github.com/IntelPython/dpnp/pull/2871)
 * Fixed incorrect in-place advanced indexing for 4D arrays when using `range` or `list` as index keys [#2872](https://github.com/IntelPython/dpnp/pull/2872)
 * Fixed `conda build` command syntax in GitHub workflows and documentation to use `conda-build` [#2888](https://github.com/IntelPython/dpnp/pull/2888)
 * Fixed incorrect `dpnp.tensor.acosh` result for `complex(±0, NaN)` special case to match the Python Array API specification [#2914](https://github.com/IntelPython/dpnp/pull/2914)
@@ -90,7 +112,7 @@ This release is compatible with NumPy 2.5.
 * Fixed `dpnp.mgrid` and `dpnp.ogrid` to return consistent results between single-slice and tuple-of-slices syntax when the step is a complex number with a non-integer magnitude (e.g. `2.5j`) [#2971](https://github.com/IntelPython/dpnp/pull/2971)
 * Fixed `icx`/`icpx` warning during `conda build` by stripping the GCC-only `-fno-merge-constants` flag injected by conda-forge into `CFLAGS`/`CXXFLAGS` [#2978](https://github.com/IntelPython/dpnp/pull/2978)
 * Fixed `dpnp.asnumpy` and `dpnp.ndarray.asnumpy` ignoring the `order` keyword, which caused a non-contiguous source array to be returned with a non-contiguous layout even when `order="C"` was requested [#2980](https://github.com/IntelPython/dpnp/pull/2980)
-* Fixed a flood of deprecation warnings from the DPC++/SYCL headers when building `dpnp.tensor` on Windows [#2984](https://github.com/IntelPython/dpnp/pull/2984)
+* Fixed a flood of deprecation warnings from the DPC++/SYCL headers when building `dpnp.tensor` on Windows [#2993](https://github.com/IntelPython/dpnp/pull/2993)
 * Fixed `dpnp.tensor.acosh` and `dpnp.tensor.acos` returning infinity for complex numbers with large negative real parts [#2928](https://github.com/IntelPython/dpnp/pull/2928)
 * Fixed `__array_namespace_info__().devices()` and `.default_device()` to return Python array API compatible device objects [#2979](https://github.com/IntelPython/dpnp/pull/2979)
 * Fixed `dpnp.interp` with an empty input array `x` to return an empty array with the correct dtype [#2985](https://github.com/IntelPython/dpnp/pull/2985)
@@ -126,8 +148,7 @@ This release is compatible with NumPy 2.5.
 * Fixed importing `dpnp.scipy.sparse` re-enabling the GIL on free-threaded Python builds, because its pybind11 extension did not declare free-threading support [#3101](https://github.com/IntelPython/dpnp/pull/3101)
 * Fixed the CuPy-based `dpnp.scipy` tests under `dpnp/tests/third_party/cupyx/scipy_tests/` missing from the `dpnp` package, so they never ran against an installed package [#3102](https://github.com/IntelPython/dpnp/pull/3102)
 * Fixed a `RuntimeError` raised by kernels of the `blas`, `statistics`, `ufunc` and `window` extensions and of the legacy backend launched over more than `INT_MAX` work-items when built with DPC++ compiler 2026.2 or newer [#3104](https://github.com/IntelPython/dpnp/pull/3104)
-
-### Security
+* Fixed the Linux conda build producing a wheel with an invalid `manylinux___x86_64` platform tag when the `conda` CLI is not on `PATH` [#3126](https://github.com/IntelPython/dpnp/pull/3126)
 
 
 ## [0.20.0] - 2026-04-22
