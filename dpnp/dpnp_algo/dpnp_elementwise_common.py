@@ -71,7 +71,6 @@ __all__ = [
     "DPNPUnaryTwoOutputsFunc",
     "acceptance_fn_gcd_lcm",
     "acceptance_fn_negative",
-    "acceptance_fn_positive",
     "acceptance_fn_sign",
     "acceptance_fn_subtract",
     "resolve_weak_types_2nd_arg_int",
@@ -1381,17 +1380,6 @@ def acceptance_fn_negative(arg_dtype, buf_dt, res_dt, sycl_dev):
             "The `negative` function, the `-` operator, is not supported "
             "for inputs of data type bool, use the `~` operator or the "
             "`logical_not` function instead"
-        )
-    else:
-        return True
-
-
-def acceptance_fn_positive(arg_dtype, buf_dt, res_dt, sycl_dev):
-    # positive is not defined for boolean data type
-    if arg_dtype.char == "?":
-        raise TypeError(
-            "The `positive` function is not supported for inputs of data type "
-            "bool"
         )
     else:
         return True
