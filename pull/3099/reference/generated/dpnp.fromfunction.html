@@ -1070,20 +1070,23 @@
 <dt class="sig sig-object py" id="dpnp.fromfunction">
 <span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">fromfunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'float'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">like</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'device'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#fromfunction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.fromfunction" title="Link to this definition">¶</a></dt>
 <dd><p>Construct an array by executing a function over each coordinate.</p>
-<p>The resulting array therefore has a value <code class="docutils literal notranslate"><span class="pre">fn(x,</span> <span class="pre">y,</span> <span class="pre">z)</span></code> at
-coordinate <code class="docutils literal notranslate"><span class="pre">(x,</span> <span class="pre">y,</span> <span class="pre">z)</span></code>.</p>
+<p>The function is called once with one coordinate array for each dimension
+of <cite>shape</cite> instead of once per coordinate.</p>
+<p>For functions that operate elementwise on array arguments, the resulting
+array has a value <code class="docutils literal notranslate"><span class="pre">fn(x,</span> <span class="pre">y,</span> <span class="pre">z)</span></code> at coordinate <code class="docutils literal notranslate"><span class="pre">(x,</span> <span class="pre">y,</span> <span class="pre">z)</span></code>.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.fromfunction.html#numpy.fromfunction" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.fromfunction</span></code></a>.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>function</strong><span class="classifier">callable</span></dt><dd><p>The function is called with N parameters, where N is the rank of
-<cite>shape</cite>. Each parameter represents the coordinates of the array varying
+<dt><strong>function</strong><span class="classifier">callable</span></dt><dd><p>The function is called once with N coordinate arrays as parameters,
+where N is the length of <cite>shape</cite>. Each array represents the coordinates
 along a specific axis. For example, if <cite>shape</cite> were <code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">2)</span></code>, then
 the parameters would be <code class="docutils literal notranslate"><span class="pre">array([[0,</span> <span class="pre">0],</span> <span class="pre">[1,</span> <span class="pre">1]])</span></code> and
 <code class="docutils literal notranslate"><span class="pre">array([[0,</span> <span class="pre">1],</span> <span class="pre">[0,</span> <span class="pre">1]])</span></code>.</p>
 </dd>
-<dt><strong>shape</strong><span class="classifier">(N,) tuple of ints</span></dt><dd><p>Shape of the output array, which also determines the shape of
-the coordinate arrays passed to <cite>function</cite>.</p>
+<dt><strong>shape</strong><span class="classifier">(N,) tuple of ints</span></dt><dd><p>Shape of the coordinate arrays passed to <cite>function</cite>. The shape of the
+output is determined by the value returned by <cite>function</cite> and may be
+different from <cite>shape</cite>.</p>
 </dd>
 <dt><strong>dtype</strong><span class="classifier">{None, str, dtype object}, optional</span></dt><dd><p>Data-type of the coordinate arrays passed to <cite>function</cite>.
 If <code class="docutils literal notranslate"><span class="pre">None</span></code>, uses a default floating point data type for the device on
@@ -1133,6 +1136,13 @@ Otherwise, the function raises <code class="docutils literal notranslate"><span 
 <p class="rubric">Notes</p>
 <p>This uses <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.fromfunction.html#numpy.fromfunction" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.fromfunction</span></code></a> and coerces the result to a DPNP array.
 Keywords other than <cite>dtype</cite> and <cite>like</cite> are passed to <cite>function</cite>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><cite>shape</cite> determines the shape of the coordinate arrays passed to
+<cite>function</cite>. It does not enforce that the function returns a result
+with that shape. If <cite>function</cite> returns a scalar, the result is
+a zero-dimensional array rather than an array with the given <cite>shape</cite>.</p>
+</div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">fromfunction</span><span class="p">(</span><span class="k">lambda</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
