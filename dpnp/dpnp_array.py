@@ -1300,7 +1300,12 @@ class dpnp_array:
                [8., 8.]])
         """
 
-        return dpnp.dot(self, b, out)
+        # lazy import avoids circular imports
+        # pylint: disable=import-outside-toplevel
+        from .dpnp_iface_linearalgebra import _dot
+
+        # calling _dot keeps the deprecation warning pointing to the caller
+        return _dot(self, b, out=out)
 
     @property
     def dtype(self):

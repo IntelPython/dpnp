@@ -770,6 +770,20 @@ def correlate(a, v, mode="valid", method="auto"):
     .. math:: c'_k = \sum_n a_{n} \cdot \overline{v_{n+k}}
 
     which is related to :math:`c_k` by :math:`c'_k = c_{-k}`.
+    For example:
+
+    >>> import dpnp as np
+    >>> a = np.array([1, 1])
+    >>> v = np.array([1, 2, 3, 4, 5, 6])
+    >>> np.correlate(a, v, "valid")
+    array([11,  9,  7,  5,  3])
+
+    Using DPNP's definition, the valid correlation values correspond to
+    the lags -4, -3, -2, -1, and 0, so the returned values correspond to
+    :math:`[c_{-4}, c_{-3}, c_{-2}, c_{-1}, c_0]`.
+
+    Under the alternative definition, :math:`c'_k = c_{-k}`, the same
+    correlation values are associated with the opposite lag sign.
 
     References
     ----------
@@ -791,7 +805,7 @@ def correlate(a, v, mode="valid", method="auto"):
     array([3.5], dtype=float32)
     >>> np.correlate(a, v, "same")
     array([2. , 3.5, 3. ], dtype=float32)
-    >>> np.correlate([a, v, "full")
+    >>> np.correlate(a, v, "full")
     array([0.5, 2. , 3.5, 3. , 0. ], dtype=float32)
 
     Using complex sequences:
