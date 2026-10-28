@@ -1,0 +1,176 @@
+name: Coverity Scan
+
+on:
+  schedule:
+    - cron: "0 1 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: coverity-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  COVERITY_PROJECT: IntelPython/dpnp
+  ONEAPI_ROOT: /opt/intel/oneapi
+
+jobs:
+  coverity-scan:
+    if: github.repository == 'IntelPython/dpnp'
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # versioneer needs the tags to compute the package version
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Add Intel repository
+        run: |
+          wget -qO- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB \
+            | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
+          echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" \
+            | sudo tee /etc/apt/sources.list.d/oneAPI.list
+          sudo apt-get update
+
+      - name: Install latest Intel OneAPI
+        run: |
+          sudo apt-get install -y hwloc                     \
+                                  intel-oneapi-mkl          \
+                                  intel-oneapi-umf          \
+                                  intel-oneapi-mkl-devel    \
+                                  intel-oneapi-tbb-devel    \
+                                  intel-oneapi-libdpstd-devel \
+                                  intel-oneapi-compiler-dpcpp-cpp
+
+      - name: Setup Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
+          architecture: x64
+
+      - name: Install dpnp build dependencies
+        # Cython pinned so the generated code, and the Coverity CIDs, stay stable
+        run: |
+          pip install cmake "cython==3.3.0" ninja numpy scikit-build setuptools wheel \
+                      "versioneer[toml]==0.29"
+
+      - name: Install dpctl
+        # dpctl_pkg.txt replaces PyPI, so numpy must come from the step above
+        run: pip install -r environments/dpctl_pkg.txt
+
+      - name: Report compiler version
+        run: |
+          source "${ONEAPI_ROOT}/setvars.sh"
+          icpx --version
+
+      - name: Download Coverity Build Tool
+        timeout-minutes: 15
+        env:
+          COVERITY_SCAN_TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
+        run: |
+          curl --location --no-progress-meter --fail-with-body \
+               --retry 5 --retry-connrefused --retry-delay 5 \
+               --data-urlencode "token=${COVERITY_SCAN_TOKEN}" \
+               --data-urlencode "project=${COVERITY_PROJECT}" \
+               --output cov-analysis.tar.gz \
+               https://scan.coverity.com/download/linux64
+          if [ "$(stat -c '%s' cov-analysis.tar.gz)" -lt 1000000 ]; then
+            echo "::error::Coverity build tool download failed. Verify the COVERITY_SCAN_TOKEN secret and that the registered project name matches '${COVERITY_PROJECT}'."
+            head -c 512 cov-analysis.tar.gz || true
+            exit 1
+          fi
+          mkdir -p cov-analysis
+          tar -xzf cov-analysis.tar.gz --strip 1 -C cov-analysis
+          echo "${PWD}/cov-analysis/bin" >> "$GITHUB_PATH"
+
+      - name: Configure Coverity for the DPC++ compiler
+        run: |
+          source "${ONEAPI_ROOT}/setvars.sh"
+          cov-configure --gcc
+          # Generic clang templates can't parse SYCL headers, see https://github.com/IntelPython/dpctl/pull/2401
+          comptypes="$(cov-configure --list-compiler-types | cut -d, -f1)"
+          comptype=""
+          for candidate in intel_oneapi_icx intel_oneapi_icx:linux intel_icx:linux; do
+            if grep -qxF "${candidate}" <<< "${comptypes}"; then
+              comptype="${candidate}"
+              break
+            fi
+          done
+          if [ -z "${comptype}" ]; then
+            echo "::error::No Intel oneAPI compiler type in this cov-analysis; refusing to fall back to the generic Clang configuration."
+            exit 1
+          fi
+          echo "Using Coverity compiler type: ${comptype}"
+          cov-configure --template --comptype "${comptype}" --compiler icx
+          cov-configure --template --comptype "${comptype}" --compiler icpx
+
+      - name: Build under cov-build
+        timeout-minutes: 300
+        run: |
+          set -o pipefail
+          source "${ONEAPI_ROOT}/setvars.sh"
+          # --skip-editable: build_ext --inplace already compiled everything
+          cov-build --dir cov-int \
+              python scripts/build_locally.py --oneapi --skip-editable --verbose \
+              2>&1 | tee cov-build.log
+          {
+            echo "### Coverity capture"
+            echo '```'
+            grep -E "Emitted .*compilation unit|are ready for analysis" cov-build.log || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          # Gate on per-source emits, not the P% total, see https://github.com/IntelPython/dpctl/pull/2401
+          log=cov-int/build-log.txt
+          compiled="$(grep -oP '\[STATUS\] Compiling \K\S+' "${log}" | grep -F "${GITHUB_WORKSPACE}/" | grep -vF /CMakeFiles/ | sort -u || true)"
+          # Unanchored: parallel compiles can splice output onto the same log line
+          emitted="$(grep -oP "Emit for file '\K[^']+(?=' \(TU [0-9]+\) complete\.)" "${log}" | sort -u || true)"
+          missing="$(comm -23 <(echo "${compiled}") <(echo "${emitted}"))"
+          total="$(grep -c . <<< "${compiled}" || true)"
+          nmissing="$(grep -c . <<< "${missing}" || true)"
+          echo "Coverity emitted $(( total - nmissing )) of ${total} project sources" | tee -a "$GITHUB_STEP_SUMMARY"
+          if [ "${total}" -eq 0 ]; then
+            echo "::error::No project sources were compiled under cov-build."
+            exit 1
+          fi
+          if [ "${nmissing}" -gt 0 ]; then
+            echo "${missing}"
+            echo "::error::Coverity did not emit ${nmissing} of ${total} project sources (listed above)."
+            exit 1
+          fi
+
+      - name: Upload Coverity build log
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: coverity-build-log
+          path: |
+            cov-build.log
+            cov-int/build-log.txt
+          retention-days: 7
+          if-no-files-found: warn
+
+      - name: Submit results to Coverity Scan
+        # A branch submit would replace master's results on the Scan dashboard
+        if: github.ref == 'refs/heads/master'
+        timeout-minutes: 30
+        env:
+          COVERITY_SCAN_TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
+          COVERITY_SCAN_EMAIL: ${{ secrets.COVERITY_SCAN_EMAIL }}
+        run: |
+          tar -czf cov-int.tgz cov-int
+          echo "Submitting $(du -h cov-int.tgz | cut -f1) of intermediate results"
+          curl --no-progress-meter --fail-with-body \
+               --retry 5 --retry-connrefused --retry-delay 5 \
+               --form token="${COVERITY_SCAN_TOKEN}" \
+               --form email="${COVERITY_SCAN_EMAIL}" \
+               --form file=@cov-int.tgz \
+               --form version="${GITHUB_SHA}" \
+               --form description="GitHub Actions ${GITHUB_REF_NAME} (run ${GITHUB_RUN_ID})" \
+               --form project="${COVERITY_PROJECT}" \
+               https://scan.coverity.com/builds
