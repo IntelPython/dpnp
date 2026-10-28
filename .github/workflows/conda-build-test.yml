@@ -24,6 +24,8 @@ permissions:
   contents: read
 
 env:
+  # Pinned: Miniforge3 26.9.4-0 fails 'conda init' on Windows runners
+  miniforge-version: '26.7.2-1'
   package-name: dpnp
   module-name: dpnp
   ver-script-part1: "import json; f = open('version.json', 'r'); j = json.load(f); f.close(); "
@@ -54,6 +56,8 @@ jobs:
             python_spec: '3.14.* *_cp314'
           # TODO: add free-threaded builds ('3.14.* *_cp314t') once a
           # free-threaded dpctl is available on conda-forge
+          # TODO: add Python 3.15 ('3.15.* *_cp315') once dpctl with
+          # Python 3.15 support is available on conda-forge
 
     env:
       build-conda-pkg-env: 'environments/build_conda_pkg.yml'
@@ -73,7 +77,7 @@ jobs:
         continue-on-error: true
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.build-conda-pkg-env }}
@@ -83,7 +87,7 @@ jobs:
         if: steps.setup_miniconda.outcome == 'failure'
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.build-conda-pkg-env }}
@@ -148,6 +152,8 @@ jobs:
             python_spec: '3.14.* *_cp314'
           # TODO: add free-threaded builds ('3.14.* *_cp314t') once a
           # free-threaded dpctl is available on conda-forge
+          # TODO: add Python 3.15 ('3.15.* *_cp315') once dpctl with
+          # Python 3.15 support is available on conda-forge
 
     env:
       dpnp-repo-path: './source'
@@ -183,7 +189,7 @@ jobs:
         continue-on-error: true
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.create-conda-channel-env }}
@@ -193,7 +199,7 @@ jobs:
         if: steps.setup_miniconda.outcome == 'failure'
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.create-conda-channel-env }}

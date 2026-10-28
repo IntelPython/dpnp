@@ -27,11 +27,11 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-cmake_minimum_required(VERSION 3.21...3.27 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.27 FATAL_ERROR)
 
 project(
     dpnp
-    VERSION 0.21
+    VERSION 0.22
     LANGUAGES CXX
     DESCRIPTION "NumPy-like API accelerated by SYCL."
 )
@@ -100,7 +100,7 @@ find_package(oneDPL REQUIRED PATHS ${path_to_cmake_dir})
 include(GNUInstallDirs)
 
 # find Python before enabling pybind11
-find_package(Python 3.10...<3.15 REQUIRED COMPONENTS Development.Module NumPy)
+find_package(Python 3.10...<3.16 REQUIRED COMPONENTS Development.Module NumPy)
 
 # Fetch pybind11
 include(FetchContent)

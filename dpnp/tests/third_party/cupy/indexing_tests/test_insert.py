@@ -126,6 +126,18 @@ class TestPutScalars(unittest.TestCase):
         return a
 
 
+class TestPutUint64(unittest.TestCase):
+
+    @testing.with_requires("numpy>=2.6.0.dev0")
+    @testing.numpy_cupy_array_equal()
+    def test_put_uint64(self, xp):
+        a = xp.arange(5)
+        indices = xp.array([0, 2, 4], dtype=xp.uint64)
+        # 'raise' mode is not supported, indices are in bounds anyway
+        xp.put(a, indices, [10, 20, 30], mode="clip")
+        return a
+
+
 @testing.parameterize(
     *testing.product(
         {

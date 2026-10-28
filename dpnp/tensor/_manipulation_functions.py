@@ -638,8 +638,12 @@ def repeat(x, repeats, /, *, axis=None):
         if not dpt.can_cast(repeats.dtype, dpt.int64, casting="same_kind"):
             raise TypeError(
                 f"'repeats' data type {repeats.dtype} cannot be cast to "
-                "'int64' according to the casting rule ''safe.''"
+                "'int64' according to the casting rule ''same_kind.''"
             )
+        err_msg = "`repeats` elements must be positive"
+        if repeats.dtype == dpt.uint64:
+            repeats = dpt.astype(repeats, dpt.int64)
+            err_msg = "`repeats` elements must not exceed the int64 maximum"
         if repeats.size == 1:
             scalar = True
             # bring the single element to the host
@@ -650,7 +654,7 @@ def repeat(x, repeats, /, *, axis=None):
                 # since non-0D arrays can not be converted to scalars
                 repeats = int(repeats[0])
             if repeats < 0:
-                raise ValueError("`repeats` elements must be positive")
+                raise ValueError(err_msg)
         else:
             if repeats.size != axis_size:
                 raise ValueError(
@@ -658,7 +662,7 @@ def repeat(x, repeats, /, *, axis=None):
                     "the repeated axis"
                 )
             if not dpt.all(repeats >= 0):
-                raise ValueError("'repeats' elements must be positive")
+                raise ValueError(err_msg)
 
     elif isinstance(repeats, (tuple, list, range)):
         usm_type = x.usm_type

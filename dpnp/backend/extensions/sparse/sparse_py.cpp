@@ -43,7 +43,7 @@ using dpnp::extensions::sparse::sparse_gemv_compute;
 using dpnp::extensions::sparse::sparse_gemv_init;
 using dpnp::extensions::sparse::sparse_gemv_release;
 
-PYBIND11_MODULE(_sparse_impl, m)
+PYBIND11_MODULE(_sparse_impl, m, py::mod_gil_not_used())
 {
     init_sparse_gemv_dispatch_tables();
 

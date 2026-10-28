@@ -2,7 +2,8 @@ name: Bump open source SYCL build deps
 
 # Keeps the pinned oclcpuexp driver (intel/llvm YYYY-WWNN release) and oneTBB
 # release used by os-llvm-sycl-build.yml up to date by opening a pull request
-# when a newer upstream release is available.
+# when a newer upstream release is available. The pins live in
+# .github/sycl-build-deps.env, since GITHUB_TOKEN can't push workflow files.
 
 on:
   # Check weekly on Saturday, and allow manual runs.
@@ -31,7 +32,7 @@ jobs:
       pull-requests: write
 
     env:
-      WF: .github/workflows/os-llvm-sycl-build.yml
+      PINS: .github/sycl-build-deps.env
       GH_TOKEN: ${{ github.token }}
 
     steps:
@@ -91,7 +92,7 @@ jobs:
             echo "tbb_dir=oneapi-tbb-${TBB_VER}"
           } >> "${GITHUB_OUTPUT}"
 
-      - name: Apply pins to workflow file
+      - name: Apply pins to pins file
         env:
           DRIVER_TAG: ${{ steps.resolve.outputs.driver_tag }}
           OCLCPUEXP_FN: ${{ steps.resolve.outputs.oclcpuexp_fn }}
@@ -101,34 +102,34 @@ jobs:
         run: |
           set -euo pipefail
           # Surgical, comment-preserving edits: rewrite only the value after each
-          # key and keep indentation. "|" delimiter so the "/"-heavy URL is safe.
+          # key. "|" delimiter so the "/"-heavy URL is safe.
           sed -i -E \
-            -e "s|^( *DRIVER_PATH: ).*|\1${DRIVER_TAG}|" \
-            -e "s|^( *OCLCPUEXP_FN: ).*|\1${OCLCPUEXP_FN}|" \
-            -e "s|^( *TBB_URL: ).*|\1https://github.com/uxlfoundation/oneTBB/releases/download/${TBB_TAG}/|" \
-            -e "s|^( *TBB_INSTALL_DIR: ).*|\1${TBB_DIR}|" \
-            -e "s|^( *TBB_FN: ).*|\1${TBB_FN}|" \
-            "${WF}"
+            -e "s|^(DRIVER_PATH=).*|\1${DRIVER_TAG}|" \
+            -e "s|^(OCLCPUEXP_FN=).*|\1${OCLCPUEXP_FN}|" \
+            -e "s|^(TBB_URL=).*|\1https://github.com/uxlfoundation/oneTBB/releases/download/${TBB_TAG}/|" \
+            -e "s|^(TBB_INSTALL_DIR=).*|\1${TBB_DIR}|" \
+            -e "s|^(TBB_FN=).*|\1${TBB_FN}|" \
+            "${PINS}"
           echo "---- resulting diff ----"
-          git diff -- "${WF}" || true
+          git diff -- "${PINS}" || true
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
           token: ${{ github.token }}
-          add-paths: ${{ env.WF }}
+          add-paths: ${{ env.PINS }}
           branch: bot/bump-sycl-build-deps
           delete-branch: true
           labels: autoupdate
           commit-message: |
-            Bump oclcpuexp/oneTBB pins in os-llvm-sycl-build workflow
+            Bump oclcpuexp/oneTBB pins for os-llvm-sycl-build workflow
 
             driver: ${{ steps.resolve.outputs.driver_tag }} / ${{ steps.resolve.outputs.oclcpuexp_fn }}
             oneTBB: ${{ steps.resolve.outputs.tbb_tag }}
           title: "Bump open source SYCL build dependencies"
           body: |
             Automated bump of the pinned open source SYCL build dependencies in
-            `os-llvm-sycl-build.yml`.
+            `.github/sycl-build-deps.env`, used by `os-llvm-sycl-build.yml`.
 
             | dependency | new value |
             | --- | --- |

@@ -10,6 +10,8 @@ permissions:
   contents: read
 
 env:
+  # Pinned: Miniforge3 26.9.4-0 fails 'conda init' on Windows runners
+  miniforge-version: '26.7.2-1'
   package-name: dpnp
   # Follow oneAPI installation instruction for conda, since intel channel is not longer available
   # channels-list: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
@@ -30,7 +32,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.12', '3.13']
+        python: ['3.13']
         os: [ubuntu-latest, windows-2022]
         include:
           - python: '3.14'
@@ -45,6 +47,14 @@ jobs:
           - python: '3.14'
             os: windows-2022
             python_spec: '3.14.* *_cp314t'
+          - python: '3.15'
+            os: ubuntu-latest
+            python_spec: '3.15.* *_cp315'
+          - python: '3.15'
+            os: windows-2022
+            python_spec: '3.15.* *_cp315'
+          # TODO: add free-threaded builds ('3.15.* *_cp315t') once NumPy and
+          # dpctl cp315t builds are available
 
     permissions:
       # Needed to cancel any previous runs that are not completed for a given workflow
@@ -152,7 +162,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.12', '3.13']
+        python: ['3.13']
         os: [ubuntu-latest]
         include:
           - python: '3.14'
@@ -161,6 +171,11 @@ jobs:
           - python: '3.14'
             os: ubuntu-latest
             python_spec: '3.14.* *_cp314t'
+          - python: '3.15'
+            os: ubuntu-latest
+            python_spec: '3.15.* *_cp315'
+          # TODO: add free-threaded builds ('3.15.* *_cp315t') once NumPy and
+          # dpctl cp315t builds are available
 
     env:
       dpnp-repo-path: '${{ github.workspace }}/source/'
@@ -195,7 +210,7 @@ jobs:
         continue-on-error: true
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.create-conda-channel-env }}
@@ -205,7 +220,7 @@ jobs:
         if: steps.setup_miniconda.outcome == 'failure'
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.create-conda-channel-env }}
@@ -350,7 +365,7 @@ jobs:
         continue-on-error: true
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.examples-conda-pkg-env }}
@@ -360,7 +375,7 @@ jobs:
         if: steps.setup_miniconda.outcome == 'failure'
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.examples-conda-pkg-env }}
@@ -430,7 +445,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.12', '3.13']
+        python: ['3.13']
         os: [windows-2022]
         include:
           - python: '3.14'
@@ -439,6 +454,11 @@ jobs:
           - python: '3.14'
             os: windows-2022
             python_spec: '3.14.* *_cp314t'
+          - python: '3.15'
+            os: windows-2022
+            python_spec: '3.15.* *_cp315'
+          # TODO: add free-threaded builds ('3.15.* *_cp315t') once NumPy and
+          # dpctl cp315t builds are available
 
     env:
       dpnp-repo-path: '${{ github.workspace }}\source'
@@ -479,7 +499,7 @@ jobs:
         continue-on-error: true
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.create-conda-channel-env }}
@@ -489,7 +509,7 @@ jobs:
         if: steps.setup_miniconda.outcome == 'failure'
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.create-conda-channel-env }}
@@ -612,7 +632,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.12', '3.13']
+        python: ['3.13']
         os: [ubuntu-latest, windows-2022]
         include:
           - python: '3.14'
@@ -627,6 +647,14 @@ jobs:
           - python: '3.14'
             os: windows-2022
             python_spec: '3.14.* *_cp314t'
+          - python: '3.15'
+            os: ubuntu-latest
+            python_spec: '3.15.* *_cp315'
+          - python: '3.15'
+            os: windows-2022
+            python_spec: '3.15.* *_cp315'
+          # TODO: add free-threaded builds ('3.15.* *_cp315t') once NumPy and
+          # dpctl cp315t builds are available
 
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
@@ -666,7 +694,7 @@ jobs:
         continue-on-error: true
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.upload-conda-pkg-env }}
@@ -676,7 +704,7 @@ jobs:
         if: steps.setup_miniconda.outcome == 'failure'
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.upload-conda-pkg-env }}
@@ -748,7 +776,7 @@ jobs:
         continue-on-error: true
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.create-conda-channel-env }}
@@ -758,7 +786,7 @@ jobs:
         if: steps.setup_miniconda.outcome == 'failure'
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.create-conda-channel-env }}
@@ -899,7 +927,7 @@ jobs:
         continue-on-error: true
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.cleanup-conda-pkg-env }}
@@ -909,7 +937,7 @@ jobs:
         if: steps.setup_miniconda.outcome == 'failure'
         uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
-          miniforge-version: latest
+          miniforge-version: ${{ env.miniforge-version }}
           use-mamba: 'true'
           conda-remove-defaults: 'true'
           environment-file: ${{ env.cleanup-conda-pkg-env }}
