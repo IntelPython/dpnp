@@ -1847,6 +1847,20 @@
 <span class="sd">    .. math:: c'_k = \sum_n a_{n} \cdot \overline{v_{n+k}}</span>
 
 <span class="sd">    which is related to :math:`c_k` by :math:`c'_k = c_{-k}`.</span>
+<span class="sd">    For example:</span>
+
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([1, 1])</span>
+<span class="sd">    &gt;&gt;&gt; v = np.array([1, 2, 3, 4, 5, 6])</span>
+<span class="sd">    &gt;&gt;&gt; np.correlate(a, v, "valid")</span>
+<span class="sd">    array([11,  9,  7,  5,  3])</span>
+
+<span class="sd">    Using DPNP's definition, the valid correlation values correspond to</span>
+<span class="sd">    the lags -4, -3, -2, -1, and 0, so the returned values correspond to</span>
+<span class="sd">    :math:`[c_{-4}, c_{-3}, c_{-2}, c_{-1}, c_0]`.</span>
+
+<span class="sd">    Under the alternative definition, :math:`c'_k = c_{-k}`, the same</span>
+<span class="sd">    correlation values are associated with the opposite lag sign.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -1868,7 +1882,7 @@
 <span class="sd">    array([3.5], dtype=float32)</span>
 <span class="sd">    &gt;&gt;&gt; np.correlate(a, v, "same")</span>
 <span class="sd">    array([2. , 3.5, 3. ], dtype=float32)</span>
-<span class="sd">    &gt;&gt;&gt; np.correlate([a, v, "full")</span>
+<span class="sd">    &gt;&gt;&gt; np.correlate(a, v, "full")</span>
 <span class="sd">    array([0.5, 2. , 3.5, 3. , 0. ], dtype=float32)</span>
 
 <span class="sd">    Using complex sequences:</span>
