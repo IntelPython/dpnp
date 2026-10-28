@@ -1130,7 +1130,6 @@
     <span class="n">DPNPUnaryTwoOutputsFunc</span><span class="p">,</span>
     <span class="n">acceptance_fn_gcd_lcm</span><span class="p">,</span>
     <span class="n">acceptance_fn_negative</span><span class="p">,</span>
-    <span class="n">acceptance_fn_positive</span><span class="p">,</span>
     <span class="n">acceptance_fn_sign</span><span class="p">,</span>
     <span class="n">acceptance_fn_subtract</span><span class="p">,</span>
     <span class="n">resolve_weak_types_2nd_arg_int</span><span class="p">,</span>
@@ -1325,6 +1324,23 @@
         <span class="n">out</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice1</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">a</span> <span class="o">*</span> <span class="n">f</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice2</span><span class="p">)]</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">f</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice3</span><span class="p">)]</span> <span class="o">+</span> <span class="n">c</span> <span class="o">*</span> <span class="n">f</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice4</span><span class="p">)]</span>
         <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_positive</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Call positive kernel, using abs one for boolean input."""</span>
+
+    <span class="c1"># dpnp.tensor.positive has no boolean loop, abs is identity on bool</span>
+    <span class="k">if</span> <span class="n">src</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">char</span> <span class="o">==</span> <span class="s2">"?"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ti</span><span class="o">.</span><span class="n">_abs</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">,</span> <span class="n">depends</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ti</span><span class="o">.</span><span class="n">_positive</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">,</span> <span class="n">depends</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_positive_result_type</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Get the result data type of positive, including boolean input."""</span>
+
+    <span class="k">if</span> <span class="n">dtype</span><span class="o">.</span><span class="n">char</span> <span class="o">==</span> <span class="s2">"?"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ti</span><span class="o">.</span><span class="n">_abs_result_type</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ti</span><span class="o">.</span><span class="n">_positive_result_type</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_process_ediff1d_args</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">arg_name</span><span class="p">,</span> <span class="n">ary_dtype</span><span class="p">,</span> <span class="n">ary_sycl_queue</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">):</span>
@@ -4997,7 +5013,7 @@
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have a numeric data type.</span>
+<span class="s2">    Input array, expected to have a boolean or numeric data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -5047,10 +5063,9 @@
 
 <span class="n">positive</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
     <span class="s2">"positive"</span><span class="p">,</span>
-    <span class="n">ti</span><span class="o">.</span><span class="n">_positive_result_type</span><span class="p">,</span>
-    <span class="n">ti</span><span class="o">.</span><span class="n">_positive</span><span class="p">,</span>
+    <span class="n">_positive_result_type</span><span class="p">,</span>
+    <span class="n">_positive</span><span class="p">,</span>
     <span class="n">_POSITIVE_DOCSTRING</span><span class="p">,</span>
-    <span class="n">acceptance_fn</span><span class="o">=</span><span class="n">acceptance_fn_positive</span><span class="p">,</span>
 <span class="p">)</span>
 
 
