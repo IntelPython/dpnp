@@ -80,16 +80,6 @@ foreach(_cy_file ${_cython_sources})
     )
 endforeach()
 
-if(WIN32)
-    if(${CMAKE_VERSION} VERSION_LESS "3.27")
-        # this is a work-around for target_link_options inserting option after -link option, cause
-        # linker to ignore it.
-        set(CMAKE_CXX_LINK_FLAGS
-            "${CMAKE_CXX_LINK_FLAGS} -fsycl-device-code-split=per_kernel"
-        )
-    endif()
-endif()
-
 # TODO: reuse this library for dpnp ufunc extension build
 set(_static_lib_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/simplify_iteration_space.cpp
