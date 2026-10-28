@@ -71,7 +71,7 @@ class TestArrayUnaryOp(unittest.TestCase):
         return +a
 
     @pytest.mark.skip(
-        "dpnp boolean positive, the `+` operator, is not supported"
+        "dpnp boolean positive, the `+` operator, emits no DeprecationWarning"
     )
     @testing.with_requires("numpy<1.25")
     def test_pos_boolarray(self):
