@@ -46,7 +46,6 @@
 
 #include "kernels/sorting/merge_sort.hpp"
 #include "kernels/sorting/radix_select.hpp"
-#include "kernels/sorting/radix_sort.hpp"
 #include "kernels/sorting/search_sorted_detail.hpp"
 #include "kernels/sorting/sort_utils.hpp"
 #include "utils/sycl_alloc_utils.hpp"
@@ -438,72 +437,6 @@ sycl::event topk_merge_impl(
 
         return cleanup_host_task_event;
     }
-}
-
-template <typename T1, typename T2>
-class topk_iota_krn;
-
-template <typename T1, typename T2>
-class topk_radix_map_back_krn;
-
-template <typename argTy, typename IndexTy>
-sycl::event topk_radix_impl(sycl::queue &exec_q,
-                            std::size_t iter_nelems, // number of sub-arrays
-                            std::size_t axis_nelems, // size of each sub-array
-                            std::size_t k,
-                            bool ascending,
-                            const char *arg_cp,
-                            char *vals_cp,
-                            char *inds_cp,
-                            const std::vector<sycl::event> &depends)
-{
-    if (axis_nelems < k) {
-        throw std::runtime_error("Invalid sort axis size for value of k");
-    }
-
-    const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp);
-    argTy *vals_tp = reinterpret_cast<argTy *>(vals_cp);
-    IndexTy *inds_tp = reinterpret_cast<IndexTy *>(inds_cp);
-
-    const std::size_t total_nelems = iter_nelems * axis_nelems;
-    const std::size_t padded_total_nelems = ((total_nelems + 63) / 64) * 64;
-    auto workspace_owner =
-        dpnp::tensor::alloc_utils::smart_malloc_device<IndexTy>(
-            padded_total_nelems + total_nelems, exec_q);
-
-    // get raw USM pointer
-    IndexTy *workspace = workspace_owner.get();
-    IndexTy *tmp_tp = workspace + padded_total_nelems;
-
-    using IdentityProjT = radix_sort_details::IdentityProj;
-    using IndexedProjT =
-        radix_sort_details::IndexedProj<IndexTy, argTy, IdentityProjT>;
-    const IndexedProjT proj_op{arg_tp};
-
-    using IotaKernelName = topk_iota_krn<argTy, IndexTy>;
-
-    using dpnp::tensor::kernels::sort_utils_detail::iota_impl;
-
-    sycl::event iota_ev = iota_impl<IotaKernelName, IndexTy>(
-        exec_q, workspace, total_nelems, depends);
-
-    sycl::event radix_sort_ev =
-        radix_sort_details::parallel_radix_sort_impl<IndexTy, IndexedProjT>(
-            exec_q, iter_nelems, axis_nelems, workspace, tmp_tp, proj_op,
-            ascending, {iota_ev});
-
-    // Write out top k of the temporary
-    using WriteOutKernelName = topk_radix_map_back_krn<argTy, IndexTy>;
-
-    sycl::event write_topk_ev =
-        topk_detail::write_out_impl<WriteOutKernelName, argTy, IndexTy>(
-            exec_q, iter_nelems, k, arg_tp, tmp_tp, axis_nelems, axis_nelems,
-            vals_tp, inds_tp, {radix_sort_ev});
-
-    sycl::event cleanup_ev = dpnp::tensor::alloc_utils::async_smart_free(
-        exec_q, {write_topk_ev}, workspace_owner);
-
-    return cleanup_ev;
 }
 
 // the order of the k elements of each row is unspecified

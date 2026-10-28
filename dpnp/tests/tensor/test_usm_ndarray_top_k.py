@@ -192,26 +192,27 @@ def test_top_k_nan(dtype, mode):
     is_complex = dtype in ("c8", "c16")
     nan = complex(dpt.nan, dpt.nan) if is_complex else dpt.nan
 
-    def has_nan(a):
+    def isnan(a):
         if is_complex:
-            return dpt.any(dpt.isnan(dpt.real(a)) | dpt.isnan(dpt.imag(a)))
-        return dpt.any(dpt.isnan(a))
+            return dpt.isnan(dpt.real(a)) | dpt.isnan(dpt.imag(a))
+        return dpt.isnan(a)
 
     # 5 distinct finite values followed by 2 NaNs, then rolled to interleave
     x = dpt.roll(dpt.asarray([3, 1, 5, 2, 4, nan, nan], dtype=dtype), 3)
 
     # k within the finite region: NaNs are excluded from the result
     r = dpt.top_k(x, 3, mode=mode)
-    assert not has_nan(r.values)
+    assert not dpt.any(isnan(r.values))
     assert dpt.all(r.values == x[r.indices])
     extreme = [5, 4, 3] if mode == "largest" else [1, 2, 3]
     expected = dpt.asarray(extreme, dtype=dtype)
     assert dpt.all(dpt.sort(r.values) == dpt.sort(expected))
 
-    # k reaching into the NaN region: the 2 NaNs are ordered last
-    r = dpt.top_k(x, 7, mode=mode)
-    assert has_nan(r.values[-2:])
-    assert not has_nan(r.values[:5])
+    # k reaching into the NaN region: all finite values are selected, NaNs
+    # fill the rest (the elements may come in any order)
+    for k, n_nans in [(6, 1), (7, 2)]:
+        r = dpt.top_k(x, k, mode=mode)
+        assert int(dpt.sum(isnan(r.values))) == n_nans
 
 
 @pytest.mark.parametrize(
@@ -308,6 +309,12 @@ def _reference_top_k_inds(x_np, k, mode):
         n = x_np.shape[-1]
         inds = np.argsort(x_np[..., ::-1], axis=-1, kind="stable")[..., ::-1]
         inds = n - 1 - inds
+        # NaNs order last for both modes, as with `descending=True` of
+        # numpy>=2.5
+        nans = np.isnan(np.take_along_axis(x_np, inds, axis=-1))
+        inds = np.take_along_axis(
+            inds, np.argsort(nans, axis=-1, kind="stable"), axis=-1
+        )
     else:
         inds = np.argsort(x_np, axis=-1, kind="stable")
     return inds[..., :k]

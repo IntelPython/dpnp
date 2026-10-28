@@ -35,6 +35,7 @@
 #pragma once
 
 #include <algorithm>
+#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
@@ -162,6 +163,9 @@ bucket_info find_bucket(const sycl::nd_item<1> &ndit,
     return result[0];
 }
 
+/*! @brief Largest tile size `gather_selected` can rank within 16 bits */
+inline constexpr std::size_t max_tile_size = (std::size_t(1) << 16) - 1;
+
 /*! @brief Passes the elements `i` of `[begin, end)` whose prefix under `mask`
  * is less than `desired` to `less_out(j, i)`, and the first `n_ties` of the
  * row equal to it to `tie_out(j, i)`, `j` being their rank in index order */
@@ -199,6 +203,7 @@ void gather_selected(const sycl::nd_item<1> &ndit,
     // each sub-group processes a contiguous piece of the tile, so that
     // elements are ranked in index order
     const std::size_t tile_size = wg_size * elems_per_wi;
+    assert(tile_size <= max_tile_size);
     const std::size_t sg_tile_offset = (lid - lane_id) * elems_per_wi;
 
     std::uint64_t less_done = 0;
@@ -342,9 +347,6 @@ template <typename ValueT,
           bool is_ascending,
           std::uint32_t elems_per_wi>
 class radix_select_one_group_krn;
-
-/*! @brief Largest tile size `gather_selected` can rank within 16 bits */
-inline constexpr std::size_t max_tile_size = (std::size_t(1) << 16) - 1;
 
 template <bool is_ascending,
           std::uint32_t elems_per_wi,
