@@ -3028,22 +3028,26 @@
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Construct an array by executing a function over each coordinate.</span>
 
-<span class="sd">    The resulting array therefore has a value ``fn(x, y, z)`` at</span>
-<span class="sd">    coordinate ``(x, y, z)``.</span>
+<span class="sd">    The function is called once with one coordinate array for each dimension</span>
+<span class="sd">    of `shape` instead of once per coordinate.</span>
+
+<span class="sd">    For functions that operate elementwise on array arguments, the resulting</span>
+<span class="sd">    array has a value ``fn(x, y, z)`` at coordinate ``(x, y, z)``.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.fromfunction`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    function : callable</span>
-<span class="sd">        The function is called with N parameters, where N is the rank of</span>
-<span class="sd">        `shape`. Each parameter represents the coordinates of the array varying</span>
+<span class="sd">        The function is called once with N coordinate arrays as parameters,</span>
+<span class="sd">        where N is the length of `shape`. Each array represents the coordinates</span>
 <span class="sd">        along a specific axis. For example, if `shape` were ``(2, 2)``, then</span>
 <span class="sd">        the parameters would be ``array([[0, 0], [1, 1]])`` and</span>
 <span class="sd">        ``array([[0, 1], [0, 1]])``.</span>
 <span class="sd">    shape : (N,) tuple of ints</span>
-<span class="sd">        Shape of the output array, which also determines the shape of</span>
-<span class="sd">        the coordinate arrays passed to `function`.</span>
+<span class="sd">        Shape of the coordinate arrays passed to `function`. The shape of the</span>
+<span class="sd">        output is determined by the value returned by `function` and may be</span>
+<span class="sd">        different from `shape`.</span>
 <span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        Data-type of the coordinate arrays passed to `function`.</span>
 <span class="sd">        If ``None``, uses a default floating point data type for the device on</span>
@@ -3087,6 +3091,12 @@
 <span class="sd">    -----</span>
 <span class="sd">    This uses :obj:`numpy.fromfunction` and coerces the result to a DPNP array.</span>
 <span class="sd">    Keywords other than `dtype` and `like` are passed to `function`.</span>
+
+<span class="sd">    .. warning::</span>
+<span class="sd">        `shape` determines the shape of the coordinate arrays passed to</span>
+<span class="sd">        `function`. It does not enforce that the function returns a result</span>
+<span class="sd">        with that shape. If `function` returns a scalar, the result is</span>
+<span class="sd">        a zero-dimensional array rather than an array with the given `shape`.</span>
 
 <span class="sd">    See also</span>
 <span class="sd">    --------</span>
@@ -3266,7 +3276,6 @@
 <span class="sd">        A string containing the data.</span>
 <span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        The data type of the array.</span>
-<span class="sd">        For binary input data, the data must be in exactly this format.</span>
 <span class="sd">        If ``None``, uses a default floating point data type for the device on</span>
 <span class="sd">        which the returned array is allocated.</span>
 
@@ -3278,7 +3287,7 @@
 <span class="sd">        Default: ``-1``.</span>
 <span class="sd">    sep : str</span>
 <span class="sd">        The string separating numbers in the data; extra whitespace between</span>
-<span class="sd">        elements is also ignored.</span>
+<span class="sd">        elements is also ignored. This cannot be an empty string.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>

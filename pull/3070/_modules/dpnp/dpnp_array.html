@@ -2412,7 +2412,12 @@
 <span class="sd">               [8., 8.]])</span>
 <span class="sd">        """</span>
 
-        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span></div>
+        <span class="c1"># lazy import avoids circular imports</span>
+        <span class="c1"># pylint: disable=import-outside-toplevel</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_iface_linearalgebra</span><span class="w"> </span><span class="kn">import</span> <span class="n">_dot</span>
+
+        <span class="c1"># calling _dot keeps the deprecation warning pointing to the caller</span>
+        <span class="k">return</span> <span class="n">_dot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
 
 
     <span class="nd">@property</span>
