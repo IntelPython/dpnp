@@ -55,15 +55,13 @@ jobs:
           architecture: x64
 
       - name: Install dpnp build dependencies
-        # Cython is pinned here only (not in pyproject.toml) to keep the generated
-        # code stable between scans, so Coverity CIDs and their triage survive
+        # Cython pinned so the generated code, and the Coverity CIDs, stay stable
         run: |
           pip install cmake "cython==3.3.0" ninja numpy scikit-build setuptools wheel \
                       "versioneer[toml]==0.29"
 
       - name: Install dpctl
-        # dpctl_pkg.txt replaces PyPI with the dppy dev index, so numpy has to
-        # be installed by the step above
+        # dpctl_pkg.txt replaces PyPI, so numpy must come from the step above
         run: pip install -r environments/dpctl_pkg.txt
 
       - name: Report compiler version
@@ -95,8 +93,7 @@ jobs:
         run: |
           source "${ONEAPI_ROOT}/setvars.sh"
           cov-configure --gcc
-          # The generic clangcc/clangcxx templates parse the SYCL headers without
-          # SYCL mode and fail on them, so require Coverity's Intel compiler type
+          # Generic clang templates can't parse SYCL headers, see https://github.com/IntelPython/dpctl/pull/2401
           comptypes="$(cov-configure --list-compiler-types | cut -d, -f1)"
           comptype=""
           for candidate in intel_oneapi_icx intel_oneapi_icx:linux intel_icx:linux; do
@@ -118,8 +115,7 @@ jobs:
         run: |
           set -o pipefail
           source "${ONEAPI_ROOT}/setvars.sh"
-          # --skip-editable: the in-place build_ext already compiled everything
-          # Coverity needs to see, a pip install would only repeat it
+          # --skip-editable: build_ext --inplace already compiled everything
           cov-build --dir cov-int \
               python scripts/build_locally.py --oneapi --skip-editable --verbose \
               2>&1 | tee cov-build.log
@@ -129,13 +125,10 @@ jobs:
             grep -E "Emitted .*compilation unit|are ready for analysis" cov-build.log || true
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
-          # Require every project source to be emitted. The "Emitted N (P%)" total
-          # can't be used for this: it also counts the SYCL device passes, which
-          # Coverity fails to parse. CMakeFiles/ only holds CMake's own probes.
+          # Gate on per-source emits, not the P% total, see https://github.com/IntelPython/dpctl/pull/2401
           log=cov-int/build-log.txt
           compiled="$(grep -oP '\[STATUS\] Compiling \K\S+' "${log}" | grep -F "${GITHUB_WORKSPACE}/" | grep -vF /CMakeFiles/ | sort -u || true)"
-          # Unanchored: parallel compiles can splice another unit's output onto
-          # the same line of the log
+          # Unanchored: parallel compiles can splice output onto the same log line
           emitted="$(grep -oP "Emit for file '\K[^']+(?=' \(TU [0-9]+\) complete\.)" "${log}" | sort -u || true)"
           missing="$(comm -23 <(echo "${compiled}") <(echo "${emitted}"))"
           total="$(grep -c . <<< "${compiled}" || true)"
@@ -163,8 +156,7 @@ jobs:
           if-no-files-found: warn
 
       - name: Submit results to Coverity Scan
-        # Branch dispatches only validate the capture, a submit from them would
-        # replace master's results on the Scan dashboard
+        # A branch submit would replace master's results on the Scan dashboard
         if: github.ref == 'refs/heads/master'
         timeout-minutes: 30
         env:
