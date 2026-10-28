@@ -4,6 +4,7 @@
 [![Conda package](https://github.com/IntelPython/dpnp/actions/workflows/conda-package.yml/badge.svg?branch=master&event=push)](https://github.com/IntelPython/dpnp/actions/workflows/conda-package.yml)
 [![Coverage Status](https://coveralls.io/repos/github/IntelPython/dpnp/badge.svg?branch=master)](https://coveralls.io/github/IntelPython/dpnp?branch=master)
 [![Build Sphinx](https://github.com/IntelPython/dpnp/workflows/Build%20Sphinx/badge.svg)](https://intelpython.github.io/dpnp)
+[![Coverity Scan Build Status](https://scan.coverity.com/projects/intelpython-dpnp/badge.svg)](https://scan.coverity.com/projects/intelpython-dpnp)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/IntelPython/dpnp/badge)](https://securityscorecards.dev/viewer/?uri=github.com/IntelPython/dpnp)
 
 <img align="left" src="https://spec.oneapi.io/oneapi-logo-white-scaled.jpg" alt="oneAPI logo" width="75"/>

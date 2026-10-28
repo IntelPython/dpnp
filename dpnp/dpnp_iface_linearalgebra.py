@@ -40,6 +40,8 @@ it contains:
 """
 
 # pylint: disable=no-name-in-module
+import warnings
+
 import numpy
 
 import dpnp
@@ -111,6 +113,14 @@ def dot(a, b, out=None):
         Returns the dot product of `a` and `b`.
         If `out` is given, then it is returned.
 
+    Warnings
+    --------
+    Calling the function when `a` has 2 or more dimensions and `b` has more
+    than 2 dimensions is deprecated and will eventually raise an error,
+    because the leading dimensions of `b` end up in the middle of the result.
+    Use ``dpnp.tensordot(a, b, axes=(-1, -2))`` for the same result, or
+    :obj:`dpnp.matmul` for batched matrix multiplication.
+
     See Also
     --------
     :obj:`dpnp.ndarray.dot` : Equivalent method.
@@ -141,14 +151,13 @@ def dot(a, b, out=None):
     array([[4, 1],
            [2, 2]])
 
-    >>> a = np.arange(3 * 4 * 5 * 6).reshape((3, 4, 5, 6))
-    >>> b = np.arange(3 * 4 * 5 * 6)[::-1].reshape((5, 4, 6, 3))
-    >>> np.dot(a, b)[2, 3, 2, 1, 2, 2]
-    array(499128)
-    >>> sum(a[2, 3, 2, :] * b[1, 2, :, 2])
-    array(499128)
-
     """
+
+    return _dot(a, b, out=out)
+
+
+def _dot(a, b, out=None):
+    """Implementation of `dpnp.dot` shared with `dpnp.ndarray.dot`."""
 
     dpnp.check_supported_arrays_type(a, b, scalar_type=True)
 
@@ -180,6 +189,18 @@ def dot(a, b, out=None):
     # TODO: investigate usage of matmul for some possible
     # use cases instead of dpnp.tensordot
     result = dpnp.tensordot(a, b, axes=(-1, -2))
+
+    # a_ndim >= 2 here; warn once tensordot validated shapes
+    if b_ndim > 2:
+        # stacklevel=3 points to the caller of dpnp.dot/dpnp.ndarray.dot
+        warnings.warn(
+            "dpnp.dot received arrays with a.ndim >= 2 and b.ndim > 2. "
+            "This places the leading dimensions of b in the middle of the "
+            "result, which is deprecated and will eventually raise an error. "
+            "Use dpnp.tensordot(a, b, axes=(-1, -2)) instead.",
+            DeprecationWarning,
+            stacklevel=3,
+        )
     return dpnp.get_result_array(result, out, casting="no")
 
 

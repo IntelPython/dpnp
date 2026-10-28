@@ -2376,32 +2376,29 @@ def test_negative_boolean():
 @pytest.mark.parametrize(
     "data", [[[1.0, -1.0], [0.1, -0.1]], [-2, -1, 0, 1, 2]], ids=["2D", "1D"]
 )
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True, no_bool=True))
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
 def test_positive(data, dtype):
     a = get_abs_array(data, dtype=dtype)
     ia = dpnp.array(a)
 
+    # numpy < 2.6 raises TypeError for boolean input
+    if dtype == dpnp.bool and numpy_version() < "2.6.0.dev0":
+        expected = a.copy()
+    else:
+        expected = numpy.positive(a)
+
     result = dpnp.positive(ia)
-    expected = numpy.positive(a)
-    assert_allclose(result, expected)
+    assert_dtype_allclose(result, expected)
 
     result = +ia
-    expected = +a
-    assert_allclose(result, expected)
+    assert_dtype_allclose(result, expected)
 
     # out keyword
     if dtype is not None:
         iout = dpnp.empty(expected.shape, dtype=dtype)
         result = dpnp.positive(ia, out=iout)
         assert result is iout
-        assert_allclose(result, expected)
-
-
-def test_positive_boolean():
-    ia = dpnp.array([True, False])
-
-    with pytest.raises(TypeError):
-        dpnp.positive(ia)
+        assert_dtype_allclose(result, expected)
 
 
 @pytest.mark.parametrize("dtype", get_float_dtypes(no_float16=False))
