@@ -15,6 +15,7 @@ These come from recurring maintainer review comments. Directory-specific rules a
 - Every user-visible change, including build, recipe and C-API changes, gets a one-line `CHANGELOG.md` entry (format below).
 - A new public function needs an export in `dpnp/__init__.py` (or in its subpackage's `__init__.py`), a numpydoc docstring, an entry in `doc/reference/*.rst`, tests (including `test_sycl_queue.py` and `test_usm_type.py`) and a changelog entry. Don't export names that NumPy/SciPy don't.
 - Deprecate before removing: keep the old API for at least one release with a `DeprecationWarning`, and add a `Deprecated` changelog entry and a test for the warning. Removing something NumPy itself has removed can land directly with a `Removed` entry.
+- A removal, rename or version bump also updates every other place that names or relies on the old thing: grep the whole repository, workflows and recipes included. A site kept on purpose gets a `TODO`, unless a directory `AGENTS.md` says to keep it. Past `CHANGELOG.md` entries stay.
 - Every new branch and error path has a test; a bug fix comes with a test that fails without it. Use `# pragma: no cover` only for branches the Linux coverage job can't reach (CUDA, HIP, Windows-only) or that can't happen by construction.
 - A workaround, skip or xfail gets a comment with the full issue URL so it can be reverted later. In `dpnp/tests/third_party/`, a skip for an unsupported feature needs only its reason string.
 - Keep comments short and accurate: one line of why. Don't narrate the change, restate the code, or mention "this PR".
@@ -45,11 +46,11 @@ Append to the end of the matching `### Added` / `Changed` / `Deprecated` / `Remo
 | Check | Workflow | Required on master |
 | --- | --- | --- |
 | pre-commit (`Check`) | `.github/workflows/pre-commit.yml` | yes |
-| conda build and tests, Linux and Windows, py3.12-3.14t (`Test (...)`) | `conda-package.yml` | yes |
+| conda build and tests, Linux and Windows, py3.13-3.15 and 3.14t (`Test (...)`) | `conda-package.yml` | yes |
 | Internal Jenkins (`jenkins-test-dpnp-3.13-linux-dev`, `...-3.14-...`) | external | yes |
 | Array API conformance of `dpnp`, not yet `dpnp.tensor` (array-api-tests; never fails, results posted as a PR comment) | `conda-package.yml` | no |
 | pybind11 examples | `conda-package.yml` | no |
-| conda-forge build and tests | `conda-package-cf.yml` | no |
+| conda-forge build and tests | `conda-package-cf.yml`, matrix in `conda-build-test.yml` | no |
 | oneMath build, open-source LLVM SYCL build | `check-onemath.yaml`, `os-llvm-sycl-build.yml` | no |
 | Sphinx docs (`make spelling`, `make html`) | `build-sphinx.yml` | no |
 | Coverage (Coveralls), zizmor | `generate_coverage.yaml`, `zizmor.yml` | no |

@@ -22,7 +22,7 @@
 - A new function is added to the matching parametrized lists in `test_sycl_queue.py` and `test_usm_type.py` (`test_1in_1out`, `test_2in_1out`, ...); elementwise ones also to `test_strides.py`.
 - A test that may exceed the device's maximum allocation size skips on `USMAllocationError` (from `dpnp.exceptions`), not `MemoryError`, which it does not derive from.
 - Markers are strict and only `slow` and `multi_gpu` are registered. Tests that need huge allocations are `@pytest.mark.slow`; they never run in CI by design.
-- Skip lists are for device- or backend-specific failures only; use the full parametrized node ID.
+- Skip lists are for device- or backend-specific failures only; use the full parametrized node ID, and update or drop the entries of a test you rename or remove.
 - CI runs the installed package (`--pyargs dpnp.tests`), so a new test directory or data file needs a matching glob in `package_data` in `setup.py`, or CI silently skips it.
 
 ## CuPy Tests (third_party/)

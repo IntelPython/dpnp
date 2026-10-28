@@ -5,8 +5,8 @@
 
 ## Layout
 - `*.py`: Array API functions; `_elementwise_funcs.py` holds the elementwise function objects
-- `*.pyx`, `*.pxd`: Cython modules, all built by glob. `_usmarray.pyx` defines `usm_ndarray`; its `public api` generates `dpnp/include/dpnp/tensor/_usmarray*.h`
-- `libtensor/include/kernels/`, `libtensor/include/utils/` (`type_dispatch*.hpp`, `type_utils.hpp`, ...), `libtensor/source/`: C++ for `_tensor_impl`, `_tensor_elementwise_impl`, `_tensor_reductions_impl`, `_tensor_sorting_impl`, `_tensor_accumulation_impl` and `_tensor_linalg_impl`
+- `*.pyx`, `*.pxd`: Cython modules, all built by glob. `_usmarray.pyx` defines `usm_ndarray`; the `public` and `api` declarations in it and `_usmarray.pxd` generate `dpnp/include/dpnp/tensor/_usmarray*.h`
+- `libtensor/include/kernels/`, `libtensor/include/utils/` (`type_dispatch.hpp`, `type_dispatch_building.hpp`, `type_utils.hpp`, ...), `libtensor/source/`: C++ for `_tensor_impl`, `_tensor_elementwise_impl`, `_tensor_reductions_impl`, `_tensor_sorting_impl`, `_tensor_accumulation_impl` and `_tensor_linalg_impl`
 - Tests: `dpnp/tests/tensor/`
 
 ## Rules for Changes
