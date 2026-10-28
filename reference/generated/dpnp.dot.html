@@ -1096,6 +1096,14 @@ If <cite>out</cite> is given, then it is returned.</p>
 </dl>
 </dd>
 </dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Calling the function when <cite>a</cite> has 2 or more dimensions and <cite>b</cite> has more
+than 2 dimensions is deprecated and will eventually raise an error,
+because the leading dimensions of <cite>b</cite> end up in the middle of the result.
+Use <code class="docutils literal notranslate"><span class="pre">dpnp.tensordot(a,</span> <span class="pre">b,</span> <span class="pre">axes=(-1,</span> <span class="pre">-2))</span></code> for the same result, or
+<a class="reference internal" href="dpnp.matmul.html#dpnp.matmul" title="dpnp.matmul"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.matmul</span></code></a> for batched matrix multiplication.</p>
+</div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
@@ -1132,14 +1140,6 @@ If <cite>out</cite> is given, then it is returned.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 <span class="go">array([[4, 1],</span>
 <span class="go">       [2, 2]])</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">6</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
-<span class="go">array(499128)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">sum</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">])</span>
-<span class="go">array(499128)</span>
 </pre></div>
 </div>
 </dd></dl>
