@@ -1,25 +1,8 @@
 name: Coverity Scan
 
-# Public static analysis via the free Coverity Scan service (scan.coverity.com,
-# operated by Black Duck). Coverity is a compiled-language analyzer: it must wrap
-# the real C/C++ build with `cov-build`, so this workflow installs oneAPI, builds
-# the SYCL extensions under capture, and uploads the result for analysis.
-#
-# One-time setup required before the first run:
-#   1. Register IntelPython/dpnp at https://scan.coverity.com/github
-#      (sign in with GitHub; the project name must match COVERITY_PROJECT below).
-#   2. Add two repository secrets (Settings -> Secrets and variables -> Actions):
-#        COVERITY_SCAN_TOKEN  - the project token from the Project Settings tab
-#        COVERITY_SCAN_EMAIL  - a maintainer email for build notifications
-#
-# dpnp is ~140K lines of C++/Cython, which puts it in the 100K-500K LOC free-tier
-# bucket: 21 builds/week, max 3/day. Running weekly plus on demand stays well
-# under that, and matters more here than for the smaller IntelPython projects
-# because a full dpnp build under cov-build takes hours.
-
 on:
   schedule:
-    - cron: "0 1 * * 1"  # Mondays 01:00 UTC; well under the free build quota
+    - cron: "0 1 * * 1"
   workflow_dispatch:
 
 permissions:
@@ -35,12 +18,8 @@ env:
 
 jobs:
   coverity-scan:
-    # Forks lack the COVERITY_SCAN_* secrets; only run on the canonical repo.
     if: github.repository == 'IntelPython/dpnp'
     runs-on: ubuntu-latest
-    # Backstop for the whole job. dpnp's own conda-package build budgets 90 min
-    # and Coverity's emit roughly doubles compile time, so this is deliberately
-    # close to the 6 h hard cap GitHub imposes on a job.
     timeout-minutes: 350
 
     steps:
@@ -60,8 +39,6 @@ jobs:
           sudo apt-get update
 
       - name: Install latest Intel OneAPI
-        # Same package set the coverage workflow uses: dpnp's CMakeLists requires
-        # IntelSYCL, MKL, TBB and oneDPL (libdpstd) to be found at configure time.
         run: |
           sudo apt-get install -y hwloc                     \
                                   intel-oneapi-mkl          \
@@ -70,7 +47,6 @@ jobs:
                                   intel-oneapi-tbb-devel    \
                                   intel-oneapi-libdpstd-devel \
                                   intel-oneapi-compiler-dpcpp-cpp
-          sudo apt-get install -y ninja-build
 
       - name: Setup Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
@@ -79,20 +55,15 @@ jobs:
           architecture: x64
 
       - name: Install dpnp build dependencies
-        # Mirrors the build-time requirements in pyproject.toml. dpnp still uses
-        # classic scikit-build, so setup.py is the build entry point.
         # Cython is pinned here only (not in pyproject.toml) to keep the generated
-        # code stable between scans, so Coverity CIDs and their triage survive;
-        # bump it deliberately, as the mkl_fft and mkl-service scans do.
+        # code stable between scans, so Coverity CIDs and their triage survive
         run: |
           pip install cmake "cython==3.3.0" ninja numpy scikit-build setuptools wheel \
                       "versioneer[toml]==0.29"
 
       - name: Install dpctl
-        # dpctl must come from pip, not conda: the conda package has a runtime
-        # dependency on DPC++ RT, which would be resolved independently of the
-        # apt-installed compiler above and can end up newer than it. DPC++ only
-        # guarantees backwards compatibility, so that skew breaks the build.
+        # dpctl_pkg.txt replaces PyPI with the dppy dev index, so numpy has to
+        # be installed by the step above
         run: pip install -r environments/dpctl_pkg.txt
 
       - name: Report compiler version
@@ -111,9 +82,6 @@ jobs:
                --data-urlencode "project=${COVERITY_PROJECT}" \
                --output cov-analysis.tar.gz \
                https://scan.coverity.com/download/linux64
-          # An invalid token/project is answered with a small HTML error page and
-          # HTTP 200, not the multi-hundred-MB tarball, so --fail-with-body does
-          # not catch it. Fail loudly with a clear hint instead.
           if [ "$(stat -c '%s' cov-analysis.tar.gz)" -lt 1000000 ]; then
             echo "::error::Coverity build tool download failed. Verify the COVERITY_SCAN_TOKEN secret and that the registered project name matches '${COVERITY_PROJECT}'."
             head -c 512 cov-analysis.tar.gz || true
@@ -126,18 +94,9 @@ jobs:
       - name: Configure Coverity for the DPC++ compiler
         run: |
           source "${ONEAPI_ROOT}/setvars.sh"
-          # Cython-generated sources and the pybind11 extensions go through
-          # icpx, the sysroot/driver probing bits still use gcc
           cov-configure --gcc
-          # Register icx/icpx with Coverity's native Intel oneAPI compiler type.
-          # The generic clangcc/clangcxx templates parse <sycl/sycl.hpp> without
-          # SYCL mode and fail on device-only builtins (__ocl_sampler_t,
-          # __ocl_image2d_ro_t, ...): dpctl's scan with that setup captures only
-          # 9 of its 30 sources, and nearly all of dpnp's sources include SYCL.
-          # The native type emits each SYCL source twice, as a host pass and a
-          # spir64 device pass; see the capture check below for the latter.
-          # intel_oneapi_icx is current; intel_icx:linux is the older spelling
-          # the Scan build tool still ships (what mkl_umath's scan resolves to).
+          # The generic clangcc/clangcxx templates parse the SYCL headers without
+          # SYCL mode and fail on them, so require Coverity's Intel compiler type
           comptypes="$(cov-configure --list-compiler-types | cut -d, -f1)"
           comptype=""
           for candidate in intel_oneapi_icx intel_oneapi_icx:linux intel_icx:linux; do
@@ -151,17 +110,10 @@ jobs:
             exit 1
           fi
           echo "Using Coverity compiler type: ${comptype}"
-          # With --template, --compiler takes a bare executable name; capture
-          # matches on the name of the spawned executable, so this also covers
-          # the absolute icx/icpx paths CMake resolves.
           cov-configure --template --comptype "${comptype}" --compiler icx
           cov-configure --template --comptype "${comptype}" --compiler icpx
 
       - name: Build under cov-build
-        # dpnp has ~250 translation units, many of them template-heavy SYCL
-        # kernels, and cov-build compiles each one a second time with its own
-        # frontend. Cap the step so a wedged capture fails before the job
-        # timeout eats the whole 6 h budget.
         timeout-minutes: 300
         run: |
           set -o pipefail
@@ -177,20 +129,13 @@ jobs:
             grep -E "Emitted .*compilation unit|are ready for analysis" cov-build.log || true
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
-          # A partial capture still uploads happily and uses up a scan, so
-          # require every project source to be emitted. This is checked per
-          # source rather than via the "Emitted N (P%)" total because that
-          # total also counts the spir64 device passes, which the Scan build
-          # tool's emitter cannot parse (it trips over and then crashes in the
-          # SPIR-V builtin headers), capping P near 50% for dpnp. The host
-          # pass of each source is what gets analyzed. CMake's own try-compile
-          # probes under CMakeFiles/ are not project code and often fail.
-          # `|| true` because a no-match grep would otherwise trip pipefail and
-          # end the step before the errors below are printed.
+          # Require every project source to be emitted. The "Emitted N (P%)" total
+          # can't be used for this: it also counts the SYCL device passes, which
+          # Coverity fails to parse. CMakeFiles/ only holds CMake's own probes.
           log=cov-int/build-log.txt
           compiled="$(grep -oP '\[STATUS\] Compiling \K\S+' "${log}" | grep -F "${GITHUB_WORKSPACE}/" | grep -vF /CMakeFiles/ | sort -u || true)"
           # Unanchored: parallel compiles can splice another unit's output onto
-          # the same line of the log.
+          # the same line of the log
           emitted="$(grep -oP "Emit for file '\K[^']+(?=' \(TU [0-9]+\) complete\.)" "${log}" | sort -u || true)"
           missing="$(comm -23 <(echo "${compiled}") <(echo "${emitted}"))"
           total="$(grep -c . <<< "${compiled}" || true)"
@@ -218,8 +163,8 @@ jobs:
           if-no-files-found: warn
 
       - name: Submit results to Coverity Scan
-        # Scan keeps only the latest build, so a run dispatched on a feature
-        # branch would replace master's results; such runs stop after capture.
+        # Branch dispatches only validate the capture, a submit from them would
+        # replace master's results on the Scan dashboard
         if: github.ref == 'refs/heads/master'
         timeout-minutes: 30
         env:
@@ -227,9 +172,6 @@ jobs:
           COVERITY_SCAN_EMAIL: ${{ secrets.COVERITY_SCAN_EMAIL }}
         run: |
           tar -czf cov-int.tgz cov-int
-          # dpnp's emit database is far larger than the other IntelPython
-          # projects'; log the size because Scan rejects oversized submissions
-          # and the resulting error is otherwise opaque.
           echo "Submitting $(du -h cov-int.tgz | cut -f1) of intermediate results"
           curl --no-progress-meter --fail-with-body \
                --retry 5 --retry-connrefused --retry-delay 5 \
