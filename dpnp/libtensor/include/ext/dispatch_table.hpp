@@ -316,16 +316,6 @@ public:
         return fn;
     }
 
-    const SupportedDTypeList &get_supported_first_type() const
-    {
-        return supported_first_type;
-    }
-
-    const SupportedDTypeList &get_supported_second_type() const
-    {
-        return supported_second_type;
-    }
-
     const SupportedDTypeList2 &get_all_supported_types() const
     {
         return all_supported_types;

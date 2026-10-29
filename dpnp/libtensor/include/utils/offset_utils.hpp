@@ -602,18 +602,6 @@ private:
 
 static_assert(sycl::is_device_copyable_v<FourOffsets_StridedIndexer>);
 
-struct FourZeroOffsets_Indexer
-{
-    constexpr FourZeroOffsets_Indexer() {}
-
-    constexpr FourOffsets<ssize_t> operator()(ssize_t) const
-    {
-        return FourOffsets<ssize_t>();
-    }
-};
-
-static_assert(sycl::is_device_copyable_v<FourZeroOffsets_Indexer>);
-
 struct NthStrideOffset
 {
     NthStrideOffset(int common_nd,
@@ -643,40 +631,6 @@ private:
 };
 
 static_assert(sycl::is_device_copyable_v<NthStrideOffset>);
-
-template <int nd>
-struct FixedDimStridedIndexer
-{
-    FixedDimStridedIndexer(const std::array<ssize_t, nd> &_shape,
-                           const std::array<ssize_t, nd> &_strides,
-                           ssize_t _offset)
-        : _ind(_shape), strides(_strides), starting_offset(_offset)
-    {
-    }
-    std::size_t operator()(std::size_t gid) const
-    {
-        dpnp::tensor::strides::CIndexer_array<nd, ssize_t> local_indexer(
-            std::move(_ind));
-        local_indexer.set(gid);
-        auto mi = local_indexer.get();
-
-        ssize_t relative_offset = 0;
-
-#pragma unroll
-        for (int i = 0; i < nd; ++i) {
-            relative_offset += mi[i] * strides[i];
-        }
-        return starting_offset + relative_offset;
-    }
-
-private:
-    dpnp::tensor::strides::CIndexer_array<nd, ssize_t> _ind;
-
-    std::array<ssize_t, nd> strides;
-    ssize_t starting_offset;
-};
-
-static_assert(sycl::is_device_copyable_v<FixedDimStridedIndexer<1>>);
 
 template <int nd>
 struct TwoOffsets_FixedDimStridedIndexer
@@ -724,65 +678,4 @@ private:
 };
 
 static_assert(sycl::is_device_copyable_v<TwoOffsets_FixedDimStridedIndexer<1>>);
-
-template <int nd>
-struct ThreeOffsets_FixedDimStridedIndexer
-{
-    ThreeOffsets_FixedDimStridedIndexer(
-        const std::array<ssize_t, nd> &_shape,
-        const std::array<ssize_t, nd> &_strides1,
-        const std::array<ssize_t, nd> &_strides2,
-        const std::array<ssize_t, nd> &_strides3,
-        ssize_t _offset1,
-        ssize_t _offset2,
-        ssize_t _offset3)
-        : _ind(_shape), strides1(_strides1), strides2(_strides2),
-          strides3(_strides3), starting_offset1(_offset1),
-          starting_offset2(_offset2), starting_offset3(_offset3)
-    {
-    }
-
-    ThreeOffsets<ssize_t> operator()(std::size_t gid) const
-    {
-        dpnp::tensor::strides::CIndexer_array<nd, ssize_t> local_indexer(
-            std::move(_ind));
-        local_indexer.set(gid);
-        auto mi = local_indexer.get();
-
-        ssize_t relative_offset1 = 0;
-#pragma unroll
-        for (int i = 0; i < nd; ++i) {
-            relative_offset1 += mi[i] * strides1[i];
-        }
-
-        ssize_t relative_offset2 = 0;
-#pragma unroll
-        for (int i = 0; i < nd; ++i) {
-            relative_offset2 += mi[i] * strides2[i];
-        }
-
-        ssize_t relative_offset3 = 0;
-#pragma unroll
-        for (int i = 0; i < nd; ++i) {
-            relative_offset3 += mi[i] * strides3[i];
-        }
-
-        return ThreeOffsets<ssize_t>(starting_offset1 + relative_offset1,
-                                     starting_offset2 + relative_offset2,
-                                     starting_offset3 + relative_offset3);
-    }
-
-private:
-    dpnp::tensor::strides::CIndexer_array<nd, ssize_t> _ind;
-
-    std::array<ssize_t, nd> strides1;
-    std::array<ssize_t, nd> strides2;
-    std::array<ssize_t, nd> strides3;
-    ssize_t starting_offset1;
-    ssize_t starting_offset2;
-    ssize_t starting_offset3;
-};
-
-static_assert(
-    sycl::is_device_copyable_v<ThreeOffsets_FixedDimStridedIndexer<1>>);
 } // namespace dpnp::tensor::offset_utils

@@ -89,7 +89,7 @@ inline void check_c_contig(const std::vector<array_ptr> &arrays,
     for (const auto &arr : arrays) {
         if (arr != nullptr && !arr->is_c_contiguous()) {
             throw py::value_error(name_of(arr, names) +
-                                  " parameter is not c-contiguos");
+                                  " parameter is not c-contiguous");
         }
     }
 }
