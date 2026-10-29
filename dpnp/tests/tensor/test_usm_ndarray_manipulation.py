@@ -33,8 +33,8 @@ import numpy as np
 import pytest
 from numpy.testing import assert_, assert_array_equal, assert_raises_regex
 
+import dpnp.libtensor._tensor_impl as ti
 import dpnp.tensor as dpt
-import dpnp.tensor._tensor_impl as ti
 from dpnp.tensor._numpy_helper import AxisError
 
 from .helper import get_queue_or_skip

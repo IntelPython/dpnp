@@ -31,8 +31,8 @@ import numpy as np
 import pytest
 from numpy.testing import assert_array_equal
 
+import dpnp.libtensor._tensor_impl as ti
 import dpnp.tensor as dpt
-import dpnp.tensor._tensor_impl as ti
 from dpnp.tensor._copy_utils import _take_multi_index
 
 from .helper import (

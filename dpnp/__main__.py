@@ -51,7 +51,7 @@ def print_include_flags() -> None:
 
 def get_tensor_include_dir() -> str:
     """Returns path to dpnp libtensor include directory"""
-    libtensor_dir = os.path.join(_dpnp_dir(), "tensor", "libtensor", "include")
+    libtensor_dir = os.path.join(_dpnp_dir(), "libtensor", "include")
     return libtensor_dir
 
 

@@ -49,10 +49,10 @@ import dpctl.utils as dpu
 import numpy
 
 import dpnp
+import dpnp.libtensor._tensor_impl as ti
 
 # pylint: disable=no-name-in-module
 import dpnp.tensor as dpt
-import dpnp.tensor._tensor_impl as ti
 
 from .dpnp_array import dpnp_array
 from .dpnp_utils import (
@@ -428,14 +428,17 @@ def get_dpnp_descriptor(
 
 def get_include():
     r"""
-    Return the directory that contains \*.h header files of dpnp C++ backend.
+    Return the directory that contains \*.h header files of dpnp C++ library
+    (libtensor).
 
     An extension module that needs to be compiled against dpnp backend
     should use this function to locate the appropriate include directory.
+    It is the same directory as returned by
+    ``python -m dpnp --tensor-include-dir``.
 
     """
 
-    return os.path.join(os.path.dirname(__file__), "backend", "include")
+    return os.path.join(os.path.dirname(__file__), "libtensor", "include")
 
 
 def get_normalized_queue_device(obj=None, device=None, sycl_queue=None):

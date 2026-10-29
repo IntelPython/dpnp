@@ -33,12 +33,12 @@ import dpctl.utils as dpu
 import numpy
 
 import dpnp
-import dpnp.backend.extensions.vm._vm_impl as vmi
+import dpnp.libtensor._tensor_impl as dti
+import dpnp.libtensor._vm_impl as vmi
 
 # pylint: disable=no-name-in-module
 import dpnp.tensor as dpt
 import dpnp.tensor._copy_utils as dtc
-import dpnp.tensor._tensor_impl as dti
 import dpnp.tensor._type_utils as dtu
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import get_usm_allocations

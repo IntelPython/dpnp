@@ -32,8 +32,8 @@ import operator
 import numpy as np
 from dpctl.utils import SequentialOrderManager
 
+import dpnp.libtensor._tensor_impl as ti
 import dpnp.tensor as dpt
-import dpnp.tensor._tensor_impl as ti
 
 from ._numpy_helper import normalize_axis_index, normalize_axis_tuple
 from ._type_utils import _supported_dtype, _to_device_supported_dtype
