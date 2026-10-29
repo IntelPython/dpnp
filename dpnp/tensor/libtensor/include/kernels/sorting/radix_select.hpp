@@ -38,6 +38,7 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
+#include <exception>
 #include <limits>
 #include <stdexcept>
 #include <type_traits>
@@ -72,6 +73,37 @@ struct bucket_info
     // number of elements in `bucket_id`
     std::uint64_t count;
 };
+
+/*! @brief Executable bundle of kernels, and the largest work-group size all
+ * of them may be run with */
+struct kernels_bundle
+{
+    sycl::kernel_bundle<sycl::bundle_state::executable> kb;
+    std::size_t max_wg_size;
+};
+
+/*! @brief Bundle of the kernels `KernelNames` for the device of `exec_q` */
+template <typename... KernelNames>
+kernels_bundle get_kernels_bundle(sycl::queue &exec_q)
+{
+    const auto &ctx = exec_q.get_context();
+    const auto &dev = exec_q.get_device();
+
+    const std::vector<sycl::kernel_id> kernel_ids{
+        sycl::get_kernel_id<KernelNames>()...};
+    auto kb = sycl::get_kernel_bundle<sycl::bundle_state::executable>(
+        ctx, {dev}, kernel_ids);
+
+    std::size_t max_wg_size = std::numeric_limits<std::size_t>::max();
+    for (const auto &kernel_id : kernel_ids) {
+        const auto krn = kb.get_kernel(kernel_id);
+        max_wg_size = std::min(
+            max_wg_size,
+            krn.template get_info<
+                sycl::info::kernel_device_specific::work_group_size>(dev));
+    }
+    return kernels_bundle{std::move(kb), max_wg_size};
+}
 
 //-----------------------------------------------------------------------
 // radix select: work-group level building blocks
@@ -126,12 +158,12 @@ void count_digits(const sycl::nd_item<1> &ndit,
 
 /*! @brief Finds the bucket of the complete local histogram `hist` holding
  * the element of 1-based rank `rank` */
-template <typename HistAccT, typename ResultAccT>
+template <typename HistAccT>
 bucket_info find_bucket(const sycl::nd_item<1> &ndit,
                         const HistAccT &hist,
-                        std::uint64_t rank,
-                        const ResultAccT &result)
+                        std::uint64_t rank)
 {
+    const auto &wg = ndit.get_group();
     const std::uint32_t lid = ndit.get_local_linear_id();
     const std::uint32_t wg_size = ndit.get_local_range(0);
 
@@ -147,20 +179,32 @@ bucket_info find_bucket(const sycl::nd_item<1> &ndit,
     }
 
     std::uint64_t prefix = sycl::exclusive_scan_over_group(
-        ndit.get_group(), wi_count, sycl::plus<std::uint64_t>());
+        wg, wi_count, sycl::plus<std::uint64_t>());
 
-    // exactly one work-item owns the bucket in which the prefix crosses rank
+    // exactly one work-item owns the bucket in which the prefix crosses
+    // rank, the others contribute zeros to the result
+    bucket_info owned{0, 0, 0};
     for (std::uint32_t b = bucket_begin; b < bucket_end; ++b) {
         const std::uint64_t c = hist[b];
         if (prefix < rank && rank <= prefix + c) {
-            result[0] = bucket_info{b, prefix, c};
+            owned = bucket_info{b, prefix, c};
         }
         prefix += c;
     }
 
-    sycl::group_barrier(ndit.get_group());
+    const bucket_info info{
+        sycl::reduce_over_group(wg, owned.bucket_id,
+                                sycl::plus<std::uint32_t>()),
+        sycl::reduce_over_group(wg, owned.before, sycl::plus<std::uint64_t>()),
+        sycl::reduce_over_group(wg, owned.count, sycl::plus<std::uint64_t>())};
+    // the bucket is not found only if the histogram counts fewer than rank
+    // elements
+    assert(info.count > 0);
 
-    return result[0];
+    // the caller may overwrite the histogram next
+    sycl::group_barrier(wg);
+
+    return info;
 }
 
 /*! @brief Largest tile size `gather_selected` can rank within 16 bits */
@@ -371,6 +415,9 @@ sycl::event
     static constexpr std::uint32_t key_bits =
         radix_utils::number_of_bits_in_type<KeyT>();
 
+    const kernels_bundle bundle = get_kernels_bundle<KernelName>(exec_q);
+    wg_size = std::min(wg_size, bundle.max_wg_size);
+
     if (n_values > std::numeric_limits<std::uint32_t>::max() ||
         wg_size * elems_per_wi > max_tile_size) {
         throw std::runtime_error("Invalid parameters for radix select");
@@ -378,9 +425,9 @@ sycl::event
 
     return exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
+        cgh.use_kernel_bundle(bundle.kb);
 
         sycl::local_accessor<std::uint32_t, 1> hist(radix_states, cgh);
-        sycl::local_accessor<bucket_info, 1> bucket(1, cgh);
 
         sycl::nd_range<1> ndRange(n_iters * wg_size, wg_size);
 
@@ -406,7 +453,7 @@ sycl::event
                              hist);
                 sycl::group_barrier(ndit.get_group());
 
-                const bucket_info info = find_bucket(ndit, hist, k_rem, bucket);
+                const bucket_info info = find_bucket(ndit, hist, k_rem);
 
                 desired |= static_cast<KeyT>(KeyT(info.bucket_id) << shift);
                 mask |= static_cast<KeyT>(KeyT(radix_mask) << shift);
@@ -457,7 +504,7 @@ sycl::event
                                   const ValueT *arg_ptr,
                                   ValueT *vals_ptr,
                                   IndexT *inds_ptr,
-                                  std::size_t n_groups,
+                                  std::size_t min_sg_size,
                                   std::size_t wg_size,
                                   const std::vector<sycl::event> &depends)
 {
@@ -465,8 +512,17 @@ sycl::event
     using KernelName =
         radix_select_sub_group_krn<ValueT, IndexT, is_ascending, max_chunks>;
 
+    const kernels_bundle bundle = get_kernels_bundle<KernelName>(exec_q);
+    wg_size = std::min(wg_size, bundle.max_wg_size);
+
+    const std::size_t rows_per_group = std::max<std::size_t>(
+        1, wg_size / std::max<std::size_t>(1, min_sg_size));
+    const std::size_t n_groups =
+        (n_iters + rows_per_group - 1) / rows_per_group;
+
     return exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
+        cgh.use_kernel_bundle(bundle.kb);
 
         sycl::nd_range<1> ndRange(n_groups * wg_size, wg_size);
 
@@ -483,11 +539,36 @@ sycl::event
             const std::uint32_t n = static_cast<std::uint32_t>(n_values);
             const std::uint32_t n_chunks = (n + sg_size - 1) / sg_size;
 
-            // rows are strided over sub-groups, so any sub-group size of at
-            // least n_values / max_chunks covers all of them
+            // rows are strided over sub-groups, so any number of sub-groups
+            // covers all of them
             for (std::size_t iter_id = sg_id; iter_id < n_iters;
                  iter_id += n_sub_groups) {
                 const ValueT *row_arg = arg_ptr + iter_id * n_values;
+                ValueT *row_vals = vals_ptr + iter_id * k;
+                IndexT *row_inds = inds_ptr + iter_id * k;
+
+                // a sub-group smaller than the dispatch assumed, such as a
+                // partial one, cannot hold the row in registers and ranks it
+                // from memory instead
+                if (n_chunks > max_chunks) {
+                    for (std::uint32_t i = lane_id; i < n; i += sg_size) {
+                        const KeyT ki =
+                            radix_utils::ordered_radix_key<is_ascending>(
+                                row_arg[i]);
+                        std::uint32_t rank = 0;
+                        for (std::uint32_t j = 0; j < n; ++j) {
+                            const KeyT kj =
+                                radix_utils::ordered_radix_key<is_ascending>(
+                                    row_arg[j]);
+                            rank += (kj < ki) || (kj == ki && j < i);
+                        }
+                        if (rank < k) {
+                            row_vals[rank] = row_arg[i];
+                            row_inds[rank] = static_cast<IndexT>(i);
+                        }
+                    }
+                    continue;
+                }
 
                 // element c * sg_size + lane_id of the row
                 KeyT keys[max_chunks];
@@ -526,8 +607,6 @@ sycl::event
                     }
                 }
 
-                ValueT *row_vals = vals_ptr + iter_id * k;
-                IndexT *row_inds = inds_ptr + iter_id * k;
 #pragma unroll
                 for (std::uint32_t c = 0; c < max_chunks; ++c) {
                     const std::uint32_t i = c * sg_size + lane_id;
@@ -597,6 +676,34 @@ inline std::pair<std::size_t, std::size_t> segment_range(std::size_t segment_id,
 // row, a larger buffer costs more to allocate than it saves
 inline constexpr std::size_t filter_cap_divisor = 16;
 
+/*! @brief Waits for the event `ev` refers to when destroyed by a thrown
+ * exception, so that the kernels it stands for are done with the temporaries
+ * freed next */
+class wait_on_throw
+{
+public:
+    explicit wait_on_throw(sycl::event &ev)
+        : ev_(ev), n_uncaught_(std::uncaught_exceptions())
+    {
+    }
+    wait_on_throw(const wait_on_throw &) = delete;
+    wait_on_throw &operator=(const wait_on_throw &) = delete;
+
+    ~wait_on_throw()
+    {
+        if (std::uncaught_exceptions() > n_uncaught_) {
+            try {
+                ev_.wait();
+            } catch (...) {
+            }
+        }
+    }
+
+private:
+    sycl::event &ev_;
+    int n_uncaught_;
+};
+
 /*! @brief Radix select with `n_segments` work-groups per row and a kernel per
  * pass, the last work-group of a row to finish a pass resolves its digit */
 template <bool is_ascending,
@@ -620,10 +727,22 @@ sycl::event
     using StateT = row_state<KeyT>;
     using RowKeyT = RowKey<KeyT, ValueT, is_ascending>;
     using CandKeyT = CandidateKey<KeyT, ValueT, is_ascending>;
+    using CountKernelName =
+        radix_select_count_krn<ValueT, IndexT, is_ascending>;
+    using FilterKernelName =
+        radix_select_filter_krn<ValueT, IndexT, is_ascending, elems_per_wi>;
+    using GatherKernelName =
+        radix_select_gather_krn<ValueT, IndexT, is_ascending, elems_per_wi>;
 
     static constexpr std::uint32_t n_passes = n_radix_passes<KeyT>();
     static constexpr std::uint32_t key_bits =
         radix_utils::number_of_bits_in_type<KeyT>();
+
+    // the kernels share the work-groups of the rows' segments
+    const kernels_bundle bundle =
+        get_kernels_bundle<CountKernelName, FilterKernelName, GatherKernelName>(
+            exec_q);
+    wg_size = std::min(wg_size, bundle.max_wg_size);
 
     const std::size_t elems_per_segment =
         (n_values + n_segments - 1) / n_segments;
@@ -669,7 +788,12 @@ sycl::event
             (filter) ? n_iters * cand_cap : 1, exec_q);
     std::uint32_t *cand_ptr = cand_owner.get();
 
-    sycl::event init_ev = exec_q.submit([&](sycl::handler &cgh) {
+    // the last kernel submitted, each one depends on the one before; if a
+    // submission throws, it is waited for before the temporaries are freed
+    sycl::event last_ev{};
+    const wait_on_throw last_ev_guard(last_ev);
+
+    last_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
         using KernelName = radix_select_init_krn<ValueT, IndexT, is_ascending>;
@@ -681,22 +805,20 @@ sycl::event
 
     const sycl::nd_range<1> ndRange(n_all_segments * wg_size, wg_size);
 
-    sycl::event pass_ev = init_ev;
     for (std::uint32_t pass = 0; pass < n_passes; ++pass) {
         const std::uint32_t shift = key_bits - (pass + 1) * radix_bits;
         const bool last_pass = (pass + 1 == n_passes);
         const bool filter_after = filter && (pass == 0);
 
-        pass_ev = exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(pass_ev);
+        last_ev = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(last_ev);
+            cgh.use_kernel_bundle(bundle.kb);
 
             sycl::local_accessor<std::uint32_t, 1> hist(radix_states, cgh);
             sycl::local_accessor<std::uint64_t, 1> row_hist(radix_states, cgh);
-            sycl::local_accessor<bucket_info, 1> bucket(1, cgh);
             sycl::local_accessor<std::uint32_t, 1> is_last(1, cgh);
 
-            using KernelName =
-                radix_select_count_krn<ValueT, IndexT, is_ascending>;
+            using KernelName = CountKernelName;
             cgh.parallel_for<KernelName>(ndRange, [=](sycl::nd_item<1> ndit) {
                 const auto &wg = ndit.get_group();
                 const std::size_t group_id = ndit.get_group(0);
@@ -769,8 +891,7 @@ sycl::event
                 sycl::group_barrier(wg);
 
                 const std::uint64_t k_rem = state.k_rem;
-                const bucket_info info =
-                    find_bucket(ndit, row_hist, k_rem, bucket);
+                const bucket_info info = find_bucket(ndit, row_hist, k_rem);
                 const std::uint64_t new_k_rem = k_rem - info.before;
                 const bool done = last_pass || (info.count == new_k_rem);
                 // the elements of this pass' bucket become the candidates
@@ -832,13 +953,11 @@ sycl::event
         if (filter_after) {
             // writes out the less elements of the first pass and lists its
             // candidates
-            pass_ev = exec_q.submit([&](sycl::handler &cgh) {
-                cgh.depends_on(pass_ev);
+            last_ev = exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(last_ev);
+                cgh.use_kernel_bundle(bundle.kb);
 
-                using KernelName =
-                    radix_select_filter_krn<ValueT, IndexT, is_ascending,
-                                            elems_per_wi>;
-                cgh.parallel_for<KernelName>(
+                cgh.parallel_for<FilterKernelName>(
                     ndRange, [=](sycl::nd_item<1> ndit) {
                         const std::size_t group_id = ndit.get_group(0);
                         const std::size_t iter_id = group_id / n_segments;
@@ -866,12 +985,11 @@ sycl::event
         }
     }
 
-    sycl::event gather_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(pass_ev);
+    last_ev = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(last_ev);
+        cgh.use_kernel_bundle(bundle.kb);
 
-        using KernelName =
-            radix_select_gather_krn<ValueT, IndexT, is_ascending, elems_per_wi>;
-        cgh.parallel_for<KernelName>(ndRange, [=](sycl::nd_item<1> ndit) {
+        cgh.parallel_for<GatherKernelName>(ndRange, [=](sycl::nd_item<1> ndit) {
             const std::size_t group_id = ndit.get_group(0);
             const std::size_t iter_id = group_id / n_segments;
             const std::size_t segment_id = group_id - iter_id * n_segments;
@@ -912,7 +1030,7 @@ sycl::event
     });
 
     return dpnp::tensor::alloc_utils::async_smart_free(
-        exec_q, {gather_ev}, state_owner, hist_owner, counts_owner, cand_owner);
+        exec_q, {last_ev}, state_owner, hist_owner, counts_owner, cand_owner);
 }
 
 //-----------------------------------------------------------------------
@@ -957,19 +1075,16 @@ sycl::event radix_select_dispatch(sycl::queue &exec_q,
     if (n_values <=
             std::min(sub_group_max_n, sub_group_max_chunks * min_sg_size) &&
         min_sg_size <= wg_size) {
-        const std::size_t rows_per_group = wg_size / min_sg_size;
-        const std::size_t n_groups =
-            (n_iters + rows_per_group - 1) / rows_per_group;
         if (n_values <= sub_group_few_chunks * min_sg_size) {
             return radix_select_sub_group_submit<is_ascending,
                                                  sub_group_few_chunks>(
                 exec_q, n_iters, n_values, k, arg_ptr, vals_ptr, inds_ptr,
-                n_groups, wg_size, depends);
+                min_sg_size, wg_size, depends);
         }
         return radix_select_sub_group_submit<is_ascending,
                                              sub_group_max_chunks>(
-            exec_q, n_iters, n_values, k, arg_ptr, vals_ptr, inds_ptr, n_groups,
-            wg_size, depends);
+            exec_q, n_iters, n_values, k, arg_ptr, vals_ptr, inds_ptr,
+            min_sg_size, wg_size, depends);
     }
 
     // enough work-groups to occupy the device
