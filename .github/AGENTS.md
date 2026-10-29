@@ -9,5 +9,5 @@ These keep zizmor (`zizmor.yml`, fails on medium or higher findings) and the Ope
 - Every job sets `timeout-minutes`; for a job that calls a reusable workflow, set it inside the called workflow.
 - `actionlint` runs in pre-commit.
 - `workflows/array-api-skips.txt` lists array-api-tests node IDs skipped by the conformance job; precede each with a comment naming the upstream issue.
-- `bump-sycl-deps.yml` rewrites the `DRIVER_PATH`, `OCLCPUEXP_FN` and `TBB_*` pins in `os-llvm-sycl-build.yml` with `sed`; keep their format.
+- `bump-sycl-deps.yml` rewrites the `DRIVER_PATH`, `OCLCPUEXP_FN`, `TBB_URL`, `TBB_INSTALL_DIR` and `TBB_FN` pins in `.github/sycl-build-deps.env` with `sed`, and `os-llvm-sycl-build.yml` reads exactly those five; keep one `KEY=VALUE` per line.
 - Dependabot (`dependabot.yml`) bumps actions, `environments/` pins and pre-commit hooks weekly with a 7-day cooldown.
