@@ -70,7 +70,6 @@ from .dpnp_algo.dpnp_elementwise_common import (
     DPNPUnaryTwoOutputsFunc,
     acceptance_fn_gcd_lcm,
     acceptance_fn_negative,
-    acceptance_fn_positive,
     acceptance_fn_sign,
     acceptance_fn_subtract,
     resolve_weak_types_2nd_arg_int,
@@ -265,6 +264,23 @@ def _gradient_num_diff_edges(
         out[tuple(slice1)] = (
             a * f[tuple(slice2)] + b * f[tuple(slice3)] + c * f[tuple(slice4)]
         )
+
+
+def _positive(src, dst, sycl_queue, depends=None):
+    """Call positive kernel, using abs one for boolean input."""
+
+    # dpnp.tensor.positive has no boolean loop, abs is identity on bool
+    if src.dtype.char == "?":
+        return ti._abs(src, dst, sycl_queue, depends)
+    return ti._positive(src, dst, sycl_queue, depends)
+
+
+def _positive_result_type(dtype):
+    """Get the result data type of positive, including boolean input."""
+
+    if dtype.char == "?":
+        return ti._abs_result_type(dtype)
+    return ti._positive_result_type(dtype)
 
 
 def _process_ediff1d_args(arg, arg_name, ary_dtype, ary_sycl_queue, usm_type):
@@ -3901,7 +3917,7 @@ For full documentation refer to :obj:`numpy.positive`.
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have a numeric data type.
+    Input array, expected to have a boolean or numeric data type.
 out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -3951,10 +3967,9 @@ array([ 1., -1.])
 
 positive = DPNPUnaryFunc(
     "positive",
-    ti._positive_result_type,
-    ti._positive,
+    _positive_result_type,
+    _positive,
     _POSITIVE_DOCSTRING,
-    acceptance_fn=acceptance_fn_positive,
 )
 
 
