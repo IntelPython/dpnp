@@ -30,8 +30,8 @@ import operator
 
 from dpctl.utils import SequentialOrderManager
 
+import dpnp.libtensor._tensor_impl as ti
 import dpnp.tensor as dpt
-import dpnp.tensor._tensor_impl as ti
 
 from ._copy_utils import (
     _extract_impl,

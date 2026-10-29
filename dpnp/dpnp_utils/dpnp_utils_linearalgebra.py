@@ -30,11 +30,11 @@ import dpctl.utils as dpu
 import numpy
 
 import dpnp
-import dpnp.backend.extensions.blas._blas_impl as bi
+import dpnp.libtensor._blas_impl as bi
+import dpnp.libtensor._tensor_impl as ti
 
 # pylint: disable=no-name-in-module
 import dpnp.tensor as dpt
-import dpnp.tensor._tensor_impl as ti
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import get_usm_allocations
 from dpnp.exceptions import AxisError, ExecutionPlacementError

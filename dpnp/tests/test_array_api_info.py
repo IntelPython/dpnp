@@ -3,7 +3,7 @@ from dpctl import get_devices, select_default_device
 
 import dpnp
 from dpnp.exceptions import SyclDeviceCreationError
-from dpnp.tensor._tensor_impl import default_device_complex_type
+from dpnp.libtensor._tensor_impl import default_device_complex_type
 from dpnp.tests.helper import (
     has_support_aspect64,
     is_win_platform,

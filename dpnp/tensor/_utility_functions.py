@@ -31,9 +31,9 @@ import operator
 
 import dpctl.utils as du
 
+import dpnp.libtensor._tensor_impl as ti
+import dpnp.libtensor._tensor_reductions_impl as tri
 import dpnp.tensor as dpt
-import dpnp.tensor._tensor_impl as ti
-import dpnp.tensor._tensor_reductions_impl as tri
 
 from ._numpy_helper import normalize_axis_index, normalize_axis_tuple
 from ._scalar_utils import (

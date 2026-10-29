@@ -188,12 +188,13 @@ function(build_dpnp_cython_ext_with_backend _trgt _src _dest)
     target_link_libraries(${_trgt} PRIVATE dpnp_backend_library)
 endfunction()
 
-# Builds a pybind11 extension of dpnp/backend/extensions with the options all of
-# them share. INCLUDE_DIRS come before the common include directories, and
-# LARGE_RANGES is for modules whose kernels can be launched over more than
-# INT_MAX work-items.
-function(build_dpnp_pybind11_ext _trgt _dest)
-    cmake_parse_arguments(PARSE_ARGV 2 _arg "LARGE_RANGES" "" "SOURCES;INCLUDE_DIRS")
+# Builds a pybind11 extension of dpnp/libtensor/extensions with the options all
+# of them share and installs it into dpnp/libtensor, next to the libtensor
+# modules.
+# INCLUDE_DIRS come before the common include directories, and LARGE_RANGES is
+# for modules whose kernels can be launched over more than INT_MAX work-items.
+function(build_dpnp_pybind11_ext _trgt)
+    cmake_parse_arguments(PARSE_ARGV 1 _arg "LARGE_RANGES" "" "SOURCES;INCLUDE_DIRS")
 
     pybind11_add_module(${_trgt} MODULE ${_arg_SOURCES})
     add_sycl_to_target(TARGET ${_trgt} SOURCES ${_arg_SOURCES})
@@ -214,7 +215,7 @@ function(build_dpnp_pybind11_ext _trgt _dest)
         PRIVATE
             ${_arg_INCLUDE_DIRS}
             ${CMAKE_SOURCE_DIR}/dpnp/include
-            ${CMAKE_SOURCE_DIR}/dpnp/tensor/libtensor/include
+            ${CMAKE_SOURCE_DIR}/dpnp/libtensor/include
     )
 
     # treat below headers as system to suppress the warnings there during the build
@@ -254,27 +255,21 @@ function(build_dpnp_pybind11_ext _trgt _dest)
     endif()
 
     if(DPNP_WITH_REDIST)
-        set_target_properties(
-            ${_trgt}
-            PROPERTIES INSTALL_RPATH "$ORIGIN/../../../../../../"
-        )
+        set_target_properties(${_trgt} PROPERTIES INSTALL_RPATH "$ORIGIN/../../../..")
     endif()
 
-    install(TARGETS ${_trgt} DESTINATION ${_dest})
+    install(TARGETS ${_trgt} DESTINATION "dpnp/libtensor")
 endfunction()
 
 add_subdirectory(tensor)
 
 add_subdirectory(backend)
-add_subdirectory(backend/extensions/blas)
-add_subdirectory(backend/extensions/fft)
-add_subdirectory(backend/extensions/indexing)
-add_subdirectory(backend/extensions/lapack)
-add_subdirectory(backend/extensions/statistics)
-add_subdirectory(backend/extensions/ufunc)
-add_subdirectory(backend/extensions/vm)
-add_subdirectory(backend/extensions/window)
-add_subdirectory(backend/extensions/sparse)
+add_subdirectory(libtensor/source)
+add_subdirectory(libtensor/extensions/blas)
+add_subdirectory(libtensor/extensions/fft)
+add_subdirectory(libtensor/extensions/lapack)
+add_subdirectory(libtensor/extensions/vm)
+add_subdirectory(libtensor/extensions/sparse)
 
 add_subdirectory(dpnp_algo)
 add_subdirectory(dpnp_utils)

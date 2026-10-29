@@ -47,9 +47,8 @@ import dpctl.utils as dpu
 import numpy
 
 import dpnp
-import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
+import dpnp.libtensor._tensor_elementwise_impl as ti
 import dpnp.tensor as dpt
-import dpnp.tensor._tensor_elementwise_impl as ti
 from dpnp.tensor._type_utils import _resolve_weak_types_all_py_ints
 
 from .dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
@@ -108,7 +107,7 @@ def _isclose_scalar_tol(a, b, rtol, atol, equal_nan):
     )
 
     _manager = dpu.SequentialOrderManager[exec_q]
-    mem_ev, ht_ev = ufi._isclose_scalar(
+    mem_ev, ht_ev = ti._isclose_scalar(
         a.get_array(),
         b.get_array(),
         rtol,

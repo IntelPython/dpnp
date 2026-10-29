@@ -30,10 +30,10 @@ import operator
 
 from dpctl.utils import SequentialOrderManager
 
+import dpnp.libtensor._tensor_elementwise_impl as tei
+import dpnp.libtensor._tensor_impl as ti
+import dpnp.libtensor._tensor_linalg_impl as tli
 import dpnp.tensor as dpt
-import dpnp.tensor._tensor_elementwise_impl as tei
-import dpnp.tensor._tensor_impl as ti
-import dpnp.tensor._tensor_linalg_impl as tli
 
 from ._copy_utils import _empty_like_orderK, _empty_like_pair_orderK
 from ._manipulation_functions import _broadcast_shape_impl

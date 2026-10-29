@@ -9,7 +9,7 @@ from numpy.testing import (
 )
 
 import dpnp
-import dpnp.backend.extensions.vm._vm_impl as vmi
+import dpnp.libtensor._vm_impl as vmi
 from dpnp.dpnp_utils import map_dtype_to_device
 
 from .helper import (

@@ -32,8 +32,7 @@ import numpy as np
 from dpctl.utils import SequentialOrderManager
 
 import dpnp.tensor as dpt
-
-from ._tensor_impl import (
+from dpnp.libtensor._tensor_impl import (
     _copy_usm_ndarray_for_reshape,
     _ravel_multi_index,
     _unravel_index,
