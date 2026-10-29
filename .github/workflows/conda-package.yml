@@ -24,6 +24,7 @@ env:
   rerun-tests-on-failure: 'true'
   rerun-tests-max-attempts: 2
   rerun-tests-timeout: 45
+  rerun-tensor-tests-timeout: 15
 
 jobs:
   build:
@@ -308,7 +309,7 @@ jobs:
         id: run_tests_tensor_linux
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
-          timeout_minutes: ${{ env.rerun-tests-timeout }}
+          timeout_minutes: ${{ env.rerun-tensor-tests-timeout }}
           max_attempts: ${{ env.rerun-tests-max-attempts }}
           retry_on: any
           command: |
@@ -617,7 +618,7 @@ jobs:
         id: run_tests_tensor_win
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
-          timeout_minutes: ${{ env.rerun-tests-timeout }}
+          timeout_minutes: ${{ env.rerun-tensor-tests-timeout }}
           max_attempts: ${{ env.rerun-tests-max-attempts }}
           retry_on: any
           shell: pwsh
