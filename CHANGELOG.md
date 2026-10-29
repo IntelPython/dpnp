@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * Changed `dpnp.tensor.top_k` to select the `k` elements with a radix select instead of sorting every row, for all but complex data types. The order of the returned elements is now unspecified, where it was largest-first or smallest-first before [#3079](https://github.com/IntelPython/dpnp/pull/3079)
+* Moved libtensor from `dpnp/tensor/libtensor` to `dpnp/libtensor`. All pybind11 extension modules are installed into `dpnp/libtensor` (e.g. `dpnp.libtensor._tensor_impl`, `dpnp.libtensor._blas_impl`), while `dpnp/backend` now contains only the legacy `dpnp_backend_c` library [#3131](https://github.com/IntelPython/dpnp/pull/3131)
+* Merged the `ufunc` and `indexing` extensions into `dpnp.libtensor._tensor_elementwise_impl` and `dpnp.libtensor._tensor_impl`, while `statistics` and `window` extensions became part of libtensor [#3131](https://github.com/IntelPython/dpnp/pull/3131)
+* Moved `blas`, `fft`, `lapack`, `sparse` and `vm` extensions into `dpnp/libtensor/extensions` [#3131](https://github.com/IntelPython/dpnp/pull/3131)
 
 ### Deprecated
 
