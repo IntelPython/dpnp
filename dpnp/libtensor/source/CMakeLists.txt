@@ -244,13 +244,7 @@ set(_tensor_linalg_impl_sources
 set(_static_lib_trgt simplify_iteration_space)
 
 add_library(${_static_lib_trgt} STATIC ${_static_lib_sources})
-target_include_directories(
-    ${_static_lib_trgt}
-    PRIVATE
-        # ${Python_INCLUDE_DIRS}
-        # ${Dpctl_INCLUDE_DIR}
-        ${_libtensor_include_dir}
-)
+target_include_directories(${_static_lib_trgt} PRIVATE ${_libtensor_include_dir})
 target_link_libraries(${_static_lib_trgt} PRIVATE pybind11::headers Python::Module)
 set_target_properties(${_static_lib_trgt} PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
@@ -322,6 +316,8 @@ list(
     ${_linalg_sources}
     ${_accumulator_sources}
 )
+# elementwise_functions_type_utils.cpp is in both the elementwise and linalg lists
+list(REMOVE_DUPLICATES _no_fast_math_sources)
 
 foreach(_src_fn ${_no_fast_math_sources})
     get_source_file_property(_cmpl_options_prop ${_src_fn} COMPILE_OPTIONS)
@@ -350,21 +346,6 @@ foreach(_src_fn ${_dpnp_sources})
     set_source_files_properties(
         ${_src_fn}
         PROPERTIES COMPILE_OPTIONS "${_combined_options_prop}"
-    )
-endforeach()
-
-set(_compiler_definitions "")
-
-foreach(_src_fn ${_elementwise_sources})
-    get_source_file_property(_cmpl_options_defs ${_src_fn} COMPILE_DEFINITIONS)
-    if(${_cmpl_options_defs})
-        set(_combined_options_defs ${_cmpl_options_defs} "${_compiler_definitions}")
-    else()
-        set(_combined_options_defs "${_compiler_definitions}")
-    endif()
-    set_source_files_properties(
-        ${_src_fn}
-        PROPERTIES COMPILE_DEFINITIONS "${_combined_options_defs}"
     )
 endforeach()
 

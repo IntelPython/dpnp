@@ -145,27 +145,8 @@ inline size_t get_max_local_size(const sycl::queue &queue)
     return get_max_local_size(queue.get_device());
 }
 
-inline size_t get_max_local_size(const sycl::queue &queue,
-                                 int cpu_local_size_limit,
-                                 int gpu_local_size_limit)
-{
-    return get_max_local_size(queue.get_device(), cpu_local_size_limit,
-                              gpu_local_size_limit);
-}
-
 size_t get_local_mem_size_in_bytes(const sycl::device &device);
 size_t get_local_mem_size_in_bytes(const sycl::device &device, size_t reserve);
-
-inline size_t get_local_mem_size_in_bytes(const sycl::queue &queue)
-{
-    return get_local_mem_size_in_bytes(queue.get_device());
-}
-
-inline size_t get_local_mem_size_in_bytes(const sycl::queue &queue,
-                                          size_t reserve)
-{
-    return get_local_mem_size_in_bytes(queue.get_device(), reserve);
-}
 
 template <typename T>
 size_t get_local_mem_size_in_items(const sycl::device &device)
@@ -174,22 +155,9 @@ size_t get_local_mem_size_in_items(const sycl::device &device)
 }
 
 template <typename T>
-size_t get_local_mem_size_in_items(const sycl::device &device, size_t reserve)
-{
-    return get_local_mem_size_in_bytes(device, sizeof(T) * reserve) / sizeof(T);
-}
-
-template <typename T>
 inline size_t get_local_mem_size_in_items(const sycl::queue &queue)
 {
     return get_local_mem_size_in_items<T>(queue.get_device());
-}
-
-template <typename T>
-inline size_t get_local_mem_size_in_items(const sycl::queue &queue,
-                                          size_t reserve)
-{
-    return get_local_mem_size_in_items<T>(queue.get_device(), reserve);
 }
 
 template <int Dims>

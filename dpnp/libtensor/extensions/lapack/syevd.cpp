@@ -61,7 +61,7 @@ static sycl::event syevd_impl(sycl::queue &exec_q,
     type_utils::validate_type_for_device<RealT>(exec_q);
 
     T *a = reinterpret_cast<T *>(in_a);
-    RealT *w = reinterpret_cast<T *>(out_w);
+    RealT *w = reinterpret_cast<RealT *>(out_w);
 
     const std::int64_t lda = std::max<size_t>(1UL, n);
     const std::int64_t scratchpad_size =

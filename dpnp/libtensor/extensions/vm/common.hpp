@@ -352,7 +352,7 @@ bool need_to_call_binary_ufunc(sycl::queue &exec_q,
     }
 
     // MKL function is not defined for the type
-    if (contig_dispatch_table[src1_typeid] == nullptr) {
+    if (contig_dispatch_table[src1_typeid][src2_typeid] == nullptr) {
         return false;
     }
     return true;

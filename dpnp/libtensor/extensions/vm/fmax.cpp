@@ -149,8 +149,8 @@ void init_fmax(py::module_ m)
     };
     m.def("_fmax", fmax_pyapi,
           "Call `fmax` function from OneMKL VM library to performs element "
-          "by element computation of the modulus function of vector `src1` "
-          "with respect to vector `src2` to resulting vector `dst`",
+          "by element computation of the maximum of vector `src1` and vector "
+          "`src2` to resulting vector `dst`",
           py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
           py::arg("dst"), py::arg("depends") = py::list());
 

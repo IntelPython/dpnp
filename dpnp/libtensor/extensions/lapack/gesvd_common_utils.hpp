@@ -172,7 +172,7 @@ inline void common_gesvd_checks(sycl::queue &exec_q,
     if (a_array_type_id != out_u_type_id || a_array_type_id != out_vt_type_id) {
         throw py::type_error(
             "Input array, output left singular vectors array, "
-            "and outpuy right singular vectors array must have "
+            "and output right singular vectors array must have "
             "the same data type");
     }
 }
@@ -231,7 +231,7 @@ inline void handle_lapack_exc(const std::int64_t scratchpad_size,
     }
     else {
         error_msg
-            << "Unexpected MKL exception caught during gesv() call:\nreason: "
+            << "Unexpected MKL exception caught during gesvd() call:\nreason: "
             << e.what() << "\ninfo: " << e.info();
     }
 }
