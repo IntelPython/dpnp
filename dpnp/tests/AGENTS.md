@@ -7,7 +7,7 @@
 - `third_party/cupy/`, `third_party/cupyx/`: CuPy's tests ported with `import dpnp as cupy`; `numpy_cupy_*` decorators run each test with `xp=dpnp` and `xp=numpy`
 - `tensor/`: `dpnp.tensor` tests (see `dpnp/tensor/AGENTS.md`)
 - `skipped_tests.tbl` (non-GPU default device), `skipped_tests_gpu.tbl` (GPU, or `DPNP_QUEUE_GPU=1`), plus `skipped_tests_cuda.tbl` on CUDA: one exact node ID per line, chosen by `conftest.py`; there is no comment syntax
-- `tests_perf/` is never collected
+- `tests_perf/` is not collected unless its path is given explicitly
 
 ## Rules for Changes
 - Compare with `assert_dtype_allclose(result, expected)` and build inputs with `generate_random_numpy_array` (seeded) from `helper.py`. Don't hand-write dtype lists or use unseeded `numpy.random`.
@@ -33,7 +33,7 @@
 ## Running
 ```bash
 python -m pytest -ra dpnp/tests/test_mathematical.py                    # one file, in-place build
-SKIP_TENSOR_TESTS=1 python -m pytest -n auto -ra --pyargs dpnp.tests    # as CI; -n needs pytest-xdist
+SKIP_TENSOR_TESTS=1 python -m pytest -n auto -ra --pyargs dpnp.tests    # as the main conda CI jobs; -n needs pytest-xdist
 python -m pytest -n auto -ra --pyargs dpnp.tests.tensor                  # tensor tests, a separate CI step
 python -m pytest -ra -m slow dpnp/tests/test_fft_gil.py                  # slow tests only
 python -m pytest -ra -m "slow or not slow" dpnp/tests/test_fft_gil.py     # all tests, slow included

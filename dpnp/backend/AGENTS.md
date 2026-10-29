@@ -14,7 +14,7 @@
 3. Register `init_<name>(m)` in `extensions/ufunc/elementwise_functions/common.cpp` and add the source to `_elementwise_sources` in `extensions/ufunc/CMakeLists.txt`.
 4. Wrap it in Python (see `dpnp/AGENTS.md`).
 
-A new extension's `CMakeLists.txt` lists its sources and calls `build_dpnp_pybind11_ext(<module> <install dir> SOURCES ... [INCLUDE_DIRS ...] [LARGE_RANGES])` from `dpnp/CMakeLists.txt`, which sets the options all extensions share; only oneMKL/oneMath linking stays in the extension. Add it with `add_subdirectory` in `dpnp/CMakeLists.txt`, and put an option every extension needs into the helper, not into one extension.
+A new extension's `CMakeLists.txt` lists its sources and calls `build_dpnp_pybind11_ext(<module> <install dir> SOURCES ... [INCLUDE_DIRS ...] [LARGE_RANGES])` from `dpnp/CMakeLists.txt`, which sets the options all extensions share; only oneMKL/oneMath linking and the `-DUSE_ONEMATH*` definitions stay in the extension. Add it with `add_subdirectory` in `dpnp/CMakeLists.txt`, and put an option every extension needs into the helper, not into one extension.
 
 ## Rules for Changes
 These also apply to `dpnp/tensor/libtensor/`.

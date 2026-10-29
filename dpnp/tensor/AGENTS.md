@@ -20,4 +20,4 @@
 ```bash
 python -m pytest -n auto -ra --pyargs dpnp.tests.tensor
 ```
-The Array API conformance job in `conda-package.yml` tests only `dpnp` (`ARRAY_API_TESTS_MODULE: 'dpnp'`); a check for `dpnp.tensor` itself is not added yet, so verify spec compliance of `dpnp.tensor` changes against the spec. A libtensor change can still move the `dpnp` results, and the job never fails the build, so read its PR comment (posted for PRs from IntelPython/dpnp branches only) or its log.
+The Array API conformance job in `conda-package.yml` tests only `dpnp` (`ARRAY_API_TESTS_MODULE: 'dpnp'`); a check for `dpnp.tensor` itself is not added yet, so verify spec compliance of `dpnp.tensor` changes against the spec. A libtensor change can still move the `dpnp` results, and the job never fails the build, so read its PR comment (posted for PRs from IntelPython/dpnp branches only, and only when the tests produced a report) or its log.

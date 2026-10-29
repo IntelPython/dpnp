@@ -10,7 +10,7 @@
 
 ## Adding a Public Function
 1. Implement it in the matching `dpnp_iface_*.py` or subpackage module. Iface modules have no `__all__`.
-2. Export it in `dpnp/__init__.py` in two places, both under its NumPy routine category: the `from .dpnp_iface_xxx import (...)` block and the `__all__ += [...]` block. Functions in `linalg`, `fft`, `random`, `scipy.*` and `lib` are exported from that subpackage's `__init__.py` instead (import block and `__all__`). A new subpackage also goes in `packages=` in `setup.py`.
+2. Export it in `dpnp/__init__.py` in two places, both under its NumPy routine category: the `from .dpnp_iface_<category> import (...)` block and the `__all__ += [...]` block. Functions in `linalg`, `fft`, `random`, `scipy.*` and `lib` are exported from that subpackage's `__init__.py` instead (import block and `__all__`). A new subpackage also goes in `packages=` in `setup.py`.
 3. Add it to `doc/reference/` (see `doc/AGENTS.md`), tests (see `dpnp/tests/AGENTS.md`) and `CHANGELOG.md`.
 
 ## Patterns
