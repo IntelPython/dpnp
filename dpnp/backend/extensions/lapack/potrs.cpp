@@ -172,7 +172,7 @@ std::pair<sycl::event, sycl::event>
                               std::to_string(a_array_nd) +
                               ", but a 2-dimensional array is expected.");
     }
-    if (b_array_nd > 2) {
+    if (b_array_nd < 1 || b_array_nd > 2) {
         throw py::value_error(
             "The right-hand sides array has ndim=" +
             std::to_string(b_array_nd) +

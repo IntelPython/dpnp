@@ -210,6 +210,7 @@ class TestChoFactor:
         a_dp = dpnp.array(a_np, order=order)
 
         c, low = dpnp.scipy.linalg.cho_factor(a_dp, lower=lower)
+        # SciPy >= 1.18 returns `lower` tiled to the batch shape
         assert low is lower
         assert c.shape == shape
 
@@ -270,6 +271,16 @@ class TestChoFactor:
         c, _ = dpnp.scipy.linalg.cho_factor(a_dp, overwrite_a=True)
         assert c is not a_dp
         assert_array_equal(a_dp, a_orig)
+
+    @pytest.mark.parametrize("overwrite_a", [False, True])
+    def test_usm_ndarray(self, overwrite_a):
+        a_np = _make_hpd_np((3, 3), dpnp.default_float_type(), order="F")
+        a = dpt.asarray(a_np, order="F")
+
+        c, low = dpnp.scipy.linalg.cho_factor(a, overwrite_a=overwrite_a)
+        assert isinstance(c, dpnp.ndarray)
+        assert_dtype_allclose(_tri(c, low), _cholesky_np(a_np, low))
+        assert numpy.array_equal(dpt.asnumpy(a), a_np) is not overwrite_a
 
     @pytest.mark.parametrize("lower", [True, False])
     @pytest.mark.parametrize("seq", [list, tuple])
@@ -531,7 +542,9 @@ class TestChoSolve:
             ((0, 0), (0, 2), (0, 2)),
             ((2, 2), (2, 0), (2, 0)),
             ((2, 0, 0), (0,), (2, 0)),
+            # SciPy raises for a zero-size batch
             ((0, 2, 2), (2,), (0, 2)),
+            ((2, 2), (0, 2, 1), (0, 2, 1)),
             ((2, 2, 2), (2, 2, 0), (2, 2, 0)),
         ],
     )
@@ -542,6 +555,28 @@ class TestChoSolve:
         x = dpnp.scipy.linalg.cho_solve((c, False), b)
         assert x.shape == x_shape
         assert x.dtype == dpnp.default_float_type(sycl_queue=c.sycl_queue)
+
+    @pytest.mark.parametrize("overwrite_b", [False, True])
+    def test_usm_ndarray(self, overwrite_b):
+        dtype = dpnp.default_float_type()
+        a_np = _make_hpd_np((3, 3), dtype)
+        b_np = generate_random_numpy_array((3, 2), dtype, order="F")
+
+        c, low = dpnp.scipy.linalg.cho_factor(dpt.asarray(a_np))
+        c, b = dpnp.get_usm_ndarray(c), dpt.asarray(b_np, order="F")
+
+        x = dpnp.scipy.linalg.cho_solve((c, low), b, overwrite_b=overwrite_b)
+        assert isinstance(x, dpnp.ndarray)
+        assert_dtype_allclose(x, numpy.linalg.solve(a_np, b_np))
+        assert numpy.array_equal(dpt.asnumpy(b), b_np) is not overwrite_b
+
+    def test_potrs_0d_rhs(self):
+        # the public API raises IndexError first, as SciPy does
+        import dpnp.backend.extensions.lapack._lapack_impl as li
+
+        c, b = dpnp.eye(2, order="F"), dpnp.array(1.0)
+        with pytest.raises(ValueError, match="ndim=0"):
+            li._potrs(c.sycl_queue, c.get_array(), b.get_array(), 1)
 
     @pytest.mark.parametrize("bad", [numpy.inf, -numpy.inf, numpy.nan])
     def test_check_finite_raises(self, bad):

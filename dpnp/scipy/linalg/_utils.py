@@ -635,7 +635,7 @@ def dpnp_cho_factor(a, lower=False, overwrite_a=False, check_finite=True):
         and a.ndim == 2
         and not _is_copy_required(a, res_type, allow_c_contig=True)
     ):
-        c = a
+        c = dpnp.get_result_array(a)
         dep_ev = _manager.submitted_events
     else:
         a = dpnp.astype(a, res_type, copy=False)
@@ -735,7 +735,7 @@ def dpnp_cho_solve(c, lower, b, overwrite_b=False, check_finite=True):
         _copy_rhs(b, b_h, conj, exec_q)
     else:
         # input is suitable for in-place modification
-        b_h = b
+        b_h = dpnp.get_result_array(b)
         if conj:
             dpnp.conj(b_h, out=b_h)
 
