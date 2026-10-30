@@ -1099,11 +1099,19 @@ Disabling may give a performance gain, but may result in problems
 </dd>
 </dl>
 </dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>If <cite>c</cite> is not square, if the shapes of <cite>c</cite> and <cite>b</cite> are incompatible,
+if the values of <cite>lower</cite> are not all equal, or if
+<code class="docutils literal notranslate"><span class="pre">check_finite=True</span></code> and <cite>c</cite> or <cite>b</cite> contains infinities or NaNs.</p>
+</dd>
+</dl>
+</dd>
 </dl>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This function synchronizes in order to validate array elements
-when <code class="docutils literal notranslate"><span class="pre">check_finite=True</span></code>.</p>
+when <code class="docutils literal notranslate"><span class="pre">check_finite=True</span></code>, and to read <cite>lower</cite> given as a dpnp array.</p>
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>

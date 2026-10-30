@@ -1104,7 +1104,6 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.linalg.dpnp_utils_linalg</span><span class="w"> </span><span class="kn">import</span> <span class="n">assert_stacked_2d</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">._utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">dpnp_cho_factor</span><span class="p">,</span>
@@ -1181,7 +1180,10 @@
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    dpnp.linalg.LinAlgError</span>
-<span class="sd">        Raised if decomposition fails.</span>
+<span class="sd">        If the decomposition fails.</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If `a` is not square, or if ``check_finite=True`` and `a` contains</span>
+<span class="sd">        infinities or NaNs.</span>
 
 <span class="sd">    Warnings</span>
 <span class="sd">    --------</span>
@@ -1226,16 +1228,17 @@
 <span class="sd">    """</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">assert_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="c1"># as in SciPy, a 0-D or 1-D input is viewed as a matrix</span>
+    <span class="n">a1</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">a1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">a1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="s2">"Expected a square matrix or batch thereof, "</span>
-            <span class="sa">f</span><span class="s2">"got a.shape=</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span>
+            <span class="sa">f</span><span class="s2">"got a1.shape=</span><span class="si">{</span><span class="n">a1</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_cho_factor</span><span class="p">(</span>
-        <span class="n">a</span><span class="p">,</span>
+        <span class="n">a1</span><span class="p">,</span>
         <span class="n">lower</span><span class="o">=</span><span class="n">_lower_to_bool</span><span class="p">(</span><span class="n">lower</span><span class="p">),</span>
         <span class="n">overwrite_a</span><span class="o">=</span><span class="n">overwrite_a</span><span class="p">,</span>
         <span class="n">check_finite</span><span class="o">=</span><span class="n">check_finite</span><span class="p">,</span>
@@ -1276,10 +1279,17 @@
 <span class="sd">    x : {(M,), (..., M, K)} dpnp.ndarray</span>
 <span class="sd">        The solution to the system ``A x = b``.</span>
 
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If `c` is not square, if the shapes of `c` and `b` are incompatible,</span>
+<span class="sd">        if the values of `lower` are not all equal, or if</span>
+<span class="sd">        ``check_finite=True`` and `c` or `b` contains infinities or NaNs.</span>
+
 <span class="sd">    Warnings</span>
 <span class="sd">    --------</span>
 <span class="sd">    This function synchronizes in order to validate array elements</span>
-<span class="sd">    when ``check_finite=True``.</span>
+<span class="sd">    when ``check_finite=True``, and to read `lower` given as a dpnp array.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1305,9 +1315,8 @@
 
     <span class="n">c</span><span class="p">,</span> <span class="n">lower</span> <span class="o">=</span> <span class="n">c_and_lower</span>
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
-    <span class="n">assert_stacked_2d</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"The factored matrix c is not square."</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_cho_solve</span><span class="p">(</span>

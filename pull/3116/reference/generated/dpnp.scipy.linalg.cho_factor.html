@@ -1111,7 +1111,10 @@ a Python bool is returned.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
-<dt>dpnp.linalg.LinAlgError</dt><dd><p>Raised if decomposition fails.</p>
+<dt>dpnp.linalg.LinAlgError</dt><dd><p>If the decomposition fails.</p>
+</dd>
+<dt>ValueError</dt><dd><p>If <cite>a</cite> is not square, or if <code class="docutils literal notranslate"><span class="pre">check_finite=True</span></code> and <cite>a</cite> contains
+infinities or NaNs.</p>
 </dd>
 </dl>
 </dd>
