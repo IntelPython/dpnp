@@ -1772,6 +1772,14 @@ class TestLinAlgebra:
         assert_sycl_queue_equal(result.sycl_queue, a.sycl_queue)
         assert_sycl_queue_equal(result.sycl_queue, b.sycl_queue)
 
+    @pytest.mark.parametrize("c_shape", [(2, 2), (1, 2, 2)])
+    def test_cho_solve_diff_queue(self, c_shape, device):
+        c = dpnp.full(c_shape, 2.0, device=device)
+        b = dpnp.ones(2, sycl_queue=dpctl.SyclQueue(device))
+
+        with assert_raises((ValueError, ExecutionPlacementError)):
+            dpnp.scipy.linalg.cho_solve((c, False), b)
+
     @pytest.mark.parametrize("n", [-1, 0, 1, 2, 3])
     def test_matrix_power(self, n, device):
         x = dpnp.array([[1.0, 2.0], [3.0, 5.0]], device=device)
