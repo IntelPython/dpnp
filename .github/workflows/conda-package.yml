@@ -24,6 +24,10 @@ env:
   rerun-tests-on-failure: 'true'
   rerun-tests-max-attempts: 2
   rerun-tests-timeout: 45
+  rerun-tensor-tests-timeout: 15
+  rerun-tensor-tests-max-attempts: 3
+  # Healthy Windows tensor runs take up to ~19 min
+  rerun-tensor-tests-timeout-win: 20
 
 jobs:
   build:
@@ -153,7 +157,7 @@ jobs:
     needs: build
 
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 100
+    timeout-minutes: 120
 
     defaults:
       run:
@@ -308,8 +312,8 @@ jobs:
         id: run_tests_tensor_linux
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
-          timeout_minutes: ${{ env.rerun-tests-timeout }}
-          max_attempts: ${{ env.rerun-tests-max-attempts }}
+          timeout_minutes: ${{ env.rerun-tensor-tests-timeout }}
+          max_attempts: ${{ env.rerun-tensor-tests-max-attempts }}
           retry_on: any
           command: |
             . $CONDA/etc/profile.d/conda.sh
@@ -617,8 +621,8 @@ jobs:
         id: run_tests_tensor_win
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
-          timeout_minutes: ${{ env.rerun-tests-timeout }}
-          max_attempts: ${{ env.rerun-tests-max-attempts }}
+          timeout_minutes: ${{ env.rerun-tensor-tests-timeout-win }}
+          max_attempts: ${{ env.rerun-tensor-tests-max-attempts }}
           retry_on: any
           shell: pwsh
           command: |
