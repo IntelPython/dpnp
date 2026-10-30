@@ -356,7 +356,12 @@ def _batched_cho_solve(c, lower, b, res_type, res_usm_type, exec_q):
     """Solve a batched equation system given Cholesky factors."""
 
     b_ndim_orig = b.ndim
-    c_2d = c if c.ndim == 2 else None
+    # a single factor, also with size-1 batch dimensions, is not broadcast
+    c_2d = (
+        dpnp.reshape(c, c.shape[-2:])
+        if all(dim == 1 for dim in c.shape[:-2])
+        else None
+    )
     c, b = _align_lu_solve_broadcast(c, b, name="c")
 
     if b.size == 0:
@@ -369,7 +374,6 @@ def _batched_cho_solve(c, lower, b, res_type, res_usm_type, exec_q):
     batch_size = c.size // (n * n)
 
     if c_2d is not None:
-        # a single factor is not broadcast
         c_f, uplo, conj = _cho_factor_f(c_2d, lower, res_type)
         fold = _fold_rhs_batch(exec_q, res_type, batch_size, nrhs)
     else:
