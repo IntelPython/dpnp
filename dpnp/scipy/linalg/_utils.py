@@ -723,13 +723,17 @@ def dpnp_cho_solve(c, lower, b, overwrite_b=False, check_finite=True):
         if not (c_is_finite and b_is_finite):
             raise ValueError("array must not contain infs or NaNs")
 
+    # as SciPy, report the shapes of a single system
+    b_core = b.shape if b.ndim < 2 else b.shape[-2:]
+    if c.shape[-1] != b_core[0]:
+        raise ValueError(
+            f"incompatible dimensions ({c.shape[-2:]} and {b_core})"
+        )
+
     if c.ndim > 2 or b.ndim > 2:
         # SciPy always copies each 2D slice,
         # so `overwrite_b` is ignored here
         return _batched_cho_solve(c, lower, b, res_type, res_usm_type, exec_q)
-
-    if c.shape[1] != b.shape[0]:
-        raise ValueError(f"incompatible dimensions ({c.shape} and {b.shape})")
 
     # accommodate empty arrays
     if b.size == 0:

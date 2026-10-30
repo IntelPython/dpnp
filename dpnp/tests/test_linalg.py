@@ -347,12 +347,21 @@ class TestChoFactor:
         )
 
         a_dp = dpnp.ones(3)
-        assert_raises(
-            dpnp.linalg.LinAlgError, dpnp.scipy.linalg.cho_factor, a_dp
+        assert_raises_regex(
+            ValueError,
+            r"got a1.shape=\(1, 3\)",
+            dpnp.scipy.linalg.cho_factor,
+            a_dp,
         )
 
         a_np = numpy.eye(2)
         assert_raises(TypeError, dpnp.scipy.linalg.cho_factor, a_np)
+
+    @pytest.mark.parametrize("shape", [(), (1,)])
+    def test_scalar_like(self, shape):
+        # as in SciPy, viewed as a 1x1 matrix
+        c, _ = dpnp.scipy.linalg.cho_factor(dpnp.full(shape, 4.0))
+        assert_allclose(c, numpy.full((1, 1), 2.0))
 
 
 class TestChoSolve:
@@ -666,10 +675,15 @@ class TestChoSolve:
     @pytest.mark.parametrize(
         "c_shape, b_shape, match",
         [
-            ((3, 3), (2,), "incompatible dimensions"),
+            ((3, 3), (2,), r"incompatible dimensions \(\(3, 3\) and \(2,\)\)"),
+            ((), (1,), "not square"),
+            ((3,), (3,), "not square"),
             ((3, 2), (3,), "not square"),
-            ((2, 3, 3), (2, 2, 1), "Shapes of c"),
-            ((2, 4, 4), (2,), "Shapes of c"),
+            # as SciPy, the shapes of a single system are reported
+            ((2, 3, 3), (2, 3), r"\(\(3, 3\) and \(2, 3\)\)"),
+            ((2, 3, 3), (2, 2, 1), r"\(\(3, 3\) and \(2, 1\)\)"),
+            ((2, 4, 4), (2,), r"\(\(4, 4\) and \(2,\)\)"),
+            ((4, 4), (2, 3, 1), r"\(\(4, 4\) and \(3, 1\)\)"),
             ((2, 4, 4), (3, 4, 1), "Shape mismatch"),
         ],
     )
@@ -680,12 +694,6 @@ class TestChoSolve:
         )
 
     def test_errors(self):
-        assert_raises(
-            dpnp.linalg.LinAlgError,
-            dpnp.scipy.linalg.cho_solve,
-            (dpnp.ones(3), False),
-            dpnp.ones(3),
-        )
         assert_raises(
             TypeError,
             dpnp.scipy.linalg.cho_solve,
