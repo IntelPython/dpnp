@@ -111,6 +111,8 @@ def cho_factor(a, lower=False, overwrite_a=False, check_finite=True):
         otherwise it contains the data of `a` not used by the decomposition.
     lower : bool
         Flag indicating whether the factor is in the lower or upper triangle.
+        Unlike SciPy, which returns it as an array tiled to the batch shape,
+        a Python bool is returned.
 
     Raises
     ------
@@ -215,6 +217,10 @@ def cho_solve(c_and_lower, b, overwrite_b=False, check_finite=True):
     See Also
     --------
     :func:`dpnp.scipy.linalg.cho_factor` : Cholesky factorization of a matrix.
+
+    Notes
+    -----
+    Unlike SciPy, a zero-size batch is supported and gives an empty solution.
 
     Examples
     --------
