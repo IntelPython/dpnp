@@ -13,8 +13,8 @@
     </script>
     <link rel="index" title="Index" href="../../../../genindex.html"><link rel="search" title="Search" href="../../../../search.html">
 
-    <!-- Generated with Sphinx 9.1.1 and Furo 2025.12.19 -->
-        <title>dpnp.scipy.linalg._decomp_cholesky - Data Parallel Extension for NumPy (dpnp) 0.21.0dev15 documentation</title>
+    <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
+        <title>dpnp.scipy.linalg._decomp_cholesky - Data Parallel Extension for NumPy (dpnp) 0.22.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -172,7 +172,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev15 documentation</div></a>
+      <a href="../../../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.22.0dev0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev15 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.22.0dev0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -1101,6 +1101,8 @@
 
 <span class="sd">"""</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.linalg.dpnp_utils_linalg</span><span class="w"> </span><span class="kn">import</span> <span class="n">assert_stacked_2d</span>
 
@@ -1108,6 +1110,27 @@
     <span class="n">dpnp_cho_factor</span><span class="p">,</span>
     <span class="n">dpnp_cho_solve</span><span class="p">,</span>
 <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_lower_to_bool</span><span class="p">(</span><span class="n">lower</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Convert `lower` to bool, also accepting an array or a sequence of equal</span>
+<span class="sd">    values.</span>
+
+<span class="sd">    """</span>
+
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">lower</span><span class="p">):</span>
+        <span class="n">lower</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">lower</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="c1"># bool() of a non-empty sequence is always True</span>
+        <span class="n">lower</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">lower</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">lower</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">lower</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">lower</span> <span class="o">==</span> <span class="n">lower</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"All values of `lower` must be equal."</span><span class="p">)</span>
+        <span class="n">lower</span> <span class="o">=</span> <span class="n">lower</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">lower</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="cho_factor">
@@ -1152,6 +1175,8 @@
 <span class="sd">        otherwise it contains the data of `a` not used by the decomposition.</span>
 <span class="sd">    lower : bool</span>
 <span class="sd">        Flag indicating whether the factor is in the lower or upper triangle.</span>
+<span class="sd">        Unlike SciPy, which returns it as an array tiled to the batch shape,</span>
+<span class="sd">        a Python bool is returned.</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
@@ -1211,7 +1236,7 @@
 
     <span class="k">return</span> <span class="n">dpnp_cho_factor</span><span class="p">(</span>
         <span class="n">a</span><span class="p">,</span>
-        <span class="n">lower</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span><span class="n">lower</span><span class="p">),</span>
+        <span class="n">lower</span><span class="o">=</span><span class="n">_lower_to_bool</span><span class="p">(</span><span class="n">lower</span><span class="p">),</span>
         <span class="n">overwrite_a</span><span class="o">=</span><span class="n">overwrite_a</span><span class="p">,</span>
         <span class="n">check_finite</span><span class="o">=</span><span class="n">check_finite</span><span class="p">,</span>
     <span class="p">)</span></div>
@@ -1231,7 +1256,8 @@
 <span class="sd">    ----------</span>
 <span class="sd">    (c, lower) : tuple, ({dpnp.ndarray, usm_ndarray}, bool)</span>
 <span class="sd">        Cholesky factorization of `A` (..., M, M), as given by</span>
-<span class="sd">        :obj:`dpnp.scipy.linalg.cho_factor`.</span>
+<span class="sd">        :obj:`dpnp.scipy.linalg.cho_factor`. `lower` can also be an array</span>
+<span class="sd">        or a sequence whose values are all equal.</span>
 <span class="sd">    b : {(M,), (..., M, K)} {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Right-hand side.</span>
 <span class="sd">    overwrite_b : bool, optional</span>
@@ -1259,6 +1285,10 @@
 <span class="sd">    --------</span>
 <span class="sd">    :func:`dpnp.scipy.linalg.cho_factor` : Cholesky factorization of a matrix.</span>
 
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Unlike SciPy, a zero-size batch is supported and gives an empty solution.</span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
@@ -1282,7 +1312,7 @@
 
     <span class="k">return</span> <span class="n">dpnp_cho_solve</span><span class="p">(</span>
         <span class="n">c</span><span class="p">,</span>
-        <span class="nb">bool</span><span class="p">(</span><span class="n">lower</span><span class="p">),</span>
+        <span class="n">_lower_to_bool</span><span class="p">(</span><span class="n">lower</span><span class="p">),</span>
         <span class="n">b</span><span class="p">,</span>
         <span class="n">overwrite_b</span><span class="o">=</span><span class="n">overwrite_b</span><span class="p">,</span>
         <span class="n">check_finite</span><span class="o">=</span><span class="n">check_finite</span><span class="p">,</span>
@@ -1320,7 +1350,7 @@
       
     </aside>
   </div>
-</div><script src="../../../../_static/documentation_options.js?v=100a5f39"></script>
+</div><script src="../../../../_static/documentation_options.js?v=aa23f226"></script>
     <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../../_static/scripts/furo.js?v=46bd48cc"></script>
