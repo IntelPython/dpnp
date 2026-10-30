@@ -540,18 +540,21 @@ class TestChoSolve:
         expected = numpy.linalg.solve(a_np, b_np)
         assert_allclose(x, expected, rtol=tol, atol=tol)
 
+    @pytest.mark.parametrize("c_shape", [(4, 4), (1, 4, 4), (1, 1, 4, 4)])
     @pytest.mark.parametrize("fold", [True, False])
     @pytest.mark.parametrize("lower", [True, False])
     @pytest.mark.parametrize("order", ["C", "F"])
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     def test_2d_factor_batched_rhs_path(
-        self, monkeypatch, fold, lower, order, dtype
+        self, monkeypatch, c_shape, fold, lower, order, dtype
     ):
         # the shared factor is chosen on GPU only: force each path
+        calls = []
         monkeypatch.setattr(
-            "dpnp.scipy.linalg._utils._fold_rhs_batch", lambda *args: fold
+            "dpnp.scipy.linalg._utils._fold_rhs_batch",
+            lambda *args: calls.append(args) or fold,
         )
-        a_np = _make_hpd_np((4, 4), dtype)
+        a_np = _make_hpd_np(c_shape, dtype)
         b_np = generate_random_numpy_array((3, 4, 2), dtype)
 
         c, low = dpnp.scipy.linalg.cho_factor(dpnp.array(a_np), lower=lower)
@@ -559,6 +562,8 @@ class TestChoSolve:
 
         x = dpnp.scipy.linalg.cho_solve((c, low), dpnp.array(b_np))
         assert_dtype_allclose(x, numpy.linalg.solve(a_np, b_np))
+        # a factor with size-1 batch dimensions is not broadcast either
+        assert len(calls) == 1
 
     @pytest.mark.parametrize("lower", [True, False])
     @pytest.mark.parametrize("xp", [numpy, dpnp])
