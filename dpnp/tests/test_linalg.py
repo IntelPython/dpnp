@@ -271,6 +271,14 @@ class TestChoFactor:
         assert c is not a_dp
         assert_array_equal(a_dp, a_orig)
 
+    @pytest.mark.parametrize("lower", [True, False])
+    @pytest.mark.parametrize("seq", [list, tuple])
+    def test_lower_sequence(self, lower, seq):
+        a_dp = dpnp.array(_make_hpd_np((3, 3), dpnp.default_float_type()))
+        c, low = dpnp.scipy.linalg.cho_factor(a_dp, lower=seq([lower]))
+        assert low is lower
+        assert (_other_tri(c, lower) == 0).all()
+
     @pytest.mark.parametrize("shape", [(0, 0), (2, 0, 0), (0, 2, 2)])
     def test_empty(self, shape):
         a_dp = dpnp.empty(shape)
@@ -495,9 +503,23 @@ class TestChoSolve:
             x = dpnp.scipy.linalg.cho_solve((c, low), dpnp.array(b_np))
             assert_dtype_allclose(x, expected)
 
-    def test_lower_array_errors(self):
+    @pytest.mark.parametrize("lower", [True, False])
+    @pytest.mark.parametrize("seq", [list, tuple])
+    def test_lower_sequence(self, lower, seq):
+        # bool() of a non-empty sequence is True whatever its values
+        dtype = dpnp.default_float_type()
+        a_np = _make_hpd_np((3, 4, 4), dtype)
+        b_np = generate_random_numpy_array((3, 4, 2), dtype)
+
+        c, _ = dpnp.scipy.linalg.cho_factor(dpnp.array(a_np), lower=lower)
+        expected = numpy.linalg.solve(a_np, b_np)
+        for low in [seq([lower]), seq([lower] * 3), seq([seq([lower])] * 3)]:
+            x = dpnp.scipy.linalg.cho_solve((c, low), dpnp.array(b_np))
+            assert_dtype_allclose(x, expected)
+
+    @pytest.mark.parametrize("low", [numpy.array([True, False]), [True, False]])
+    def test_lower_array_errors(self, low):
         c, _ = dpnp.scipy.linalg.cho_factor(4 * dpnp.ones((2, 1, 1)))
-        low = numpy.array([True, False])
         assert_raises(
             ValueError, dpnp.scipy.linalg.cho_solve, (c, low), dpnp.ones(1)
         )
@@ -514,8 +536,8 @@ class TestChoSolve:
         ],
     )
     def test_empty(self, c_shape, b_shape, x_shape):
-        c = dpnp.empty(c_shape)
-        b = dpnp.empty(b_shape)
+        c = dpnp.ones(c_shape)
+        b = dpnp.ones(b_shape)
 
         x = dpnp.scipy.linalg.cho_solve((c, False), b)
         assert x.shape == x_shape

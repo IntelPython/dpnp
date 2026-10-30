@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Added support for boolean input in `dpnp.positive` and the `+` operator of `dpnp.ndarray` [#3128](https://github.com/IntelPython/dpnp/pull/3128)
+* Added implementation of `dpnp.scipy.linalg.cho_factor` and `dpnp.scipy.linalg.cho_solve` (SciPy-compatible) [#3116](https://github.com/IntelPython/dpnp/pull/3116)
 
 ### Changed
 

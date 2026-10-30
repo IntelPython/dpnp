@@ -51,10 +51,17 @@ from ._utils import (
 
 
 def _lower_to_bool(lower):
-    """Convert `lower` to bool, also accepting an array of equal values."""
+    """
+    Convert `lower` to bool, also accepting an array or a sequence of equal
+    values.
+
+    """
 
     if dpnp.is_supported_array_type(lower):
         lower = dpnp.asnumpy(lower)
+    elif isinstance(lower, (list, tuple)):
+        # bool() of a non-empty sequence is always True
+        lower = numpy.asarray(lower)
     if isinstance(lower, numpy.ndarray) and lower.size != 1:
         if lower.size == 0:
             return False
@@ -163,7 +170,7 @@ def cho_factor(a, lower=False, overwrite_a=False, check_finite=True):
 
     return dpnp_cho_factor(
         a,
-        lower=bool(lower),
+        lower=_lower_to_bool(lower),
         overwrite_a=overwrite_a,
         check_finite=check_finite,
     )
@@ -181,7 +188,7 @@ def cho_solve(c_and_lower, b, overwrite_b=False, check_finite=True):
     (c, lower) : tuple, ({dpnp.ndarray, usm_ndarray}, bool)
         Cholesky factorization of `A` (..., M, M), as given by
         :obj:`dpnp.scipy.linalg.cho_factor`. `lower` can also be an array
-        whose values are all equal.
+        or a sequence whose values are all equal.
     b : {(M,), (..., M, K)} {dpnp.ndarray, usm_ndarray}
         Right-hand side.
     overwrite_b : bool, optional
