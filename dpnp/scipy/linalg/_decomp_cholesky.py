@@ -42,7 +42,6 @@ It contains:
 import numpy
 
 import dpnp
-from dpnp.linalg.dpnp_utils_linalg import assert_stacked_2d
 
 from ._utils import (
     dpnp_cho_factor,
@@ -117,7 +116,7 @@ def cho_factor(a, lower=False, overwrite_a=False, check_finite=True):
     Raises
     ------
     dpnp.linalg.LinAlgError
-        If `a` has fewer than two dimensions, or if the decomposition fails.
+        If the decomposition fails.
     ValueError
         If `a` is not square, or if ``check_finite=True`` and `a` contains
         infinities or NaNs.
@@ -165,16 +164,17 @@ def cho_factor(a, lower=False, overwrite_a=False, check_finite=True):
     """
 
     dpnp.check_supported_arrays_type(a)
-    assert_stacked_2d(a)
+    # as in SciPy, a 0-D or 1-D input is viewed as a matrix
+    a1 = dpnp.atleast_2d(a)
 
-    if a.shape[-1] != a.shape[-2]:
+    if a1.shape[-1] != a1.shape[-2]:
         raise ValueError(
             "Expected a square matrix or batch thereof, "
-            f"got a.shape={a.shape}"
+            f"got a1.shape={a1.shape}"
         )
 
     return dpnp_cho_factor(
-        a,
+        a1,
         lower=_lower_to_bool(lower),
         overwrite_a=overwrite_a,
         check_finite=check_finite,
@@ -214,8 +214,6 @@ def cho_solve(c_and_lower, b, overwrite_b=False, check_finite=True):
 
     Raises
     ------
-    dpnp.linalg.LinAlgError
-        If `c` has fewer than two dimensions.
     ValueError
         If `c` is not square, if the shapes of `c` and `b` are incompatible,
         if the values of `lower` are not all equal, or if
@@ -250,9 +248,8 @@ def cho_solve(c_and_lower, b, overwrite_b=False, check_finite=True):
 
     c, lower = c_and_lower
     dpnp.check_supported_arrays_type(c, b)
-    assert_stacked_2d(c)
 
-    if c.shape[-1] != c.shape[-2]:
+    if c.ndim < 2 or c.shape[-1] != c.shape[-2]:
         raise ValueError("The factored matrix c is not square.")
 
     return dpnp_cho_solve(
