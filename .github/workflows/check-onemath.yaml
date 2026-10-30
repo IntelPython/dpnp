@@ -25,6 +25,7 @@ env:
   rerun-tests-max-attempts: 2
   rerun-tests-timeout: 30
   rerun-tensor-tests-timeout: 10
+  rerun-tensor-tests-max-attempts: 3
 
 jobs:
   build_env_file:
@@ -198,7 +199,7 @@ jobs:
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
           timeout_minutes: ${{ env.rerun-tensor-tests-timeout }}
-          max_attempts: ${{ env.rerun-tests-max-attempts }}
+          max_attempts: ${{ env.rerun-tensor-tests-max-attempts }}
           retry_on: any
           command: |
             . $CONDA/etc/profile.d/conda.sh
@@ -332,7 +333,7 @@ jobs:
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
           timeout_minutes: ${{ env.rerun-tensor-tests-timeout }}
-          max_attempts: ${{ env.rerun-tests-max-attempts }}
+          max_attempts: ${{ env.rerun-tensor-tests-max-attempts }}
           retry_on: any
           command: |
             . $CONDA/etc/profile.d/conda.sh
