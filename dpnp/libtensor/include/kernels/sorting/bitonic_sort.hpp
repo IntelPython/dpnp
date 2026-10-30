@@ -113,13 +113,8 @@ struct PadValue
             return is_ascending;
         }
         else if constexpr (is_real_fp_v<T>) {
-            // NaN is ordered after every other value when ascending, while
-            // -infinity is ordered after every other value, NaN included,
-            // when descending
-            return (is_ascending)
-                       ? static_cast<T>(std::numeric_limits<float>::quiet_NaN())
-                       : static_cast<T>(
-                             -std::numeric_limits<float>::infinity());
+            // NaN is ordered after every other value in both directions
+            return static_cast<T>(std::numeric_limits<float>::quiet_NaN());
         }
         else {
             return (is_ascending) ? std::numeric_limits<T>::max()
@@ -134,15 +129,11 @@ struct PadValue<std::complex<T>, is_ascending>
     static std::complex<T> get()
     {
         // complex values are ordered by the pair of NaN-ness of their parts
-        // first, so (NaN, NaN) is ordered after every other value when
-        // ascending, while (-infinity, -infinity) is the smallest value of the
-        // leading (not NaN, not NaN) group and hence is ordered after every
-        // other value when descending
+        // first, so (NaN, NaN) is ordered after every other value in both
+        // directions
         const T nan_v = static_cast<T>(std::numeric_limits<float>::quiet_NaN());
-        const T inf_v = static_cast<T>(std::numeric_limits<float>::infinity());
 
-        return (is_ascending) ? std::complex<T>{nan_v, nan_v}
-                              : std::complex<T>{-inf_v, -inf_v};
+        return std::complex<T>{nan_v, nan_v};
     }
 };
 
