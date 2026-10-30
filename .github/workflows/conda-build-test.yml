@@ -35,6 +35,10 @@ env:
   test-env-name: 'test'
   rerun-tests-max-attempts: 2
   rerun-tests-timeout: 45
+  rerun-tensor-tests-timeout: 15
+  rerun-tensor-tests-max-attempts: 3
+  # Healthy Windows tensor runs take up to ~19 min
+  rerun-tensor-tests-timeout-win: 20
 
 jobs:
   build:
@@ -285,8 +289,8 @@ jobs:
         id: run_tests_tensor
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
-          timeout_minutes: ${{ env.rerun-tests-timeout }}
-          max_attempts: ${{ env.rerun-tests-max-attempts }}
+          timeout_minutes: ${{ runner.os == 'Windows' && env.rerun-tensor-tests-timeout-win || env.rerun-tensor-tests-timeout }}
+          max_attempts: ${{ env.rerun-tensor-tests-max-attempts }}
           retry_on: any
           shell: bash
           command: |

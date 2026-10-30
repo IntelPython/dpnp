@@ -23,7 +23,9 @@ env:
   test-env-name: 'test_onemath'
   rerun-tests-on-failure: 'true'
   rerun-tests-max-attempts: 2
-  rerun-tests-timeout: 20
+  rerun-tests-timeout: 30
+  rerun-tensor-tests-timeout: 10
+  rerun-tensor-tests-max-attempts: 3
 
 jobs:
   build_env_file:
@@ -196,8 +198,8 @@ jobs:
         id: run_tensor_tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
-          timeout_minutes: ${{ env.rerun-tests-timeout }}
-          max_attempts: ${{ env.rerun-tests-max-attempts }}
+          timeout_minutes: ${{ env.rerun-tensor-tests-timeout }}
+          max_attempts: ${{ env.rerun-tensor-tests-max-attempts }}
           retry_on: any
           command: |
             . $CONDA/etc/profile.d/conda.sh
@@ -221,7 +223,7 @@ jobs:
         os: [ubuntu-latest] # windows-2022 - no DFT support for Windows in oneMKL
 
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 60
+    timeout-minutes: 120
 
     defaults:
       run:
@@ -330,8 +332,8 @@ jobs:
         id: run_tensor_tests_branch
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
-          timeout_minutes: ${{ env.rerun-tests-timeout }}
-          max_attempts: ${{ env.rerun-tests-max-attempts }}
+          timeout_minutes: ${{ env.rerun-tensor-tests-timeout }}
+          max_attempts: ${{ env.rerun-tensor-tests-max-attempts }}
           retry_on: any
           command: |
             . $CONDA/etc/profile.d/conda.sh
