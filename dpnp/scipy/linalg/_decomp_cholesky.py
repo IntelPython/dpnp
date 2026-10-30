@@ -117,7 +117,10 @@ def cho_factor(a, lower=False, overwrite_a=False, check_finite=True):
     Raises
     ------
     dpnp.linalg.LinAlgError
-        Raised if decomposition fails.
+        If `a` has fewer than two dimensions, or if the decomposition fails.
+    ValueError
+        If `a` is not square, or if ``check_finite=True`` and `a` contains
+        infinities or NaNs.
 
     Warnings
     --------
@@ -209,10 +212,19 @@ def cho_solve(c_and_lower, b, overwrite_b=False, check_finite=True):
     x : {(M,), (..., M, K)} dpnp.ndarray
         The solution to the system ``A x = b``.
 
+    Raises
+    ------
+    dpnp.linalg.LinAlgError
+        If `c` has fewer than two dimensions.
+    ValueError
+        If `c` is not square, if the shapes of `c` and `b` are incompatible,
+        if the values of `lower` are not all equal, or if
+        ``check_finite=True`` and `c` or `b` contains infinities or NaNs.
+
     Warnings
     --------
     This function synchronizes in order to validate array elements
-    when ``check_finite=True``.
+    when ``check_finite=True``, and to read `lower` given as a dpnp array.
 
     See Also
     --------
