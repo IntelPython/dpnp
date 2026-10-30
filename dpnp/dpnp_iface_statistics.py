@@ -1461,6 +1461,14 @@ def minmax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     Parameters `where`, and `initial` are only supported with their default
     values. Otherwise ``NotImplementedError`` exception will be raised.
 
+    If an array in `out` has a data type other than that of `a`, the result is
+    computed in the data type of `a` and then cast, while NumPy casts `a` to
+    the data type of `out` first. The results differ when the cast does not
+    preserve the order of values, e.g. for a narrowing integer cast.
+
+    The arrays in `out` must not overlap in memory. Interleaved views, such as
+    ``(r[:, 0], r[:, 1])``, are rejected as well, while NumPy accepts them.
+
     See Also
     --------
     :obj:`dpnp.min` : Return the minimum of an array.

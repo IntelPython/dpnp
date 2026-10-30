@@ -1043,6 +1043,17 @@ class TestMinMax:
         expected = numpy.max(a, axis=0, out=numpy.empty(4, dtype="i2"))
         assert_dtype_allclose(result[1], expected)
 
+    def test_out_dtype_narrowing(self):
+        a = numpy.array([300, 100])
+        ia = dpnp.array(a)
+
+        out = (dpnp.empty((), dtype=dpnp.int8), dpnp.empty((), dtype=dpnp.int8))
+        result = dpnp.minmax(ia, out=out)
+
+        # unlike NumPy, the result is cast after the reduction, not the input
+        assert_array_equal(result[0], numpy.min(a).astype(numpy.int8))
+        assert_array_equal(result[1], numpy.max(a).astype(numpy.int8))
+
     def test_out_no_axis(self):
         a = numpy.arange(6, dtype=numpy.float32).reshape((2, 3))
         ia = dpnp.array(a)
@@ -1119,6 +1130,11 @@ class TestMinMax:
         buf = dpnp.empty(6, dtype=ia.dtype)
         with pytest.raises(ValueError, match="cannot overlap"):
             dpnp.minmax(ia, axis=0, out=(buf[:4], buf[2:]))
+
+        # unlike NumPy, interleaved out entries are rejected as overlapping
+        res = dpnp.empty((4, 2), dtype=ia.dtype)
+        with pytest.raises(ValueError, match="cannot overlap"):
+            dpnp.minmax(ia, axis=0, out=(res[:, 0], res[:, 1]))
 
     @pytest.mark.parametrize("axis", [None, 0])
     def test_empty_error(self, axis):
