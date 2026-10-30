@@ -747,8 +747,13 @@ def dpnp_cho_solve(c, lower, b, overwrite_b=False, check_finite=True):
     # - overwrite_b is False (always copy),
     # - dtype mismatch,
     # - not F-contiguous,
-    # - not writeable
-    if not overwrite_b or _is_copy_required(b, res_type):
+    # - not writeable,
+    # - USM type differs from the result one
+    if (
+        not overwrite_b
+        or b.usm_type != res_usm_type
+        or _is_copy_required(b, res_type)
+    ):
         b_h = dpnp.empty_like(
             b, order="F", dtype=res_type, usm_type=res_usm_type
         )
