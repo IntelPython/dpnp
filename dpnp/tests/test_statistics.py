@@ -10,6 +10,7 @@ from numpy.testing import (
 
 import dpnp
 import dpnp.tensor as dpt
+from dpnp.exceptions import ExecutionPlacementError
 
 from .helper import (
     assert_dtype_allclose,
@@ -19,6 +20,7 @@ from .helper import (
     get_complex_dtypes,
     get_float_complex_dtypes,
     get_float_dtypes,
+    get_integer_dtypes,
     has_support_aspect64,
     numpy_version,
 )
@@ -856,7 +858,9 @@ class TestMaxMin:
 class TestMinMax:
     @pytest.mark.parametrize("axis", [None, 0, 1, -1, 2, -2, (1, 2), (0, -2)])
     @pytest.mark.parametrize("keepdims", [False, True])
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_float16=False)
+    )
     def test_basic(self, axis, keepdims, dtype):
         a = generate_random_numpy_array((4, 4, 6, 8), dtype=dtype)
         ia = dpnp.array(a)
@@ -870,7 +874,9 @@ class TestMinMax:
 
     # sequential, one work-group and several work-groups per reduction
     @pytest.mark.parametrize("n", [7, 1000, 100_000])
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_float16=False)
+    )
     def test_size(self, n, dtype):
         a = generate_random_numpy_array((3, n), dtype=dtype)
         ia = dpnp.array(a)
@@ -882,16 +888,17 @@ class TestMinMax:
                 assert_dtype_allclose(result[1], numpy.max(x, axis=axis))
 
     # several passes over partial results
+    @pytest.mark.parametrize("axis", [None, 1])
     @pytest.mark.parametrize("dtype", [dpnp.int8, dpnp.float32])
-    def test_large(self, dtype):
-        a = generate_random_numpy_array(6_000_000, dtype=dtype)
-        a[123] = -100
-        a[-5] = 100
+    def test_large(self, axis, dtype):
+        a = generate_random_numpy_array((2, 6_000_000), dtype=dtype)
+        a[0, 123] = -100
+        a[1, -5] = 100
         ia = dpnp.array(a)
 
-        result = dpnp.minmax(ia)
-        assert_dtype_allclose(result[0], numpy.min(a))
-        assert_dtype_allclose(result[1], numpy.max(a))
+        result = dpnp.minmax(ia, axis=axis)
+        assert_dtype_allclose(result[0], numpy.min(a, axis=axis))
+        assert_dtype_allclose(result[1], numpy.max(a, axis=axis))
 
     @pytest.mark.parametrize("order", ["C", "F"])
     @pytest.mark.parametrize("axis", [None, 0, 1, 2, (0, 2), (1, 2)])
@@ -950,6 +957,35 @@ class TestMinMax:
         assert_dtype_allclose(result[0], numpy.min(a, axis=axis))
         assert_dtype_allclose(result[1], numpy.max(a, axis=axis))
 
+    @pytest.mark.parametrize("n", [7, 1000, 100_000])
+    @pytest.mark.parametrize(
+        "dtype", get_float_complex_dtypes(no_float16=False)
+    )
+    def test_nan_position(self, n, dtype):
+        a = generate_random_numpy_array(n, dtype=dtype)
+        nans = [numpy.nan]
+        if dpnp.issubdtype(dtype, dpnp.complexfloating):
+            nans.append(complex(0, numpy.nan))
+
+        for pos in [0, n // 2, -1]:
+            for nan in nans:
+                x = a.copy()
+                x[pos] = nan
+                result = dpnp.minmax(dpnp.array(x))
+                assert_dtype_allclose(result[0], numpy.min(x))
+                assert_dtype_allclose(result[1], numpy.max(x))
+
+    # all items equal to the identity of the other reduction
+    @pytest.mark.parametrize("n", [7, 1000, 100_000])
+    @pytest.mark.parametrize("dtype", get_integer_dtypes(all_int_types=True))
+    def test_integer_limits(self, n, dtype):
+        info = numpy.iinfo(dtype)
+        for val in [info.min, info.max]:
+            a = numpy.full(n, val, dtype=dtype)
+            result = dpnp.minmax(dpnp.array(a))
+            assert_array_equal(result[0], numpy.min(a))
+            assert_array_equal(result[1], numpy.max(a))
+
     def test_0d(self):
         ia = dpnp.array(3)
         result = dpnp.minmax(ia)
@@ -1007,6 +1043,23 @@ class TestMinMax:
         expected = numpy.max(a, axis=0, out=numpy.empty(4, dtype="i2"))
         assert_dtype_allclose(result[1], expected)
 
+    def test_out_no_axis(self):
+        a = numpy.arange(6, dtype=numpy.float32).reshape((2, 3))
+        ia = dpnp.array(a)
+        expected = numpy.min(a, axis=()), numpy.max(a, axis=())
+
+        out = (dpnp.empty_like(ia), dpnp.empty_like(ia))
+        result = dpnp.minmax(ia, axis=(), out=out)
+        assert result[0] is out[0] and result[1] is out[1]
+        assert_array_equal(result[0], expected[0])
+        assert_array_equal(result[1], expected[1])
+
+        # out overlaps the input
+        result = dpnp.minmax(ia, axis=(), out=(ia, None))
+        assert result[0] is ia
+        assert_array_equal(result[0], expected[0])
+        assert_array_equal(result[1], expected[1])
+
     @pytest.mark.parametrize("idx", [0, 1])
     def test_out_overlap_input(self, idx):
         # the 1st row holds the maximum of some columns
@@ -1048,6 +1101,17 @@ class TestMinMax:
             dpnp.minmax(ia, axis=0, out=(dpnp.empty(3), None))
         with pytest.raises(ValueError):
             dpnp.minmax(ia, axis=0, out=(None, dpnp.empty(3)))
+
+        # out entry is read-only
+        out_read_only = dpnp.empty_like(out)
+        out_read_only.flags.writable = False
+        with pytest.raises(ValueError, match="read-only"):
+            dpnp.minmax(ia, axis=0, out=(None, out_read_only))
+
+        # out entry is allocated on another queue
+        out_q = dpnp.empty_like(out, sycl_queue=dpctl.SyclQueue())
+        with pytest.raises((ValueError, ExecutionPlacementError)):
+            dpnp.minmax(ia, axis=0, out=(out_q, None))
 
         # out entries overlap
         with pytest.raises(ValueError, match="cannot overlap"):

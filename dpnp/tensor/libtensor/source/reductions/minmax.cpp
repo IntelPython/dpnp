@@ -290,7 +290,6 @@ std::pair<sycl::event, sycl::event>
         }
     }
 
-    auto const &src_shape_vecs = src.get_shape_vector();
     auto const &src_strides_vecs = src.get_strides_vector();
     auto const &dst_min_strides_vecs = dst_min.get_strides_vector();
     auto const &dst_max_strides_vecs = dst_max.get_strides_vector();
