@@ -306,8 +306,9 @@ class TestChoFactor:
             dpnp.linalg.LinAlgError, dpnp.scipy.linalg.cho_factor, a_dp
         )
 
-        # failing matrix first: on a WSL Arrow Lake iGPU, single-precision
-        # potrf_batch was seen to miss failures at odd batch indices
+        # failing matrix first: on an Arrow Lake iGPU under WSL only (not on
+        # native Linux), single-precision potrf_batch was seen to miss
+        # failures at odd batch indices
         a_dp = dpnp.stack([-dpnp.eye(3), dpnp.eye(3), dpnp.eye(3)])
         assert_raises(
             dpnp.linalg.LinAlgError, dpnp.scipy.linalg.cho_factor, a_dp
