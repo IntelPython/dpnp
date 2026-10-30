@@ -26,7 +26,13 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#include <algorithm>
+#include <cstdint>
+#include <sstream>
 #include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include <pybind11/pybind11.h>
 
