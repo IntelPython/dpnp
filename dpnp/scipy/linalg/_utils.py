@@ -55,22 +55,22 @@ from dpnp.dpnp_utils import get_usm_allocations
 from dpnp.linalg.dpnp_utils_linalg import _common_type, _real_type
 
 
-def _align_lu_solve_broadcast(lu, b, name="lu"):
-    """Align LU (or Cholesky) and RHS batch dimensions with SciPy-like rules."""
+def _align_lu_solve_broadcast(lu, b):
+    """Align LU and RHS batch dimensions with SciPy-like rules."""
     lu_shape = lu.shape
     b_shape = b.shape
 
     if b.ndim < 2:
         if lu_shape[-2] != b_shape[0]:
             raise ValueError(
-                f"Shapes of {name} {lu_shape} and b {b_shape} are incompatible"
+                f"Shapes of lu {lu_shape} and b {b_shape} are incompatible"
             )
         b = dpnp.broadcast_to(b, lu_shape[:-1])
         return lu, b
 
     if lu_shape[-2] != b_shape[-2]:
         raise ValueError(
-            f"Shapes of {name} {lu_shape} and b {b_shape} are incompatible"
+            f"Shapes of lu {lu_shape} and b {b_shape} are incompatible"
         )
 
     # Use dpnp.broadcast_shapes() to align the resulting batch shapes
@@ -362,7 +362,7 @@ def _batched_cho_solve(c, lower, b, res_type, res_usm_type, exec_q):
         if all(dim == 1 for dim in c.shape[:-2])
         else None
     )
-    c, b = _align_lu_solve_broadcast(c, b, name="c")
+    c, b = _align_lu_solve_broadcast(c, b)
 
     if b.size == 0:
         return dpnp.empty(
@@ -392,7 +392,8 @@ def _batched_cho_solve(c, lower, b, res_type, res_usm_type, exec_q):
             c_f = dpnp.transpose(c, (2, 1, 0))
             uplo, conj = int(not lower), c_is_complex
 
-    # the solves overwrite `b`: copy it to (n, nrhs, batch) layout
+    # the solves overwrite `b`: copy it to (n, nrhs, batch) layout,
+    # through a view in its shape, so a broadcast `b` is not materialized
     b_h = dpnp.empty(
         (n, nrhs, batch_size),
         dtype=res_type,
@@ -400,8 +401,9 @@ def _batched_cho_solve(c, lower, b, res_type, res_usm_type, exec_q):
         usm_type=res_usm_type,
         sycl_queue=exec_q,
     )
-    b_src = dpnp.reshape(b, (batch_size, n, nrhs))
-    _copy_rhs(b_src, dpnp.moveaxis(b_h, -1, 0), conj, exec_q)
+    b_nd = b if b_ndim_orig > 1 else b[..., None]
+    x = dpnp.reshape(dpnp.moveaxis(b_h, -1, 0), b_nd.shape, copy=False)
+    _copy_rhs(b_nd, x, conj, exec_q)
 
     if fold:
         _potrs(c_f, dpnp.reshape(b_h, (n, -1), order="F"), uplo, exec_q)
@@ -411,8 +413,7 @@ def _batched_cho_solve(c, lower, b, res_type, res_usm_type, exec_q):
     if conj:
         dpnp.conj(b_h, out=b_h)
 
-    # Restore original shape: move batch axis back and reshape
-    return dpnp.moveaxis(b_h, -1, 0).reshape(b.shape)
+    return x if b_ndim_orig > 1 else x[..., 0]
 
 
 def _cho_solve_trsm(c_f, b_f, uplo, exec_q):

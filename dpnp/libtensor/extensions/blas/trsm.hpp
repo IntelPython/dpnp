@@ -28,6 +28,10 @@
 
 #pragma once
 
+#include <cstdint>
+#include <utility>
+#include <vector>
+
 #include <oneapi/mkl.hpp>
 #include <sycl/sycl.hpp>
 
