@@ -369,17 +369,9 @@ def _batched_cho_solve(c, lower, b, res_type, res_usm_type, exec_q):
     batch_size = c.size // (n * n)
 
     if c_2d is not None:
-        # a single factor is not broadcast: fold the batch into the RHS
-        # columns for one potrs call, except for a real type on GPU and
-        # a small batch, where oneMKL potrs slows down above 16 columns
-        # and the factor is shared by the batch in trsm_batch (stride 0)
+        # a single factor is not broadcast
         c_f, uplo, conj = _cho_factor_f(c_2d, lower, res_type)
-        fold = not (
-            exec_q.sycl_device.is_gpu
-            and not dpnp.issubdtype(res_type, dpnp.complexfloating)
-            and 16 < batch_size * nrhs
-            and batch_size <= 32
-        )
+        fold = _fold_rhs_batch(exec_q, res_type, batch_size, nrhs)
     else:
         fold = False
         c = dpnp.reshape(c, (batch_size, n, n))
@@ -464,6 +456,25 @@ def _cho_factor_f(c, lower, res_type):
     if c.flags.f_contiguous:
         return c, int(lower), False
     return dpnp.ascontiguousarray(c).T, int(not lower), c_is_complex
+
+
+def _fold_rhs_batch(exec_q, res_type, batch_size, nrhs):
+    """
+    Whether to solve with a 2-D factor in one potrs call, with the RHS batch
+    folded into the columns.
+
+    Otherwise, for a real type on GPU and a small batch, where oneMKL potrs
+    slows down above 16 columns, the factor is shared by the batch in
+    trsm_batch (stride 0).
+
+    """
+
+    return not (
+        exec_q.sycl_device.is_gpu
+        and not dpnp.issubdtype(res_type, dpnp.complexfloating)
+        and 16 < batch_size * nrhs
+        and batch_size <= 32
+    )
 
 
 def _potrs(c_f, b_f, uplo, exec_q):
