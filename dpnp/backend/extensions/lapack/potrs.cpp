@@ -26,7 +26,13 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#include <algorithm>
+#include <cstdint>
+#include <sstream>
 #include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include <pybind11/pybind11.h>
 
@@ -39,7 +45,6 @@
 #include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_utils.hpp"
 
-#include "linalg_exceptions.hpp"
 #include "potrs.hpp"
 #include "types_matrix.hpp"
 
@@ -132,6 +137,12 @@ static sycl::event potrs_impl(sycl::queue &exec_q,
                          "call:\nreason: "
                       << e.what() << "\ninfo: " << e.info();
         }
+    } catch (oneapi::mkl::exception const &e) {
+        // not from LAPACK, e.g. unimplemented or a failed allocation
+        is_exception_caught = true;
+        error_msg << "Unexpected MKL exception caught during potrs() "
+                     "call:\nreason: "
+                  << e.what();
     } catch (sycl::exception const &e) {
         is_exception_caught = true;
         error_msg << "Unexpected SYCL exception caught during potrs() call:\n"
