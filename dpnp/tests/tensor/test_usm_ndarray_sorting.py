@@ -453,7 +453,9 @@ def test_bitonic_sort_extremal_values(dtype, descending):
     s = dpt.sort(x, descending=descending, kind="bitonicsort")
     expected = np.sort(dpt.asnumpy(x))
     if descending:
-        expected = np.flip(expected)
+        # NaNs are sorted to the end for descending order too
+        nans = np.isnan(expected)
+        expected = np.concatenate((np.flip(expected[~nans]), expected[nans]))
     assert np.array_equal(dpt.asnumpy(s), expected, equal_nan=True)
 
     idx = dpt.argsort(x, descending=descending, kind="bitonicsort")
