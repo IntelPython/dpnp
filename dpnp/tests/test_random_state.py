@@ -206,6 +206,108 @@ class TestState:
         assert_raises(ValueError, RandomState().set_state, 1)
 
 
+
+@pytest.fixture
+def restore_bit_generator():
+    saved = dpnp.random.get_bit_generator()
+    yield
+    dpnp.random.set_bit_generator(saved)
+
+
+@pytest.mark.usefixtures("restore_bit_generator")
+class TestBitGenerator:
+    def test_get_same_object(self):
+        bg = dpnp.random.get_bit_generator()
+        assert isinstance(bg, dpnp.random.Philox4x3210)
+        assert dpnp.random.get_bit_generator() is bg
+
+    def test_module_seed_keeps_object(self):
+        bg = dpnp.random.get_bit_generator()
+        dpnp.random.seed(3)
+        assert dpnp.random.get_bit_generator() is bg
+        assert_array_equal(
+            dpnp.random.random_sample(5), RandomState(3).random_sample(5)
+        )
+
+    def test_set(self):
+        bg = dpnp.random.PCG64DXSM(5)
+        dpnp.random.set_bit_generator(bg)
+        assert dpnp.random.get_bit_generator() is bg
+        ref = dpnp.random.Generator(dpnp.random.PCG64DXSM(5)).random(6)
+        assert_array_equal(dpnp.random.random_sample(6), ref)
+
+    def test_shared_stream(self):
+        bg = dpnp.random.PCG64DXSM(5)
+        dpnp.random.set_bit_generator(bg)
+        a = dpnp.random.random_sample(3)
+        b = dpnp.random.Generator(bg).random(3)
+        ref = dpnp.random.Generator(dpnp.random.PCG64DXSM(5)).random(6)
+        assert_array_equal(dpnp.concatenate((a, b)), ref)
+
+    def test_module_seed_reseeds_in_place(self):
+        bg = dpnp.random.PCG64DXSM(5)
+        dpnp.random.set_bit_generator(bg)
+        dpnp.random.random_sample(3)
+        dpnp.random.seed(9)
+        assert dpnp.random.get_bit_generator() is bg
+        assert bg.state == dpnp.random.PCG64DXSM(9).state
+        ref = dpnp.random.Generator(dpnp.random.PCG64DXSM(9)).random(4)
+        assert_array_equal(dpnp.random.random_sample(4), ref)
+
+    def test_queue(self):
+        queue = dpctl.SyclQueue()
+        bg = dpnp.random.PCG64DXSM(1, sycl_queue=queue)
+        dpnp.random.set_bit_generator(bg)
+        assert dpnp.random.get_bit_generator(sycl_queue=queue) is bg
+        assert dpnp.random.get_bit_generator() is not bg
+
+        res = dpnp.random.random_sample(4, sycl_queue=queue)
+        assert res.sycl_queue == queue
+        gen = dpnp.random.Generator(dpnp.random.PCG64DXSM(1, sycl_queue=queue))
+        assert_array_equal(res, gen.random(4))
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    def test_class(self, xp):
+        bg_type = xp.random.PCG64DXSM
+        assert_raises(ValueError, xp.random.set_bit_generator, bg_type)
+
+    @pytest.mark.parametrize("bitgen", [None, 5, numpy.random.PCG64DXSM(1)])
+    def test_not_a_bit_generator(self, bitgen):
+        assert_raises(TypeError, dpnp.random.set_bit_generator, bitgen)
+
+
+class TestBitGeneratorSeed:
+    def test_random_state(self):
+        bg = dpnp.random.PCG64DXSM(7)
+        rs = RandomState(bg)
+        assert str(rs) == "RandomState(PCG64DXSM)"
+        assert rs.get_sycl_queue() == bg.sycl_queue
+        ref = dpnp.random.Generator(dpnp.random.PCG64DXSM(7)).random(5)
+        assert_array_equal(rs.random_sample(5), ref)
+
+    def test_state(self):
+        rs = RandomState(dpnp.random.PCG64DXSM(7))
+        state = rs.get_state()
+        assert state["bit_generator"] == "PCG64DXSM"
+        a1 = rs.random_sample(5)
+        rs.set_state(state)
+        assert_array_equal(rs.random_sample(5), a1)
+        philox_state = RandomState(7).get_state()
+        assert_raises(ValueError, rs.set_state, philox_state)
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    def test_reseed(self, xp):
+        # only the legacy bit generator can be reseeded
+        rs = xp.random.RandomState(xp.random.PCG64DXSM(7))
+        assert_raises(TypeError, rs.seed, 3)
+
+    @pytest.mark.parametrize("kw", ["device", "sycl_queue"])
+    def test_queue_kwarg(self, kw):
+        bg = dpnp.random.PCG64DXSM(7)
+        queue = dpctl.SyclQueue()
+        assert_raises(ValueError, RandomState, bg, **{kw: queue})
+
+
 class TestQueue:
     @pytest.mark.parametrize("device", _all_devices(), ids=str)
     def test_device(self, device):

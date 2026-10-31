@@ -48,7 +48,7 @@ import numpy
 import dpnp
 import dpnp.libtensor._rng_impl as ri  # pylint: disable=no-name-in-module
 
-from ._bit_generator import Philox4x3210
+from ._bit_generator import BitGenerator, Philox4x3210
 from ._generator import (
     _CONS_BOUNDED_0_1,
     _CONS_GTE_1,
@@ -131,6 +131,19 @@ def _legacy_seed(seed):
     return idx
 
 
+def _reseed_in_place(bit_generator, seeded):
+    """
+    Give `bit_generator` the state and seed sequence of `seeded`, a new bit
+    generator of the same type, so that every user of `bit_generator` sees
+    the new seed, as NumPy reseeds its bit generators in place.
+
+    """
+
+    # pylint: disable=protected-access
+    bit_generator.state = seeded.state
+    bit_generator._seed_seq = seeded.seed_seq
+
+
 class RandomState:
     """
     A container of a pseudo-random number generator on a SYCL device, with
@@ -140,11 +153,12 @@ class RandomState:
 
     Parameters
     ----------
-    seed : {None, int, array_like[ints]}, optional
+    seed : {None, int, array_like[ints], BitGenerator}, optional
         A random seed to initialize the pseudo-random number generator, as
         for :obj:`numpy.random.RandomState`: an integer in [0, 2**32 - 1] or
         a 1-D array of such integers. With ``None``, fresh entropy is pulled
-        from the operating system.
+        from the operating system. A :class:`dpnp.random.BitGenerator` is
+        used as the bit generator, on its own queue.
 
         Default: ``None``.
     device : {None, string, SyclDevice, SyclQueue, Device}, optional
@@ -166,11 +180,14 @@ class RandomState:
 
     Limitations
     -----------
-    The bit generator is :class:`dpnp.random.Philox4x3210` rather than
-    MT19937, so the values drawn differ from NumPy's, and the state is that
-    of :class:`dpnp.random.Philox4x3210`. The values for a seed are the same
-    on every device, and those of ``dpnp.random.default_rng(seed)`` for the
-    distributions whose checks agree.
+    Unless `seed` is a :class:`dpnp.random.BitGenerator`, the bit generator
+    is :class:`dpnp.random.Philox4x3210` rather than MT19937, so the values
+    drawn differ from NumPy's, and the state is that of
+    :class:`dpnp.random.Philox4x3210`. `device` and `sycl_queue` cannot be
+    given with a :class:`dpnp.random.BitGenerator`. The values for a seed
+    are the same on every device, and those of
+    ``dpnp.random.default_rng(seed)`` for the distributions whose checks
+    agree.
 
     Every method returns a :class:`dpnp.ndarray`, zero-dimensional when
     `size` is ``None`` and the parameters are scalars, rather than a Python
@@ -184,6 +201,16 @@ class RandomState:
     """
 
     def __init__(self, seed=None, device=None, sycl_queue=None):
+        if isinstance(seed, BitGenerator):
+            if device is not None or sycl_queue is not None:
+                raise ValueError(
+                    "device and sycl_queue cannot be given with a "
+                    "BitGenerator, whose queue is used"
+                )
+            self._sycl_queue = seed.sycl_queue
+            self._generator = _LegacyGenerator(seed)
+            return
+
         self._sycl_queue = dpnp.get_normalized_queue_device(
             device=device, sycl_queue=sycl_queue
         )
@@ -196,7 +223,12 @@ class RandomState:
         return self.__str__() + f" at 0x{id(self):X}"
 
     def __str__(self):
-        return f"{self.__class__.__name__}(Philox4x3210)"
+        bit_generator = self._generator.bit_generator
+        return f"{self.__class__.__name__}({type(bit_generator).__name__})"
+
+    def _set_bit_generator(self, bit_generator):
+        """Draw from `bit_generator`, which is on the queue of the state."""
+        self._generator.bit_generator = bit_generator
 
     def seed(self, seed=None):
         """
@@ -204,8 +236,16 @@ class RandomState:
 
         For full documentation refer to :obj:`numpy.random.RandomState.seed`.
 
+        Limitations
+        -----------
+        As NumPy reseeds only its legacy MT19937, only a
+        :class:`dpnp.random.Philox4x3210` bit generator can be reseeded.
+
         """
-        self._generator.bit_generator = self._make_bit_generator(seed)
+        bit_generator = self._generator.bit_generator
+        if type(bit_generator) is not Philox4x3210:
+            raise TypeError("can only re-seed a Philox4x3210 BitGenerator")
+        _reseed_in_place(bit_generator, self._make_bit_generator(seed))
 
     def get_state(self, legacy=True):
         """
@@ -216,8 +256,9 @@ class RandomState:
 
         Limitations
         -----------
-        The state is always the dictionary of
-        :attr:`dpnp.random.Philox4x3210.state`, whatever `legacy` is.
+        The state is always the dictionary of the
+        :attr:`dpnp.random.BitGenerator.state` of the bit generator,
+        whatever `legacy` is.
 
         """
         # pylint: disable=unused-argument
@@ -232,13 +273,16 @@ class RandomState:
 
         Limitations
         -----------
-        `state` must be a state of :class:`dpnp.random.Philox4x3210`, as
-        returned by :meth:`get_state`.
+        `state` must be a state of the bit generator, as returned by
+        :meth:`get_state`.
 
         """
+        bit_generator = self._generator.bit_generator
         if not isinstance(state, dict):
-            raise ValueError("state must be for a Philox4x3210 PRNG")
-        self._generator.bit_generator.state = state
+            raise ValueError(
+                f"state must be for a {type(bit_generator).__name__} PRNG"
+            )
+        bit_generator.state = state
 
     def get_sycl_queue(self):
         """
