@@ -1074,8 +1074,7 @@ class TestTakeAlongAxis:
             pytest.param(
                 _add_keepdims(dpnp.max), _add_keepdims(dpnp.argmax), {}
             ),
-            # TODO: unmute, once `dpnp.argpartition` is implemented
-            # pytest.param(dpnp.partition, dpnp.argpartition, {"kth": 2}),
+            pytest.param(dpnp.partition, dpnp.argpartition, {"kth": 2}),
         ],
     )
     def test_argequivalent(self, func, argfunc, kwargs):

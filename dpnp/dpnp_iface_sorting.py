@@ -41,18 +41,126 @@ it contains:
 
 from collections.abc import Sequence
 
+import dpctl.utils as dpu
+
 import dpnp
-import dpnp.tensor as dpt
+import dpnp.libtensor._tensor_impl as ti
 
 # pylint: disable=no-name-in-module
-from .dpnp_algo import (
-    dpnp_partition,
-)
+import dpnp.libtensor._tensor_sorting_impl as sorting_ext
+import dpnp.tensor as dpt
+
 from .dpnp_array import dpnp_array
 from .dpnp_utils import (
     map_dtype_to_device,
 )
 from .tensor._numpy_helper import normalize_axis_index
+
+
+def _normalize_kth(kth, length, check_bounds=True):
+    """Validate `kth` and return it as a list of non-negative integers."""
+
+    if isinstance(kth, int):
+        kth = (kth,)
+    elif not isinstance(kth, Sequence):
+        raise TypeError(
+            f"kth must be int or sequence of ints, but got {type(kth)}"
+        )
+    elif not all(isinstance(k, int) for k in kth):
+        raise TypeError("kth is a sequence, but not all elements are integers")
+
+    kth = list(kth)
+    if not check_bounds:
+        return kth
+    for i, k in enumerate(kth):
+        if k < 0:
+            k += length
+        if not 0 <= k < length:
+            raise ValueError(f"kth(={kth[i]}) out of bounds {length}")
+        kth[i] = k
+    return kth
+
+
+def _wrap_partition_argpartition(a, kth, axis, kind, order, return_indices):
+    """
+    Partition `a` along `axis` about a single `kth` by radix select, falling
+    back to a full sort for several `kth` and for complex data types.
+
+    """
+
+    dpnp.check_supported_arrays_type(a)
+
+    if kind != "introselect":
+        raise NotImplementedError(
+            "`kind` keyword argument is only supported with its default value."
+        )
+    if order is not None:
+        raise NotImplementedError(
+            "`order` keyword argument is only supported with its default value."
+        )
+
+    if axis is None:
+        a = dpnp.ravel(a)
+        axis = -1
+
+    nd = a.ndim
+    axis = normalize_axis_index(axis, nd)
+    # an empty array is partitioned whatever kth is
+    kth = _normalize_kth(kth, a.shape[axis], check_bounds=a.size > 0)
+
+    if len(kth) == 0 and not return_indices:
+        # nothing is to be put in its sorted position
+        return dpnp.copy(a)
+    if (
+        a.size == 0
+        or len(kth) != 1
+        or dpnp.issubdtype(a.dtype, dpnp.complexfloating)
+    ):
+        sort_fn = dpnp.argsort if return_indices else dpnp.sort
+        return sort_fn(a, axis=axis)
+
+    usm_a = dpnp.get_usm_ndarray(a)
+    if axis != nd - 1:
+        perm = [i for i in range(nd) if i != axis] + [axis]
+        usm_a = dpt.permute_dims(usm_a, perm)
+
+    exec_q = usm_a.sycl_queue
+    _manager = dpu.SequentialOrderManager[exec_q]
+    dep_evs = _manager.submitted_events
+
+    # the rows are partitioned along the last axis of C-contiguous arrays
+    if not usm_a.flags.c_contiguous:
+        usm_tmp = dpt.empty_like(usm_a, order="C")
+        ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=usm_a, dst=usm_tmp, sycl_queue=exec_q, depends=dep_evs
+        )
+        _manager.add_event_pair(ht_ev, copy_ev)
+        usm_a = usm_tmp
+        dep_evs = [copy_ev]
+
+    if return_indices:
+        partition_fn = sorting_ext._argpartition
+        res_dt = dpt.int64
+    else:
+        partition_fn = sorting_ext._partition
+        res_dt = usm_a.dtype
+
+    usm_res = dpt.empty(
+        usm_a.shape,
+        dtype=res_dt,
+        usm_type=usm_a.usm_type,
+        order="C",
+        sycl_queue=exec_q,
+    )
+    ht_ev, part_ev = partition_fn(
+        usm_a, kth[0], usm_res, sycl_queue=exec_q, depends=dep_evs
+    )
+    _manager.add_event_pair(ht_ev, part_ev)
+
+    if axis != nd - 1:
+        inv_perm = sorted(range(nd), key=lambda d: perm[d])
+        usm_res = dpt.permute_dims(usm_res, inv_perm)
+    return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
 def _wrap_sort_argsort(
@@ -91,6 +199,79 @@ def _wrap_sort_argsort(
         usm_a, axis=axis, descending=descending, stable=stable, kind=kind
     )
     return dpnp_array._create_from_usm_ndarray(usm_res)
+
+
+def argpartition(a, kth, axis=-1, kind="introselect", order=None):
+    """
+    Perform an indirect partition along the given axis using the algorithm
+    specified by the `kind` keyword. It returns an array of indices of the
+    same shape as `a` that index data along the given axis in partitioned
+    order.
+
+    For full documentation refer to :obj:`numpy.argpartition`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Array to sort.
+    kth : {int, sequence of ints}
+        Element index to partition by. The k-th element will be in its final
+        sorted position and all smaller elements will be moved before it and
+        all larger elements behind it. The order of all elements in the
+        partitions is undefined. If provided with a sequence of k-th it will
+        partition all of them into their sorted position at once.
+    axis : {None, int}, optional
+        Axis along which to sort. If ``None``, the array is flattened before
+        sorting. The default is ``-1``, which sorts along the last axis.
+
+        Default: ``-1``.
+
+    Returns
+    -------
+    index_array : dpnp.ndarray
+        Array of indices that partition `a` along the specified axis. If `a`
+        is one-dimensional, ``a[index_array]`` yields a partitioned `a`. More
+        generally, ``dpnp.take_along_axis(a, index_array, axis=axis)`` always
+        yields the partitioned `a`, irrespective of dimensionality.
+
+    Limitations
+    -----------
+    Parameters `kind` and `order` are only supported with its default value.
+    Otherwise ``NotImplementedError`` exception will be raised.
+
+    See Also
+    --------
+    :obj:`dpnp.partition` : Describes partition algorithms used.
+    :obj:`dpnp.ndarray.partition` : Inplace partition.
+    :obj:`dpnp.argsort` : Full indirect sort.
+    :obj:`dpnp.take_along_axis` : Apply ``index_array`` from argpartition to
+                                  an array as if by calling partition.
+
+    Examples
+    --------
+    One dimensional array:
+
+    >>> import dpnp as np
+    >>> x = np.array([3, 4, 2, 1])
+    >>> x[np.argpartition(x, 3)]
+    array([2, 1, 3, 4]) # may vary
+    >>> x[np.argpartition(x, (1, 3))]
+    array([1, 2, 3, 4]) # may vary
+
+    Multi-dimensional array:
+
+    >>> x = np.array([[3, 4, 2], [1, 3, 1]])
+    >>> index_array = np.argpartition(x, kth=1, axis=-1)
+    >>> # below is the same as np.partition(x, kth=1)
+    >>> np.take_along_axis(x, index_array, axis=-1)
+    array([[2, 3, 4],
+           [1, 1, 3]])
+
+    """
+
+    return _wrap_partition_argpartition(
+        a, kth, axis, kind, order, return_indices=True
+    )
 
 
 def argsort(
@@ -269,60 +450,9 @@ def partition(a, kth, axis=-1, kind="introselect", order=None):
 
     """
 
-    dpnp.check_supported_arrays_type(a)
-
-    if kind != "introselect":
-        raise NotImplementedError(
-            "`kind` keyword argument is only supported with its default value."
-        )
-    if order is not None:
-        raise NotImplementedError(
-            "`order` keyword argument is only supported with its default value."
-        )
-
-    if axis is None:
-        a = dpnp.ravel(a)
-        axis = -1
-
-    nd = a.ndim
-    axis = normalize_axis_index(axis, nd)
-    length = a.shape[axis]
-
-    if isinstance(kth, int):
-        kth = (kth,)
-    elif not isinstance(kth, Sequence):
-        raise TypeError(
-            f"kth must be int or sequence of ints, but got {type(kth)}"
-        )
-    elif not all(isinstance(k, int) for k in kth):
-        raise TypeError("kth is a sequence, but not all elements are integers")
-
-    nkth = len(kth)
-    if nkth == 0 or a.size == 0:
-        return dpnp.copy(a)
-
-    # validate kth
-    kth = list(kth)
-    for i in range(nkth):
-        if kth[i] < 0:
-            kth[i] += length
-
-        if not 0 <= kth[i] < length:
-            raise ValueError(f"kth(={kth[i]}) out of bounds {length}")
-
-    dt = a.dtype
-    if (
-        nd > 1
-        or nkth > 1
-        or dpnp.issubdtype(dt, dpnp.unsignedinteger)
-        or dt in (dpnp.int8, dpnp.int16)
-        or dpnp.is_cuda_backend(a.get_array())
-    ):
-        # sort is a faster path in case of ndim > 1
-        return dpnp.sort(a, axis=axis)
-
-    desc = dpnp.get_dpnp_descriptor(a, copy_when_nondefault_queue=False)
-    return dpnp_partition(desc, kth[0], axis, kind, order).get_pyobj()
+    return _wrap_partition_argpartition(
+        a, kth, axis, kind, order, return_indices=False
+    )
 
 
 def sort(a, axis=-1, kind=None, order=None, *, descending=False, stable=None):
