@@ -28,7 +28,6 @@
 # *****************************************************************************
 
 function(build_dpnp_cython_ext _trgt _src _dest)
-    set(options SYCL)
     add_cython_target(${_trgt} ${_src} CXX OUTPUT_VAR _generated_src)
     message(STATUS "Using ${_trgt}")
 
@@ -36,10 +35,6 @@ function(build_dpnp_cython_ext _trgt _src _dest)
     set(_trgt_deps "${_trgt}_deps")
     add_custom_target(${_trgt_deps} DEPENDS ${_src})
     add_dependencies(${_trgt} ${_trgt_deps})
-
-    if(BUILD_DPNP_EXT_SYCL)
-        add_sycl_to_target(TARGET ${_trgt} SOURCES ${_generated_src})
-    endif()
 
     if(DPNP_GENERATE_COVERAGE)
         # Pass CYTHON_USE_SYS_MONITORING=0 to force Cython's legacy (settrace-based)
@@ -95,7 +90,6 @@ function(build_dpnp_tensor_ext _trgt _src _dest)
     set(options SYCL)
     cmake_parse_arguments(BUILD_DPNP_TENSOR "${options}" "RELATIVE_PATH" "" ${ARGN})
     add_cython_target(${_trgt} ${_src} CXX OUTPUT_VAR _generated_src)
-    set(_cythonize_trgt "${_trgt}_cythonize_pyx")
     python_add_library(${_trgt} MODULE WITH_SOABI ${_generated_src})
     if(BUILD_DPNP_TENSOR_SYCL)
         add_sycl_to_target(TARGET ${_trgt} SOURCES ${_generated_src})
@@ -173,14 +167,6 @@ function(build_dpnp_tensor_ext _trgt _src _dest)
         file(RELATIVE_PATH _rel_dir ${CMAKE_SOURCE_DIR} ${_original_src_dir})
         install(FILES ${_generated_src} DESTINATION ${CMAKE_INSTALL_PREFIX}/${_rel_dir})
     endif()
-
-    # Create target with headers only, because python is managing all the
-    # library imports at runtime
-    set(_trgt_headers ${_trgt}_headers)
-    add_library(${_trgt_headers} INTERFACE)
-    add_dependencies(${_trgt_headers} ${_trgt})
-    get_target_property(_trgt_headers_dir ${_trgt} INTERFACE_INCLUDE_DIRECTORIES)
-    target_include_directories(${_trgt_headers} INTERFACE ${_trgt_headers_dir})
 endfunction()
 
 function(build_dpnp_cython_ext_with_backend _trgt _src _dest)
@@ -188,12 +174,13 @@ function(build_dpnp_cython_ext_with_backend _trgt _src _dest)
     target_link_libraries(${_trgt} PRIVATE dpnp_backend_library)
 endfunction()
 
-# Builds a pybind11 extension of dpnp/backend/extensions with the options all of
-# them share. INCLUDE_DIRS come before the common include directories, and
-# LARGE_RANGES is for modules whose kernels can be launched over more than
-# INT_MAX work-items.
-function(build_dpnp_pybind11_ext _trgt _dest)
-    cmake_parse_arguments(PARSE_ARGV 2 _arg "LARGE_RANGES" "" "SOURCES;INCLUDE_DIRS")
+# Builds a pybind11 extension of dpnp/libtensor/extensions with the options all
+# of them share and installs it into dpnp/libtensor, next to the libtensor
+# modules.
+# INCLUDE_DIRS come before the common include directories, and LARGE_RANGES is
+# for modules whose kernels can be launched over more than INT_MAX work-items.
+function(build_dpnp_pybind11_ext _trgt)
+    cmake_parse_arguments(PARSE_ARGV 1 _arg "LARGE_RANGES" "" "SOURCES;INCLUDE_DIRS")
 
     pybind11_add_module(${_trgt} MODULE ${_arg_SOURCES})
     add_sycl_to_target(TARGET ${_trgt} SOURCES ${_arg_SOURCES})
@@ -207,14 +194,12 @@ function(build_dpnp_pybind11_ext _trgt _dest)
         target_link_options(${_trgt} PRIVATE ${_dpnp_sycl_target_link_options})
     endif()
 
-    set_target_properties(${_trgt} PROPERTIES CMAKE_POSITION_INDEPENDENT_CODE ON)
-
     target_include_directories(
         ${_trgt}
         PRIVATE
             ${_arg_INCLUDE_DIRS}
             ${CMAKE_SOURCE_DIR}/dpnp/include
-            ${CMAKE_SOURCE_DIR}/dpnp/tensor/libtensor/include
+            ${CMAKE_SOURCE_DIR}/dpnp/libtensor/include
     )
 
     # treat below headers as system to suppress the warnings there during the build
@@ -254,27 +239,21 @@ function(build_dpnp_pybind11_ext _trgt _dest)
     endif()
 
     if(DPNP_WITH_REDIST)
-        set_target_properties(
-            ${_trgt}
-            PROPERTIES INSTALL_RPATH "$ORIGIN/../../../../../../"
-        )
+        set_target_properties(${_trgt} PROPERTIES INSTALL_RPATH "$ORIGIN/../../../..")
     endif()
 
-    install(TARGETS ${_trgt} DESTINATION ${_dest})
+    install(TARGETS ${_trgt} DESTINATION "dpnp/libtensor")
 endfunction()
 
 add_subdirectory(tensor)
 
 add_subdirectory(backend)
-add_subdirectory(backend/extensions/blas)
-add_subdirectory(backend/extensions/fft)
-add_subdirectory(backend/extensions/indexing)
-add_subdirectory(backend/extensions/lapack)
-add_subdirectory(backend/extensions/statistics)
-add_subdirectory(backend/extensions/ufunc)
-add_subdirectory(backend/extensions/vm)
-add_subdirectory(backend/extensions/window)
-add_subdirectory(backend/extensions/sparse)
+add_subdirectory(libtensor/source)
+add_subdirectory(libtensor/extensions/blas)
+add_subdirectory(libtensor/extensions/fft)
+add_subdirectory(libtensor/extensions/lapack)
+add_subdirectory(libtensor/extensions/vm)
+add_subdirectory(libtensor/extensions/sparse)
 
 add_subdirectory(dpnp_algo)
 add_subdirectory(dpnp_utils)

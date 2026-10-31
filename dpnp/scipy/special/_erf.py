@@ -41,7 +41,7 @@ it contains:
 # pylint: disable=no-name-in-module
 # pylint: disable=protected-access
 
-import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
+import dpnp.libtensor._tensor_elementwise_impl as ti
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPUnaryFunc
 
 
@@ -124,8 +124,8 @@ array([[-0.99997791, -0.96610515,  0.        ,  0.96610515,  0.99997791])
 
 erf = DPNPErf(
     "erf",
-    ufi._erf_result_type,
-    ufi._erf,
+    ti._erf_result_type,
+    ti._erf,
     _ERF_DOCSTRING,
     mkl_fn_to_call="_mkl_erf_to_call",
     mkl_impl_fn="_erf",
@@ -173,8 +173,8 @@ array([[-0.99997791, -0.96610515,  0.        ,  0.96610515,  0.99997791])
 
 erfc = DPNPErf(
     "erfc",
-    ufi._erf_result_type,
-    ufi._erfc,
+    ti._erf_result_type,
+    ti._erfc,
     _ERFC_DOCSTRING,
     mkl_fn_to_call="_mkl_erf_to_call",
     mkl_impl_fn="_erfc",
@@ -222,8 +222,8 @@ array([1.62059889e+04, 5.00898008e+00, 4.27583576e-01, 1.79001151e-01])
 
 erfcx = DPNPErf(
     "erfcx",
-    ufi._erf_result_type,
-    ufi._erfcx,
+    ti._erf_result_type,
+    ti._erfcx,
     _ERFCX_DOCSTRING,
     mkl_fn_to_call="_mkl_erf_to_call",
     mkl_impl_fn="_erfcx",
@@ -278,8 +278,8 @@ array([-1.  , -0.75, -0.5 , -0.25,  0.  ,  0.25,  0.5 ,  0.75,  1.  ])
 
 erfinv = DPNPErf(
     "erfinv",
-    ufi._erf_result_type,
-    ufi._erfinv,
+    ti._erf_result_type,
+    ti._erfinv,
     _ERFINV_DOCSTRING,
     mkl_fn_to_call="_mkl_erf_to_call",
     mkl_impl_fn="_erfinv",
@@ -337,8 +337,8 @@ array([0. , 0.2, 0.4, 0.6, 0.8, 1. , 1.2, 1.4, 1.6, 1.8, 2. ])
 
 erfcinv = DPNPErf(
     "erfcinv",
-    ufi._erf_result_type,
-    ufi._erfcinv,
+    ti._erf_result_type,
+    ti._erfcinv,
     _ERFCINV_DOCSTRING,
     mkl_fn_to_call="_mkl_erf_to_call",
     mkl_impl_fn="_erfcinv",

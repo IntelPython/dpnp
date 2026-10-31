@@ -1673,7 +1673,7 @@ class TestCsrMatrix:
         # Single cached alpha/beta slot per handle: only 1.0/0.0 accepted.
         import dpctl.utils as dpu
 
-        from dpnp.backend.extensions.sparse import _sparse_impl as si
+        from dpnp.libtensor import _sparse_impl as si
 
         n = 4
         dt = dpnp.default_float_type()

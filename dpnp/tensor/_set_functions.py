@@ -31,16 +31,8 @@ from typing import NamedTuple, Optional, Union
 import dpctl.utils as du
 
 import dpnp.tensor as dpt
-
-from ._copy_utils import _empty_like_orderK
-from ._scalar_utils import (
-    _get_dtype,
-    _get_queue_usm_type,
-    _get_shape,
-    _validate_dtype,
-)
-from ._tensor_elementwise_impl import _not_equal, _subtract
-from ._tensor_impl import (
+from dpnp.libtensor._tensor_elementwise_impl import _not_equal, _subtract
+from dpnp.libtensor._tensor_impl import (
     _copy_usm_ndarray_into_usm_ndarray,
     _extract,
     _full_usm_ndarray,
@@ -49,11 +41,19 @@ from ._tensor_impl import (
     default_device_index_type,
     mask_positions,
 )
-from ._tensor_sorting_impl import (
+from dpnp.libtensor._tensor_sorting_impl import (
     _argsort_ascending,
     _isin,
     _searchsorted_left,
     _sort_ascending,
+)
+
+from ._copy_utils import _empty_like_orderK
+from ._scalar_utils import (
+    _get_dtype,
+    _get_queue_usm_type,
+    _get_shape,
+    _validate_dtype,
 )
 from ._type_utils import (
     _resolve_weak_types_all_py_ints,

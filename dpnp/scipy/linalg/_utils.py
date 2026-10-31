@@ -46,10 +46,10 @@ from warnings import warn
 import dpctl.utils as dpu
 
 import dpnp
-import dpnp.backend.extensions.lapack._lapack_impl as li
+import dpnp.libtensor._lapack_impl as li
 
 # pylint: disable=no-name-in-module
-import dpnp.tensor._tensor_impl as ti
+import dpnp.libtensor._tensor_impl as ti
 from dpnp.dpnp_utils import get_usm_allocations
 from dpnp.linalg.dpnp_utils_linalg import _common_type, _real_type
 

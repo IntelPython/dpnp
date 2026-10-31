@@ -44,8 +44,8 @@ it contains:
 import dpnp
 
 # pylint: disable=no-name-in-module
+import dpnp.libtensor._tensor_impl as dti
 import dpnp.tensor as dpt
-import dpnp.tensor._tensor_impl as dti
 
 from .dpnp_array import dpnp_array
 from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call

@@ -31,6 +31,17 @@ from typing import Literal
 import dpctl.utils as du
 
 import dpnp.tensor as dpt
+from dpnp.libtensor._tensor_impl import (
+    _copy_usm_ndarray_into_usm_ndarray as ti_copy,
+)
+from dpnp.libtensor._tensor_impl import _take as ti_take
+from dpnp.libtensor._tensor_impl import (
+    default_device_index_type as ti_default_device_index_type,
+)
+from dpnp.libtensor._tensor_sorting_impl import (
+    _searchsorted_left,
+    _searchsorted_right,
+)
 
 from ._compute_follows_data import (
     ExecutionPlacementError,
@@ -40,12 +51,6 @@ from ._compute_follows_data import (
 from ._copy_utils import _empty_like_orderK
 from ._ctors import empty_like
 from ._scalar_utils import _get_dtype, _get_queue_usm_type, _validate_dtype
-from ._tensor_impl import _copy_usm_ndarray_into_usm_ndarray as ti_copy
-from ._tensor_impl import _take as ti_take
-from ._tensor_impl import (
-    default_device_index_type as ti_default_device_index_type,
-)
-from ._tensor_sorting_impl import _searchsorted_left, _searchsorted_right
 from ._type_utils import (
     _resolve_weak_types_all_py_ints,
     _to_device_supported_dtype,
