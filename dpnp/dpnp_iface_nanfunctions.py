@@ -736,8 +736,10 @@ def nanmedian(a, axis=None, out=None, overwrite_input=False, keepdims=False):
     """
 
     dpnp.check_supported_arrays_type(a)
-    ignore_nan = False
-    if dpnp.issubdtype(a.dtype, dpnp.inexact):
+    # selecting the medians of real data types ignores NaNs at no extra cost,
+    # while the sort used for complex data types only has to if there are any
+    ignore_nan = dpnp.issubdtype(a.dtype, dpnp.floating)
+    if dpnp.issubdtype(a.dtype, dpnp.complexfloating):
         mask = dpnp.isnan(a)
         if dpnp.any(mask):
             ignore_nan = True
