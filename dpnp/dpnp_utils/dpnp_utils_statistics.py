@@ -29,7 +29,13 @@
 import math
 import warnings
 
+import dpctl.utils as dpu
+
 import dpnp
+
+# pylint: disable=no-name-in-module
+import dpnp.libtensor._statistics_impl as statistics_ext
+import dpnp.libtensor._tensor_impl as ti
 import dpnp.tensor as dpt
 from dpnp.dpnp_array import dpnp_array
 from dpnp.exceptions import ExecutionPlacementError
@@ -56,6 +62,76 @@ def _calc_median(a, axis, out=None):
         res[nan_mask] = dpnp.nan
 
     return res
+
+
+def _calc_median_by_select(a, ignore_nan, out=None):
+    """
+    Compute the median of an array along its last axis by radix select,
+    ignoring NaNs if `ignore_nan`.
+
+    """
+
+    usm_a = dpnp.get_usm_ndarray(a)
+    exec_q = usm_a.sycl_queue
+    if out is not None:
+        dpnp.check_supported_arrays_type(out)
+        if dpt.get_execution_queue((exec_q, out.sycl_queue)) is None:
+            raise ExecutionPlacementError(
+                "Input and output allocation queues are not compatible"
+            )
+
+    _manager = dpu.SequentialOrderManager[exec_q]
+    dep_evs = _manager.submitted_events
+
+    # the medians are selected along the last axis of a C-contiguous array
+    if not usm_a.flags.c_contiguous:
+        usm_tmp = dpt.empty_like(usm_a, order="C")
+        ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=usm_a, dst=usm_tmp, sycl_queue=exec_q, depends=dep_evs
+        )
+        _manager.add_event_pair(ht_ev, copy_ev)
+        usm_a = usm_tmp
+        dep_evs = [copy_ev]
+
+    # the medians of floating data types keep their type, as with numpy
+    if dpnp.issubdtype(usm_a.dtype, dpnp.floating):
+        res_dt = usm_a.dtype
+    else:
+        res_dt = dpnp.default_float_type(sycl_queue=exec_q)
+
+    usm_res = dpt.empty(
+        usm_a.shape[:-1],
+        dtype=res_dt,
+        usm_type=usm_a.usm_type,
+        order="C",
+        sycl_queue=exec_q,
+    )
+    # set to whether a row has NaNs only, the one case warned about
+    usm_all_nan = None
+    if ignore_nan:
+        usm_all_nan = dpt.empty(
+            1, dtype=dpt.uint32, usm_type=usm_a.usm_type, sycl_queue=exec_q
+        )
+
+    ht_ev, median_ev = statistics_ext._median(
+        usm_a,
+        ignore_nan,
+        usm_res,
+        sycl_queue=exec_q,
+        all_nan=usm_all_nan,
+        depends=dep_evs,
+    )
+    _manager.add_event_pair(ht_ev, median_ev)
+
+    # reading a scalar through asnumpy is several times cheaper than int()
+    if ignore_nan and dpt.asnumpy(usm_all_nan)[0]:
+        warnings.warn("All-NaN slice encountered", RuntimeWarning, stacklevel=4)
+
+    res = dpnp_array._create_from_usm_ndarray(usm_res)
+    if out is None:
+        return res
+    out[...] = res
+    return out
 
 
 def _calc_nanmedian(a, out=None):
@@ -197,6 +273,29 @@ def dpnp_cov(
     return c.squeeze()
 
 
+def _calc_median_by_sort(a, axis, out, overwrite_input, ignore_nan):
+    """Compute the median of an array along a specified axis by sorting."""
+
+    if overwrite_input:
+        if isinstance(a, dpt.usm_ndarray):
+            # dpnp.ndarray.sort only works with dpnp_array
+            a = dpnp_array._create_from_usm_ndarray(a)
+        a.sort(axis=axis)
+        a_sorted = a
+    else:
+        a_sorted = dpnp.sort(a, axis=axis)
+
+    if ignore_nan:
+        # sorting puts NaNs at the end
+        assert axis == -1
+        return _calc_nanmedian(a_sorted, out=out)
+
+    # We can't pass keepdims and use it in dpnp.mean and dpnp.any
+    # because of the reshape hack that might have been used in
+    # `_flatten_array_along_axes`.
+    return _calc_median(a_sorted, axis=axis, out=out)
+
+
 def dpnp_median(
     a,
     axis=None,
@@ -212,8 +311,16 @@ def dpnp_median(
     _axis = range(a_ndim) if axis is None else axis
     _axis = normalize_axis_tuple(_axis, a_ndim)
 
+    # the medians of real data types are selected rather than sorted
+    use_select = a.size > 0 and not dpnp.issubdtype(
+        a.dtype, dpnp.complexfloating
+    )
+    if a.size == 0 or not dpnp.issubdtype(a.dtype, dpnp.inexact):
+        # there are no NaNs to ignore
+        ignore_nan = False
+
     if len(_axis) == 1:
-        if ignore_nan:
+        if ignore_nan or use_select:
             a = dpnp.moveaxis(a, _axis[0], -1)
             axis = -1
         else:
@@ -229,24 +336,11 @@ def dpnp_median(
             )
         axis = -1
 
-    if overwrite_input:
-        if isinstance(a, dpt.usm_ndarray):
-            # dpnp.ndarray.sort only works with dpnp_array
-            a = dpnp_array._create_from_usm_ndarray(a)
-        a.sort(axis=axis)
-        a_sorted = a
-    else:
-        a_sorted = dpnp.sort(a, axis=axis)
-
-    if ignore_nan:
-        # sorting puts NaNs at the end
+    if use_select:
         assert axis == -1
-        res = _calc_nanmedian(a_sorted, out=out)
+        res = _calc_median_by_select(a, ignore_nan, out=out)
     else:
-        # We can't pass keepdims and use it in dpnp.mean and dpnp.any
-        # because of the reshape hack that might have been used in
-        # `_flatten_array_along_axes`.
-        res = _calc_median(a_sorted, axis=axis, out=out)
+        res = _calc_median_by_sort(a, axis, out, overwrite_input, ignore_nan)
 
     if keepdims:
         res_shape = list(a_shape)

@@ -429,7 +429,7 @@ cdef dpnp_descriptor create_output_descriptor(
 
 
 @cython.profile(False)
-cpdef inline tuple _object_to_tuple(object obj):
+cpdef tuple _object_to_tuple(object obj):
     """ Converts Python object into tuple
 
     """
