@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+* Changed `dpnp.tensor.top_k` to select the `k` elements with a radix select instead of sorting every row, for all but complex data types. The order of the returned elements is now unspecified, where it was largest-first or smallest-first before [#3079](https://github.com/IntelPython/dpnp/pull/3079)
+
 ### Deprecated
 
 * Deprecated `dpnp.dot` and `dpnp.ndarray.dot` when `a.ndim >= 2` and `b.ndim > 2`, which place the leading dimensions of `b` in the middle of the result; use `dpnp.tensordot(a, b, axes=(-1, -2))` or `dpnp.matmul` instead [#3124](https://github.com/IntelPython/dpnp/pull/3124)
