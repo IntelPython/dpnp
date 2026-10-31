@@ -341,7 +341,8 @@ def top_k(x, k, /, *, axis=None, mode="largest"):
     .. note::
         The order of the `k` elements along `axis` in `values` and `indices`
         is unspecified, and may depend on the data type, the shape of `x` and
-        the device. Sort the result if a particular order is needed.
+        the device. Sort the result if a particular order is needed. Among
+        elements that compare equal, those with lower indices are selected.
     """
     largest = _get_top_k_largest(mode)
     if not isinstance(x, dpt.usm_ndarray):

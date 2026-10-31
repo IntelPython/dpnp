@@ -107,7 +107,10 @@ def test_top_k_1d_largest(dtype, n):
     assert s.indices.shape == (k,)
     assert dpt.all(s.values == dpt.ones(k, dtype=dtype)), s.values
     assert dpt.all(s.values == inp[s.indices]), s.indices
-    assert dpt.all(s.indices == expected_inds), (s.indices, expected_inds)
+    assert dpt.all(dpt.sort(s.indices) == dpt.sort(expected_inds)), (
+        s.indices,
+        expected_inds,
+    )
 
 
 def _expected_smallest_inds(inp, n, shift, k):
@@ -178,7 +181,10 @@ def test_top_k_1d_smallest(dtype, n):
     assert s.indices.shape == (k,)
     assert dpt.all(s.values == dpt.zeros(k, dtype=dtype)), s.values
     assert dpt.all(s.values == inp[s.indices]), s.indices
-    assert dpt.all(s.indices == expected_inds), (s.indices, expected_inds)
+    assert dpt.all(dpt.sort(s.indices) == dpt.sort(expected_inds)), (
+        s.indices,
+        expected_inds,
+    )
 
 
 @pytest.mark.parametrize("dtype", ["f2", "f4", "f8", "c8", "c16"])
@@ -402,6 +408,28 @@ def test_top_k_nans_and_signed_zeros(dtype, n, mode):
     for k in sorted({1, min(n, 5), min(n, 200), n // 2, n}):
         r = dpt.top_k(x, k, mode=mode)
         _check_top_k(r, x_np, k, mode)
+
+
+@pytest.mark.parametrize("n", [5, 30, 64, 128, 3001, 70000])
+@pytest.mark.parametrize("mode", ["largest", "smallest"])
+def test_top_k_nonstandard_bool_bytes(n, mode):
+    # NumPy treats any non-zero byte of a bool as True, see gh-2121
+    q = get_queue_or_skip()
+
+    rng = np.random.default_rng(19)
+    m = 3 if n > 1000 else 40
+    raw_np = rng.choice(np.array([0, 1, 2, 127, 128, 255], dtype="u1"), (m, n))
+    raw = dpt.asarray(raw_np, sycl_queue=q)
+    x = dpt.usm_ndarray(raw.shape, dtype="?", buffer=raw.usm_data)
+    x_np = raw_np != 0
+
+    for k in sorted({1, min(n, 4), n // 2, n}):
+        r = dpt.top_k(x, k, axis=-1, mode=mode)
+        inds = dpt.asnumpy(r.indices)
+        expected_inds = np.sort(_reference_top_k_inds(x_np, k, mode), axis=-1)
+        assert_array_equal(np.sort(inds, axis=-1), expected_inds)
+        vals = dpt.asnumpy(r.values).view("u1") != 0
+        assert_array_equal(vals, np.take_along_axis(x_np, inds, axis=-1))
 
 
 def test_top_k_0d():
