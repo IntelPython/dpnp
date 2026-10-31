@@ -20,7 +20,6 @@ class TestPermutations(unittest.TestCase):
         if self.seed is None:
             return xp.random
         else:
-            pytest.skip("random.RandomState.permutation() is not supported yet")
             return xp.random.RandomState(seed=self.seed)
 
     # Test ranks
@@ -38,11 +37,6 @@ class TestPermutations(unittest.TestCase):
 
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
     def test_permutation_sort_1dim(self, dtype):
-        flag = cupy.issubdtype(dtype, cupy.unsignedinteger)
-        if flag or dtype in [cupy.int8, cupy.int16]:
-            pytest.skip(
-                "dpnp.random.permutation() does not support new integer dtypes."
-            )
         cupy_random = self._xp_random(cupy)
         a = cupy.arange(10, dtype=dtype)
         b = cupy.copy(a)
@@ -52,11 +46,6 @@ class TestPermutations(unittest.TestCase):
 
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
     def test_permutation_sort_ndim(self, dtype):
-        flag = cupy.issubdtype(dtype, cupy.unsignedinteger)
-        if flag or dtype in [cupy.int8, cupy.int16]:
-            pytest.skip(
-                "dpnp.random.permutation() does not support new integer dtypes."
-            )
         cupy_random = self._xp_random(cupy)
         a = cupy.arange(15, dtype=dtype).reshape(5, 3)
         b = cupy.copy(a)
@@ -70,11 +59,6 @@ class TestPermutations(unittest.TestCase):
     # @pytest.mark.thread_unsafe(reason="relies on global random state")
     @testing.for_all_dtypes()
     def test_permutation_seed1(self, dtype):
-        flag = cupy.issubdtype(dtype, cupy.unsignedinteger)
-        if flag or dtype in [cupy.int8, cupy.int16]:
-            pytest.skip(
-                "dpnp.random.permutation() does not support new integer dtypes."
-            )
         a = testing.shaped_random((10,), cupy, dtype)
         b = cupy.copy(a)
 
@@ -95,7 +79,6 @@ class TestShuffle(unittest.TestCase):
 
     # Test ranks
 
-    @pytest.mark.skip("no proper validation yet")
     def test_shuffle_zero_dim(self):
         for xp in (numpy, cupy):
             a = testing.shaped_random((), xp)
@@ -106,11 +89,6 @@ class TestShuffle(unittest.TestCase):
 
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
     def test_shuffle_sort_1dim(self, dtype):
-        flag = cupy.issubdtype(dtype, cupy.unsignedinteger)
-        if flag or dtype in [cupy.int8, cupy.int16]:
-            pytest.skip(
-                "dpnp.random.shuffle() does not support new integer dtypes."
-            )
         a = cupy.arange(10, dtype=dtype)
         b = cupy.copy(a)
         cupy.random.shuffle(a)
@@ -118,11 +96,6 @@ class TestShuffle(unittest.TestCase):
 
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
     def test_shuffle_sort_ndim(self, dtype):
-        flag = cupy.issubdtype(dtype, cupy.unsignedinteger)
-        if flag or dtype in [cupy.int8, cupy.int16]:
-            pytest.skip(
-                "dpnp.random.shuffle() does not support new integer dtypes."
-            )
         a = cupy.arange(15, dtype=dtype).reshape(5, 3)
         b = cupy.copy(a)
         cupy.random.shuffle(a)
@@ -134,11 +107,6 @@ class TestShuffle(unittest.TestCase):
     # @pytest.mark.thread_unsafe(reason="relies on global random state")
     @testing.for_all_dtypes()
     def test_shuffle_seed1(self, dtype):
-        flag = cupy.issubdtype(dtype, cupy.unsignedinteger)
-        if flag or dtype in [cupy.int8, cupy.int16]:
-            pytest.skip(
-                "dpnp.random.shuffle() does not support new integer dtypes."
-            )
         a = testing.shaped_random((10,), cupy, dtype)
         b = cupy.copy(a)
         cupy.random.seed(0)
@@ -204,7 +172,6 @@ class TestPermutationRandomness(unittest.TestCase):
     # Note that this is not an established method to check randomness.
     # TODO(anaruse): implement randomness check using some established methods.
     @_condition.repeat_with_success_at_least(5, 3)
-    @pytest.mark.skip("no support of index as numpy array")
     def test_permutation_randomness(self):
         if self.mask > self.num_half:
             return
@@ -212,7 +179,9 @@ class TestPermutationRandomness(unittest.TestCase):
         index = (index * self.gap + self.offset) % self.num
         samples = self.a[index]
         ret = samples & self.mask > 0
-        count = numpy.count_nonzero(ret)  # expectation: self.num_half / 2
+        # numpy.count_nonzero does not accept a dpnp.ndarray
+        # count = numpy.count_nonzero(ret)  # expectation: self.num_half / 2
+        count = int(cupy.count_nonzero(ret))  # expectation: self.num_half / 2
         if count > self.num_half - count:
             count = self.num_half - count
         prob_le_count = self._calc_probability(count)

@@ -105,7 +105,6 @@ class TestRandint2(unittest.TestCase):
         assert _hypothesis.chi_square_test(counts, expected)
 
 
-@pytest.mark.skip("high=(max+1) is not supported")
 class TestRandintDtype(unittest.TestCase):
 
     @testing.with_requires("numpy>=2.0")
@@ -132,7 +131,7 @@ class TestRandintDtype(unittest.TestCase):
         iinfo = numpy.iinfo(dtype)
         size = (10000,)
 
-        x = random.randint(iinfo.min, iinfo.max + 1, size, dtype).get()
+        x = random.randint(iinfo.min, iinfo.max + 1, size, dtype).asnumpy()
         assert x.dtype == dtype
         assert iinfo.min <= min(x)
         assert max(x) <= iinfo.max
@@ -201,7 +200,7 @@ class TestRandomIntegers2(unittest.TestCase):
         assert _hypothesis.chi_square_test(counts, expected)
 
 
-@pytest.mark.skip("random.choice() is not supported yet")
+@pytest.mark.skip("mocks CuPy internals (random._generator._random_states)")
 class TestChoice(unittest.TestCase):
 
     def setUp(self):
@@ -286,15 +285,16 @@ class TestRandomSample(unittest.TestCase):
     {"size": (1, 0)},
 )
 @testing.fix_random()
-@pytest.mark.skip("random.multinomial() is not fully supported")
 class TestMultinomial(unittest.TestCase):
 
+    @pytest.mark.skip("tests CuPy's internal _sample._multinominal_kernel")
     def test_kernel_accepts_large_n(self):
         xs = cupy.array([0], dtype=cupy.int64)
         ys = cupy.zeros(1, dtype="l")
         _sample._multinominal_kernel(xs, 1, 2**31, ys)
         assert ys[0] == 1
 
+    @pytest.mark.skip("tests CuPy's internal _sample._multinominal_kernel")
     def test_kernel_uses_large_p_for_output_offset(self):
         xs = cupy.array([0, 0], dtype=cupy.int64)
         ys = cupy.zeros(2, dtype="l")
@@ -310,5 +310,7 @@ class TestMultinomial(unittest.TestCase):
     def test_multinomial(self, xp, dtype):
         pvals = xp.array([0.2, 0.3, 0.5], dtype)
         x = xp.random.multinomial(100000, pvals, self.size)
-        assert x.dtype.kind == "l"
+        # dtype.kind of int64 is "i", so this fails for NumPy as well
+        # assert x.dtype.kind == "l"
+        assert x.dtype == numpy.int64
         return x / 100000
