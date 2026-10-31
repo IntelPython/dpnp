@@ -45,7 +45,8 @@ import threading
 
 import dpnp
 
-from .dpnp_random_state import RandomState
+from ._bit_generator import BitGenerator, Philox4x3210
+from .dpnp_random_state import RandomState, _reseed_in_place
 
 # The states of the queues. The lock guarantees that concurrent callers
 # asking for the state of the same queue get the same instance back rather
@@ -127,8 +128,23 @@ def seed(seed=None, *, device=None, sycl_queue=None):
     ----------
     %(queue)s
 
+    Notes
+    -----
+    A bit generator set by :func:`dpnp.random.set_bit_generator` other than
+    :class:`dpnp.random.Philox4x3210` is reseeded in place with the state a
+    new one of its type would have for `seed`, as in NumPy.
+
     """
-    _get_random_state(device, sycl_queue).seed(seed)
+    # pylint: disable=protected-access
+    rs = _get_random_state(device, sycl_queue)
+    bit_generator = rs._generator.bit_generator
+    if type(bit_generator) is Philox4x3210:
+        rs.seed(seed)
+    else:
+        _reseed_in_place(
+            bit_generator,
+            type(bit_generator)(seed, sycl_queue=bit_generator.sycl_queue),
+        )
 
 
 @_params_doc
@@ -167,6 +183,73 @@ def set_state(state, *, device=None, sycl_queue=None):
 
     """
     _get_random_state(device, sycl_queue).set_state(state)
+
+
+@_params_doc
+def get_bit_generator(*, device=None, sycl_queue=None):
+    """
+    Return the bit generator of the state of a queue, which the
+    :mod:`dpnp.random` functions draw from on that queue.
+
+    For full documentation refer to :obj:`numpy.random.get_bit_generator`.
+
+    Parameters
+    ----------
+    %(queue)s
+
+    Returns
+    -------
+    out : BitGenerator
+        The bit generator, a :class:`dpnp.random.Philox4x3210` unless set
+        by :func:`dpnp.random.set_bit_generator`.
+
+    See Also
+    --------
+    :obj:`dpnp.random.set_bit_generator` : Set the bit generator of a queue.
+
+    """
+    # pylint: disable=protected-access
+    return _get_random_state(device, sycl_queue)._generator.bit_generator
+
+
+def set_bit_generator(bitgen):
+    """
+    Set the bit generator of the state of the queue of `bitgen`, which the
+    :mod:`dpnp.random` functions then draw from on that queue.
+
+    For full documentation refer to :obj:`numpy.random.set_bit_generator`.
+
+    Parameters
+    ----------
+    bitgen : BitGenerator
+        The bit generator. It is used itself, not a copy, so the
+        :mod:`dpnp.random` functions and a :class:`dpnp.random.Generator`
+        of `bitgen` share its stream.
+
+    See Also
+    --------
+    :obj:`dpnp.random.get_bit_generator` : Return the bit generator of a
+        queue.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> bg = np.random.PCG64DXSM(42)
+    >>> np.random.set_bit_generator(bg)
+    >>> np.random.get_bit_generator() is bg
+    True
+
+    """
+    if isinstance(bitgen, type) and issubclass(bitgen, BitGenerator):
+        raise ValueError(
+            "Invalid bit generator. The bit generator must be instantiated."
+        )
+    if not isinstance(bitgen, BitGenerator):
+        raise TypeError(
+            "bitgen must be an instance of dpnp.random.BitGenerator"
+        )
+    # pylint: disable=protected-access
+    _get_random_state(sycl_queue=bitgen.sycl_queue)._set_bit_generator(bitgen)
 
 
 @_params_doc

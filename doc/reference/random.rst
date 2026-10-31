@@ -162,6 +162,8 @@ a :class:`dpnp.ndarray` parameter, or else the default queue.
    seed
    get_state
    set_state
+   get_bit_generator
+   set_bit_generator
 
 Simple random data
 ^^^^^^^^^^^^^^^^^^
