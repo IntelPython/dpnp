@@ -83,7 +83,6 @@ class TestDistributionsBeta(RandomDistributionsTestCase):
 )
 class TestDistributionsBinomial(RandomDistributionsTestCase):
 
-    @pytest.mark.skip("n and p params as arrays are not supported")
     @testing.for_signed_dtypes("n_dtype")
     @testing.for_float_dtypes("p_dtype")
     def test_binomial(self, n_dtype, p_dtype):
@@ -230,7 +229,6 @@ class TestDistributionsGamma:
             _distributions.gamma, shape_dtype, scale_dtype, self.dtype
         )
 
-    @pytest.mark.skip("no support of generator yet")
     @testing.for_dtypes_combination(
         _float_dtypes, names=["shape_dtype", "scale_dtype"]
     )
@@ -434,7 +432,6 @@ class TestDistributionsLogseries(RandomDistributionsTestCase):
         }
     )
 )
-@pytest.mark.skip("multivariate_normal is not fully supported yet")
 class TestDistributionsMultivariateNormal:
 
     def check_distribution(self, dist_func, mean_dtype, cov_dtype, dtype):
@@ -648,7 +645,6 @@ class TestDistributionsPoisson:
     def test_poisson_legacy(self, lam_dtype):
         self.check_distribution(_distributions.poisson, lam_dtype)
 
-    @pytest.mark.skip("no support of generator yet")
     @testing.for_float_dtypes("lam_dtype")
     def test_poisson_generator(self, lam_dtype):
         self.check_distribution(cupy.random.default_rng(0).poisson, lam_dtype)
@@ -656,7 +652,6 @@ class TestDistributionsPoisson:
 
 class TestDistributionsPoissonInvalid:
 
-    @pytest.mark.skip("no support of generator yet")
     def test_none_lam_generator(self):
         with pytest.raises(TypeError):
             cupy.random.default_rng(0).poisson(None)
@@ -770,7 +765,6 @@ class TestDistributionsStandardGamma(RandomDistributionsTestCase):
         shape = numpy.ones(self.shape_shape, dtype=shape_dtype)
         self.check_distribution("standard_gamma", {"shape": shape})
 
-    @pytest.mark.skip("no support of generator yet")
     @testing.for_float_dtypes("dtype", no_float16=True)
     @testing.for_float_dtypes("shape_dtype")
     def test_standard_gamma_generator(self, shape_dtype, dtype):
@@ -782,7 +776,6 @@ class TestDistributionsStandardGamma(RandomDistributionsTestCase):
 
 class TestDistributionsStandardGammaInvalid(RandomDistributionsTestCase):
 
-    @pytest.mark.skip("no support of generator yet")
     def test_none_shape_generator(self):
         with pytest.raises(TypeError):
             cupy.random.default_rng(0).standard_gamma(None)
