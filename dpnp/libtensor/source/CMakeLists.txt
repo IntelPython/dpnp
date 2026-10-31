@@ -70,11 +70,13 @@ set(_dpnp_indexing_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/choose.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/putmask.cpp
 )
+set(_dpnp_sorting_sources ${CMAKE_CURRENT_SOURCE_DIR}/sorting/partition.cpp)
 set(_statistics_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/statistics/bincount.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/statistics/histogram.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/statistics/histogramdd.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/statistics/histogram_common.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/statistics/median.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/statistics/sliding_dot_product1d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/statistics/sliding_window1d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/statistics/statistics_py.cpp
@@ -86,6 +88,7 @@ set(_window_impl_sources
 set(_dpnp_sources
     ${_dpnp_elementwise_sources}
     ${_dpnp_indexing_sources}
+    ${_dpnp_sorting_sources}
     ${_statistics_impl_sources}
     ${_window_impl_sources}
 )
@@ -235,6 +238,7 @@ set(_tensor_reductions_impl_sources
 set(_tensor_sorting_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/tensor_sorting.cpp
     ${_sorting_sources}
+    ${_dpnp_sorting_sources}
 )
 set(_tensor_linalg_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/tensor_linalg.cpp

@@ -1004,8 +1004,8 @@ class TestMedian:
         result = dpnp.median(
             ib, axis=axis, keepdims=keepdims, overwrite_input=True
         )
+        # overwrite_input only allows the input to be modified
         assert not numpy.all(a == b)
-        assert not dpnp.all(ia == ib)
 
         assert_dtype_allclose(result, expected)
 
@@ -1018,6 +1018,69 @@ class TestMedian:
         expected = numpy.median(a, axis=axis, overwrite_input=overwrite_input)
         result = dpnp.median(ia, axis=axis, overwrite_input=overwrite_input)
         assert_dtype_allclose(result, expected)
+
+
+class TestMedianSelect:
+    # row lengths reaching the sub-group, the work-group and the multi-group
+    # kernels of radix select
+    @pytest.mark.parametrize(
+        "shape",
+        [(1,), (2,), (4, 3), (5, 64), (3, 65), (6, 1000), (2, 1001)]
+        + [(1, 2**16 + 3), (3, 2**17), (2, 2**17 + 1)],
+    )
+    @pytest.mark.parametrize("duplicates", [False, True])
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_complex=True, no_float16=False)
+    )
+    def test_basic(self, shape, duplicates, dtype):
+        rnd = numpy.random.RandomState(81)
+        if duplicates or dtype == dpnp.bool:
+            a = rnd.randint(0, 4, size=shape).astype(dtype)
+        elif dpnp.issubdtype(dtype, dpnp.integer):
+            # the median of two large integers must not overflow
+            info = numpy.iinfo(dtype)
+            a = rnd.randint(info.min, info.max, size=shape, dtype=dtype)
+        else:
+            a = rnd.standard_normal(size=shape).astype(dtype)
+        ia = dpnp.array(a)
+
+        expected = numpy.median(a, axis=-1)
+        result = dpnp.median(ia, axis=-1)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("n", [5, 64, 1000, 2**16 + 1])
+    @pytest.mark.parametrize("dtype", get_float_dtypes(no_float16=False))
+    def test_special_values(self, n, dtype):
+        a = numpy.zeros((4, n), dtype=dtype)
+        a[:, ::3] = -0.0
+        a[1, ::5] = numpy.inf
+        a[2, ::4] = -numpy.inf
+        a[3, : n // 2] = numpy.finfo(dtype).max
+        # a single NaN makes the median NaN
+        a[0, n // 3] = numpy.nan
+        ia = dpnp.array(a)
+
+        expected = numpy.median(a, axis=-1)
+        result = dpnp.median(ia, axis=-1)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("axis", [0, 1, 2, (0, 2), None])
+    def test_non_contiguous(self, axis):
+        a = generate_random_numpy_array((70, 3, 90), dtype="f4")
+        ia = dpnp.array(a)[::-1, :, ::2]
+        a = a[::-1, :, ::2]
+
+        expected = numpy.median(a, axis=axis)
+        result = dpnp.median(ia, axis=axis)
+        assert_dtype_allclose(result, expected)
+
+    def test_input_unchanged(self):
+        a = generate_random_numpy_array((3, 1001), dtype="f4")
+        ia = dpnp.array(a)
+
+        result = dpnp.median(ia, axis=-1, overwrite_input=True)
+        assert_dtype_allclose(result, numpy.median(a, axis=-1))
+        assert_array_equal(ia, a)
 
 
 class TestPtp:
