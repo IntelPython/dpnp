@@ -891,7 +891,19 @@ class dpnp_array:
 
         return dpnp.argmin(self, axis=axis, out=out, keepdims=keepdims)
 
-    # 'argpartition',
+    def argpartition(self, /, kth, axis=-1, kind="introselect", order=None):
+        """
+        Return indices that would partition this array.
+
+        Refer to :obj:`dpnp.argpartition` for full documentation.
+
+        See Also
+        --------
+        :obj:`dpnp.argpartition` : Equivalent function.
+
+        """
+
+        return dpnp.argpartition(self, kth, axis=axis, kind=kind, order=order)
 
     def argsort(
         self, axis=-1, kind=None, order=None, *, descending=False, stable=None

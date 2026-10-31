@@ -493,8 +493,8 @@ class TestNanMedian:
         ib = ia.copy()
         expected = numpy.nanmedian(b, axis=axis, overwrite_input=True)
         result = dpnp.nanmedian(ib, axis=axis, overwrite_input=True)
+        # overwrite_input only allows the input to be modified
         assert not numpy.all(a == b)
-        assert not dpnp.all(ia == ib)
 
         assert_dtype_allclose(result, expected)
 
@@ -540,6 +540,53 @@ class TestNanMedian:
         res = dpnp.empty(2, dtype=a.dtype, sycl_queue=exec_q)
         with pytest.raises(ExecutionPlacementError):
             dpnp.nanmedian(a, axis=1, out=res)
+
+
+class TestNanMedianSelect:
+    # row lengths reaching the sub-group, the work-group and the multi-group
+    # kernels of radix select
+    @pytest.mark.parametrize(
+        "n", [1, 2, 3, 63, 64, 65, 1000, 1001, 2**16 + 2, 2**17 + 1]
+    )
+    @pytest.mark.parametrize("dtype", get_float_dtypes(no_float16=False))
+    def test_basic(self, n, dtype):
+        rnd = numpy.random.RandomState(81)
+        a = rnd.standard_normal(size=(5, n)).astype(dtype)
+        # a varying number of NaNs, to give both even and odd valid counts
+        for i in range(1, 4):
+            a[i, rnd.choice(n, min(i * n // 4 + i, n - 1), replace=False)] = (
+                numpy.nan
+            )
+        a[4, :] = -0.0
+        a[4, ::3] = numpy.nan
+        ia = dpnp.array(a)
+
+        expected = numpy.nanmedian(a, axis=-1)
+        result = dpnp.nanmedian(ia, axis=-1)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("n", [3, 1000, 2**16 + 1])
+    def test_all_nan_rows(self, n):
+        a = generate_random_numpy_array((3, n), dtype="f4")
+        a[1] = numpy.nan
+        ia = dpnp.array(a)
+
+        with pytest.warns(RuntimeWarning, match="All-NaN slice"):
+            result = dpnp.nanmedian(ia, axis=-1)
+        with pytest.warns(RuntimeWarning, match="All-NaN slice"):
+            expected = numpy.nanmedian(a, axis=-1)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_float16=False, no_complex=True)
+    )
+    def test_no_warning(self, dtype, recwarn):
+        a = generate_random_numpy_array((3, 100), dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = dpnp.nanmedian(ia, axis=-1)
+        assert_dtype_allclose(result, numpy.nanmedian(a, axis=-1))
+        assert not [w for w in recwarn if "All-NaN" in str(w.message)]
 
 
 @pytest.mark.parametrize("func", ["nanprod", "nansum"])

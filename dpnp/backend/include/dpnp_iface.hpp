@@ -105,38 +105,6 @@ INP_DLLEXPORT void
 
 /**
  * @ingroup BACKEND_API
- * @brief Return a partitioned copy of an array.
- *
- * @param [in]  q_ref             Reference to SYCL queue.
- * @param [in]  array             Input array.
- * @param [in]  array2            Copy input array.
- * @param [out] result            Result array.
- * @param [in]  kth               Element index to partition by.
- * @param [in]  shape             Shape of input array.
- * @param [in]  ndim              Number of elements in shape.
- * @param [in]  dep_event_vec_ref Reference to vector of SYCL events.
- */
-template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef
-    dpnp_partition_c(DPCTLSyclQueueRef q_ref,
-                     void *array,
-                     void *array2,
-                     void *result,
-                     const size_t kth,
-                     const shape_elem_type *shape,
-                     const size_t ndim,
-                     const DPCTLEventVectorRef dep_event_vec_ref);
-
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_partition_c(void *array,
-                                    void *array2,
-                                    void *result,
-                                    const size_t kth,
-                                    const shape_elem_type *shape,
-                                    const size_t ndim);
-
-/**
- * @ingroup BACKEND_API
  * @brief implementation of creating filled with value array function
  *
  * @param [in]  q_ref               Reference to SYCL queue.

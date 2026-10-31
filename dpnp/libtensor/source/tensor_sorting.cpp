@@ -38,6 +38,7 @@
 #include "sorting/isin.hpp"
 #include "sorting/merge_argsort.hpp"
 #include "sorting/merge_sort.hpp"
+#include "sorting/partition.hpp"
 #include "sorting/radix_argsort.hpp"
 #include "sorting/radix_sort.hpp"
 #include "sorting/searchsorted.hpp"
@@ -52,4 +53,5 @@ PYBIND11_MODULE(_tensor_sorting_impl, m, py::mod_gil_not_used())
     dpnp::tensor::py_internal::init_radix_sort_functions(m);
     dpnp::tensor::py_internal::init_radix_argsort_functions(m);
     dpnp::tensor::py_internal::init_topk_functions(m);
+    dpnp::tensor::py_internal::init_partition(m);
 }
