@@ -138,6 +138,139 @@ def _comparison_over_axis(x, axis, keepdims, out, _reduction_fn):
     return out
 
 
+def _minmax(x, /, *, axis=None, keepdims=False, out=None):
+    """
+    Calculates the minimum and the maximum of the input array ``x`` in a
+    single pass.
+
+    Args:
+        x (usm_ndarray):
+            input array.
+        axis (Optional[int, Tuple[int, ...]]):
+            axis or axes along which the extrema must be computed.
+            If ``None``, they are computed over the entire array.
+            Default: ``None``.
+        keepdims (Optional[bool]):
+            if ``True``, the reduced axes (dimensions) are included in the
+            results as singleton dimensions. Default: ``False``.
+        out (Optional[Tuple[Optional[usm_ndarray], Optional[usm_ndarray]]]):
+            the arrays into which the minima and the maxima are written.
+            Each array must have the expected shape and the data type of
+            ``x``. A ``None`` entry means that a new array is returned.
+            Default: ``None``.
+
+    Returns:
+        Tuple[usm_ndarray, usm_ndarray]:
+            the minima and the maxima of ``x``, with its data type.
+    """
+    if not isinstance(x, dpt.usm_ndarray):
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
+
+    nd = x.ndim
+    if axis is None:
+        axis = tuple(range(nd))
+        perm = list(axis)
+        x_tmp = x
+    else:
+        if not isinstance(axis, (tuple, list)):
+            axis = (axis,)
+        axis = normalize_axis_tuple(axis, nd, "axis")
+        perm = [i for i in range(nd) if i not in axis] + list(axis)
+        x_tmp = dpt.permute_dims(x, perm)
+    red_nd = len(axis)
+    if any([x_tmp.shape[i] == 0 for i in range(-red_nd, 0)]):
+        raise ValueError("reduction cannot be performed over zero-size axes")
+    res_shape = x_tmp.shape[: nd - red_nd]
+    exec_q = x.sycl_queue
+    res_dt = x.dtype
+    res_usm_type = x.usm_type
+
+    if keepdims:
+        final_res_shape = tuple(
+            x.shape[d] if d not in axis else 1 for d in range(nd)
+        )
+    else:
+        final_res_shape = res_shape
+
+    if out is None:
+        out = (None, None)
+    orig_out = list(out)
+    out = list(out)
+    for i, res in enumerate(out):
+        if res is None:
+            out[i] = dpt.empty(
+                res_shape,
+                dtype=res_dt,
+                usm_type=res_usm_type,
+                sycl_queue=exec_q,
+            )
+            continue
+
+        if not isinstance(res, dpt.usm_ndarray):
+            raise TypeError(
+                f"output array must be of usm_ndarray type, got {type(res)}"
+            )
+        if not res.flags.writable:
+            raise ValueError("provided `out` array is read-only")
+        if not res.shape == final_res_shape:
+            raise ValueError(
+                "The shape of input and output arrays are inconsistent. "
+                f"Expected output shape is {final_res_shape}, got {res.shape}"
+            )
+        if res_dt != res.dtype:
+            raise ValueError(
+                f"Output array of type {res_dt} is needed, got {res.dtype}"
+            )
+        if dpt.get_execution_queue((exec_q, res.sycl_queue)) is None:
+            raise dpt.ExecutionPlacementError(
+                "Input and output allocation queues are not compatible"
+            )
+        if keepdims:
+            res = dpt.squeeze(res, axis=axis)
+            orig_out[i] = res
+        if ti._array_overlap(x, res):
+            res = dpt.empty_like(res)
+        out[i] = res
+
+    _manager = SequentialOrderManager[exec_q]
+    dep_evs = _manager.submitted_events
+    if red_nd == 0:
+        for res in out:
+            ht_e_cpy, cpy_e = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=x_tmp, dst=res, sycl_queue=exec_q, depends=dep_evs
+            )
+            _manager.add_event_pair(ht_e_cpy, cpy_e)
+        red_evs = _manager.submitted_events
+    else:
+        hev, red_ev = tri._minmax_over_axis(
+            src=x_tmp,
+            trailing_dims_to_reduce=red_nd,
+            dst_min=out[0],
+            dst_max=out[1],
+            sycl_queue=exec_q,
+            depends=dep_evs,
+        )
+        _manager.add_event_pair(hev, red_ev)
+        red_evs = [red_ev]
+
+    for i, res in enumerate(out):
+        if not (orig_out[i] is None or orig_out[i] is res):
+            ht_e_cpy2, cpy2_e = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=res, dst=orig_out[i], sycl_queue=exec_q, depends=red_evs
+            )
+            _manager.add_event_pair(ht_e_cpy2, cpy2_e)
+            out[i] = orig_out[i]
+
+    if keepdims:
+        res_shape = res_shape + (1,) * red_nd
+        inv_perm = sorted(range(nd), key=lambda d: perm[d])
+        out = [
+            dpt.permute_dims(dpt.reshape(res, res_shape), inv_perm)
+            for res in out
+        ]
+    return tuple(out)
+
+
 def _reduction_over_axis(
     x,
     axis,
