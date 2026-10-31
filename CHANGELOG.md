@@ -108,6 +108,7 @@ This release requires DPC++ compiler 2026.1.1 or newer and `dpctl` 0.23.0 or new
 * Removed all references to the unimplemented `dpnp.ndarray.resize` method from the documentation [#2989](https://github.com/IntelPython/dpnp/pull/2989)
 * Removed an obsolete oneAPI 2021.x workaround from the Windows conda build script that manually prepended `BUILD_PREFIX` paths onto the `LIB` and `INCLUDE` [#3013](https://github.com/IntelPython/dpnp/pull/3013)
 * Removed the legacy backend implementation of `dpnp.random` and the link to the oneMKL RNG host library [#XXXX](https://github.com/IntelPython/dpnp/pull/XXXX)
+* Removed the unused parts of the legacy backend library `dpnp_backend_c`, which now only provides `dpnp.partition`, its empty GTest suite with the `DPNP_BACKEND_TESTS` CMake option, and the unused NumPy fallback helper `call_origin` [#XXXX](https://github.com/IntelPython/dpnp/pull/XXXX)
 
 ### Fixed
 

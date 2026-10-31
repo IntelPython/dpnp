@@ -6,7 +6,7 @@
 - `dpnp_algo/dpnp_elementwise_common.py`: ufunc wrapper classes (`DPNPUnaryFunc`, `DPNPBinaryFunc`, two-output and specialised variants)
 - `dpnp_utils/`: shared helpers (`get_usm_allocations`, `map_dtype_to_device`, reduction wrappers)
 - `linalg/`, `fft/`, `random/`, `scipy/`, `lib/`: subpackages, each exporting through its own `__init__.py`
-- Legacy, don't extend: the Cython `dpnp_algo` path and `dpnp_backend_c` (still used by `dpnp.partition`), and the NumPy fallback `call_origin`. New kernels go into pybind11 extensions or `dpnp.tensor`.
+- Legacy, don't extend: the Cython `dpnp_algo` path and `dpnp_backend_c` (still used by `dpnp.partition`). New kernels go into pybind11 extensions or `dpnp.tensor`.
 
 ## Adding a Public Function
 1. Implement it in the matching `dpnp_iface_*.py` or subpackage module. Iface modules have no `__all__`.

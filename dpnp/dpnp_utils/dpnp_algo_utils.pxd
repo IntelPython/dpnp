@@ -54,8 +54,6 @@ cpdef checker_throw_type_error(function_name, given_type)
 cpdef cpp_bool use_origin_backend(input1=*, size_t compute_size=*)
 
 
-cpdef tuple _object_to_tuple(object obj)
-
 
 cdef class dpnp_descriptor:
     """array DPNP descriptor"""
@@ -75,6 +73,3 @@ cdef dpnp_descriptor create_output_descriptor(shape_type_c output_shape,
                                               device=*,
                                               usm_type=*,
                                               sycl_queue=*)
-
-# Get common USM allocation in the form of (sycl_device, usm_type, sycl_queue)
-cdef tuple get_common_usm_allocation(dpnp_descriptor x1, dpnp_descriptor x2)

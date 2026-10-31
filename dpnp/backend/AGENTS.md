@@ -5,7 +5,7 @@
 - `extensions/common/ext/`: dispatch helpers (`init_dispatch_vector`, `init_dispatch_table`, `DispatchTable`) and validation helpers (`validation_utils.hpp`)
 - `extensions/elementwise_functions/`: copy of the libtensor elementwise Python-API helpers, compiled into `ufunc` and `vm`
 - `kernels/{elementwise_functions,indexing,statistics,window}/`: header-only SYCL functors in namespaces under `dpnp::kernels`
-- Legacy: `src/`, `include/` and `kernels/dpnp_krnl_*.cpp` build `dpnp_backend_c` (still used by `dpnp.partition`); `tests/` (GTest, `-DDPNP_BACKEND_TESTS=ON`) and `examples/` are not built in CI
+- Legacy: `src/`, `include/` and `kernels/dpnp_krnl_*.cpp` build `dpnp_backend_c` (still used by `dpnp.partition`)
 - `cmake/Modules/`: vendored `IntelSYCL`, `MKL`, `TBB` and `oneDPL` config modules
 
 ## Adding a ufunc Kernel (model: `fabs`)
