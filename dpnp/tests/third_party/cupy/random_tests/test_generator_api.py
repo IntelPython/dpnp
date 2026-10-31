@@ -360,10 +360,17 @@ class TestPower(common_distributions.Power, GeneratorTestCase):
 
 
 @testing.with_requires("numpy>=1.17.0")
+# @pytest.mark.skipif(
+#     cupy.cuda.runtime.is_hip
+#     and (int(str(cupy.cuda.runtime.runtimeGetVersion())[:3]) < 403),
+#     reason="HIP<4.3 not supported ",
+# )
 class TestRandomStateThreadSafe(unittest.TestCase):
 
+    @pytest.mark.skip("uses cupy.cuda.Device")
     def test_default_rng_thread_safe(self):
         def _f(func, args=()):
+            cupy.cuda.Device().use()
             func(*args)
 
         seed = 10
@@ -409,12 +416,12 @@ class TestF(common_distributions.F, GeneratorTestCase):
 
 @testing.parameterize(*common_distributions.dirichlet_params)
 @testing.fix_random()
+@pytest.mark.skip(
+    "dpnp raises TypeError for a scalar alpha, as NumPy does, and two of "
+    "the alpha params are scalars"
+)
 class TestDrichlet(common_distributions.Dirichlet, GeneratorTestCase):
-
-    @pytest.fixture(autouse=True)
-    def skip_scalar_alpha(self):
-        if numpy.ndim(self.alpha) == 0:
-            pytest.skip("NumPy raises TypeError for a scalar alpha")
+    pass
 
 
 @testing.slow

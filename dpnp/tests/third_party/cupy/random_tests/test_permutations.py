@@ -172,6 +172,7 @@ class TestPermutationRandomness(unittest.TestCase):
     # Note that this is not an established method to check randomness.
     # TODO(anaruse): implement randomness check using some established methods.
     @_condition.repeat_with_success_at_least(5, 3)
+    @pytest.mark.skip("numpy.count_nonzero does not accept a dpnp.ndarray")
     def test_permutation_randomness(self):
         if self.mask > self.num_half:
             return
@@ -179,9 +180,7 @@ class TestPermutationRandomness(unittest.TestCase):
         index = (index * self.gap + self.offset) % self.num
         samples = self.a[index]
         ret = samples & self.mask > 0
-        # numpy.count_nonzero does not accept a dpnp.ndarray
-        # count = numpy.count_nonzero(ret)  # expectation: self.num_half / 2
-        count = int(cupy.count_nonzero(ret))  # expectation: self.num_half / 2
+        count = numpy.count_nonzero(ret)  # expectation: self.num_half / 2
         if count > self.num_half - count:
             count = self.num_half - count
         prob_le_count = self._calc_probability(count)

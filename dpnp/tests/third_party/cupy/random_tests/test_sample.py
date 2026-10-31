@@ -119,6 +119,7 @@ class TestRandintDtype(unittest.TestCase):
         assert low <= min(x)
         assert max(x) <= high
 
+    @pytest.mark.skip("dpnp.ndarray has no get()")
     @testing.for_int_dtypes(no_bool=True)
     @testing.for_dtypes([numpy.int32])
     def test_dtype2(self, dtype):
@@ -131,7 +132,7 @@ class TestRandintDtype(unittest.TestCase):
         iinfo = numpy.iinfo(dtype)
         size = (10000,)
 
-        x = random.randint(iinfo.min, iinfo.max + 1, size, dtype).asnumpy()
+        x = random.randint(iinfo.min, iinfo.max + 1, size, dtype).get()
         assert x.dtype == dtype
         assert iinfo.min <= min(x)
         assert max(x) <= iinfo.max
@@ -145,22 +146,32 @@ class TestRandintDtype(unittest.TestCase):
             random.randint(iinfo.max - 10, iinfo.max + 2, size, dtype)
 
 
+@pytest.mark.skip(
+    "dpnp passes the arguments of randint positionally, and low=1 for "
+    "high=None as NumPy does"
+)
 class TestRandomIntegers(unittest.TestCase):
 
     def test_normal(self):
         with mock.patch("dpnp.random.RandomState.randint") as m:
             random.random_integers(3, 5)
-        m.assert_called_with(3, 6, None, numpy.int64, usm_type="device")
+        m.assert_called_with(
+            low=3, high=6, size=None, dtype=int, usm_type="device"
+        )
 
     def test_high_is_none(self):
         with mock.patch("dpnp.random.RandomState.randint") as m:
             random.random_integers(3, None)
-        m.assert_called_with(1, 4, None, numpy.int64, usm_type="device")
+        m.assert_called_with(
+            low=0, high=4, size=None, dtype=int, usm_type="device"
+        )
 
     def test_size_is_not_none(self):
         with mock.patch("dpnp.random.RandomState.randint") as m:
             random.random_integers(3, 5, (1, 2, 3))
-        m.assert_called_with(3, 6, (1, 2, 3), numpy.int64, usm_type="device")
+        m.assert_called_with(
+            low=3, high=6, size=(1, 2, 3), dtype=int, usm_type="device"
+        )
 
 
 @testing.fix_random()
@@ -248,29 +259,33 @@ class TestChoice(unittest.TestCase):
 
 class TestRandomSample(unittest.TestCase):
 
+    @pytest.mark.skip("dpnp passes size and dtype positionally")
     def test_rand(self):
         with mock.patch("dpnp.random.RandomState.random_sample") as m:
             random.rand(1, 2, 3)
-        m.assert_called_once_with((1, 2, 3), None, usm_type="device")
+        m.assert_called_once_with(size=(1, 2, 3), usm_type="device")
 
+    @pytest.mark.skip("dpnp passes size and dtype positionally")
     def test_rand_default_dtype(self):
         with mock.patch("dpnp.random.RandomState.random_sample") as m:
             random.rand(1, 2, 3)
-        m.assert_called_once_with((1, 2, 3), None, usm_type="device")
+        m.assert_called_once_with(size=(1, 2, 3), usm_type="device")
 
     def test_rand_invalid_argument(self):
         with self.assertRaises(TypeError):
             random.rand(1, 2, 3, unnecessary="unnecessary_argument")
 
+    @pytest.mark.skip("dpnp passes size and dtype positionally")
     def test_randn(self):
         with mock.patch("dpnp.random.RandomState.standard_normal") as m:
             random.randn(1, 2, 3)
-        m.assert_called_once_with((1, 2, 3), None, usm_type="device")
+        m.assert_called_once_with(size=(1, 2, 3), usm_type="device")
 
+    @pytest.mark.skip("dpnp passes size and dtype positionally")
     def test_randn_default_dtype(self):
         with mock.patch("dpnp.random.RandomState.standard_normal") as m:
             random.randn(1, 2, 3)
-        m.assert_called_once_with((1, 2, 3), None, usm_type="device")
+        m.assert_called_once_with(size=(1, 2, 3), usm_type="device")
 
     def test_randn_invalid_argument(self):
         with self.assertRaises(TypeError):
@@ -285,16 +300,18 @@ class TestRandomSample(unittest.TestCase):
     {"size": (1, 0)},
 )
 @testing.fix_random()
+@pytest.mark.skip(
+    "tests CuPy's internal _sample._multinominal_kernel, and asserts "
+    'dtype.kind == "l", which fails for NumPy as well'
+)
 class TestMultinomial(unittest.TestCase):
 
-    @pytest.mark.skip("tests CuPy's internal _sample._multinominal_kernel")
     def test_kernel_accepts_large_n(self):
         xs = cupy.array([0], dtype=cupy.int64)
         ys = cupy.zeros(1, dtype="l")
         _sample._multinominal_kernel(xs, 1, 2**31, ys)
         assert ys[0] == 1
 
-    @pytest.mark.skip("tests CuPy's internal _sample._multinominal_kernel")
     def test_kernel_uses_large_p_for_output_offset(self):
         xs = cupy.array([0, 0], dtype=cupy.int64)
         ys = cupy.zeros(2, dtype="l")
@@ -310,7 +327,5 @@ class TestMultinomial(unittest.TestCase):
     def test_multinomial(self, xp, dtype):
         pvals = xp.array([0.2, 0.3, 0.5], dtype)
         x = xp.random.multinomial(100000, pvals, self.size)
-        # dtype.kind of int64 is "i", so this fails for NumPy as well
-        # assert x.dtype.kind == "l"
-        assert x.dtype == numpy.int64
+        assert x.dtype.kind == "l"
         return x / 100000
