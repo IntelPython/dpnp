@@ -36,6 +36,8 @@
 
 #include <oneapi/mkl/rng/device.hpp>
 
+#include "umul_hi.hpp"
+
 namespace dpnp::kernels::rng
 {
 namespace mkl_rng_dev = oneapi::mkl::rng::device;
@@ -217,7 +219,7 @@ inline UInt128 operator+(const UInt128 &a, const UInt128 &b)
 
 inline UInt128 operator*(const UInt128 &a, const UInt128 &b)
 {
-    return {a.lo * b.lo, sycl::mul_hi(a.lo, b.lo) + a.lo * b.hi + a.hi * b.lo};
+    return {a.lo * b.lo, umul_hi(a.lo, b.lo) + a.lo * b.hi + a.hi * b.lo};
 }
 
 // The affine map x -> mult * x + inc modulo 2**128, as a step of an LCG

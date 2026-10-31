@@ -70,6 +70,8 @@
 
 #include <sycl/sycl.hpp>
 
+#include "umul_hi.hpp"
+
 namespace dpnp::kernels::rng
 {
 // A distribution parameter: either one value for every sample, or a
@@ -282,7 +284,7 @@ std::uint64_t bounded_lemire_uint64(BitGenT &bg, const std::uint64_t rng)
             leftover = x * rng_excl;
         }
     }
-    return sycl::mul_hi(x, rng_excl);
+    return umul_hi(x, rng_excl);
 }
 
 // A uniform integer on [0, rng], as in NumPy's random_bounded_uint64()
