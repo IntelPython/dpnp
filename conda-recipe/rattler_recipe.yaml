@@ -70,7 +70,6 @@ requirements:
     - ${{ pin_compatible('onemkl-sycl-blas', lower_bound='x.x', upper_bound='x') }}
     - ${{ pin_compatible('onemkl-sycl-dft', lower_bound='x.x', upper_bound='x') }}
     - ${{ pin_compatible('onemkl-sycl-lapack', lower_bound='x.x', upper_bound='x') }}
-    - ${{ pin_compatible('onemkl-sycl-rng', lower_bound='x.x', upper_bound='x') }}
     - ${{ pin_compatible('onemkl-sycl-vm', lower_bound='x.x', upper_bound='x') }}
     - ${{ pin_compatible('onemkl-sycl-sparse', lower_bound='x.x', upper_bound='x') }}
     - numpy
