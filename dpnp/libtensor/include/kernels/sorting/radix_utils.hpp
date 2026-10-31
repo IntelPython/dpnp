@@ -326,6 +326,38 @@ radix_key_t<T> ordered_radix_key(const T &val)
     }
 }
 
+/*! @brief Value of type `T` whose `ordered_radix_key` is `key`, NaNs and zeros
+ * come back as the quiet NaN and +0.0 */
+template <bool is_ascending, typename T>
+T ordered_radix_value(radix_key_t<T> key)
+{
+    using KeyT = radix_key_t<T>;
+    static constexpr KeyT sign_bit = KeyT(1)
+                                     << (number_of_bits_in_type<KeyT>() - 1);
+
+    if constexpr (std::is_same_v<T, bool>) {
+        return (is_ascending) ? (key != 0) : (key == 0);
+    }
+    else {
+        // the descending keys are the bitwise inverses of the ascending ones
+        const KeyT asc_key = (is_ascending) ? key : static_cast<KeyT>(~key);
+        if constexpr (std::is_integral_v<T> && std::is_unsigned_v<T>) {
+            return T(asc_key);
+        }
+        else if constexpr (std::is_integral_v<T>) {
+            return sycl::bit_cast<T>(static_cast<KeyT>(asc_key ^ sign_bit));
+        }
+        else {
+            // non-negative values have the sign bit flipped, negative ones
+            // all their bits
+            const KeyT bits = (asc_key & sign_bit)
+                                  ? static_cast<KeyT>(asc_key ^ sign_bit)
+                                  : static_cast<KeyT>(~asc_key);
+            return sycl::bit_cast<T>(bits);
+        }
+    }
+}
+
 //-----------
 // projections
 //-----------

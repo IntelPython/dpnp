@@ -35,6 +35,7 @@
 #include "bincount.hpp"
 #include "histogram.hpp"
 #include "histogramdd.hpp"
+#include "median.hpp"
 #include "sliding_dot_product1d.hpp"
 
 PYBIND11_MODULE(_statistics_impl, m, py::mod_gil_not_used())
@@ -43,4 +44,5 @@ PYBIND11_MODULE(_statistics_impl, m, py::mod_gil_not_used())
     statistics::histogram::populate_histogram(m);
     statistics::sliding_window1d::populate_sliding_dot_product1d(m);
     statistics::histogram::populate_histogramdd(m);
+    statistics::median::populate_median(m);
 }
