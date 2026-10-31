@@ -26,11 +26,15 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include <iostream>
+#include <complex>
+#include <cstdint>
+#include <functional>
+#include <numeric>
+
+#include <sycl/sycl.hpp>
 
 #include "dpnp_fptr.hpp"
-#include "dpnpc_memory_adapter.hpp"
-#include "queue_sycl.hpp"
+#include "dpnp_pstl.hpp"
 #include <dpnp_iface.hpp>
 
 template <typename _DataType>
@@ -95,31 +99,6 @@ DPCTLSyclEventRef dpnp_partition_c(DPCTLSyclQueueRef q_ref,
 }
 
 template <typename _DataType>
-void dpnp_partition_c(void *array1_in,
-                      void *array2_in,
-                      void *result1,
-                      const size_t kth,
-                      const shape_elem_type *shape_,
-                      const size_t ndim)
-{
-    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
-    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref =
-        dpnp_partition_c<_DataType>(q_ref, array1_in, array2_in, result1, kth,
-                                    shape_, ndim, dep_event_vec_ref);
-    DPCTLEvent_WaitAndThrow(event_ref);
-    DPCTLEvent_Delete(event_ref);
-}
-
-template <typename _DataType>
-void (*dpnp_partition_default_c)(void *,
-                                 void *,
-                                 void *,
-                                 const size_t,
-                                 const shape_elem_type *,
-                                 const size_t) = dpnp_partition_c<_DataType>;
-
-template <typename _DataType>
 DPCTLSyclEventRef (*dpnp_partition_ext_c)(DPCTLSyclQueueRef,
                                           void *,
                                           void *,
@@ -132,15 +111,6 @@ DPCTLSyclEventRef (*dpnp_partition_ext_c)(DPCTLSyclQueueRef,
 
 void func_map_init_sorting(func_map_t &fmap)
 {
-    fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_partition_default_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_partition_default_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_partition_default_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_partition_default_c<double>};
-
     fmap[DPNPFuncName::DPNP_FN_PARTITION_EXT][eft_BLN][eft_BLN] = {
         eft_BLN, (void *)dpnp_partition_ext_c<bool>};
     fmap[DPNPFuncName::DPNP_FN_PARTITION_EXT][eft_INT][eft_INT] = {

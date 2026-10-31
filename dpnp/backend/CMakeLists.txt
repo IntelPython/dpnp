@@ -27,15 +27,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-set(DPNP_SRC
-    kernels/dpnp_krnl_arraycreation.cpp
-    kernels/dpnp_krnl_common.cpp
-    kernels/dpnp_krnl_sorting.cpp
-    src/dpnp_iface_fptr.cpp
-    src/memory_sycl.cpp
-    src/queue_sycl.cpp
-    src/verbose.cpp
-)
+set(DPNP_SRC kernels/dpnp_krnl_sorting.cpp src/dpnp_iface_fptr.cpp)
 
 set(_trgt "dpnp_backend_c")
 
@@ -67,9 +59,6 @@ if(DPNP_GENERATE_COVERAGE)
     target_link_options(${_trgt} PRIVATE -fprofile-instr-generate -fcoverage-mapping)
 endif()
 
-# Link only the MKL SYCL domains actually used by the backend sources
-# (BLAS: mkl_blas::scal; VM: vector math ops)
-target_link_libraries(${_trgt} PUBLIC MKL::MKL_SYCL::BLAS MKL::MKL_SYCL::VM)
 target_link_libraries(${_trgt} PUBLIC oneDPL)
 
 if(UNIX)
@@ -96,10 +85,6 @@ target_link_libraries(dpnp_backend_library INTERFACE ${_trgt})
 
 if(DPNP_WITH_REDIST)
     set_target_properties(${_trgt} PROPERTIES INSTALL_RPATH "$ORIGIN/../../../")
-endif()
-
-if(DPNP_BACKEND_TESTS)
-    add_subdirectory(tests)
 endif()
 
 set(_lib_destination dpnp)
