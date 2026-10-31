@@ -1597,6 +1597,58 @@ class TestLinAlgebra:
             [usm_type, usm_type_rhs]
         )
 
+    @pytest.mark.parametrize(
+        "data",
+        [
+            [[4.0, 2.0], [2.0, 3.0]],
+            numpy.empty((0, 0)),
+            [[[4.0, 2.0], [2.0, 3.0]]],
+            numpy.empty((1, 0, 0)),
+        ],
+    )
+    def test_cho_factor(self, data, usm_type):
+        a = dpnp.array(data, usm_type=usm_type)
+        c, _ = dpnp.scipy.linalg.cho_factor(a)
+
+        assert a.usm_type == usm_type
+        assert c.usm_type == usm_type
+
+    @pytest.mark.parametrize("usm_type_rhs", list_of_usm_types)
+    @pytest.mark.parametrize(
+        "a_data, b_data",
+        [
+            ([[4.0, 2.0], [2.0, 3.0]], [1.0, 2.0]),
+            ([[4.0, 2.0], [2.0, 3.0]], numpy.empty((2, 0))),
+            ([[[4.0, 2.0], [2.0, 3.0]]], [1.0, 2.0]),
+            ([[[4.0, 2.0], [2.0, 3.0]]], numpy.empty((1, 2, 0))),
+        ],
+    )
+    def test_cho_solve(self, a_data, b_data, usm_type, usm_type_rhs):
+        a = dpnp.array(a_data, usm_type=usm_type)
+        c, low = dpnp.scipy.linalg.cho_factor(a)
+        b = dpnp.array(b_data, usm_type=usm_type_rhs)
+
+        result = dpnp.scipy.linalg.cho_solve((c, low), b)
+
+        assert c.usm_type == usm_type
+        assert b.usm_type == usm_type_rhs
+        assert result.usm_type == dpt.get_coerced_usm_type(
+            [usm_type, usm_type_rhs]
+        )
+
+    @pytest.mark.parametrize("usm_type_rhs", list_of_usm_types)
+    def test_cho_solve_overwrite_b(self, usm_type, usm_type_rhs):
+        a = dpnp.array([[4.0, 2.0], [2.0, 3.0]], usm_type=usm_type)
+        c, low = dpnp.scipy.linalg.cho_factor(a)
+        b = dpnp.ones((2, 1), order="F", usm_type=usm_type_rhs)
+
+        result = dpnp.scipy.linalg.cho_solve((c, low), b, overwrite_b=True)
+
+        res_usm_type = dpt.get_coerced_usm_type([usm_type, usm_type_rhs])
+        assert result.usm_type == res_usm_type
+        # `b` is overwritten only if it has the USM type of the result
+        assert (result is b) == (usm_type_rhs == res_usm_type)
+
     @pytest.mark.parametrize("n", [-1, 0, 1, 2, 3])
     def test_matrix_power(self, n, usm_type):
         a = dpnp.array([[1, 2], [3, 5]], usm_type=usm_type)

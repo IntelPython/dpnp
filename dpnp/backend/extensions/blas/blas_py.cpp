@@ -43,6 +43,7 @@
 #include "gemm.hpp"
 #include "gemv.hpp"
 #include "syrk.hpp"
+#include "trsm.hpp"
 
 namespace blas_ns = dpnp::extensions::blas;
 namespace py = pybind11;
@@ -58,6 +59,7 @@ void init_dispatch_vectors_tables(void)
     blas_ns::init_gemm_dispatch_table();
     blas_ns::init_gemv_dispatch_vector();
     blas_ns::init_syrk_dispatch_vector();
+    blas_ns::init_trsm_batch_dispatch_vector();
 }
 
 static dot_impl_fn_ptr_t dot_dispatch_vector[dpnp_td_ns::num_types];
@@ -160,6 +162,17 @@ PYBIND11_MODULE(_blas_impl, m, py::mod_gil_not_used())
               "the matrix-vector product with a general matrix.",
               py::arg("sycl_queue"), py::arg("matrixA"), py::arg("resultC"),
               py::arg("depends") = py::list());
+    }
+
+    {
+        m.def("_trsm_batch", &blas_ns::trsm_batch,
+              "Call `trsm_batch` from oneMKL BLAS library to solve "
+              "op(A) X = B for a batch of triangular matrices A "
+              "(a 2-D A is shared by the batch). "
+              "trans_op picks op(A): 0=N, 1=T, 2=C.",
+              py::arg("sycl_queue"), py::arg("matrixA"), py::arg("matrixB"),
+              py::arg("upper_lower"), py::arg("trans_op") = 0,
+              py::arg("unit_diag") = false, py::arg("depends") = py::list());
     }
 
     {
