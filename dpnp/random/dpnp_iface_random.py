@@ -50,7 +50,7 @@ from .dpnp_random_state import RandomState
 # The states of the queues. The lock guarantees that concurrent callers
 # asking for the state of the same queue get the same instance back rather
 # than each building one of their own.
-_random_states = {}
+_dpnp_random_states = {}
 _random_states_lock = threading.Lock()
 
 _QUEUE_PARAMS = """\
@@ -108,10 +108,10 @@ def _get_random_state(device=None, sycl_queue=None, arrays=()):
         device=device, sycl_queue=sycl_queue
     )
     with _random_states_lock:
-        rs = _random_states.get(sycl_queue)
+        rs = _dpnp_random_states.get(sycl_queue)
         if rs is None:
             rs = RandomState(sycl_queue=sycl_queue)
-            _random_states[sycl_queue] = rs
+            _dpnp_random_states[sycl_queue] = rs
         return rs
 
 
