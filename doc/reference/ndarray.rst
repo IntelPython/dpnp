@@ -399,7 +399,7 @@ For standard library functions:
 
    ndarray.__copy__
    ndarray.__deepcopy__
-   .. ndarray.__reduce__
+   ndarray.__reduce__
    ndarray.__setstate__
 
 Basic customization:

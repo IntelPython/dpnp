@@ -1,4 +1,5 @@
 import copy
+import pickle
 import tempfile
 from math import prod
 
@@ -270,10 +271,15 @@ def test_copy_method(usm_type_x, usm_type_y):
     assert y.usm_type == usm_type_y
 
 
+@pytest.mark.parametrize(
+    "func",
+    [copy.copy, copy.deepcopy, lambda x: pickle.loads(pickle.dumps(x))],
+    ids=["copy", "deepcopy", "pickle"],
+)
 @pytest.mark.parametrize("usm_type", list_of_usm_types)
-def test_copy_operation(usm_type):
+def test_copy_operation(func, usm_type):
     x = dpnp.array([[1, 2, 3], [4, 5, 6]], usm_type=usm_type)
-    y = copy.copy(x)
+    y = func(x)
     assert x.usm_type == y.usm_type == usm_type
 
 

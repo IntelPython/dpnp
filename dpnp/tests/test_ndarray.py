@@ -1,3 +1,5 @@
+import copy
+import pickle
 import warnings
 
 import numpy
@@ -879,6 +881,90 @@ class TestItem:
         ia = dpnp.arange(12).reshape(3, 4)
         with pytest.raises(ValueError):
             ia.item()
+
+
+# pickle looks a class up by name, so it can't be local to a test
+class _PickleSubclass(dpnp.ndarray):
+    pass
+
+
+_layouts = pytest.mark.parametrize(
+    "view",
+    [lambda x: x, lambda x: x.T, lambda x: x[:, ::2]],
+    ids=["C", "F", "strided"],
+)
+
+
+class TestPickle:
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize(
+        "shape", [(), (0,), (5,), (2, 3)], ids=["()", "(0,)", "(5,)", "(2, 3)"]
+    )
+    def test_basic(self, dtype, shape):
+        a = generate_random_numpy_array(shape, dtype)
+        ia = dpnp.array(a)
+
+        expected = pickle.loads(pickle.dumps(a))
+        result = pickle.loads(pickle.dumps(ia))
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("protocol", range(pickle.HIGHEST_PROTOCOL + 1))
+    def test_protocol(self, protocol):
+        a = numpy.arange(6, dtype="i4").reshape(2, 3)
+        ia = dpnp.array(a)
+
+        result = pickle.loads(pickle.dumps(ia, protocol=protocol))
+        assert_array_equal(result, a)
+
+    @_layouts
+    def test_layout(self, view):
+        a = numpy.arange(12, dtype="i4").reshape(3, 4)
+        ia = dpnp.array(a)
+
+        expected = pickle.loads(pickle.dumps(view(a)))
+        result = pickle.loads(pickle.dumps(view(ia)))
+        assert_array_equal(result, expected)
+        assert result.flags.c_contiguous == expected.flags.c_contiguous
+        assert result.flags.f_contiguous == expected.flags.f_contiguous
+
+    def test_subclass(self):
+        ia = dpnp.arange(3).view(type=_PickleSubclass)
+
+        result = pickle.loads(pickle.dumps(ia))
+        assert type(result) is _PickleSubclass
+        assert_array_equal(result, ia)
+
+    @pytest.mark.skipif(has_support_aspect64(), reason="device supports fp64")
+    def test_no_fp64(self):
+        # unpickling keeps the dtype instead of downcasting float64 data
+        func, args = dpnp.ones(3, dtype="f4").__reduce__()
+        args = (args[0], numpy.ones(3, dtype="f8"), args[2])
+        with pytest.raises(ValueError, match="double-precision"):
+            func(*args)
+
+
+class TestDeepCopy:
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    def test_basic(self, dtype):
+        a = generate_random_numpy_array((2, 3), dtype)
+        ia = dpnp.array(a)
+
+        result = copy.deepcopy(ia)
+        assert_array_equal(result, copy.deepcopy(a))
+
+        result[...] = 0
+        assert_array_equal(ia, a)
+
+    @_layouts
+    def test_layout(self, view):
+        a = numpy.arange(12, dtype="i4").reshape(3, 4)
+        ia = dpnp.array(a)
+
+        expected = copy.deepcopy(view(a))
+        result = copy.deepcopy(view(ia))
+        assert_array_equal(result, expected)
+        assert result.flags.c_contiguous == expected.flags.c_contiguous
+        assert result.flags.f_contiguous == expected.flags.f_contiguous
 
 
 class TestUsmNdarrayProtocol:

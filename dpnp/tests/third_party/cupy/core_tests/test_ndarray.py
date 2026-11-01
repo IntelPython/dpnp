@@ -232,7 +232,6 @@ class TestNdarrayInitRaise(unittest.TestCase):
         }
     )
 )
-@pytest.mark.skip("deepcopy() is not supported")
 class TestNdarrayDeepCopy(unittest.TestCase):
 
     def _check_deepcopy(self, arr, arr2):
@@ -244,15 +243,15 @@ class TestNdarrayDeepCopy(unittest.TestCase):
         testing.assert_array_equal(arr, arr2)
 
     def test_deepcopy(self):
-        arr = _core.ndarray(self.shape)
+        arr = cupy.ndarray(self.shape)
         arr2 = copy.deepcopy(arr)
         self._check_deepcopy(arr, arr2)
 
     @testing.multi_gpu(2)
     def test_deepcopy_multi_device(self):
-        arr = _core.ndarray(self.shape)
-        with cuda.Device(1):
-            arr2 = copy.deepcopy(arr)
+        arr = cupy.ndarray(self.shape)
+        # with cuda.Device(1):
+        arr2 = copy.deepcopy(arr)
         self._check_deepcopy(arr, arr2)
         assert arr2.device == arr.device
 
