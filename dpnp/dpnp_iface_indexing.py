@@ -2202,6 +2202,12 @@ def take(a, indices, /, *, axis=None, out=None, mode="wrap"):
     :obj:`dpnp.take_along_axis` : Take elements by matching the array and
                                   the index arrays.
 
+    Notes
+    -----
+    In contrast to :obj:`numpy.take`, which raises only when the result is
+    non-empty, :obj:`dpnp.take` raises ``IndexError`` for non-empty `indices`
+    along an empty `axis` even when the result is empty.
+
     Examples
     --------
     >>> import dpnp as np
