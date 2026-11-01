@@ -1,0 +1,10 @@
+﻿
+
+dpnp.scipy.special.erfcinv
+==========================
+
+.. currentmodule:: dpnp.scipy.special
+
+
+
+.. autodata:: erfcinv
