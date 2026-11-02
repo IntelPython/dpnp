@@ -1,0 +1,10 @@
+﻿
+
+dpnp.radians
+============
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: radians
