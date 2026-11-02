@@ -1,0 +1,10 @@
+﻿:orphan:
+
+dpnp.ndarray.\_\_deepcopy\_\_
+=============================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: ndarray.__deepcopy__
