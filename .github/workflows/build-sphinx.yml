@@ -89,12 +89,10 @@ jobs:
         run: |
           sudo apt-get install enchant-2
 
-      - name: Install nvidia-cuda support drivers
+      # CuPy, imported for the comparison table, needs libcuda.so.1; conda ships the rest of CUDA
+      - name: Install NVIDIA driver library
         run: |
-          sudo add-apt-repository ppa:graphics-drivers/ppa
-          sudo apt-get update
-          sudo apt-get install -y libnvidia-gl-550
-          sudo apt-get install -y nvidia-cuda-toolkit clinfo
+          sudo apt-get install -y libnvidia-compute-580
 
       - name: Checkout repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
