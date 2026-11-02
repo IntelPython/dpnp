@@ -238,9 +238,9 @@ set(_tensor_reductions_impl_sources
     ${_reduction_sources}
 )
 set(_tensor_sorting_impl_sources
+    ${_dpnp_sorting_sources}
     ${CMAKE_CURRENT_SOURCE_DIR}/tensor_sorting.cpp
     ${_sorting_sources}
-    ${_dpnp_sorting_sources}
 )
 set(_tensor_linalg_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/tensor_linalg.cpp
