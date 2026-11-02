@@ -244,7 +244,7 @@ sycl::event radix_sort_scan_submit(sycl::queue &exec_q,
                                    std::size_t n_values,
                                    std::size_t n_counts,
                                    CountT *counts_ptr,
-                                   const std::vector<sycl::event> depends)
+                                   const std::vector<sycl::event> &depends)
 {
     const std::size_t no_op_flag_id = n_counts - 1;
 
@@ -527,7 +527,7 @@ sycl::event
                               OffsetT *offset_ptr,
                               const ProjT &proj_op,
                               const bool is_ascending,
-                              const std::vector<sycl::event> dependency_events)
+                              const std::vector<sycl::event> &dependency_events)
 {
     using ValueT = InputT;
     using PeerHelper = peer_prefix_helper<OffsetT, PeerAlgo>;

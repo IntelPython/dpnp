@@ -395,7 +395,7 @@ PYBIND11_MODULE(_tensor_impl, m, py::mod_gil_not_used())
     auto tril_fn = [](const dpnp::tensor::usm_ndarray &src,
                       const dpnp::tensor::usm_ndarray &dst, py::ssize_t k,
                       sycl::queue &exec_q,
-                      const std::vector<sycl::event> depends)
+                      const std::vector<sycl::event> &depends)
         -> std::pair<sycl::event, sycl::event> {
         return usm_ndarray_triul(exec_q, src, dst, 'l', k, depends);
     };
@@ -406,7 +406,7 @@ PYBIND11_MODULE(_tensor_impl, m, py::mod_gil_not_used())
     auto triu_fn = [](const dpnp::tensor::usm_ndarray &src,
                       const dpnp::tensor::usm_ndarray &dst, py::ssize_t k,
                       sycl::queue &exec_q,
-                      const std::vector<sycl::event> depends)
+                      const std::vector<sycl::event> &depends)
         -> std::pair<sycl::event, sycl::event> {
         return usm_ndarray_triul(exec_q, src, dst, 'u', k, depends);
     };
@@ -461,7 +461,7 @@ PYBIND11_MODULE(_tensor_impl, m, py::mod_gil_not_used())
                               const dpnp::tensor::usm_ndarray &reps,
                               const dpnp::tensor::usm_ndarray &cumsum,
                               std::optional<int> axis, sycl::queue &exec_q,
-                              const std::vector<sycl::event> depends)
+                              const std::vector<sycl::event> &depends)
         -> std::pair<sycl::event, sycl::event> {
         if (axis) {
             return py_repeat_by_sequence(src, dst, reps, cumsum, axis.value(),
@@ -480,7 +480,7 @@ PYBIND11_MODULE(_tensor_impl, m, py::mod_gil_not_used())
                             const dpnp::tensor::usm_ndarray &dst,
                             const py::ssize_t reps, std::optional<int> axis,
                             sycl::queue &exec_q,
-                            const std::vector<sycl::event> depends)
+                            const std::vector<sycl::event> &depends)
         -> std::pair<sycl::event, sycl::event> {
         if (axis) {
             return py_repeat_by_scalar(src, dst, reps, axis.value(), exec_q,

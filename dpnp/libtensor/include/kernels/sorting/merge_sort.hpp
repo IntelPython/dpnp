@@ -535,7 +535,7 @@ sycl::event sort_over_work_group_contig_impl(
 class vacuous_krn;
 
 inline sycl::event tie_events(sycl::queue &q,
-                              const std::vector<sycl::event> depends)
+                              const std::vector<sycl::event> &depends)
 {
     if (depends.empty())
         return sycl::event();
