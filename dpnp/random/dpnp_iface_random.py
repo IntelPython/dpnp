@@ -30,9 +30,11 @@
 The functions of :mod:`dpnp.random` of NumPy's legacy API.
 
 Every function draws from a :class:`dpnp.random.RandomState` of the SYCL
-queue given by `device` or `sycl_queue`. Without either, the queue of the
-first parameter that is a :class:`dpnp.ndarray` is used, or else the default
-queue. There is one state per queue, which :func:`seed` reseeds.
+queue given by `device` or `sycl_queue`. Without either, the common queue of
+the parameters that are :class:`dpnp.ndarray` is used, or else the default
+queue, and parameters on incompatible queues raise
+:class:`dpnp.exceptions.ExecutionPlacementError`. There is one state per
+queue, which :func:`seed` reseeds.
 
     .. seealso:: :obj:`numpy.random`
 
@@ -44,6 +46,8 @@ queue. There is one state per queue, which :func:`seed` reseeds.
 import threading
 
 import dpnp
+import dpnp.tensor as dpt
+from dpnp.exceptions import ExecutionPlacementError
 
 from ._bit_generator import BitGenerator, Philox4x3210
 from .dpnp_random_state import RandomState, _reseed_in_place
@@ -95,16 +99,21 @@ def _params_doc(func):
 
 def _get_random_state(device=None, sycl_queue=None, arrays=()):
     """
-    The state of the queue of `device` or `sycl_queue`, or else of the first
-    array of `arrays`, or else of the default queue.
+    The state of the queue of `device` or `sycl_queue`, or else of the common
+    queue of the arrays of `arrays`, or else of the default queue.
 
     """
 
     if device is None and sycl_queue is None:
-        for x in arrays:
-            if dpnp.is_supported_array_type(x):
-                sycl_queue = x.sycl_queue
-                break
+        queues = [
+            x.sycl_queue for x in arrays if dpnp.is_supported_array_type(x)
+        ]
+        if queues:
+            sycl_queue = dpt.get_execution_queue(queues)
+            if sycl_queue is None:
+                raise ExecutionPlacementError(
+                    "Input arrays have incompatible allocation queues"
+                )
     sycl_queue = dpnp.get_normalized_queue_device(
         device=device, sycl_queue=sycl_queue
     )

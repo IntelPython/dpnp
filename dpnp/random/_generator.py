@@ -46,6 +46,8 @@ import numpy
 
 import dpnp
 import dpnp.libtensor._rng_impl as ri
+import dpnp.tensor as dpt
+from dpnp.exceptions import ExecutionPlacementError
 from dpnp.tensor import validate_usm_type
 from dpnp.tensor._numpy_helper import normalize_axis_index
 
@@ -392,6 +394,25 @@ class Generator:
         """The SYCL device samples are drawn on."""
         return self._bit_generator.sycl_device
 
+    def _check_queues(self, *values):
+        """
+        Raise ExecutionPlacementError unless every array of `values` is on
+        the queue of the generator.
+
+        """
+
+        queues = [
+            x.sycl_queue for x in values if dpnp.is_supported_array_type(x)
+        ]
+        if (
+            queues
+            and dpt.get_execution_queue([self.sycl_queue] + queues) is None
+        ):
+            raise ExecutionPlacementError(
+                "Input arrays and the generator have incompatible allocation "
+                "queues"
+            )
+
     def spawn(self, n_children):
         """
         Create new independent child generators on the same SYCL queue.
@@ -466,6 +487,7 @@ class Generator:
 
         """
 
+        self._check_queues(*params, *(kernel_params or ()), out)
         queue = self.sycl_queue
 
         param_shape = numpy.broadcast_shapes(
@@ -549,6 +571,7 @@ class Generator:
         """
 
         values = tuple(p[0] for p in params)
+        self._check_queues(*values, out)
         scalar = _is_scalar_path(*values)
         for value, pname, cons in params:
             _check_constraint(
@@ -595,18 +618,15 @@ class Generator:
             double_precision=ft == numpy.float64,
         )
 
-    def _permutation_index(self, n, queue=None):
+    def _permutation_index(self, n, usm_type="device"):
         """
-        A random permutation of ``arange(n)``, as ``int64`` values on `queue`
-        or on the queue of the generator.
+        A random permutation of ``arange(n)``, as ``int64`` values allocated
+        with `usm_type`.
 
         """
 
-        keys = self._bit_generator.random_raw(max(n, 0))
-        idx = dpnp.argsort(keys)
-        if queue is not None:
-            idx = dpnp.asarray(idx, sycl_queue=queue)
-        return idx
+        keys = self._bit_generator.random_raw(max(n, 0), usm_type=usm_type)
+        return dpnp.argsort(keys)
 
     def random(self, size=None, dtype=None, out=None, *, usm_type="device"):
         """
@@ -645,6 +665,7 @@ class Generator:
 
         """
 
+        self._check_queues(low, high)
         scalar = _is_scalar_path(low, high)
         rng = _uniform_range(
             low,
@@ -1000,6 +1021,7 @@ class Generator:
         """
 
         params = (left, mode, right)
+        self._check_queues(*params)
         xp, (fleft, fmode, fright) = _check_arrays(
             params, self._check_device, numpy.float64
         )
@@ -1054,6 +1076,7 @@ class Generator:
 
         """
 
+        self._check_queues(shape, out)
         _check_constraint(
             shape,
             "shape",
@@ -1241,6 +1264,7 @@ class Generator:
 
         """
 
+        self._check_queues(lam)
         _check_constraint(
             lam,
             "lam",
@@ -1263,6 +1287,7 @@ class Generator:
 
         """
 
+        self._check_queues(n, p)
         scalar = _is_scalar_path(n, p)
         # NumPy converts both parameters before checking either
         n = _as_int64(n)
@@ -1289,6 +1314,7 @@ class Generator:
 
         """
 
+        self._check_queues(n, p)
         # NumPy takes scalar parameters as arrays here, so None gives NaN
         _check_constraint(
             n, "n", _CONS_POSITIVE_NOT_NAN, False, device=self._check_device
@@ -1325,6 +1351,7 @@ class Generator:
 
         """
 
+        self._check_queues(p)
         _check_constraint(
             p,
             "p",
@@ -1347,6 +1374,7 @@ class Generator:
 
         """
 
+        self._check_queues(p)
         _check_constraint(
             p,
             "p",
@@ -1368,6 +1396,7 @@ class Generator:
 
         """
 
+        self._check_queues(a)
         _check_constraint(
             a, "a", _CONS_GT_1, _is_scalar_path(a), device=self._check_device
         )
@@ -1388,6 +1417,7 @@ class Generator:
 
         """
 
+        self._check_queues(ngood, nbad, nsample)
         params = tuple(_as_int64(x) for x in (ngood, nbad, nsample))
         names = ("ngood", "nbad", "nsample")
         scalar = _is_scalar_path(*params)
@@ -1429,6 +1459,7 @@ class Generator:
 
         """
 
+        self._check_queues(alpha)
         validate_usm_type(usm_type, allow_none=False)
         dtype = self._float_dtype(dtype, "dirichlet")
         queue = self.sycl_queue
@@ -1509,6 +1540,7 @@ class Generator:
 
         """
 
+        self._check_queues(n, pvals)
         validate_usm_type(usm_type, allow_none=False)
         queue = self.sycl_queue
         ft = self._discrete_float_type()
@@ -1619,6 +1651,7 @@ class Generator:
 
         """
 
+        self._check_queues(colors)
         validate_usm_type(usm_type, allow_none=False)
         if method not in ("count", "marginals"):
             raise ValueError('method must be "count" or "marginals".')
@@ -1741,6 +1774,7 @@ class Generator:
                 "method must be one of {'eigh', 'svd', 'cholesky'}"
             )
 
+        self._check_queues(mean, cov)
         validate_usm_type(usm_type, allow_none=False)
         dtype = self._float_dtype(dtype, "multivariate_normal")
         queue = self.sycl_queue
@@ -1816,22 +1850,15 @@ class Generator:
         For full documentation refer to
         :obj:`numpy.random.Generator.permutation`.
 
-        Limitations
-        -----------
-        A permutation of an array on another SYCL queue is allocated on that
-        queue.
-
         """
 
         if isinstance(x, (int, numpy.integer)):
             return self._permutation_index(int(x))
 
-        if dpnp.is_supported_array_type(x):
-            arr = dpnp.asarray(x)
-        else:
-            arr = dpnp.asarray(x, sycl_queue=self.sycl_queue)
+        self._check_queues(x)
+        arr = dpnp.asarray(x, sycl_queue=self.sycl_queue)
         axis = normalize_axis_index(axis, arr.ndim)
-        idx = self._permutation_index(arr.shape[axis], arr.sycl_queue)
+        idx = self._permutation_index(arr.shape[axis], arr.usm_type)
         return dpnp.take(arr, idx, axis=axis)
 
     def shuffle(self, x, axis=0):
@@ -1849,10 +1876,11 @@ class Generator:
 
         if not isinstance(x, dpnp.ndarray):
             raise TypeError(f"x must be a dpnp.ndarray, got {type(x)}")
+        self._check_queues(x)
         if x.ndim == 0:
             raise TypeError("len() of unsized object")
         axis = normalize_axis_index(axis, x.ndim)
-        idx = self._permutation_index(x.shape[axis], x.sycl_queue)
+        idx = self._permutation_index(x.shape[axis], x.usm_type)
         x[...] = dpnp.take(x, idx, axis=axis)
 
     def permuted(self, x, *, axis=None, out=None):
@@ -1868,10 +1896,8 @@ class Generator:
 
         """
 
-        if dpnp.is_supported_array_type(x):
-            x = dpnp.asarray(x)
-        else:
-            x = dpnp.asarray(x, sycl_queue=self.sycl_queue)
+        self._check_queues(x, out)
+        x = dpnp.asarray(x, sycl_queue=self.sycl_queue)
 
         if out is not None:
             if not isinstance(out, dpnp.ndarray):
@@ -1887,14 +1913,12 @@ class Generator:
         if axis is None:
             if x.ndim == 0:
                 raise TypeError("len() of unsized object")
-            idx = self._permutation_index(x.size, x.sycl_queue)
+            idx = self._permutation_index(x.size, x.usm_type)
             res = dpnp.take(dpnp.ravel(x), idx).reshape(x.shape)
         else:
             axis = normalize_axis_index(axis, x.ndim)
-            keys = self._bit_generator.random_raw(x.shape)
-            idx = dpnp.asarray(
-                dpnp.argsort(keys, axis=axis), sycl_queue=x.sycl_queue
-            )
+            keys = self._bit_generator.random_raw(x.shape, usm_type=x.usm_type)
+            idx = dpnp.argsort(keys, axis=axis)
             res = dpnp.take_along_axis(x, idx, axis=axis)
 
         if out is None:
@@ -1939,6 +1963,7 @@ class Generator:
 
         """
 
+        self._check_queues(a, p)
         validate_usm_type(usm_type, allow_none=False)
         queue = self.sycl_queue
         no_samples = size is not None and numpy.prod(size) == 0
@@ -1998,7 +2023,9 @@ class Generator:
                 if abs(p_sum - 1.0) > atol:
                     raise ValueError(msgs["p_sum"])
             ft = dpnp.default_float_type(sycl_queue=queue)
-            p_dev = dpnp.asarray(p_dev, dtype=ft, sycl_queue=queue)
+            p_dev = dpnp.asarray(
+                p_dev, dtype=ft, usm_type=usm_type, sycl_queue=queue
+            )
 
         shape = () if size is None else _normalize_size(size)
         n = int(numpy.prod(shape, dtype=numpy.int64))
@@ -2023,16 +2050,18 @@ class Generator:
         elif p is not None:
             # The Efraimidis-Spirakis keys: taking the smallest ones gives
             # the successive weighted draws of NumPy, in the order drawn
-            keys = self.standard_exponential(pop_size, dtype=ft) / p_dev
+            keys = (
+                self.standard_exponential(pop_size, dtype=ft, usm_type=usm_type)
+                / p_dev
+            )
             idx = dpnp.argsort(keys)[:n].reshape(shape)
         else:
-            idx = self._permutation_index(pop_size)[:n].reshape(shape)
+            idx = self._permutation_index(pop_size, usm_type)[:n].reshape(shape)
 
         if a.ndim == 0:
             return idx
         if not isinstance(a, dpnp.ndarray):
             a = dpnp.asarray(a, usm_type=usm_type, sycl_queue=queue)
-        idx = dpnp.asarray(idx, sycl_queue=a.sycl_queue)
         return dpnp.take(a, idx, axis=axis)
 
     def integers(
@@ -2067,6 +2096,7 @@ class Generator:
     def _integers(self, low, high, size, dtype, endpoint, usm_type, name):
         """The implementation of :meth:`integers`, for the method `name`."""
 
+        self._check_queues(low, high)
         validate_usm_type(usm_type, allow_none=False)
 
         if high is None:

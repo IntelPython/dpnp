@@ -25,7 +25,7 @@ class TestPermutations(unittest.TestCase):
     # Test ranks
 
     # TODO(niboshi): Fix xfail
-    @pytest.mark.xfail(reason="Explicit error types required")
+    # @pytest.mark.xfail(reason="Explicit error types required")
     def test_permutation_zero_dim(self):
         for xp in (numpy, cupy):
             xp_random = self._xp_random(xp)

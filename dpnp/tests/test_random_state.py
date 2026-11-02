@@ -267,8 +267,13 @@ class TestBitGenerator:
 
     @pytest.mark.parametrize("xp", [dpnp, numpy])
     def test_class(self, xp):
+        # NumPy keeps the class as its global bit generator after raising
+        saved = numpy.random.get_bit_generator()
         bg_type = xp.random.PCG64DXSM
-        assert_raises(ValueError, xp.random.set_bit_generator, bg_type)
+        try:
+            assert_raises(ValueError, xp.random.set_bit_generator, bg_type)
+        finally:
+            numpy.random.set_bit_generator(saved)
 
     @pytest.mark.parametrize("bitgen", [None, 5, numpy.random.PCG64DXSM(1)])
     def test_not_a_bit_generator(self, bitgen):

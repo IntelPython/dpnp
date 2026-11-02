@@ -1832,3 +1832,78 @@ class TestLinAlgebra:
         assert result.usm_type == dpt.get_coerced_usm_type(
             [usm_type, usm_type_other]
         )
+
+
+@pytest.mark.parametrize(
+    "func, args, kwargs",
+    [
+        pytest.param("choice", [5], {"size": 3}),
+        pytest.param(
+            "choice", [5], {"size": 3, "p": [0.1, 0.2, 0.3, 0.2, 0.2]}
+        ),
+        pytest.param("choice", [5], {"size": 3, "replace": False}),
+        pytest.param(
+            "choice",
+            [5],
+            {"size": 3, "replace": False, "p": [0.1, 0.2, 0.3, 0.2, 0.2]},
+        ),
+        pytest.param("dirichlet", [[0.05, 0.05]], {"size": 3}),
+        pytest.param("dirichlet", [[0.5, 1.5]], {"size": 3}),
+        pytest.param("hypergeometric", [5, 7, 4], {"size": 3}),
+        pytest.param("integers", [[3, 5], [7, 9]], {}),
+        pytest.param("multinomial", [5, [0.2, 0.8]], {"size": 3}),
+        pytest.param("multivariate_hypergeometric", [[3, 4], 2], {"size": 3}),
+        pytest.param(
+            "multivariate_normal", [[0.0, 0.0], [[1.0, 0.0], [0.0, 1.0]]], {}
+        ),
+        pytest.param("normal", [[1.0, 2.0]], {}),
+        pytest.param("poisson", [3.0], {"size": 3}),
+        pytest.param("random", [3], {}),
+        pytest.param("standard_gamma", [2.0], {"size": 3}),
+        pytest.param("triangular", [0.0, 1.0, 3.0], {"size": 3}),
+        pytest.param("uniform", [], {"size": 3}),
+    ],
+)
+@pytest.mark.parametrize("usm_type", list_of_usm_types)
+def test_generator(func, args, kwargs, usm_type):
+    for rng in (dpnp.random.default_rng(1), dpnp.random.RandomState(1)):
+        meth = getattr(rng, func, None)
+        if meth is None:  # a Generator method RandomState doesn't have
+            continue
+        res = meth(*args, **kwargs, usm_type=usm_type)
+        assert res.usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types)
+def test_generator_array_params(usm_type):
+    rng = dpnp.random.default_rng(1)
+    x = dpnp.full(4, 2.0, usm_type=usm_type)
+    p = dpnp.full(4, 0.25, usm_type=usm_type)
+
+    assert rng.normal(x, usm_type=usm_type).usm_type == usm_type
+    assert rng.choice(x, 3, p=p, usm_type=usm_type).usm_type == usm_type
+    assert rng.multinomial(5, p, usm_type=usm_type).usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types)
+def test_generator_permutations(usm_type):
+    rng = dpnp.random.default_rng(1)
+    x = dpnp.arange(12, usm_type=usm_type).reshape(3, 4)
+
+    assert rng.permutation(x).usm_type == usm_type
+    assert rng.permutation(x, axis=1).usm_type == usm_type
+    assert rng.permuted(x).usm_type == usm_type
+    assert rng.permuted(x, axis=1).usm_type == usm_type
+    assert dpnp.random.RandomState(1).permutation(x).usm_type == usm_type
+
+    rng.shuffle(x)
+    assert x.usm_type == usm_type
+
+
+@pytest.mark.parametrize(
+    "bit_generator", [dpnp.random.Philox4x3210, dpnp.random.PCG64DXSM]
+)
+@pytest.mark.parametrize("usm_type", list_of_usm_types)
+def test_bit_generator(bit_generator, usm_type):
+    res = bit_generator(1).random_raw(5, usm_type=usm_type)
+    assert res.usm_type == usm_type

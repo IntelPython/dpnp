@@ -925,6 +925,216 @@ def test_random_state(func, args, kwargs, device, usm_type):
     assert_sycl_queue_equal(res_array.sycl_queue, sycl_queue)
 
 
+_generator_methods = [
+    pytest.param("beta", [0.5, 2.0], {"size": (3, 4)}),
+    pytest.param("binomial", [10, 0.3], {"size": (3, 4)}),
+    pytest.param("chisquare", [3.0], {"size": (3, 4)}),
+    pytest.param(
+        "choice", [5], {"size": (3, 4), "p": [0.1, 0.2, 0.3, 0.2, 0.2]}
+    ),
+    pytest.param("choice", [5], {"size": 3, "replace": False}),
+    pytest.param("dirichlet", [[0.5, 1.5]], {"size": 3}),
+    pytest.param("exponential", [2.0], {"size": (3, 4)}),
+    pytest.param("f", [2.0, 3.0], {"size": (3, 4)}),
+    pytest.param("gamma", [2.0], {"size": (3, 4)}),
+    pytest.param("geometric", [0.3], {"size": (3, 4)}),
+    pytest.param("gumbel", [], {"size": (3, 4)}),
+    pytest.param("hypergeometric", [5, 7, 4], {"size": (3, 4)}),
+    pytest.param("integers", [0, 10], {"size": (3, 4)}),
+    pytest.param("laplace", [], {"size": (3, 4)}),
+    pytest.param("logistic", [], {"size": (3, 4)}),
+    pytest.param("lognormal", [], {"size": (3, 4)}),
+    pytest.param("logseries", [0.5], {"size": (3, 4)}),
+    pytest.param("multinomial", [5, [0.2, 0.8]], {"size": 3}),
+    pytest.param("multivariate_hypergeometric", [[3, 4], 2], {"size": 3}),
+    pytest.param(
+        "multivariate_normal", [[0.0, 0.0], [[1.0, 0.0], [0.0, 1.0]]], {}
+    ),
+    pytest.param("negative_binomial", [3, 0.4], {"size": (3, 4)}),
+    pytest.param("noncentral_chisquare", [3.0, 1.0], {"size": (3, 4)}),
+    pytest.param("noncentral_f", [2.0, 3.0, 1.0], {"size": (3, 4)}),
+    pytest.param("normal", [], {"size": (3, 4)}),
+    pytest.param("pareto", [2.0], {"size": (3, 4)}),
+    pytest.param("permutation", [5], {}),
+    pytest.param("poisson", [3.0], {"size": (3, 4)}),
+    pytest.param("power", [2.0], {"size": (3, 4)}),
+    pytest.param("random", [], {"size": (3, 4)}),
+    pytest.param("rayleigh", [], {"size": (3, 4)}),
+    pytest.param("standard_cauchy", [], {"size": (3, 4)}),
+    pytest.param("standard_exponential", [], {"size": (3, 4)}),
+    pytest.param("standard_gamma", [2.0], {"size": (3, 4)}),
+    pytest.param("standard_normal", [], {"size": (3, 4)}),
+    pytest.param("standard_t", [3.0], {"size": (3, 4)}),
+    pytest.param("triangular", [0.0, 1.0, 3.0], {"size": (3, 4)}),
+    pytest.param("uniform", [], {"size": (3, 4)}),
+    pytest.param("vonmises", [0.0, 1.0], {"size": (3, 4)}),
+    pytest.param("wald", [1.0, 2.0], {"size": (3, 4)}),
+    pytest.param("weibull", [2.0], {"size": (3, 4)}),
+    pytest.param("zipf", [2.0], {"size": (3, 4)}),
+]
+
+
+@pytest.mark.parametrize("func, args, kwargs", _generator_methods)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
+def test_generator(func, args, kwargs, device):
+    rng = dpnp.random.default_rng(1, device=device)
+    res = getattr(rng, func)(*args, **kwargs)
+    assert res.sycl_device == device
+    assert_sycl_queue_equal(res.sycl_queue, rng.sycl_queue)
+
+    sycl_queue = dpctl.SyclQueue(device, property="in_order")
+    rng = dpnp.random.default_rng(1, sycl_queue=sycl_queue)
+    res = getattr(rng, func)(*args, **kwargs)
+    assert_sycl_queue_equal(res.sycl_queue, sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "bit_generator", [dpnp.random.Philox4x3210, dpnp.random.PCG64DXSM]
+)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
+def test_bit_generator(bit_generator, device):
+    sycl_queue = dpctl.SyclQueue(device, property="in_order")
+    bg = bit_generator(1, sycl_queue=sycl_queue)
+    assert_sycl_queue_equal(bg.random_raw(5).sycl_queue, sycl_queue)
+    for child in bg.spawn(2):
+        assert_sycl_queue_equal(child.sycl_queue, sycl_queue)
+
+    bg = bit_generator(1, device=device)
+    assert bg.random_raw(5).sycl_device == device
+
+
+@pytest.mark.parametrize("func", ["permutation", "permuted", "shuffle"])
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
+def test_generator_permutations(func, device):
+    sycl_queue = dpctl.SyclQueue(device)
+    rng = dpnp.random.default_rng(1, sycl_queue=sycl_queue)
+    x = dpnp.arange(10, sycl_queue=sycl_queue)
+    res = getattr(rng, func)(x)
+    if res is None:
+        res = x
+    assert_sycl_queue_equal(res.sycl_queue, sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "func, args",
+    [
+        pytest.param("normal", ["f"]),
+        pytest.param("permutation", ["f"]),
+        pytest.param("poisson", ["f"]),
+        pytest.param("randint", ["i"]),
+        pytest.param("shuffle", ["f"]),
+    ],
+)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
+def test_random_param_queue(func, args, device):
+    # with no device given, the functions use the queue of the parameters
+    sycl_queue = dpctl.SyclQueue(device)
+    x = {
+        "f": dpnp.full(4, 2.0, sycl_queue=sycl_queue),
+        "i": dpnp.full(4, 5, sycl_queue=sycl_queue),
+    }
+    res = getattr(dpnp.random, func)(*[x[a] for a in args])
+    if res is None:
+        res = x[args[0]]
+    assert_sycl_queue_equal(res.sycl_queue, sycl_queue)
+
+
+# "f", "i" and "p" stand for float, integer and probability arrays on another
+# queue than the generator's
+_diff_queue_methods = [
+    pytest.param("binomial", ["i", 0.5]),
+    pytest.param("choice", ["f"]),
+    pytest.param("choice", [4, None, True, "p"]),
+    pytest.param("dirichlet", ["f"]),
+    pytest.param("geometric", ["p"]),
+    pytest.param("hypergeometric", ["i", "i", 1]),
+    pytest.param("logseries", ["p"]),
+    pytest.param("multinomial", [5, "p"]),
+    pytest.param("multivariate_normal", ["f", numpy.eye(4).tolist()]),
+    pytest.param("negative_binomial", ["f", 0.5]),
+    pytest.param("normal", ["f"]),
+    pytest.param("permutation", ["f"]),
+    pytest.param("poisson", ["f"]),
+    pytest.param("shuffle", ["f"]),
+    pytest.param("standard_gamma", ["f"]),
+    pytest.param("triangular", [0.0, "f", 5.0]),
+    pytest.param("uniform", ["f", 5.0]),
+    pytest.param("zipf", ["f"]),
+]
+
+
+def _diff_queue_args(args, device):
+    sycl_queue = dpctl.SyclQueue(device)
+    x = {
+        "f": dpnp.full(4, 2.0, sycl_queue=sycl_queue),
+        "i": dpnp.full(4, 5, sycl_queue=sycl_queue),
+        "p": dpnp.full(4, 0.25, sycl_queue=sycl_queue),
+    }
+    return [x[a] if isinstance(a, str) else a for a in args]
+
+
+@pytest.mark.parametrize(
+    "func, args",
+    _diff_queue_methods
+    + [
+        pytest.param("integers", ["i"]),
+        pytest.param("multivariate_hypergeometric", ["i", 2]),
+        pytest.param("permuted", ["f"]),
+        pytest.param("permuted", [[1.0, 2.0, 3.0, 4.0]], id="permuted-out"),
+        pytest.param("random", [4, None], id="random-out"),
+    ],
+)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
+def test_generator_diff_queue(func, args, device):
+    rng = dpnp.random.default_rng(1, device=device)
+    args = _diff_queue_args(args, device)
+    kwargs = {}
+    if func in ("permuted", "random") and not dpnp.is_supported_array_type(
+        args[0]
+    ):
+        kwargs["out"] = _diff_queue_args(["f"], device)[0]
+    with assert_raises(ExecutionPlacementError):
+        getattr(rng, func)(*args, **kwargs)
+
+
+@pytest.mark.parametrize(
+    "func, args", _diff_queue_methods + [pytest.param("randint", ["i"])]
+)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
+def test_random_state_diff_queue(func, args, device):
+    rs = dpnp.random.RandomState(1, device=device)
+    args = _diff_queue_args(args, device)
+    with assert_raises(ExecutionPlacementError):
+        getattr(rs, func)(*args)
+    if func != "shuffle":  # shuffle has no device keyword, as in NumPy
+        with assert_raises(ExecutionPlacementError):
+            getattr(dpnp.random, func)(*args, device=device)
+
+
+@pytest.mark.parametrize(
+    "func, args",
+    [
+        pytest.param("binomial", ["i", "p"]),
+        pytest.param("choice", ["f", None, True, "p"]),
+        pytest.param("hypergeometric", ["i", "i", 1]),
+        pytest.param("normal", ["f", "f"]),
+        pytest.param("triangular", [0.0, "f", "f"]),
+        pytest.param("uniform", ["f", "f"]),
+    ],
+)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
+def test_random_func_params_diff_queue(func, args, device):
+    # each array on its own queue
+    args = [
+        _diff_queue_args([a], device)[0] if isinstance(a, str) else a
+        for a in args
+    ]
+    n_states = len(dpnp.random.dpnp_iface_random._dpnp_random_states)
+    with assert_raises(ExecutionPlacementError):
+        getattr(dpnp.random, func)(*args)
+    assert len(dpnp.random.dpnp_iface_random._dpnp_random_states) == n_states
+
+
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_einsum(device):
     array_list = []

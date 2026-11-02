@@ -494,6 +494,7 @@ class RandomState:
         :obj:`numpy.random.RandomState.dirichlet`.
 
         """
+        self._generator._check_queues(alpha)
         if dpnp.is_supported_array_type(alpha):
             # the Generator copies alpha to the host anyway
             alpha = dpnp.asnumpy(alpha)
@@ -576,6 +577,7 @@ class RandomState:
         `nbad` must be less than 10**9.
 
         """
+        self._generator._check_queues(ngood, nbad, nsample)
         params = tuple(_as_int64(x) for x in (ngood, nbad, nsample))
         xp, (good, bad, sample) = _check_arrays(params, True)
         if xp.any(good + bad < sample):
@@ -659,6 +661,7 @@ class RandomState:
         :obj:`numpy.random.RandomState.multinomial`.
 
         """
+        self._generator._check_queues(n, pvals)
         t = type(n)
         if _is_array(n) or not (
             hasattr(t, "__int__") or hasattr(t, "__index__")
@@ -733,6 +736,7 @@ class RandomState:
         too large for the Poisson distribution, as for ``p == 0``.
 
         """
+        self._generator._check_queues(n, p)
         scalar = _is_scalar_path(n, p)
         _check_constraint(n, "n", _CONS_POSITIVE, scalar, device=True)
         _check_constraint(p, "p", _CONS_BOUNDED_0_1, scalar, device=True)
