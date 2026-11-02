@@ -356,18 +356,19 @@ foreach(_src_fn ${_dpnp_sources})
 endforeach()
 
 if(DPNP_GENERATE_COVERAGE)
-    # libtensor code the dpnp functions use, measured like the dpnp sources
-    target_compile_options(
-        ${_static_lib_trgt}
-        PRIVATE -fprofile-instr-generate -fcoverage-mapping
-    )
+    # libtensor code the dpnp functions use, measured like the dpnp sources.
+    # Host only: their device coverage records break sycl-link
+    # (a source property, unlike target options, keeps the repeated -Xarch_host)
     set_property(
         SOURCE
+            ${_static_lib_sources}
             ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/elementwise_functions_type_utils.cpp
         APPEND
         PROPERTY
             COMPILE_OPTIONS
+                -Xarch_host
                 -fprofile-instr-generate
+                -Xarch_host
                 -fcoverage-mapping
                 -fno-sycl-use-footer
     )
