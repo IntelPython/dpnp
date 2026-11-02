@@ -3321,6 +3321,12 @@
 <span class="sd">    :obj:`dpnp.take_along_axis` : Take elements by matching the array and</span>
 <span class="sd">                                  the index arrays.</span>
 
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    In contrast to :obj:`numpy.take`, which raises only when the result is</span>
+<span class="sd">    non-empty, :obj:`dpnp.take` raises ``IndexError`` for non-empty `indices`</span>
+<span class="sd">    along an empty `axis` even when the result is empty.</span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
