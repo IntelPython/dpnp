@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2026, Intel Corporation
+// Copyright (c) 2024, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -558,7 +558,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
     const dpnp::tensor::usm_ndarray &src2,
     const dpnp::tensor::usm_ndarray &dst, // dst = op(src1, src2), elementwise
     sycl::queue &exec_q,
-    const std::vector<sycl::event> depends,
+    const std::vector<sycl::event> &depends,
     //
     const output_typesT &output_type_table,
     const contig_dispatchT &contig_dispatch_table,
@@ -1134,7 +1134,7 @@ std::pair<sycl::event, sycl::event>
     py_binary_inplace_ufunc(const dpnp::tensor::usm_ndarray &lhs,
                             const dpnp::tensor::usm_ndarray &rhs,
                             sycl::queue &exec_q,
-                            const std::vector<sycl::event> depends,
+                            const std::vector<sycl::event> &depends,
                             //
                             const output_typesT &output_type_table,
                             const contig_dispatchT &contig_dispatch_table,
