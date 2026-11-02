@@ -1986,6 +1986,9 @@ def test_flags():
     assert f.forc == f["FORC"]
     assert f.fnc == f["FNC"]
     assert f.writable == f["W"]
+    for key in ["WRITEABLE", "OWNDATA", "c", "unknown key"]:
+        with pytest.raises(KeyError, match="Unknown flag"):
+            f[key]
 
 
 def test_asarray_uint64():

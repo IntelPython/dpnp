@@ -150,6 +150,8 @@ cdef class Flags:
             return self.fnc
         elif name in ["FORC", "CONTIGUOUS"]:
             return self.forc
+        else:
+            raise KeyError("Unknown flag")
 
     def __setitem__(self, name, val):
         if name in ["WRITABLE", "W"]:
