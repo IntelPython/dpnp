@@ -73,6 +73,10 @@ class TestIsScalarValues2(testing.NumpyAliasValuesTestBase):
 )
 class TestIsFortran(unittest.TestCase):
 
+    # both numpy.isfortran (NumPy 2.6+) and dpnp.isfortran are deprecated
+    @pytest.mark.filterwarnings(
+        "ignore:.*isfortran is deprecated:DeprecationWarning"
+    )
     @testing.numpy_cupy_equal()
     def test(self, xp):
         return xp.isfortran(xp.asarray(self.value))
