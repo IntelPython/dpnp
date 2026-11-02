@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.ndarray.tofile
+===================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: ndarray.tofile
