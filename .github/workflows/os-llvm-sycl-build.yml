@@ -38,6 +38,8 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0
+          # Blobless: all commits and tags for git describe, no gh-pages blobs
+          filter: blob:none
 
       - name: Load pinned SYCL build deps
         env:
@@ -126,6 +128,8 @@ jobs:
           persist-credentials: false
           repository: IntelPython/dpctl
           fetch-depth: 0
+          # Blobless: all commits and tags for git describe, no gh-pages blobs
+          filter: blob:none
           path: ${{ env.dpctl-repo-path }}
 
       - name: Install dpnp dependencies

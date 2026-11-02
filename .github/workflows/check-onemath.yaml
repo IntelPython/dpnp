@@ -59,6 +59,8 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0
+          # Blobless: all commits and tags for git describe, no gh-pages blobs
+          filter: blob:none
 
       - name: Install conda-merge tool
         uses: BSFishy/pip-action@8f2d471d809dc20b6ada98c91910b6ae6243f318 # v1
@@ -118,6 +120,8 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0
+          # Blobless: all commits and tags for git describe, no gh-pages blobs
+          filter: blob:none
 
       - name: Download artifact
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
@@ -239,6 +243,8 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0
+          # Blobless: all commits and tags for git describe, no gh-pages blobs
+          filter: blob:none
 
       - name: Download artifact
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2

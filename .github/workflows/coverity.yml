@@ -28,6 +28,8 @@ jobs:
         with:
           # versioneer needs the tags to compute the package version
           fetch-depth: 0
+          # Blobless: all commits and tags for git describe, no gh-pages blobs
+          filter: blob:none
           persist-credentials: false
 
       - name: Add Intel repository
