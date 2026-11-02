@@ -1071,8 +1071,6 @@
 <dt class="sig sig-object py" id="dpnp.isfortran">
 <span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">isfortran</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_logic.html#isfortran"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.isfortran" title="Link to this definition">¶</a></dt>
 <dd><p>Check if the array is Fortran contiguous but <em>not</em> C contiguous.</p>
-<p>This function is obsolete. If you only want to check if an array is Fortran
-contiguous use <code class="docutils literal notranslate"><span class="pre">a.flags.f_contiguous</span></code> instead.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.isfortran.html#numpy.isfortran" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.isfortran</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1089,6 +1087,12 @@ but <em>not</em> C contiguous.</p>
 </dl>
 </dd>
 </dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This function is deprecated and will be removed in a future release.
+Use <code class="docutils literal notranslate"><span class="pre">a.flags.fnc</span></code> instead, or <code class="docutils literal notranslate"><span class="pre">a.flags.f_contiguous</span></code> if you only need
+to check for Fortran contiguity.</p>
+</div>
 <p class="rubric">Examples</p>
 <p><a class="reference internal" href="dpnp.array.html#dpnp.array" title="dpnp.array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.array</span></code></a> allows to specify whether the array is written in
 C-contiguous order (last index varies the fastest), or FORTRAN-contiguous
@@ -1098,7 +1102,7 @@ order in memory (first index varies the fastest).</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
 <span class="go">array([[1, 2, 3],</span>
 <span class="go">       [4, 5, 6]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">isfortran</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">fnc</span>
 <span class="go">False</span>
 </pre></div>
 </div>
@@ -1106,7 +1110,7 @@ order in memory (first index varies the fastest).</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span>
 <span class="go">array([[1, 2, 3],</span>
 <span class="go">       [4, 5, 6]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">isfortran</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">fnc</span>
 <span class="go">True</span>
 </pre></div>
 </div>
@@ -1115,20 +1119,20 @@ order in memory (first index varies the fastest).</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
 <span class="go">array([[1, 2, 3],</span>
 <span class="go">       [4, 5, 6]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">isfortran</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">fnc</span>
 <span class="go">False</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">T</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span>
 <span class="go">array([[1, 4],</span>
 <span class="go">       [2, 5],</span>
 <span class="go">       [3, 6]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">isfortran</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">fnc</span>
 <span class="go">True</span>
 </pre></div>
 </div>
 <p>C-ordered arrays evaluate as <code class="docutils literal notranslate"><span class="pre">False</span></code> even if they are also
 FORTRAN-ordered.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">isfortran</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">order</span><span class="o">=</span><span class="s1">'F'</span><span class="p">))</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">order</span><span class="o">=</span><span class="s1">'F'</span><span class="p">)</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">fnc</span>
 <span class="go">False</span>
 </pre></div>
 </div>
