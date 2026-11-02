@@ -16,8 +16,6 @@ concurrency:
 env:
   # Pinned: Miniforge3 26.9.4-0 fails 'conda init' on Windows runners
   MINIFORGE_VERSION: '26.7.2-1'
-  GH_BOT_NAME: 'github-actions[bot]'
-  GH_BOT_EMAIL: 'github-actions[bot]@users.noreply.github.com'
   GH_EVENT_PUSH_UPSTREAM: ${{ github.ref == 'refs/heads/master' && github.event_name == 'push' &&
                               github.event.ref == 'refs/heads/master' && github.event.repository && !github.event.repository.fork }}
   GH_EVENT_PR_OPEN: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' }}
@@ -210,30 +208,19 @@ jobs:
       # The step is only used to build docs while pushing a PR to "master"
       - name: Deploy docs
         if: env.GH_EVENT_PUSH_UPSTREAM == 'true'
-        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ${{ env.PUBLISH_DIR }}
-          keep_files: true
-          commit_message: ${{ github.event.head_commit.message }}
-          publish_branch: gh-pages
-          user_name: ${{ env.GH_BOT_NAME }}
-          user_email: ${{ env.GH_BOT_EMAIL }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        run: .github/scripts/update_gh_pages.sh publish "${PUBLISH_DIR}" . "${COMMIT_MESSAGE}"
 
       # The step is only used to build docs while pushing to PR branch
       - name: Publish pull-request docs
         if: env.GH_EVENT_PR_OPEN == 'true' && steps.check_fork.outputs.is_fork == 'false'
-        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ${{ env.PUBLISH_DIR }}
-          destination_dir: ./pull/${{ github.event.number }}
-          allow_empty_commit : true
-          keep_files: true
-          commit_message: ${{ github.event.pull_request.title }}
-          publish_branch: gh-pages
-          user_name: ${{ env.GH_BOT_NAME }}
-          user_email: ${{ env.GH_BOT_EMAIL }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUM: ${{ github.event.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: .github/scripts/update_gh_pages.sh publish "${PUBLISH_DIR}" "pull/${PR_NUM}" "${PR_TITLE}"
 
       # The step is only used to build docs while pushing to PR branch
       # Note: Fork PRs have read-only GITHUB_TOKEN and cannot post comments
@@ -268,21 +255,14 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-          fetch-depth: 0
 
       - name: Remove docs [PR closed]
         env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUM: ${{ github.event.number }}
         run: |
-          git remote add tokened_docs https://IntelPython:${{ secrets.GITHUB_TOKEN }}@github.com/IntelPython/dpnp.git
-          git fetch tokened_docs
-          git checkout --track tokened_docs/gh-pages
-          pwd
-          [ -d pull/"${PR_NUM}" ] && git rm -rf pull/"${PR_NUM}"
-          git config --global user.name ${{ env.GH_BOT_NAME }}
-          git config --global user.email ${{ env.GH_BOT_EMAIL }}
-          git commit -m "Removing docs for closed pull request ${PR_NUM}"
-          git push tokened_docs gh-pages
+          .github/scripts/update_gh_pages.sh remove \
+              "Removing docs for closed pull request ${PR_NUM}" "pull/${PR_NUM}"
 
       - name: Modify the comment with URL to official documentation
         uses: mshick/add-pr-comment@ec328af66588ab8f77cdeb2c264f14aba45bbf59 # v3.12.0

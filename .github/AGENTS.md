@@ -10,4 +10,5 @@ These keep zizmor (`zizmor.yml`, fails on medium or higher findings) and the Ope
 - `actionlint` runs in pre-commit.
 - `workflows/array-api-skips.txt` lists array-api-tests node IDs skipped by the conformance job; precede each with a comment naming the upstream issue.
 - `bump-sycl-deps.yml` rewrites the `DRIVER_PATH`, `OCLCPUEXP_FN`, `TBB_URL`, `TBB_INSTALL_DIR` and `TBB_FN` pins in `.github/sycl-build-deps.env` with `sed`, and `os-llvm-sycl-build.yml` reads exactly those five; keep one unquoted `KEY=VALUE` per line, starting at column 0.
+- Every write to `gh-pages` (`build-sphinx.yml`, `prune-pr-docs.yml`) goes through `scripts/update_gh_pages.sh`, which retries a push rejected by a concurrent writer; don't push to `gh-pages` any other way.
 - Dependabot (`dependabot.yml`) bumps actions, `environments/` pins and pre-commit hooks weekly with a 7-day cooldown.
