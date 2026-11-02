@@ -8,6 +8,11 @@ on:
 
 permissions: read-all
 
+# A newer run, or the close of the PR, supersedes an in-progress one.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 env:
   # Pinned: Miniforge3 26.9.4-0 fails 'conda init' on Windows runners
   MINIFORGE_VERSION: '26.7.2-1'
@@ -26,12 +31,13 @@ jobs:
   build-and-deploy:
     name: Build and Deploy Docs
 
+    # A closed PR only needs the clean job
+    if: github.event.action != 'closed'
+
     runs-on: ubuntu-latest
     timeout-minutes: 90
 
     permissions:
-      # Needed to cancel any previous runs that are not completed for a given workflow
-      actions: write
       # Needed to deploy static files to GitHub Pages
       contents: write
       # Needed to add a comment to a pull request's issue
@@ -47,11 +53,6 @@ jobs:
       dpctl-pkg-txt: 'environments/dpctl_pkg.txt'
 
     steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@d07a454dad7609a92316b57b23c9ccfd4f59af66 # 0.13.1
-        with:
-          access_token: ${{ github.token }}
-
       - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
@@ -253,8 +254,6 @@ jobs:
     if: |
       github.event_name == 'pull_request' && github.event.action == 'closed' &&
       github.event.pull_request.head.repo && !github.event.pull_request.head.repo.fork
-
-    needs: build-and-deploy
 
     permissions:
       # Needed to remove docs for closed pull request from the repo
