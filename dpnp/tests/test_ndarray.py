@@ -790,6 +790,13 @@ def test_flags_writable():
     assert not a.imag.flags.writable
 
 
+@pytest.mark.parametrize("xp", [dpnp, numpy])
+def test_flags_unknown_key(xp):
+    a = xp.ones(3)
+    with pytest.raises(KeyError, match="Unknown flag"):
+        a.flags["unknown key"]
+
+
 class TestArrayNamespace:
     def test_basic(self):
         a = dpnp.arange(2)
