@@ -39,6 +39,7 @@ it contains:
 
 """
 
+import operator
 from collections.abc import Sequence
 
 import dpnp
@@ -464,8 +465,9 @@ def top_k(a, k, /, *, axis=-1, mode="largest", sorted=True):
     k : int
         The number of largest or smallest elements to return. `k` must be
         a non-negative integer not greater than the size of `a` along `axis`.
-    axis : int, optional
-        Axis along which to find the largest or smallest elements.
+    axis : {None, int}, optional
+        Axis along which to find the largest or smallest elements. If
+        ``None``, the flattened array is used.
 
         Default: ``-1``.
     mode : {"largest", "smallest"}, optional
@@ -499,14 +501,10 @@ def top_k(a, k, /, *, axis=-1, mode="largest", sorted=True):
     the indices of equal values is not guaranteed to match their order in
     `a`. This is the case regardless of the value of `sorted`.
 
-    Limitations
-    -----------
-    Parameter `axis` is not supported as ``None``, same as in NumPy.
-    Otherwise ``ValueError`` exception will be raised.
-
     See Also
     --------
-    :obj:`dpnp.tensor.top_k` : Equivalent function in :obj:`dpnp.tensor`.
+    :obj:`dpnp.tensor.top_k` : Strictly Array API compatible version; flattens
+        by default and returns the elements in an unspecified order.
     :obj:`dpnp.partition` : Partial sort.
     :obj:`dpnp.sort` : Full sorting.
 
@@ -531,22 +529,35 @@ def top_k(a, k, /, *, axis=-1, mode="largest", sorted=True):
 
     """
 
-    if axis is None:
+    if mode not in ("largest", "smallest"):
         raise ValueError(
-            "`axis=None` is not supported. Please provide a valid axis."
+            f'mode(="{mode}") must be either "largest" or "smallest".'
         )
 
     usm_a = dpnp.get_usm_ndarray(a)
-    axis = normalize_axis_index(axis, ndim=usm_a.ndim)
-    usm_vals, usm_inds = dpt.top_k(usm_a, k, axis=axis, mode=mode)
+    if axis is None:
+        usm_a = dpt.reshape(usm_a, (-1,))
+        axis = 0
+    else:
+        axis = normalize_axis_index(axis, ndim=usm_a.ndim)
 
-    # tensor.top_k returns the elements in an unspecified order
-    if sorted and usm_vals.shape[axis] > 1:
-        sort_inds = dpt.argsort(
-            usm_vals, axis=axis, descending=(mode == "largest")
-        )
-        usm_vals = dpt.take_along_axis(usm_vals, sort_inds, axis=axis)
-        usm_inds = dpt.take_along_axis(usm_inds, sort_inds, axis=axis)
+    k = operator.index(k)
+    n = usm_a.shape[axis]
+    descending = mode == "largest"
+
+    if sorted and 1 < k <= n < 2 * k:
+        # for large k a full sort is cheaper than selecting and then sorting
+        usm_inds = dpt.argsort(usm_a, axis=axis, descending=descending)
+        usm_inds = usm_inds[(slice(None),) * axis + (slice(k),)]
+        usm_vals = dpt.take_along_axis(usm_a, usm_inds, axis=axis)
+    else:
+        usm_vals, usm_inds = dpt.top_k(usm_a, k, axis=axis, mode=mode)
+
+        # tensor.top_k returns the elements in an unspecified order
+        if sorted and k > 1:
+            sort_inds = dpt.argsort(usm_vals, axis=axis, descending=descending)
+            usm_vals = dpt.take_along_axis(usm_vals, sort_inds, axis=axis)
+            usm_inds = dpt.take_along_axis(usm_inds, sort_inds, axis=axis)
 
     return (
         dpnp_array._create_from_usm_ndarray(usm_vals),
