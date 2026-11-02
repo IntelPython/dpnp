@@ -86,6 +86,8 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0
+          # Blobless: all commits and tags for git describe, no gh-pages blobs
+          filter: blob:none
 
       # rattler-build is a standalone binary with no conda/Python dependency,
       # so building conda packages with it doesn't need a full conda
