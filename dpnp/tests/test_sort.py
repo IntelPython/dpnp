@@ -10,6 +10,7 @@ from .helper import (
     generate_random_numpy_array,
     get_all_dtypes,
     get_complex_dtypes,
+    get_float_complex_dtypes,
     get_float_dtypes,
     get_integer_dtypes,
 )
@@ -550,6 +551,24 @@ class TestSort:
         result = dpnp.sort(ia, kind=kind)
         expected = numpy.sort(a, kind="stable")
         assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    @pytest.mark.parametrize(
+        "stable_kw", [{"kind": "stable"}, {"stable": True}]
+    )
+    def test_stable_signed_zeros(self, dtype, stable_kw):
+        # -0.0 and 0.0 compare equal, so a stable sort keeps their order
+        vals = numpy.array([0.0, -0.0, 1.0, -1.0], dtype=dtype)
+        a = numpy.random.default_rng(1).choice(vals, size=(3, 64))
+        ia = dpnp.array(a)
+
+        result = dpnp.sort(ia, **stable_kw)
+        expected = numpy.sort(a, kind="stable")
+        assert_array_equal(result, expected)
+        assert_array_equal(
+            numpy.signbit(dpnp.asnumpy(result).real),
+            numpy.signbit(expected.real),
+        )
 
     @testing.with_requires("numpy>=2.5")
     @pytest.mark.parametrize("descending", [False, True])

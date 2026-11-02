@@ -462,3 +462,24 @@ def test_bitonic_sort_extremal_values(dtype, descending):
     assert np.array_equal(
         dpt.asnumpy(dpt.take(x, idx)), expected, equal_nan=True
     )
+
+
+@pytest.mark.parametrize("dtype", ["f2", "f4", "f8", "c8", "c16"])
+@pytest.mark.parametrize("descending", [False, True])
+@pytest.mark.parametrize(
+    "stable_kw", [{}, {"stable": True}, {"stable": False, "kind": "stable"}]
+)
+def test_sort_stable_signed_zeros(dtype, descending, stable_kw):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    # -0.0 and 0.0 compare equal, so a stable sort keeps their order
+    vals = np.array([0.0, -0.0, 1.0, -1.0], dtype=dtype)
+    x_np = np.random.default_rng(1).choice(vals, size=(3, 64))
+    x = dpt.asarray(x_np, sycl_queue=q)
+
+    s = dpt.asnumpy(dpt.sort(x, descending=descending, **stable_kw))
+    idx = np.argsort(-x_np if descending else x_np, axis=-1, kind="stable")
+    expected = np.take_along_axis(x_np, idx, axis=-1)
+    assert_array_equal(s, expected)
+    assert_array_equal(np.signbit(s.real), np.signbit(expected.real))

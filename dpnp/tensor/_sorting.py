@@ -168,6 +168,16 @@ def _use_bitonicsort_by_default(
     )
 
 
+def _bitonicsort_is_stable_for(dt):
+    """Whether the bitonic network sorts values of data type `dt` stably
+
+    The network may reorder values which compare as equal, which is only
+    observable when such values can differ, as floating-point ones can
+    (``-0.0`` and ``0.0``, or NaNs with different payloads).
+    """
+    return dpt.isdtype(dt, ("bool", "integral"))
+
+
 def _get_mergesort_impl_fn(descending):
     return _sort_descending if descending else _sort_ascending
 
@@ -208,10 +218,14 @@ def sort(x, /, *, axis=-1, descending=False, stable=True, kind=None):
             parallel merge-sort, a parallel radix-sort, or a bitonic sorting
             network, whichever is expected to be the fastest for the array
             data type, the length of the sorted rows, and the device.
-            `"bitonicsort"` always uses the bitonic sorting network, which
-            tends to be faster when many short rows are sorted at once, and
-            slower than the alternatives for rows too long to be held in the
-            local memory of the device.
+            Unless `stable` is `False` and `kind` is not given, the bitonic
+            network is only chosen this way for boolean and integer data
+            types, since it does not maintain the relative order of
+            floating-point and complex values which compare as equal, such
+            as `-0.0` and `0.0`. `"bitonicsort"` always uses the bitonic
+            sorting network, which tends to be faster when many short rows
+            are sorted at once, and slower than the alternatives for rows
+            too long to be held in the local memory of the device.
     Returns:
         usm_ndarray:
             a sorted array. The returned array has the same data type and
@@ -234,6 +248,7 @@ def sort(x, /, *, axis=-1, descending=False, stable=True, kind=None):
             axis,
         ]
         arr = dpt.permute_dims(x, perm)
+    stable = bool(stable) or kind == "stable"
     if kind is None:
         kind = "stable"
     if not isinstance(kind, str) or kind not in [
@@ -257,7 +272,9 @@ def sort(x, /, *, axis=-1, descending=False, stable=True, kind=None):
             raise ValueError(f"Radix sort is not supported for {x.dtype}")
     else:
         dt = x.dtype
-        if _use_bitonicsort_by_default(
+        if (
+            not stable or _bitonicsort_is_stable_for(dt)
+        ) and _use_bitonicsort_by_default(
             dt,
             arr.shape[-1],
             arr.size,

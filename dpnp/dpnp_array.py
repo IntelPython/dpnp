@@ -2024,11 +2024,15 @@ class dpnp_array:
             Sorting algorithm. The default is ``None``, which uses a parallel
             merge-sort, a parallel radix-sort, or a bitonic sorting network,
             whichever is expected to be the fastest for the array data type,
-            the length of the sorted rows, and the device. ``"bitonicsort"``
-            always uses the bitonic sorting network, which tends to be faster
-            when many short rows are sorted at once, and slower than the
-            alternatives for rows too long to be held in the local memory of
-            the device.
+            the length of the sorted rows, and the device. With
+            ``kind="stable"`` or ``stable=True``, the bitonic network is only
+            chosen this way for boolean and integer data types, since it does
+            not maintain the relative order of floating-point and complex
+            values which compare as equal, such as ``-0.0`` and ``0.0``.
+            ``"bitonicsort"`` always uses the bitonic sorting network, which
+            tends to be faster when many short rows are sorted at once, and
+            slower than the alternatives for rows too long to be held in the
+            local memory of the device.
 
             Default: ``None``.
         descending : bool, optional
@@ -2040,8 +2044,8 @@ class dpnp_array:
             Default: ``False``.
         stable : {None, bool}, optional
             Sort stability. If ``True``, the returned array will maintain the
-            relative order of `a` values which compare as equal. The same
-            behavior applies when set to ``False`` or ``None``.
+            relative order of `a` values which compare as equal. If ``False``
+            or ``None``, this is not guaranteed.
             Internally, this option selects ``kind="stable"``.
 
             Default: ``None``.
