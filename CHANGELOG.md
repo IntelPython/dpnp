@@ -19,10 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Deprecated `dpnp.dot` and `dpnp.ndarray.dot` when `a.ndim >= 2` and `b.ndim > 2`, which place the leading dimensions of `b` in the middle of the result; use `dpnp.tensordot(a, b, axes=(-1, -2))` or `dpnp.matmul` instead [#3124](https://github.com/IntelPython/dpnp/pull/3124)
 * Deprecated the upcast of `arr` by a Python numeric scalar in `dpnp.append` with `axis=None` (e.g. `int8` array and `1` giving `int64`) [#3125](https://github.com/IntelPython/dpnp/pull/3125)
+* Deprecated `dpnp.isfortran`; use `a.flags.fnc` instead [#3140](https://github.com/IntelPython/dpnp/pull/3140)
 
 ### Removed
 
 ### Fixed
+
+* Fixed `flags[key]` of `dpnp.ndarray` and `dpnp.tensor.usm_ndarray` to raise `KeyError` for an unknown key [#3141](https://github.com/IntelPython/dpnp/pull/3141)
 
 ### Security
 

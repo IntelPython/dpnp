@@ -20,6 +20,7 @@ from .helper import (
     get_float_complex_dtypes,
     get_float_dtypes,
     get_integer_float_dtypes,
+    numpy_version,
 )
 from .third_party.cupy import testing
 
@@ -460,7 +461,8 @@ class TestIsFortran:
         ],
     )
     def test_isfortran_transpose(self, array, expected):
-        assert dpnp.isfortran(array.T) == expected
+        with pytest.warns(DeprecationWarning, match="isfortran is deprecated"):
+            assert dpnp.isfortran(array.T) == expected
 
     @pytest.mark.parametrize(
         "array, expected",
@@ -470,13 +472,33 @@ class TestIsFortran:
         ],
     )
     def test_isfortran_usm_ndarray(self, array, expected):
-        assert dpnp.isfortran(array.get_array()) == expected
+        with pytest.warns(DeprecationWarning, match="isfortran is deprecated"):
+            assert dpnp.isfortran(array.get_array()) == expected
 
     def test_isfortran_errors(self):
         # unsupported type
         a_np = numpy.ones((2, 3))
-        assert_raises(TypeError, dpnp.isfortran, a_np)
-        assert_raises(TypeError, dpnp.isfortran, [1, 2, 3])
+        with pytest.warns(DeprecationWarning, match="isfortran is deprecated"):
+            assert_raises(TypeError, dpnp.isfortran, a_np)
+            assert_raises(TypeError, dpnp.isfortran, [1, 2, 3])
+
+    @pytest.mark.parametrize("order", ["C", "F"])
+    def test_isfortran_deprecated(self, order):
+        a = numpy.ones((2, 4), dtype="i4", order=order)
+        ia = dpnp.array(a, order=order)
+
+        msg = "dpnp.isfortran is deprecated"
+        with pytest.warns(DeprecationWarning, match=msg) as record:
+            result = dpnp.isfortran(ia)
+        assert record[0].filename == __file__
+
+        if numpy_version() >= "2.6.0.dev0":
+            msg = "numpy.isfortran is deprecated"
+            with pytest.warns(DeprecationWarning, match=msg):
+                expected = numpy.isfortran(a)
+        else:
+            expected = numpy.isfortran(a)
+        assert result == expected
 
 
 @pytest.mark.parametrize("func", ["isneginf", "isposinf"])
