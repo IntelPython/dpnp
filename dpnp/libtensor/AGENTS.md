@@ -3,7 +3,7 @@
 ## Layout
 - `include/kernels/`: header-only SYCL kernels in namespaces under `dpnp::tensor::kernels`; `include/utils/`: type dispatch, type, offset and memory-overlap helpers (`type_dispatch.hpp`, `type_dispatch_building.hpp`, `type_utils.hpp`, `memory_overlap.hpp`, ...); `include/ext/`: dispatch helpers (`init_dispatch_vector`, `init_dispatch_table`, `DispatchTable`) and validation helpers (`validation_utils.hpp`). The headers ship with dpnp; `dpnp.get_include()` and `python -m dpnp --tensor-include-dir` return `include/`.
 - `source/`: bindings built by `source/CMakeLists.txt` into `_tensor_impl`, `_tensor_elementwise_impl`, `_tensor_reductions_impl`, `_tensor_sorting_impl`, `_tensor_accumulation_impl`, `_tensor_linalg_impl`, `_statistics_impl` and `_window_impl`. The functions dpnp adds beyond the Array API are listed in the `_dpnp_*_sources` variables there and compiled into the same modules.
-- `extensions/{blas,fft,lapack,sparse,vm}/`: oneMKL/oneMath extensions, one module `_<name>_impl` per directory.
+- `extensions/{blas,fft,lapack,rng,sparse,vm}/`: oneMKL/oneMath extensions, one module `_<name>_impl` per directory.
 - Every module installs into `dpnp/libtensor` and is imported as `dpnp.libtensor._<name>_impl`. A new kernel goes into `source/` and an existing module; only code that needs oneMKL gets a new extension.
 
 ## Adding a ufunc Kernel (model: `fabs`)
@@ -21,7 +21,7 @@ A new extension's `CMakeLists.txt` lists its sources and calls `build_dpnp_pybin
 - Validate inputs before launching: queue compatibility, contiguity, writability, memory overlap (including the same logical tensor), dtype and ndim. Reuse the helpers neighbouring files use: `check_queue`, `check_c_contig`, `check_no_overlap`, `check_writable` from `include/ext/validation_utils.hpp` (`putmask`, `statistics`, `isclose`, `interpolate`), or `dpnp::utils::queues_are_compatible`, `dpnp::tensor::overlap::MemoryOverlap` and `dpnp::tensor::validation::CheckWritable` (extensions and the Array API functions). Don't silently accept strided input.
 - Throw `py::value_error` for bad arguments and `std::runtime_error` for internal failures; catch oneMKL and SYCL exceptions and rethrow them.
 - Guard double, complex<double> and half with `dpnp::tensor::type_utils::validate_type_for_device<T>(q)`; don't use double literals or casts in kernels that must run without fp64.
-- `blas`, `fft`, `lapack` and `sparse` build against either oneMKL or oneMath (`USE_ONEMATH`); `vm` has kernels only with oneMKL: with oneMath it builds empty and `_is_available()` returns `False`.
+- `blas`, `fft`, `lapack` and `sparse` build against either oneMKL or oneMath (`USE_ONEMATH`); `vm` has kernels only with oneMKL: with oneMath it builds empty and `_is_available()` returns `False`; `rng` uses the header-only oneMKL device RNG API and links no oneMKL library.
 - Release the GIL around blocking oneMKL calls (`py::gil_scoped_release`).
 - An extension whose kernels may be launched over more than `INT_MAX` work-items passes `LARGE_RANGES` to `build_dpnp_pybind11_ext`, which adds `-fno-sycl-id-queries-fit-in-int` at compile and link time (DPC++ 2026.2 and later need it at link time). `source/CMakeLists.txt` and `dpnp_backend_c` pass it to both `target_compile_options` and `target_link_options`.
 - clang-format 23 formats C++ (`.clang-format`: LLVM base, 4-space indent, 80 columns); gersemi formats CMake at 88 columns, except `dpnp/backend/cmake/Modules/`.
