@@ -87,29 +87,9 @@ function(build_dpnp_cython_ext _trgt _src _dest)
 endfunction()
 
 function(build_dpnp_tensor_ext _trgt _src _dest)
-    set(options SYCL)
-    cmake_parse_arguments(BUILD_DPNP_TENSOR "${options}" "RELATIVE_PATH" "" ${ARGN})
+    cmake_parse_arguments(BUILD_DPNP_TENSOR "" "RELATIVE_PATH" "" ${ARGN})
     add_cython_target(${_trgt} ${_src} CXX OUTPUT_VAR _generated_src)
     python_add_library(${_trgt} MODULE WITH_SOABI ${_generated_src})
-    if(BUILD_DPNP_TENSOR_SYCL)
-        add_sycl_to_target(TARGET ${_trgt} SOURCES ${_generated_src})
-        target_compile_options(${_trgt} PRIVATE -fno-sycl-id-queries-fit-in-int)
-        target_link_options(
-            ${_trgt}
-            PRIVATE -fsycl-device-code-split=per_kernel -fno-sycl-id-queries-fit-in-int
-        )
-        if(DPNP_TENSOR_OFFLOAD_COMPRESS)
-            target_link_options(${_trgt} PRIVATE --offload-compress)
-        endif()
-        if(_dpnp_sycl_targets)
-            # make fat binary
-            target_compile_options(
-                ${_trgt}
-                PRIVATE ${_dpnp_sycl_target_compile_options}
-            )
-            target_link_options(${_trgt} PRIVATE ${_dpnp_sycl_target_link_options})
-        endif()
-    endif()
     target_link_libraries(${_trgt} PRIVATE Python::NumPy)
     if(DPNP_GENERATE_COVERAGE)
         # Pass CYTHON_USE_SYS_MONITORING=0 to force Cython's legacy (settrace-based)
@@ -119,9 +99,6 @@ function(build_dpnp_tensor_ext _trgt _src _dest)
             ${_trgt}
             PRIVATE CYTHON_TRACE=1 CYTHON_TRACE_NOGIL=1 CYTHON_USE_SYS_MONITORING=0
         )
-        if(BUILD_DPNP_TENSOR_SYCL)
-            target_compile_options(${_trgt} PRIVATE -fno-sycl-use-footer)
-        endif()
     endif()
     # Dpctl
     target_include_directories(${_trgt} PRIVATE ${Dpctl_INCLUDE_DIR})

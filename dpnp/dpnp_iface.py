@@ -428,11 +428,11 @@ def get_dpnp_descriptor(
 
 def get_include():
     r"""
-    Return the directory that contains \*.h header files of dpnp C++ library
-    (libtensor).
+    Return the directory that contains the \*.hpp header files of the dpnp
+    C++ library (libtensor).
 
-    An extension module that needs to be compiled against dpnp backend
-    should use this function to locate the appropriate include directory.
+    An extension module that needs to be compiled against libtensor should
+    use this function to locate the appropriate include directory.
     It is the same directory as returned by
     ``python -m dpnp --tensor-include-dir``.
 

@@ -6,7 +6,7 @@
 - `dpnp_algo/dpnp_elementwise_common.py`: ufunc wrapper classes (`DPNPUnaryFunc`, `DPNPBinaryFunc`, two-output and specialised variants)
 - `dpnp_utils/`: shared helpers (`get_usm_allocations`, `map_dtype_to_device`, reduction wrappers)
 - `linalg/`, `fft/`, `random/`, `scipy/`, `lib/`: subpackages, each exporting through its own `__init__.py`
-- Legacy, don't extend: the Cython `dpnp_algo` path and `dpnp_backend_c` (still used by `dpnp.partition` and `dpnp.random`), and the NumPy fallback `call_origin`. New kernels go into pybind11 extensions or `dpnp.tensor`.
+- Legacy, don't extend: the Cython `dpnp_algo` path and `dpnp_backend_c` (still used by `dpnp.partition` and `dpnp.random`), and the NumPy fallback `call_origin`. New kernels go into `dpnp/libtensor` (see `dpnp/libtensor/AGENTS.md`).
 
 ## Adding a Public Function
 1. Implement it in the matching `dpnp_iface_*.py` or subpackage module. Iface modules have no `__all__`.
@@ -14,7 +14,7 @@
 3. Add it to `doc/reference/` (see `doc/AGENTS.md`), tests (see `dpnp/tests/AGENTS.md`) and `CHANGELOG.md`.
 
 ## Patterns
-- Ufuncs are module-level wrapper instances, e.g. `cbrt = DPNPUnaryFunc("cbrt", ti._cbrt_result_type, ti._cbrt, _CBRT_DOCSTRING, mkl_fn_to_call=..., mkl_impl_fn=...)`. The first argument is the public name, with no leading underscore. Kernels come from `dpnp.tensor._tensor_elementwise_impl` or `dpnp.backend.extensions.ufunc._ufunc_impl`; the oneMKL VM path runs first when `mkl_fn_to_call` is given and supported.
+- Ufuncs are module-level wrapper instances, e.g. `cbrt = DPNPUnaryFunc("cbrt", ti._cbrt_result_type, ti._cbrt, _CBRT_DOCSTRING, mkl_fn_to_call=..., mkl_impl_fn=...)`. The first argument is the public name, with no leading underscore. Kernels come from `dpnp.libtensor._tensor_elementwise_impl`; the oneMKL VM path runs first when `mkl_fn_to_call` is given and supported.
 - Other functions: `dpnp.check_supported_arrays_type(...)`, unwrap with `dpnp.get_usm_ndarray`, call `dpnp.tensor` (`import dpnp.tensor as dpt`) or an extension, and wrap with `dpnp_array._create_from_usm_ndarray`. Pass `out` straight to the `dpnp.tensor` or extension call when it accepts one; otherwise `dpnp.get_result_array(res, out)` copies the result into it.
 - Get the result queue and USM type with `get_usm_allocations([...])` (raises `ValueError` on mixed queues) or `dpt.get_execution_queue(...)` (returns `None`; raise `ExecutionPlacementError`). Creation functions take `device`, `usm_type` and `sycl_queue` (normalised by `dpnp.get_normalized_queue_device`); `*_like` functions inherit them from the input.
 - Extension calls are ordered with `_manager = dpctl.utils.SequentialOrderManager[exec_q]`: pass `depends=_manager.submitted_events`, then `_manager.add_event_pair(ht_ev, ev)`. Don't add blocking waits.

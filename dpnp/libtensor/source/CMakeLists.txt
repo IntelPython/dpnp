@@ -41,6 +41,8 @@ get_filename_component(
 # Sources of the functions dpnp implements beyond the array API. They are
 # compiled into the same modules as the libtensor functions but keep the
 # floating-point and coverage settings of the former dpnp extensions.
+# They come first in each module: the linker keeps the first copy of an inline
+# function both groups instantiate, so coverage builds keep the instrumented one.
 set(_dpnp_elementwise_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/bitwise_count.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/degrees.cpp
@@ -92,6 +94,7 @@ set(_dpnp_sources
 
 set(_static_lib_sources ${CMAKE_CURRENT_SOURCE_DIR}/simplify_iteration_space.cpp)
 set(_tensor_impl_sources
+    ${_dpnp_indexing_sources}
     ${CMAKE_CURRENT_SOURCE_DIR}/tensor_ctors.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/accumulators.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/copy_and_cast_usm_to_usm.cpp
@@ -110,7 +113,6 @@ set(_tensor_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/device_support_queries.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/repeat.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/clip.cpp
-    ${_dpnp_indexing_sources}
 )
 set(_accumulator_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/accumulators/accumulators_common.cpp
@@ -224,9 +226,9 @@ set(_tensor_accumulation_impl_sources
     ${_accumulator_sources}
 )
 set(_tensor_elementwise_impl_sources
+    ${_dpnp_elementwise_sources}
     ${CMAKE_CURRENT_SOURCE_DIR}/tensor_elementwise.cpp
     ${_elementwise_sources}
-    ${_dpnp_elementwise_sources}
 )
 set(_tensor_reductions_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/tensor_reductions.cpp
@@ -328,6 +330,10 @@ foreach(_src_fn ${_no_fast_math_sources})
     )
 endforeach()
 
+# The two groups of sources are compiled with different floating-point flags.
+# An inline function with FP math that both instantiate gets the flags of the
+# copy the linker keeps (the dpnp one, see above), so keep such helpers out of
+# shared headers or give them the same flags in both groups.
 foreach(_src_fn ${_dpnp_sources})
     get_source_file_property(_cmpl_options_prop ${_src_fn} COMPILE_OPTIONS)
     set(_combined_options_prop
@@ -348,6 +354,24 @@ foreach(_src_fn ${_dpnp_sources})
         PROPERTIES COMPILE_OPTIONS "${_combined_options_prop}"
     )
 endforeach()
+
+if(DPNP_GENERATE_COVERAGE)
+    # libtensor code the dpnp functions use, measured like the dpnp sources
+    target_compile_options(
+        ${_static_lib_trgt}
+        PRIVATE -fprofile-instr-generate -fcoverage-mapping
+    )
+    set_property(
+        SOURCE
+            ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/elementwise_functions_type_utils.cpp
+        APPEND
+        PROPERTY
+            COMPILE_OPTIONS
+                -fprofile-instr-generate
+                -fcoverage-mapping
+                -fno-sycl-use-footer
+    )
+endif()
 
 set(_linker_options "LINKER:${DPNP_LDFLAGS}")
 foreach(python_module_name ${_py_trgts})
