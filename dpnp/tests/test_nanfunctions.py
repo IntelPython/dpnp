@@ -557,8 +557,9 @@ class TestNanMedianSelect:
             a[i, rnd.choice(n, min(i * n // 4 + i, n - 1), replace=False)] = (
                 numpy.nan
             )
+        # signed zeros and NaNs, never all NaN (see test_all_nan_rows)
         a[4, :] = -0.0
-        a[4, ::3] = numpy.nan
+        a[4, 1::3] = numpy.nan
         ia = dpnp.array(a)
 
         expected = numpy.nanmedian(a, axis=-1)
