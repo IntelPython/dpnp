@@ -36,15 +36,6 @@
 
 namespace dpnp::kernels::rng
 {
-// The number of output elements each work-item produces in the strided and
-// blocked layouts. It fixes the mapping of elements to engine streams, and
-// so is part of the stream definition: changing it changes every generated
-// value.
-inline constexpr std::size_t items_per_work_item = 8;
-
-// The samplers caching the second normal of a pair take whole pairs
-static_assert(items_per_work_item % 2 == 0);
-
 // The number of output elements each work-item produces in the sequential
 // layout, where it only sets how much of the stream every work-item skips
 // to, not the values.
@@ -53,7 +44,10 @@ inline constexpr std::size_t sequential_items_per_work_item = 64;
 // How the elements of a launch map to engine streams:
 // - strided: work-item `w` builds its own engine on the counter block `w`
 //   and draws elements w, w + G, w + 2G, ..., where G is the number of
-//   work-items, so neighbouring work-items write neighbouring elements;
+//   work-items, so neighbouring work-items write neighbouring elements.
+//   Every work-item produces EngineTraitsT::items_per_work_item elements,
+//   which fixes the mapping of elements to engine streams, and so is part
+//   of the stream definition: changing it changes every generated value;
 // - blocked: the strided layout, with all the words of a work-item
 //   generated together, which is faster on GPUs. It needs a sampler taking
 //   a fixed number of words per element, and gives the strided values;
@@ -79,15 +73,16 @@ inline constexpr bool can_draw_sequential =
 template <typename EngineTraitsT, typename SamplerT>
 inline constexpr bool can_draw_blocked =
     SamplerT::words_per_item != 0 &&
-    SamplerT::words_per_item * items_per_work_item <=
+    SamplerT::words_per_item * EngineTraitsT::items_per_work_item <=
         EngineTraitsT::max_block_words;
 
 // The number of work-items a launch producing `n` elements uses
+template <typename EngineTraitsT>
 inline std::size_t num_work_items(std::size_t n, Layout layout)
 {
     const std::size_t m = (layout == Layout::sequential)
                               ? sequential_items_per_work_item
-                              : items_per_work_item;
+                              : EngineTraitsT::items_per_work_item;
     return (n + m - 1) / m;
 }
 
@@ -102,6 +97,9 @@ private:
                   can_draw_sequential<EngineTraitsT, SamplerT>);
     static_assert(L != Layout::blocked ||
                   can_draw_blocked<EngineTraitsT, SamplerT>);
+
+    // The samplers caching the second normal of a pair take whole pairs
+    static_assert(EngineTraitsT::items_per_work_item % 2 == 0);
 
     EngineState state_;
     SamplerT sampler_;
@@ -143,8 +141,8 @@ public:
             }
         }
         else if constexpr (L == Layout::blocked) {
-            constexpr unsigned words =
-                SamplerT::words_per_item * items_per_work_item;
+            constexpr std::size_t items = EngineTraitsT::items_per_work_item;
+            constexpr unsigned words = SamplerT::words_per_item * items;
 
             auto bg = EngineTraitsT::template make_block<words>(state_, w);
             // Sample every element, even past the end, so the positions of
@@ -152,7 +150,7 @@ public:
             // exists, and stands in for the parameters of those past the
             // end.
 #pragma unroll
-            for (std::size_t k = 0; k < items_per_work_item; ++k) {
+            for (std::size_t k = 0; k < items; ++k) {
                 const std::size_t i = w + k * n_wi_;
                 const bool valid = i < n_;
                 const T v = sampler(bg, valid ? i : w);

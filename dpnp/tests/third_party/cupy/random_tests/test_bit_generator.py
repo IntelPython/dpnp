@@ -56,7 +56,6 @@ class TestBitGeneratorXORWOW(BitGeneratorTestCase, unittest.TestCase):
 
 @testing.with_requires("numpy>=1.17.0")
 @testing.fix_random()
-@pytest.mark.skip("MRG32k3a is not provided")
 class TestBitGeneratorMRG32k3a(BitGeneratorTestCase, unittest.TestCase):
     def setUp(self):
         super().setUp()

@@ -29,6 +29,7 @@
 from ._bit_generator import (
     PCG64DXSM,
     BitGenerator,
+    MRG32k3a,
     Philox4x3210,
     SeedSequence,
 )
@@ -92,6 +93,7 @@ from .dpnp_random_state import RandomState
 __all__ = [
     "BitGenerator",
     "Generator",
+    "MRG32k3a",
     "PCG64DXSM",
     "Philox4x3210",
     "SeedSequence",

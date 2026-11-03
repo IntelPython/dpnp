@@ -53,7 +53,8 @@ inline constexpr std::size_t max_seed_words = 10;
 // other work-item, of this or any later launch, no matter how many draws a
 // rejection sampler takes. For Philox, work-item `w` of a launch owns the
 // counter block `counter + w * 2**64`, in units of 128-bit counter
-// increments. PCG64DXSM keeps its whole state in the seed words.
+// increments. PCG64DXSM and MRG32k3a keep their whole state in the seed
+// words.
 struct EngineState
 {
     std::uint64_t seed[max_seed_words];
@@ -67,8 +68,9 @@ enum class engine_id : int
 {
     philox4x32x10 = 0,
     pcg64dxsm = 1,
+    mrg32k3a = 2,
 };
-inline constexpr int num_engines = 2;
+inline constexpr int num_engines = 3;
 
 // The conversions of raw bits to uniform floating-point values, for a bit
 // generator `Derived` providing next_uint32() and next_uint64(). They are
@@ -176,6 +178,9 @@ struct Philox4x32x10
     // Whether the fixed-consumption samplers draw the stream in order,
     // see SampleFunctor
     static constexpr bool ordered = false;
+
+    // The elements a work-item produces in the strided and blocked layouts
+    static constexpr std::size_t items_per_work_item = 8;
 
     // The most words make_block can generate together
     static constexpr unsigned max_block_words = 16;
@@ -306,6 +311,9 @@ struct PCG64DXSM
     // per element draw the stream in order, as NumPy does
     static constexpr bool ordered = true;
 
+    // The elements a work-item produces in the strided layout
+    static constexpr std::size_t items_per_work_item = 8;
+
     // No make_block
     static constexpr unsigned max_block_words = 0;
 
@@ -354,6 +362,71 @@ struct PCG64DXSM
             bg.next_uint32();
         }
         return bg;
+    }
+};
+
+// Adapts oneMKL's mrg32k3a, whose raw values r are in [1, m1] with
+// m1 = 2**32 - 209, to uniform 32-bit words. v = r - 1 is spread over the
+// 32-bit range as v + floor(209 * v / 2**32), which increases strictly, so
+// every word has probability 1 / m1, except 209 words that never occur.
+template <typename EngineT>
+class Mrg32k3aBitGen : public UniformBits<Mrg32k3aBitGen<EngineT>>
+{
+private:
+    // 2**32 - m1
+    static constexpr std::uint64_t gap = 209;
+
+    EngineT engine_;
+    mkl_rng_dev::bits<std::uint32_t> bits_{};
+
+public:
+    explicit Mrg32k3aBitGen(const EngineT &engine) : engine_(engine) {}
+
+    std::uint32_t next_uint32()
+    {
+        const std::uint64_t v = mkl_rng_dev::generate(bits_, engine_) - 1;
+        return static_cast<std::uint32_t>(v + ((v * gap) >> 32));
+    }
+
+    std::uint64_t next_uint64()
+    {
+        const std::uint64_t hi = next_uint32();
+        const std::uint64_t lo = next_uint32();
+        return (hi << 32) | lo;
+    }
+};
+
+// L'Ecuyer's MRG32k3a combined multiple recursive generator, as implemented
+// by the oneMKL device RNG API
+struct MRG32k3a
+{
+    using engine_t = mkl_rng_dev::mrg32k3a<1>;
+    using bitgen_t = Mrg32k3aBitGen<engine_t>;
+
+    static constexpr bool ordered = false;
+
+    // The elements a work-item produces in the strided layout. Moving the
+    // engine to the substream of a work-item takes a 3x3 matrix product
+    // modulo each of m1 and m2 per base-8 digit of the work-item's index,
+    // which 8 elements per work-item made 2x (GPU) to 10x (CPU) slower than
+    // Philox. 128 is on par with Philox on both.
+    static constexpr std::size_t items_per_work_item = 128;
+
+    // No make_block: the engine computes its values one after another
+    static constexpr unsigned max_block_words = 0;
+
+    // The seed words are the state at the start of the launch, the three
+    // words of the first component, then those of the second. Work-item
+    // `w` draws from substream `w`, which starts 2**76 * w values later, as
+    // the substreams of L'Ecuyer et al.'s RngStreams.
+    static bitgen_t make(const EngineState &state, std::uint64_t subsequence)
+    {
+        const auto word = [&state](std::size_t i) {
+            return static_cast<std::uint32_t>(state.seed[i]);
+        };
+        return bitgen_t(
+            engine_t({word(0), word(1), word(2), word(3), word(4), word(5)},
+                     {std::uint64_t{0}, subsequence << 12, subsequence >> 52}));
     }
 };
 } // namespace dpnp::kernels::rng

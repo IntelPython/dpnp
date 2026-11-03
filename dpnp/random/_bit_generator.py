@@ -40,6 +40,7 @@ used from several threads, and launches never share engine output.
 # pylint: disable=no-name-in-module
 # pylint: disable=protected-access
 
+import functools
 import operator
 import threading
 
@@ -49,7 +50,13 @@ import numpy
 import dpnp
 import dpnp.libtensor._rng_impl as ri
 
-__all__ = ["BitGenerator", "PCG64DXSM", "Philox4x3210", "SeedSequence"]
+__all__ = [
+    "BitGenerator",
+    "MRG32k3a",
+    "PCG64DXSM",
+    "Philox4x3210",
+    "SeedSequence",
+]
 
 # NumPy's SeedSequence is pure host-side code, so it is reused as is
 SeedSequence = numpy.random.SeedSequence
@@ -149,6 +156,10 @@ class BitGenerator:
     def state(self):
         """The state of the bit generator, as a dictionary."""
         raise NotImplementedError
+
+    def _num_work_items(self, size):
+        """The work-items of a strided launch producing `size` values."""
+        return -(-size // ri.items_per_work_item[self._engine])
 
     def _launch(self, kernel, dtype, size):
         """
@@ -379,7 +390,7 @@ class Philox4x3210(BitGenerator):
 
     def _launch(self, kernel, dtype, size):
         # every work-item takes a block of 2**64 counter values
-        n_blocks = -(-size // ri.items_per_work_item)
+        n_blocks = self._num_work_items(size)
         with self._lock:
             counter = self._counter
             self._counter = (counter + (n_blocks << 64)) & _MASK128
@@ -603,7 +614,183 @@ class PCG64DXSM(BitGenerator):
                     state = _pcg_advance(state, inc, 1)
             else:
                 # work-item w draws from the stream jumped w times
-                n_wi = -(-size // ri.items_per_work_item)
+                n_wi = self._num_work_items(size)
                 state = _pcg_advance(state, inc, _PCG_JUMP * n_wi)
             self._state = state
+        return words, 0, 0
+
+
+# L'Ecuyer's MRG32k3a: the moduli of its two components, and their
+# transition matrices, which map the state (x[n-3], x[n-2], x[n-1]) of a
+# component to the next one
+_MRG_M1 = 2**32 - 209
+_MRG_M2 = 2**32 - 22853
+_MRG_A1 = ((0, 1, 0), (0, 0, 1), (_MRG_M1 - 810728, 1403580, 0))
+_MRG_A2 = ((0, 1, 0), (0, 0, 1), (_MRG_M2 - 1370589, 0, 527612))
+
+# A substream is 2**76 values long
+_MRG_SUBSTREAM_BITS = 76
+
+
+def _mat_mul(a, b, m):
+    return tuple(
+        tuple(sum(a[i][k] * b[k][j] for k in range(3)) % m for j in range(3))
+        for i in range(3)
+    )
+
+
+def _mat_vec(a, v, m):
+    return tuple(sum(a[i][k] * v[k] for k in range(3)) % m for i in range(3))
+
+
+@functools.cache
+def _mrg_substream_jump(k):
+    """
+    The transition matrices of both components to the start of the
+    ``2**k``-th next substream.
+
+    """
+
+    if k == 0:
+        a1, a2 = _MRG_A1, _MRG_A2
+        for _ in range(_MRG_SUBSTREAM_BITS):
+            a1 = _mat_mul(a1, a1, _MRG_M1)
+            a2 = _mat_mul(a2, a2, _MRG_M2)
+        return a1, a2
+    a1, a2 = _mrg_substream_jump(k - 1)
+    return _mat_mul(a1, a1, _MRG_M1), _mat_mul(a2, a2, _MRG_M2)
+
+
+def _mrg_skip_substreams(s1, s2, n):
+    """The state `(s1, s2)` moved to the start of the `n`-th next substream."""
+
+    k = 0
+    while n:
+        if n & 1:
+            a1, a2 = _mrg_substream_jump(k)
+            s1 = _mat_vec(a1, s1, _MRG_M1)
+            s2 = _mat_vec(a2, s2, _MRG_M2)
+        n >>= 1
+        k += 1
+    return s1, s2
+
+
+class MRG32k3a(BitGenerator):
+    """
+    An MRG32k3a combined multiple recursive bit generator on the device.
+
+    The generator of L'Ecuyer (1999), with a period of about 2**191, as
+    implemented by the oneMKL device RNG API. Its state is two components
+    of three 32-bit words each.
+
+    Parameters
+    ----------
+    seed : {None, int, array_like[ints], SeedSequence}, optional
+        The entropy the state is derived from. See
+        :class:`dpnp.random.BitGenerator`.
+
+        Default: ``None``.
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
+        See :class:`dpnp.random.BitGenerator`.
+
+        Default: ``None``.
+    sycl_queue : {None, SyclQueue}, optional
+        See :class:`dpnp.random.BitGenerator`.
+
+        Default: ``None``.
+
+    Notes
+    -----
+    The engine gives values in ``[1, 2**32 - 209]``, which are spread over
+    the 32-bit range to give the raw 32-bit words, so that 209 words never
+    occur. A raw 64-bit value is two words, the first in the high half.
+
+    The stream is split into substreams of 2**76 values, as in L'Ecuyer et
+    al. (2002). Every call that produces ``n`` values takes ``ceil(n /
+    128)`` substreams, one for each work-item of the kernel, and every
+    work-item draws as many values as its rejection samplers need from its
+    own substream. The values therefore depend only on the state and the
+    output size, and are the same on every device, but not the same as
+    CuPy's.
+
+    References
+    ----------
+    .. [1] P. L'Ecuyer, "Good Parameters and Implementations for Combined
+           Multiple Recursive Random Number Generators", Operations
+           Research, 47(1), pp. 159-164, 1999.
+    .. [2] P. L'Ecuyer, R. Simard, E. J. Chen and W. D. Kelton, "An
+           Object-Oriented Random-Number Package with Many Long Streams and
+           Substreams", Operations Research, 50(6), pp. 1073-1075, 2002.
+
+    """
+
+    _engine = ri.engine_id.mrg32k3a
+
+    def __init__(self, seed=None, *, device=None, sycl_queue=None):
+        super().__init__(seed, device=device, sycl_queue=sycl_queue)
+
+        # values in [1, m - 1], which can't make a component all zero
+        words = [int(w) for w in self._seed_seq.generate_state(6, numpy.uint64)]
+        self._s1 = tuple(1 + w % (_MRG_M1 - 1) for w in words[:3])
+        self._s2 = tuple(1 + w % (_MRG_M2 - 1) for w in words[3:])
+
+    @staticmethod
+    def _check_component(value, m, name):
+        try:
+            words = tuple(operator.index(w) for w in value)
+        except TypeError:
+            raise TypeError(
+                f"{name} must be a sequence of 3 integers"
+            ) from None
+        if len(words) != 3:
+            raise ValueError(f"{name} must be a sequence of 3 integers")
+        if any(w < 0 or w >= m for w in words) or not any(words):
+            raise ValueError(
+                f"{name} must be in the range [0, {m}) and not all zero"
+            )
+        return words
+
+    @property
+    def state(self):
+        """
+        The state of the bit generator.
+
+        A dictionary ``{"bit_generator": "MRG32k3a", "state": {"s1": s1,
+        "s2": s2}}``, where `s1` and `s2` are the lists of the three words
+        of each component, the oldest first. The words of `s1` are less than
+        ``2**32 - 209``, those of `s2` less than ``2**32 - 22853``, and
+        neither is all zero.
+
+        """
+
+        with self._lock:
+            return {
+                "bit_generator": self.__class__.__name__,
+                "state": {"s1": list(self._s1), "s2": list(self._s2)},
+            }
+
+    @state.setter
+    def state(self, value):
+        if not isinstance(value, dict):
+            raise TypeError("state must be a dict")
+
+        bitgen = value.get("bit_generator", None)
+        if bitgen != self.__class__.__name__:
+            raise ValueError(
+                f"state must be for a {self.__class__.__name__} PRNG"
+            )
+
+        state = value["state"]
+        s1 = self._check_component(state["s1"], _MRG_M1, "s1")
+        s2 = self._check_component(state["s2"], _MRG_M2, "s2")
+        with self._lock:
+            self._s1 = s1
+            self._s2 = s2
+
+    def _launch(self, kernel, dtype, size):
+        # work-item w draws from the w-th next substream
+        n_wi = self._num_work_items(size)
+        with self._lock:
+            words = list(self._s1 + self._s2)
+            self._s1, self._s2 = _mrg_skip_substreams(self._s1, self._s2, n_wi)
         return words, 0, 0

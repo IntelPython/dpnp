@@ -989,7 +989,8 @@ def test_generator(func, args, kwargs, device):
 
 
 @pytest.mark.parametrize(
-    "bit_generator", [dpnp.random.Philox4x3210, dpnp.random.PCG64DXSM]
+    "bit_generator",
+    [dpnp.random.Philox4x3210, dpnp.random.PCG64DXSM, dpnp.random.MRG32k3a],
 )
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_bit_generator(bit_generator, device):

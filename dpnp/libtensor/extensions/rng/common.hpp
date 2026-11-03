@@ -128,7 +128,7 @@ sycl::event submit_sample(sycl::queue &exec_q,
                           const std::size_t nelems,
                           const std::vector<sycl::event> &depends)
 {
-    const std::size_t n_wi = rng_ns::num_work_items(nelems, L);
+    const std::size_t n_wi = rng_ns::num_work_items<EngineTraitsT>(nelems, L);
 
     return exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
@@ -247,7 +247,7 @@ void init_sample_dispatch_table(sample_dispatch_table_t &table)
 {
     using ext::common::init_dispatch_vector;
 
-    static_assert(rng_ns::num_engines == 2,
+    static_assert(rng_ns::num_engines == 3,
                   "Every engine must have a row in the dispatch table");
 
     constexpr int philox = static_cast<int>(rng_ns::engine_id::philox4x32x10);
@@ -261,12 +261,18 @@ void init_sample_dispatch_table(sample_dispatch_table_t &table)
                          SampleFactoryFor<rng_ns::PCG64DXSM, SamplerT,
                                           SupportedT>::template type>(
         table[pcg]);
+
+    constexpr int mrg = static_cast<int>(rng_ns::engine_id::mrg32k3a);
+    init_dispatch_vector<sample_fn_ptr_t,
+                         SampleFactoryFor<rng_ns::MRG32k3a, SamplerT,
+                                          SupportedT>::template type>(
+        table[mrg]);
 }
 
 template <template <typename> class SamplerT>
 void init_discrete_dispatch_table(discrete_dispatch_table_t &table)
 {
-    static_assert(rng_ns::num_engines == 2,
+    static_assert(rng_ns::num_engines == 3,
                   "Every engine must have a row in the dispatch table");
 
     using Philox = rng_ns::Philox4x32x10;
@@ -278,6 +284,11 @@ void init_discrete_dispatch_table(discrete_dispatch_table_t &table)
     constexpr int pcg = static_cast<int>(rng_ns::engine_id::pcg64dxsm);
     table[pcg][0] = sample_impl<PCG, SamplerT<float>, float>;
     table[pcg][1] = sample_impl<PCG, SamplerT<double>, double>;
+
+    using MRG = rng_ns::MRG32k3a;
+    constexpr int mrg = static_cast<int>(rng_ns::engine_id::mrg32k3a);
+    table[mrg][0] = sample_impl<MRG, SamplerT<float>, float>;
+    table[mrg][1] = sample_impl<MRG, SamplerT<double>, double>;
 }
 
 // Looks up the sampler of `result`'s type, and throws if there is none

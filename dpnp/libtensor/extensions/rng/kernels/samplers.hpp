@@ -51,7 +51,7 @@ namespace dpnp::kernels::rng
 // otherwise.
 //
 // `words_per_item` is the number of 32-bit words the sampler takes per
-// element, on average over items_per_work_item consecutive elements of one
+// element, on average over the items_per_work_item consecutive elements of one
 // work-item, if that number is fixed whatever the parameters and the
 // draws, and 0 otherwise. A rejection loop, even one that almost never
 // repeats, makes it 0.
