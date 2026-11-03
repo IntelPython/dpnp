@@ -172,7 +172,7 @@ PYBIND11_MODULE(_blas_impl, m, py::mod_gil_not_used())
               "trans_op picks op(A): 0=N, 1=T, 2=C.",
               py::arg("sycl_queue"), py::arg("matrixA"), py::arg("matrixB"),
               py::arg("upper_lower"), py::arg("trans_op") = 0,
-              py::arg("unit_diag") = false, py::arg("depends") = py::list());
+              py::arg("depends") = py::list());
     }
 
     {

@@ -86,8 +86,7 @@ static sycl::event potrs_impl(sycl::queue &exec_q,
     T *a = reinterpret_cast<T *>(in_a);
     T *b = reinterpret_cast<T *>(in_b);
 
-    const std::int64_t scratchpad_size = mkl_lapack::potrs_scratchpad_size<T>(
-        exec_q, upper_lower, n, nrhs, lda, ldb);
+    std::int64_t scratchpad_size = 0;
     T *scratchpad = nullptr;
 
     std::stringstream error_msg;
@@ -100,7 +99,18 @@ static sycl::event potrs_impl(sycl::queue &exec_q,
         // to the same queue in OneMKL
         py::gil_scoped_release lock{};
 
-        scratchpad = sycl::malloc_device<T>(scratchpad_size, exec_q);
+        scratchpad_size = mkl_lapack::potrs_scratchpad_size<T>(
+            exec_q, upper_lower, n, nrhs, lda, ldb);
+
+        // a backend may need no scratchpad
+        if (scratchpad_size > 0) {
+            scratchpad = sycl::malloc_device<T>(scratchpad_size, exec_q);
+            if (scratchpad == nullptr) {
+                throw std::runtime_error(
+                    "Unable to allocate the potrs scratchpad of " +
+                    std::to_string(scratchpad_size) + " elements");
+            }
+        }
 
         potrs_event = mkl_lapack::potrs(
             exec_q,

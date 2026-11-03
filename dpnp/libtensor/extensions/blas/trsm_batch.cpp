@@ -59,7 +59,6 @@ typedef sycl::event (*trsm_batch_impl_fn_ptr_t)(
     sycl::queue &,
     const oneapi::mkl::uplo,
     const oneapi::mkl::transpose,
-    const oneapi::mkl::diag,
     const std::int64_t, // m
     const std::int64_t, // n
     const char *,       // a
@@ -78,7 +77,6 @@ template <typename T>
 static sycl::event trsm_batch_impl(sycl::queue &exec_q,
                                    const oneapi::mkl::uplo upper_lower,
                                    const oneapi::mkl::transpose trans,
-                                   const oneapi::mkl::diag unit_diag,
                                    const std::int64_t m,
                                    const std::int64_t n,
                                    const char *matrixA,
@@ -108,9 +106,9 @@ static sycl::event trsm_batch_impl(sycl::queue &exec_q,
             exec_q,
             oneapi::mkl::side::left, // op(A) is on the left: op(A) X = B
             upper_lower,             // Whether A is upper or lower triangular.
-            trans,      // Defines op(A): 'N' for A, 'T' for A^T, or 'C'
-                        // for A^H.
-            unit_diag,  // Whether A is assumed to be unit triangular.
+            trans, // Defines op(A): 'N' for A, 'T' for A^T, or 'C'
+                   // for A^H.
+            oneapi::mkl::diag::nonunit, // A is not unit triangular.
             m,          // Number of rows of B, and the order of A.
             n,          // Number of columns of B.
             T(1),       // Scaling factor for B.
@@ -149,7 +147,6 @@ std::pair<sycl::event, sycl::event>
                const dpnp::tensor::usm_ndarray &matrixB,
                const std::int8_t upper_lower,
                const int trans_op,
-               const bool unit_diag,
                const std::vector<sycl::event> &depends)
 {
     const int a_nd = matrixA.get_ndim();
@@ -236,12 +233,10 @@ std::pair<sycl::event, sycl::event>
         (trans_op == 0)   ? oneapi::mkl::transpose::N
         : (trans_op == 1) ? oneapi::mkl::transpose::T
                           : oneapi::mkl::transpose::C;
-    const oneapi::mkl::diag diag_val =
-        unit_diag ? oneapi::mkl::diag::unit : oneapi::mkl::diag::nonunit;
 
     sycl::event trsm_batch_ev = trsm_batch_fn(
-        exec_q, uplo_val, trans, diag_val, m, n, matrixA.get_data(), lda,
-        stride_a, matrixB.get_data(), ldb, stride_b, batch_size, depends);
+        exec_q, uplo_val, trans, m, n, matrixA.get_data(), lda, stride_a,
+        matrixB.get_data(), ldb, stride_b, batch_size, depends);
 
     sycl::event args_ev = dpnp::utils::keep_args_alive(
         exec_q, {matrixA, matrixB}, {trsm_batch_ev});

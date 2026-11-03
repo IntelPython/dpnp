@@ -45,7 +45,6 @@ extern std::pair<sycl::event, sycl::event>
                const dpnp::tensor::usm_ndarray &matrixB,
                const std::int8_t upper_lower,
                const int trans_op,
-               const bool unit_diag,
                const std::vector<sycl::event> &depends);
 
 extern void init_trsm_batch_dispatch_vector(void);

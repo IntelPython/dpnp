@@ -43,6 +43,7 @@ available as a pybind11 extension.
 
 from warnings import warn
 
+import dpctl
 import dpctl.utils as dpu
 
 import dpnp
@@ -422,8 +423,10 @@ def _cho_solve_trsm(c_f, b_f, uplo, exec_q):
 
     `c_f` is a (n, n, batch) or a shared (n, n) and `b_f` a (n, nrhs, batch)
     F-contiguous array.
-    Two batched triangular solves are used, since oneMKL potrs_batch is much
-    slower (see MKLD-20341).
+    Two batched triangular solves are used, since oneMKL 2026.2 potrs_batch
+    solves the batch one matrix at a time: 290x slower than two trsm_batch
+    calls for a (1000, 32, 32) batch on PVC and 14-290x on Panther Lake GPU
+    (internal MKLD-20341).
 
     """
 
@@ -471,11 +474,15 @@ def _fold_rhs_batch(exec_q, res_type, batch_size, nrhs):
     Otherwise, for a real type on GPU and a small batch, where oneMKL potrs
     slows down above 16 columns, the factor is shared by the batch in
     trsm_batch (stride 0).
+    The cutoffs were measured with oneMKL 2026.2 on Intel GPUs (PVC,
+    Battlemage, Panther Lake), so CUDA and HIP devices always fold.
 
     """
 
+    dev = exec_q.sycl_device
     return not (
-        exec_q.sycl_device.is_gpu
+        dev.is_gpu
+        and dev.backend not in (dpctl.backend_type.cuda, dpctl.backend_type.hip)
         and not dpnp.issubdtype(res_type, dpnp.complexfloating)
         and 16 < batch_size * nrhs
         and batch_size <= 32
