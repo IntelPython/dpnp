@@ -1102,6 +1102,7 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">operator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedTuple</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
@@ -1115,6 +1116,12 @@
     <span class="n">map_dtype_to_device</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.tensor._numpy_helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_axis_index</span>
+
+
+<span class="c1"># pylint:disable=missing-class-docstring</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TopKResult</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="n">values</span><span class="p">:</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">indices</span><span class="p">:</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_wrap_sort_argsort</span><span class="p">(</span>
@@ -1563,12 +1570,19 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    out : tuple of dpnp.ndarray</span>
-<span class="sd">        A tuple ``(values, indices)``, where `values` are the top `k` values</span>
-<span class="sd">        of `a` and `indices` are their indices along `axis`. Both arrays have</span>
-<span class="sd">        the shape of `a` with the dimension along `axis` replaced by `k`.</span>
-<span class="sd">        `values` has the same data type as `a` and `indices` has the default</span>
-<span class="sd">        array index data type.</span>
+<span class="sd">    values : dpnp.ndarray</span>
+<span class="sd">        The top `k` values of `a`, with the same data type as `a`. The shape</span>
+<span class="sd">        is that of `a` with the dimension along `axis` replaced by `k`.</span>
+<span class="sd">    indices : dpnp.ndarray</span>
+<span class="sd">        The indices of `values` along `axis`, with the same shape as `values`</span>
+<span class="sd">        and the default array index data type.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.tensor.top_k` : Array API version; returns the elements in an</span>
+<span class="sd">        unspecified order.</span>
+<span class="sd">    :obj:`dpnp.partition` : Partial sort.</span>
+<span class="sd">    :obj:`dpnp.sort` : Full sorting.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -1576,31 +1590,43 @@
 <span class="sd">    the indices of equal values is not guaranteed to match their order in</span>
 <span class="sd">    `a`. This is the case regardless of the value of `sorted`.</span>
 
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.tensor.top_k` : Strictly Array API compatible version; flattens</span>
-<span class="sd">        by default and returns the elements in an unspecified order.</span>
-<span class="sd">    :obj:`dpnp.partition` : Partial sort.</span>
-<span class="sd">    :obj:`dpnp.sort` : Full sorting.</span>
+<span class="sd">    In contrast to :obj:`numpy.top_k`, which returns empty arrays when `axis`</span>
+<span class="sd">    is empty, :obj:`dpnp.top_k` raises ``ValueError`` for an empty `axis` and</span>
+<span class="sd">    ``k &gt; 0``, as it does for any `k` greater than the size of `axis`.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; a = np.array([[1, 2, 3, 4], [4, 3, 2, 1]])</span>
-<span class="sd">    &gt;&gt;&gt; np.top_k(a, 2)</span>
-<span class="sd">    (array([[4, 3],</span>
-<span class="sd">           [4, 3]]), array([[3, 2],</span>
-<span class="sd">           [0, 1]]))</span>
-<span class="sd">    &gt;&gt;&gt; np.top_k(a, 2, axis=0)</span>
-<span class="sd">    (array([[4, 3, 3, 4],</span>
-<span class="sd">           [1, 2, 2, 1]]), array([[1, 1, 0, 0],</span>
-<span class="sd">           [0, 0, 1, 1]]))</span>
-<span class="sd">    &gt;&gt;&gt; np.top_k(a, 2, axis=1, mode="smallest")</span>
-<span class="sd">    (array([[1, 2],</span>
-<span class="sd">           [1, 2]]), array([[0, 1],</span>
-<span class="sd">           [3, 2]]))</span>
-<span class="sd">    &gt;&gt;&gt; np.top_k(np.array([1.0, 2.0, 3.0, np.nan]), 2)</span>
-<span class="sd">    (array([3., 2.]), array([2, 1]))</span>
+<span class="sd">    &gt;&gt;&gt; res = np.top_k(a, 2)</span>
+<span class="sd">    &gt;&gt;&gt; res.values</span>
+<span class="sd">    array([[4, 3],</span>
+<span class="sd">           [4, 3]])</span>
+<span class="sd">    &gt;&gt;&gt; res.indices</span>
+<span class="sd">    array([[3, 2],</span>
+<span class="sd">           [0, 1]])</span>
+
+<span class="sd">    &gt;&gt;&gt; values, indices = np.top_k(a, 2, axis=0)</span>
+<span class="sd">    &gt;&gt;&gt; values</span>
+<span class="sd">    array([[4, 3, 3, 4],</span>
+<span class="sd">           [1, 2, 2, 1]])</span>
+<span class="sd">    &gt;&gt;&gt; indices</span>
+<span class="sd">    array([[1, 1, 0, 0],</span>
+<span class="sd">           [0, 0, 1, 1]])</span>
+
+<span class="sd">    &gt;&gt;&gt; values, indices = np.top_k(a, 2, axis=1, mode="smallest")</span>
+<span class="sd">    &gt;&gt;&gt; values</span>
+<span class="sd">    array([[1, 2],</span>
+<span class="sd">           [1, 2]])</span>
+<span class="sd">    &gt;&gt;&gt; indices</span>
+<span class="sd">    array([[0, 1],</span>
+<span class="sd">           [3, 2]])</span>
+
+<span class="sd">    &gt;&gt;&gt; values, indices = np.top_k(np.array([1.0, 2.0, 3.0, np.nan]), 2)</span>
+<span class="sd">    &gt;&gt;&gt; values</span>
+<span class="sd">    array([3., 2.])</span>
+<span class="sd">    &gt;&gt;&gt; indices</span>
+<span class="sd">    array([2, 1])</span>
 
 <span class="sd">    """</span>
 
@@ -1634,7 +1660,7 @@
             <span class="n">usm_vals</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">take_along_axis</span><span class="p">(</span><span class="n">usm_vals</span><span class="p">,</span> <span class="n">sort_inds</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
             <span class="n">usm_inds</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">take_along_axis</span><span class="p">(</span><span class="n">usm_inds</span><span class="p">,</span> <span class="n">sort_inds</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="p">(</span>
+    <span class="k">return</span> <span class="n">TopKResult</span><span class="p">(</span>
         <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_vals</span><span class="p">),</span>
         <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_inds</span><span class="p">),</span>
     <span class="p">)</span></div>

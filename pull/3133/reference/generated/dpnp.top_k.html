@@ -1102,11 +1102,11 @@ unspecified.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>out</strong><span class="classifier">tuple of dpnp.ndarray</span></dt><dd><p>A tuple <code class="docutils literal notranslate"><span class="pre">(values,</span> <span class="pre">indices)</span></code>, where <cite>values</cite> are the top <cite>k</cite> values
-of <cite>a</cite> and <cite>indices</cite> are their indices along <cite>axis</cite>. Both arrays have
-the shape of <cite>a</cite> with the dimension along <cite>axis</cite> replaced by <cite>k</cite>.
-<cite>values</cite> has the same data type as <cite>a</cite> and <cite>indices</cite> has the default
-array index data type.</p>
+<dt><strong>values</strong><span class="classifier">dpnp.ndarray</span></dt><dd><p>The top <cite>k</cite> values of <cite>a</cite>, with the same data type as <cite>a</cite>. The shape
+is that of <cite>a</cite> with the dimension along <cite>axis</cite> replaced by <cite>k</cite>.</p>
+</dd>
+<dt><strong>indices</strong><span class="classifier">dpnp.ndarray</span></dt><dd><p>The indices of <cite>values</cite> along <cite>axis</cite>, with the same shape as <cite>values</cite>
+and the default array index data type.</p>
 </dd>
 </dl>
 </dd>
@@ -1114,7 +1114,7 @@ array index data type.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference external" href="https://intelpython.github.io/dpctl/0.21.1/api_reference/dpctl/generated/dpctl.tensor.top_k.html#dpctl.tensor.top_k"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.tensor.top_k</span></code></a></dt><dd><p>Strictly Array API compatible version; flattens by default and returns the elements in an unspecified order.</p>
+<dt><a class="reference external" href="https://intelpython.github.io/dpctl/0.21.1/api_reference/dpctl/generated/dpctl.tensor.top_k.html#dpctl.tensor.top_k"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.tensor.top_k</span></code></a></dt><dd><p>Array API version; returns the elements in an unspecified order.</p>
 </dd>
 <dt><a class="reference internal" href="dpnp.partition.html#dpnp.partition" title="dpnp.partition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.partition</span></code></a></dt><dd><p>Partial sort.</p>
 </dd>
@@ -1126,23 +1126,44 @@ array index data type.</p>
 <p>The returned indices are not guaranteed to be stable, i.e., the order of
 the indices of equal values is not guaranteed to match their order in
 <cite>a</cite>. This is the case regardless of the value of <cite>sorted</cite>.</p>
+<p>In contrast to <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.top_k</span></code>, which returns empty arrays when <cite>axis</cite>
+is empty, <a class="reference internal" href="#dpnp.top_k" title="dpnp.top_k"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.top_k</span></code></a> raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> for an empty <cite>axis</cite> and
+<code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>, as it does for any <cite>k</cite> greater than the size of <cite>axis</cite>.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">top_k</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-<span class="go">(array([[4, 3],</span>
-<span class="go">       [4, 3]]), array([[3, 2],</span>
-<span class="go">       [0, 1]]))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">top_k</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="go">(array([[4, 3, 3, 4],</span>
-<span class="go">       [1, 2, 2, 1]]), array([[1, 1, 0, 0],</span>
-<span class="go">       [0, 0, 1, 1]]))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">top_k</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"smallest"</span><span class="p">)</span>
-<span class="go">(array([[1, 2],</span>
-<span class="go">       [1, 2]]), array([[0, 1],</span>
-<span class="go">       [3, 2]]))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">top_k</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">]),</span> <span class="mi">2</span><span class="p">)</span>
-<span class="go">(array([3., 2.]), array([2, 1]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">top_k</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span><span class="o">.</span><span class="n">values</span>
+<span class="go">array([[4, 3],</span>
+<span class="go">       [4, 3]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span><span class="o">.</span><span class="n">indices</span>
+<span class="go">array([[3, 2],</span>
+<span class="go">       [0, 1]])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">values</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">top_k</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">values</span>
+<span class="go">array([[4, 3, 3, 4],</span>
+<span class="go">       [1, 2, 2, 1]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">indices</span>
+<span class="go">array([[1, 1, 0, 0],</span>
+<span class="go">       [0, 0, 1, 1]])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">values</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">top_k</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"smallest"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">values</span>
+<span class="go">array([[1, 2],</span>
+<span class="go">       [1, 2]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">indices</span>
+<span class="go">array([[0, 1],</span>
+<span class="go">       [3, 2]])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">values</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">top_k</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">]),</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">values</span>
+<span class="go">array([3., 2.])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">indices</span>
+<span class="go">array([2, 1])</span>
 </pre></div>
 </div>
 </dd></dl>
