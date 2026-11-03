@@ -1103,9 +1103,8 @@
 <span class="c1"># pylint: disable=no-name-in-module</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.backend.extensions.ufunc._ufunc_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ufi</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.libtensor._tensor_elementwise_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.tensor._tensor_elementwise_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.tensor._type_utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dtu</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_algo.dpnp_elementwise_common</span><span class="w"> </span><span class="kn">import</span> <span class="n">DPNPBinaryFunc</span><span class="p">,</span> <span class="n">DPNPUnaryFunc</span>
@@ -2059,8 +2058,8 @@
 
 <span class="n">deg2rad</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
     <span class="s2">"deg2rad"</span><span class="p">,</span>
-    <span class="n">ufi</span><span class="o">.</span><span class="n">_radians_result_type</span><span class="p">,</span>
-    <span class="n">ufi</span><span class="o">.</span><span class="n">_radians</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_radians_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_radians</span><span class="p">,</span>
     <span class="n">_DEG2RAD_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -2130,8 +2129,8 @@
 
 <span class="n">degrees</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
     <span class="s2">"degrees"</span><span class="p">,</span>
-    <span class="n">ufi</span><span class="o">.</span><span class="n">_degrees_result_type</span><span class="p">,</span>
-    <span class="n">ufi</span><span class="o">.</span><span class="n">_degrees</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_degrees_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_degrees</span><span class="p">,</span>
     <span class="n">_DEGREES_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -2880,8 +2879,8 @@
 
 <span class="n">logaddexp2</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
     <span class="s2">"logaddexp2"</span><span class="p">,</span>
-    <span class="n">ufi</span><span class="o">.</span><span class="n">_logaddexp2_result_type</span><span class="p">,</span>
-    <span class="n">ufi</span><span class="o">.</span><span class="n">_logaddexp2</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_logaddexp2_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_logaddexp2</span><span class="p">,</span>
     <span class="n">_LOGADDEXP2_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -3040,8 +3039,8 @@
 
 <span class="n">rad2deg</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
     <span class="s2">"rad2deg"</span><span class="p">,</span>
-    <span class="n">ufi</span><span class="o">.</span><span class="n">_degrees_result_type</span><span class="p">,</span>
-    <span class="n">ufi</span><span class="o">.</span><span class="n">_degrees</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_degrees_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_degrees</span><span class="p">,</span>
     <span class="n">_RAD2DEG_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -3112,8 +3111,8 @@
 
 <span class="n">radians</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
     <span class="s2">"radians"</span><span class="p">,</span>
-    <span class="n">ufi</span><span class="o">.</span><span class="n">_radians_result_type</span><span class="p">,</span>
-    <span class="n">ufi</span><span class="o">.</span><span class="n">_radians</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_radians_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_radians</span><span class="p">,</span>
     <span class="n">_RADIANS_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
 
