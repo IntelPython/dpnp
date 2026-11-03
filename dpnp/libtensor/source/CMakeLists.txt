@@ -338,6 +338,11 @@ endforeach()
 # An inline function with FP math that both instantiate gets the flags of the
 # copy the linker keeps (the dpnp one, see above), so keep such helpers out of
 # shared headers or give them the same flags in both groups.
+# dpnp sources instantiating the libtensor radix select kernels
+set(_dpnp_radix_select_sources
+    ${_dpnp_sorting_sources}
+    ${CMAKE_CURRENT_SOURCE_DIR}/statistics/median.cpp
+)
 foreach(_src_fn ${_dpnp_sources})
     get_source_file_property(_cmpl_options_prop ${_src_fn} COMPILE_OPTIONS)
     set(_combined_options_prop
@@ -345,7 +350,7 @@ foreach(_src_fn ${_dpnp_sources})
         "${_clang_prefix}-fno-approx-func"
         "${_clang_prefix}-fno-finite-math-only"
     )
-    if(DPNP_GENERATE_COVERAGE)
+    if(DPNP_GENERATE_COVERAGE AND NOT _src_fn IN_LIST _dpnp_radix_select_sources)
         list(
             APPEND _combined_options_prop
             -fprofile-instr-generate
@@ -362,11 +367,15 @@ endforeach()
 if(DPNP_GENERATE_COVERAGE)
     # libtensor code the dpnp functions use, measured like the dpnp sources.
     # Host only: their device coverage records break sycl-link
-    # (a source property, unlike target options, keeps the repeated -Xarch_host)
+    # (a source property, unlike target options, keeps the repeated -Xarch_host).
+    # The radix select sources are host only too: the device counters, ~500
+    # device globals per kernel, also reach the shared sort and top_k kernels,
+    # and their init events crash the OpenCL CPU runtime at random
     set_property(
         SOURCE
             ${_static_lib_sources}
             ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/elementwise_functions_type_utils.cpp
+            ${_dpnp_radix_select_sources}
         APPEND
         PROPERTY
             COMPILE_OPTIONS
