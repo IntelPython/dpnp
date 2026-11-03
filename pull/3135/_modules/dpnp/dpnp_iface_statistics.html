@@ -1100,6 +1100,7 @@
 
 <span class="sd">"""</span>
 
+<span class="c1"># pylint: disable=protected-access</span>
 <span class="c1"># pylint: disable=no-name-in-module</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
@@ -1196,7 +1197,6 @@
     <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpu</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">queue</span><span class="p">]</span>
     <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
 
-    <span class="c1"># pylint: disable=protected-access</span>
     <span class="n">ht_ev</span><span class="p">,</span> <span class="n">div_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_divide_by_scalar</span><span class="p">(</span>
         <span class="n">src</span><span class="o">=</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">scalar</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">queue</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
     <span class="p">)</span>
@@ -2613,18 +2613,21 @@
     <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">out</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"'out' tuple must have exactly two entries"</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">res</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">out</span><span class="p">):</span>
-        <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="o">*</span><span class="n">out</span><span class="p">)</span>
-        <span class="c1"># pylint: disable=protected-access</span>
-        <span class="k">if</span> <span class="n">dti</span><span class="o">.</span><span class="n">_array_overlap</span><span class="p">(</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">,</span> <span class="n">out</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Output arrays cannot overlap"</span><span class="p">)</span>
+    <span class="n">out_arrays</span> <span class="o">=</span> <span class="p">[</span><span class="n">res</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">out</span> <span class="k">if</span> <span class="n">res</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="o">*</span><span class="n">out_arrays</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">out_arrays</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">dti</span><span class="o">.</span><span class="n">_array_overlap</span><span class="p">(</span>
+        <span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">,</span> <span class="n">out_arrays</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Output arrays cannot overlap"</span><span class="p">)</span>
 
     <span class="n">usm_out</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">out</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">res</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
             <span class="c1"># the result is computed in the data type of `a`</span>
             <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+                <span class="c1"># the cast to a writable temporary would hide the flag</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">res</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">writable</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"provided `out` array is read-only"</span><span class="p">)</span>
                 <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
         <span class="n">usm_out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
