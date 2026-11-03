@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * Changed `dpnp.tensor.top_k` to select the `k` elements with a radix select instead of sorting every row, for all but complex data types. The order of the returned elements is now unspecified, where it was largest-first or smallest-first before [#3079](https://github.com/IntelPython/dpnp/pull/3079)
+* Changed the CI to build and test the conda packages of `conda-recipe` and the wheels with Intel Python CI (`ci/`, `.github/workflows/intel-ci.yml`); the conda packages now require `onemkl-sycl-sparse` and the wheels declare the oneAPI runtime wheels in their metadata [#3151](https://github.com/IntelPython/dpnp/pull/3151)
 
 ### Deprecated
 
@@ -21,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Deprecated `dpnp.isfortran`; use `a.flags.fnc` instead [#3140](https://github.com/IntelPython/dpnp/pull/3140)
 
 ### Removed
+
+* Removed the Intel channel conda recipe, with `rattler_recipe.yaml`, and the `conda-package.yml` workflow; `conda-recipe/` is now the conda-forge recipe that was `conda-recipe-cf/` [#3151](https://github.com/IntelPython/dpnp/pull/3151)
 
 ### Fixed
 

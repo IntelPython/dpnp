@@ -46,10 +46,10 @@ Append to the end of the matching `### Added` / `Changed` / `Deprecated` / `Remo
 | Check | Workflow | Required on master |
 | --- | --- | --- |
 | pre-commit (`Check`) | `.github/workflows/pre-commit.yml` | yes |
-| conda build and tests, Linux and Windows, py3.13-3.15 and 3.14t (`Test (...)`) | `conda-package.yml` | yes |
+| conda packages and wheels built and tested, Linux and Windows, py3.11-3.15 and 3.14t for conda, py3.10-3.14 and 3.14t for wheels (`Test <Platform> Python <version>`, `Test <Platform> Wheels Python <version>`); the conda matrix is `conda-recipe/conda_build_config.yaml`, the wheel matrix the Python classifiers in `pyproject.toml`; see `ci/README.md` | `intel-ci.yml` | no |
 | Internal Jenkins (`jenkins-test-dpnp-3.13-linux-dev`, `...-3.14-...`) | external | yes |
-| Array API conformance of `dpnp`, not yet `dpnp.tensor` (array-api-tests; never fails, results posted as a PR comment on non-fork PRs) | `conda-package.yml` | no |
-| pybind11 examples | `conda-package.yml` | no |
+| Array API conformance of `dpnp`, not yet `dpnp.tensor` (array-api-tests; never fails, results posted as a PR comment on non-fork PRs) | `conda-package-cf.yml` | no |
+| pybind11 examples | `conda-package-cf.yml` | no |
 | conda-forge build and tests | `conda-package-cf.yml`, matrix in `conda-build-test.yml` | no |
 | oneMath build, open-source LLVM SYCL build | `check-onemath.yaml`, `os-llvm-sycl-build.yml` | no |
 | Sphinx docs (`make spelling`, `make html`) | `build-sphinx.yml` | no |

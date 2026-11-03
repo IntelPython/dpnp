@@ -1,125 +1,93 @@
-{% set max_compiler_and_mkl_version = environ.get("MAX_BUILD_CMPL_MKL_VERSION", "2027.0a0") %}
-{% set required_compiler_version = environ.get("MIN_BUILD_CMPL_VERSION", "2026.1.1") %}
-{% set required_mkl_version = "2026.0" %}
-{% set required_dpctl_version = "0.23.0dev0" %}
-
-{# DPNP does not support a compiler older than 2026.0, so reject any #}
-{# MIN_BUILD_CMPL_VERSION override below that by calling an undefined macro. #}
-{% if required_compiler_version.split('.') | map('int') | list < [2026, 0] %}
-{{ MIN_BUILD_CMPL_VERSION_must_be_at_least_2026_0() }}
-{% endif %}
-
-{# The minimum compiler version must stay strictly below the (exclusive) maximum, #}
-{# otherwise the ">=min,<max" compiler pin collapses to an unsolvable empty range. #}
-{% if required_compiler_version.split('.') | map('int') | list >= max_compiler_and_mkl_version.split('.') | map('int') | list %}
-{{ MIN_BUILD_CMPL_VERSION_must_be_below_MAX_BUILD_CMPL_MKL_VERSION() }}
-{% endif %}
-
-{# The conda-forge OpenCL ICD loaders (ocl-icd-system / khronos-opencl-icd-loader) #}
-{# require DPC++ RT of 2026.1.1 or newer when installing from the Intel channel. #}
-{# So fall back to intel-gpu-ocl-icd-system for older Intel channel DPC++ RTs. #}
-{# Building and installing solely with conda-forge channel works with any 2026.0+ compiler. #}
-{% set use_conda_forge_ocl_icd = required_compiler_version.split('.') | map('int') | list >= [2026, 1, 1] %}
-
-{% set pyproject = load_file_data('pyproject.toml') %}
-{% set py_build_deps = pyproject.get('build-system', {}).get('requires', []) %}
+{% set required_compiler_and_mkl_version = "2026.0.0" %}
+{% set max_compiler_and_mkl_version = "2027.0a0" %}
+{% set required_dpctl_version = "0.23.0" %}
 
 package:
-    name: dpnp
-    version: {{ GIT_DESCRIBE_TAG }}
-source:
-    path: ..
+  name: dpnp
+  version: {{ GIT_DESCRIBE_TAG }}
 
-requirements:
-    host:
-      - python
-      - pip >=25.0
-      - pybind11 >=3.0.2
-      {% for dep in py_build_deps %}
-      {% if dep.startswith('dpctl') %}
-      - dpctl >={{ required_dpctl_version }}
-      {% elif dep.startswith('ninja') %}
-      - {{ dep.split(';')[0] }} # [not win]
-      {% elif dep.startswith('cmake') %}
-      - {{ dep }}
-      {% elif dep.startswith('build>=') %}
-      - {{ 'python-' ~ dep }}
-      {% else %}
-      - {{ dep|replace('_','-') }}
-      {% endif %}
-      {% endfor %}
-      # versioneer dependency
-      - tomli # [py<311]
-      # Do not use pyproject.toml for setting dependencies on OneAPI packages
-      - mkl-devel-dpcpp >={{ required_mkl_version }},<{{ max_compiler_and_mkl_version }}
-      - onedpl-devel
-      - tbb-devel
-      - opencl-headers >=2025.06.13 # [win]
-    build:
-      - {{ compiler('cxx') }}
-      - {{ stdlib('c') }}
-      - {{ compiler('dpcpp') }} >={{ required_compiler_version }},<{{ max_compiler_and_mkl_version }}
-    run:
-      - python
-      - {{ pin_compatible('dpctl', min_pin='x.x.x', max_pin=None) }}
-      - {{ pin_compatible('dpcpp-cpp-rt', min_pin='x.x', max_pin='x') }}
-      - {{ pin_compatible('intel-sycl-rt', min_pin='x.x', max_pin='x') }}
-      - {{ pin_compatible('intel-cmplr-lib-rt', min_pin='x.x', max_pin='x') }}
-      - {{ pin_compatible('mkl', min_pin='x.x', max_pin='x') }}
-      - {{ pin_compatible('onemkl-sycl-blas', min_pin='x.x', max_pin='x') }}
-      - {{ pin_compatible('onemkl-sycl-dft', min_pin='x.x', max_pin='x') }}
-      - {{ pin_compatible('onemkl-sycl-lapack', min_pin='x.x', max_pin='x') }}
-      - {{ pin_compatible('onemkl-sycl-rng', min_pin='x.x', max_pin='x') }}
-      - {{ pin_compatible('onemkl-sycl-vm', min_pin='x.x', max_pin='x') }}
-      - {{ pin_compatible('onemkl-sycl-sparse', min_pin='x.x', max_pin='x') }}
-      - numpy
-      {% if use_conda_forge_ocl_icd %}
-      - ocl-icd-system  # [linux]
-      - khronos-opencl-icd-loader  # [win]
-      {% else %}
-      - intel-gpu-ocl-icd-system
-      {% endif %}
+source:
+  path: ..
 
 build:
-    number: {{ GIT_DESCRIBE_NUMBER }}
-    include_recipe: False
-    script_env:
-      - WHEELS_OUTPUT_FOLDER
-      - OVERRIDE_INTEL_IPO  # [win]
-    ignore_run_exports:
-      - dpctl
-      - numpy
-      - python
-      # building with Intel DPC++ and do not import the MSVC runtime DLLs
-      - vc14_runtime  # [win]
-      - ucrt          # [win]
-    missing_dso_whitelist:
-      - '*DPCTLSyclInterface*'
-      - '*/dpnp_backend_c.dll'        # [win]
+  number: {{ GIT_DESCRIBE_NUMBER }}
+  ignore_run_exports:
+    - dpctl
+    - numpy
+    - python
+    # building with Intel DPC++ and do not import the MSVC runtime DLLs
+    - vc14_runtime  # [win]
+    - ucrt          # [win]
+  missing_dso_whitelist:
+    - '*DPCTLSyclInterface*'
+    - '*/dpnp_backend_c.dll'        # [win]
+  skip: true  # [osx]
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - {{ compiler('dpcpp') }} >={{ required_compiler_and_mkl_version }},<{{ max_compiler_and_mkl_version }}
+    - ninja >=1.11.1          # [linux]
+    - cmake >=3.31.6
+  host:
+    - python
+    - pip >=25.0
+    - pybind11 >=3.0.2
+    - setuptools >=79.0.1
+    - wheel >=0.45.1
+    - python-build >=1.2.2
+    - scikit-build >=0.18.1
+    - cython >=3.1.0
+    - numpy >=1.26.0
+    - versioneer ==0.29
+    # versioneer dependency
+    - tomli                   # [py<311]
+    - dpctl >={{ required_dpctl_version }}
+    - mkl-devel-dpcpp >={{ required_compiler_and_mkl_version }},<{{ max_compiler_and_mkl_version }}
+    - onedpl-devel
+    - tbb-devel
+  run:
+    - python
+    - {{ pin_compatible('dpctl', min_pin='x.x.x', max_pin=None) }}
+    - {{ pin_compatible('dpcpp-cpp-rt', min_pin='x.x', max_pin='x') }}
+    - {{ pin_compatible('intel-sycl-rt', min_pin='x.x', max_pin='x') }}
+    - {{ pin_compatible('intel-cmplr-lib-rt', min_pin='x.x', max_pin='x') }}
+    - {{ pin_compatible('mkl', min_pin='x.x', max_pin='x') }}
+    - {{ pin_compatible('onemkl-sycl-blas', min_pin='x.x', max_pin='x') }}
+    - {{ pin_compatible('onemkl-sycl-dft', min_pin='x.x', max_pin='x') }}
+    - {{ pin_compatible('onemkl-sycl-lapack', min_pin='x.x', max_pin='x') }}
+    - {{ pin_compatible('onemkl-sycl-rng', min_pin='x.x', max_pin='x') }}
+    - {{ pin_compatible('onemkl-sycl-sparse', min_pin='x.x', max_pin='x') }}
+    - {{ pin_compatible('onemkl-sycl-vm', min_pin='x.x', max_pin='x') }}
+    - numpy
+    - ocl-icd-system  # [linux]
+    - khronos-opencl-icd-loader  # [win]
 
 test:
-    requires:
-      - pytest
-      - setuptools
-      - scipy # [py<314]
+  requires:
+    - pip
+  commands:
+    - pip check
+    - python -c "import dpnp; print(dpnp.__version__)"
 
 about:
-    home: https://github.com/IntelPython/dpnp
-    license: BSD-3-Clause
-    license_file: LICENSE.txt
-    summary: 'Data Parallel Extension for NumPy'
-    description: |
-        <strong>LEGAL NOTICE: Use of this software package is subject to the
-        software license agreement (as set forth above, in the license section of
-        the installed Conda package and/or the README file) and all notices,
-        disclaimers or license terms for third party or open source software
-        included in or with the software.</strong>
-        <br/><br/>
-        EULA: <a href="https://opensource.org/licenses/BSD-3-Clause" target="_blank">BSD-3-Clause</a>
-        <br/><br/>
+  home: https://github.com/IntelPython/dpnp
+  license: BSD-3-Clause
+  license_file: LICENSE.txt
+  summary: 'Data Parallel Extension for NumPy'
+  description: |
+    <strong>LEGAL NOTICE: Use of this software package is subject to the
+    software license agreement (as set forth above, in the license section of
+    the installed Conda package and/or the README file) and all notices,
+    disclaimers or license terms for third party or open source software
+    included in or with the software.</strong>
+    <br/><br/>
+    EULA: <a href="https://opensource.org/licenses/BSD-3-Clause" target="_blank">BSD-3-Clause</a>
+    <br/><br/>
 
 extra:
-    recipe-maintainers:
-        - antonwolfy
-        - vlad-perevezentsev
-        - ndgrigorian
+  recipe-maintainers:
+    - antonwolfy
+    - vlad-perevezentsev
+    - ndgrigorian

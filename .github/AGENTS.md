@@ -8,6 +8,7 @@ These keep zizmor (`zizmor.yml`, fails on medium or higher findings) and the Ope
 - Never inline untrusted contexts (`github.event.*`, `github.head_ref`, `inputs.*`) in `run:`; pass them through `env:`. Prefer `env:` for every value in new code.
 - Every job sets `timeout-minutes`; for a job that calls a reusable workflow, set it inside the called workflow.
 - `actionlint` runs in pre-commit.
+- `workflows/intel-ci.yml` is Intel Python CI: its conda matrix is `conda-recipe/conda_build_config.yaml`, its wheel matrix the Python classifiers in `pyproject.toml`, and its upload and cleanup jobs run only for pushes to `master` and tags in `IntelPython/dpnp`; see `ci/README.md`.
 - `workflows/array-api-skips.txt` lists array-api-tests node IDs skipped by the conformance job; precede each with a comment naming the upstream issue.
 - `bump-sycl-deps.yml` rewrites the `DRIVER_PATH`, `OCLCPUEXP_FN`, `TBB_URL`, `TBB_INSTALL_DIR` and `TBB_FN` pins in `.github/sycl-build-deps.env` with `sed`, and `os-llvm-sycl-build.yml` reads exactly those five; keep one unquoted `KEY=VALUE` per line, starting at column 0.
 - Dependabot (`dependabot.yml`) bumps actions, `environments/` pins and pre-commit hooks weekly with a 7-day cooldown.

@@ -1,7 +1,7 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 [![Pre-commit](https://github.com/IntelPython/dpnp/actions/workflows/pre-commit.yml/badge.svg?branch=master&event=push)](https://github.com/IntelPython/dpnp/actions/workflows/pre-commit.yml)
-[![Conda package](https://github.com/IntelPython/dpnp/actions/workflows/conda-package.yml/badge.svg?branch=master&event=push)](https://github.com/IntelPython/dpnp/actions/workflows/conda-package.yml)
+[![Conda package using conda-forge](https://github.com/IntelPython/dpnp/actions/workflows/conda-package-cf.yml/badge.svg?branch=master&event=push)](https://github.com/IntelPython/dpnp/actions/workflows/conda-package-cf.yml)
 [![Coverage Status](https://coveralls.io/repos/github/IntelPython/dpnp/badge.svg?branch=master)](https://coveralls.io/github/IntelPython/dpnp?branch=master)
 [![Build Sphinx](https://github.com/IntelPython/dpnp/workflows/Build%20Sphinx/badge.svg)](https://intelpython.github.io/dpnp)
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/intelpython-dpnp/badge.svg)](https://scan.coverity.com/projects/intelpython-dpnp)

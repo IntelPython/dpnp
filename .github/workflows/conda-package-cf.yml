@@ -21,7 +21,7 @@ jobs:
       runs-on: ubuntu-latest
       conda-subdir: linux-64
       channels-list: '-c conda-forge --override-channels'
-      recipe-dir: conda-recipe-cf
+      recipe-dir: conda-recipe
 
   windows:
     name: windows
@@ -30,4 +30,198 @@ jobs:
       runs-on: windows-2022
       conda-subdir: win-64
       channels-list: '-c conda-forge --override-channels'
-      recipe-dir: conda-recipe-cf
+      recipe-dir: conda-recipe
+
+  examples:
+    name: Test examples
+    needs: linux
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    env:
+      channel-path: '${{ github.workspace }}/channel'
+      python-ver: '3.14'
+
+    steps:
+      # Not in the workspace root, where its dpnp would shadow the installed one
+      - name: Checkout DPNP repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          path: source
+
+      - name: Download artifact
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: dpnp Linux Python ${{ env.python-ver }}
+          path: ${{ env.channel-path }}/linux-64
+
+      - name: Setup miniconda
+        uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
+        with:
+          miniforge-version: '26.7.2-1'
+          use-mamba: 'true'
+          conda-remove-defaults: 'true'
+          environment-file: source/environments/examples.yml
+          activate-environment: examples_test
+
+      - name: Create conda channel
+        run: python -m conda_index "$CHANNEL_PATH"
+        env:
+          CHANNEL_PATH: ${{ env.channel-path }}
+
+      - name: Install dpnp
+        run: mamba install -y dpnp "python=$PYTHON_VER.*" -c "$CHANNEL_PATH" -c conda-forge --override-channels
+        env:
+          CHANNEL_PATH: ${{ env.channel-path }}
+          PYTHON_VER: ${{ env.python-ver }}
+
+      - name: List installed packages
+        run: mamba list
+
+      - name: Smoke test
+        run: |
+          python -c "import dpctl; dpctl.lsplatform()"
+          python -c "import dpnp; print(dpnp.__version__)"
+
+      - name: Build and run pybind11 examples
+        working-directory: source/examples/pybind11
+        run: |
+          for d in */; do
+            pushd "$d" > /dev/null
+            CC=icx CXX=icpx python setup.py build_ext --inplace -G Ninja || exit 1
+            if [ -d tests ]; then
+              python -m pytest tests || exit 1
+            fi
+            popd > /dev/null
+          done
+
+  array-api-conformity:
+    name: Array API conformity
+    needs: linux
+
+    permissions:
+      # Needed to add a comment to a pull request's issue
+      pull-requests: write
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    continue-on-error: true
+
+    env:
+      array-api-tests-path: '${{ github.workspace }}/array-api-tests'
+      json-report-file: '${{ github.workspace }}/.report.json'
+      channel-path: '${{ github.workspace }}/channel'
+      python-ver: '3.14'
+
+    steps:
+      # Not in the workspace root, where its dpnp would shadow the installed one
+      - name: Checkout DPNP repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          path: source
+
+      - name: Download artifact
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: dpnp Linux Python ${{ env.python-ver }}
+          path: ${{ env.channel-path }}/linux-64
+
+      - name: Setup miniconda
+        uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
+        with:
+          miniforge-version: '26.7.2-1'
+          use-mamba: 'true'
+          conda-remove-defaults: 'true'
+          environment-file: source/environments/create_conda_channel.yml
+          activate-environment: array-api-conformity
+
+      - name: Create conda channel
+        run: python -m conda_index "$CHANNEL_PATH"
+        env:
+          CHANNEL_PATH: ${{ env.channel-path }}
+
+      - name: Install dpnp
+        run: mamba install -y dpnp pytest "python=$PYTHON_VER.*" -c "$CHANNEL_PATH" -c conda-forge --override-channels
+        env:
+          CHANNEL_PATH: ${{ env.channel-path }}
+          PYTHON_VER: ${{ env.python-ver }}
+
+      - name: List installed packages
+        run: mamba list
+
+      - name: Smoke test
+        run: |
+          python -c "import dpctl; dpctl.lsplatform()"
+          python -c "import dpnp; print(dpnp.__version__)"
+
+      - name: Clone array API tests repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          repository: 'data-apis/array-api-tests'
+          path: ${{ env.array-api-tests-path }}
+          submodules: 'recursive'
+
+      - name: Install array API test dependencies
+        run: pip install -r requirements.txt
+        working-directory: ${{ env.array-api-tests-path }}
+
+      - name: Install jq
+        run: sudo apt-get install jq
+
+      - name: Run array API conformance tests
+        run: python -m pytest --json-report --json-report-file="$JSON_REPORT_FILE" --disable-deadline --skips-file "$SKIPS_FILE" array_api_tests || true
+        env:
+          ARRAY_API_TESTS_MODULE: 'dpnp'
+          ARRAY_API_TESTS_VERSION: '2025.12'
+          SYCL_CACHE_PERSISTENT: 1
+          JSON_REPORT_FILE: ${{ env.json-report-file }}
+          SKIPS_FILE: ${{ github.workspace }}/source/.github/workflows/array-api-skips.txt
+        working-directory: ${{ env.array-api-tests-path }}
+
+      - name: Set GitHub environment variables
+        env:
+          JSON_REPORT_FILE: ${{ env.json-report-file }}
+        run: |
+          PACKAGE_VERSION=$(python -c "import dpnp; print(dpnp.__version__)")
+          if test -f "$JSON_REPORT_FILE"; then
+            PASSED_TESTS=$(jq '.summary | .passed // 0' "$JSON_REPORT_FILE")
+            FAILED_TESTS=$(jq '.summary | .failed // 0' "$JSON_REPORT_FILE")
+            SKIPPED_TESTS=$(jq '.summary | .skipped // 0' "$JSON_REPORT_FILE")
+            MESSAGE="Array API standard conformance tests for dpnp=$PACKAGE_VERSION ran successfully.
+            Passed: $PASSED_TESTS
+            Failed: $FAILED_TESTS
+            Skipped: $SKIPPED_TESTS"
+            {
+              echo "MESSAGE<<EOF"
+              echo "$MESSAGE"
+              echo "EOF"
+            } >> "$GITHUB_ENV"
+          else
+            echo "Array API standard conformance tests failed to run for dpnp=$PACKAGE_VERSION."
+            exit 1
+          fi
+
+      - name: Output API summary
+        env:
+          SUMMARY: ${{ env.MESSAGE }}
+        run: echo "::notice $SUMMARY"
+
+      - name: Post result to PR
+        if: ${{ github.event.pull_request && !github.event.pull_request.head.repo.fork }}
+        uses: mshick/add-pr-comment@ec328af66588ab8f77cdeb2c264f14aba45bbf59 # v3.12.0
+        with:
+          message-id: array_api_results
+          message: |
+            ${{ env.MESSAGE }}

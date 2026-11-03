@@ -21,7 +21,7 @@
 - Use `dpnp.default_float_type(...)` or `map_dtype_to_device(...)` for the default float type.
 - Deprecated ufuncs use `DPNPDeprecatedUnaryFunc(..., deprecated_msg=...)`.
 - Unsupported NumPy keywords raise `NotImplementedError` (`dpnp.check_limitations`) and are listed under `Limitations` in the docstring.
-- The Array API spec version is set in three places that change together: `__array_api_version__` in `dpnp/tensor/_array_api.py`, `ARRAY_API_TESTS_VERSION` in `.github/workflows/conda-package.yml` and `doc/reference/array_api.rst` (plus the version test in `dpnp/tests/test_ndarray.py`). Inspection utilities come from `__array_namespace_info__` in `dpnp_array_api_info.py`.
+- The Array API spec version is set in three places that change together: `__array_api_version__` in `dpnp/tensor/_array_api.py`, `ARRAY_API_TESTS_VERSION` in `.github/workflows/conda-package-cf.yml` and `doc/reference/array_api.rst` (plus the version test in `dpnp/tests/test_ndarray.py`). Inspection utilities come from `__array_namespace_info__` in `dpnp_array_api_info.py`.
 - `dpnp.tensor` replaces `dpctl.tensor`, which no longer exists here; `SyclQueue`, `SyclDevice`, `dpctl.memory` and `SequentialOrderManager` still come from `dpctl`.
 
 ## Docstrings

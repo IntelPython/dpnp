@@ -1,0 +1,277 @@
+# Intel Python CI (gh-ci): builds and tests the conda packages and wheels for Intel's Jenkins, see ci/README.md
+name: Intel Python CI
+
+on:
+  push:
+    branches: [master]
+    tags: ['*']
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: intel-ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  matrix:
+    name: Platforms and Python versions
+    runs-on: ${{ vars.GH_CI_RUNNER || 'ubuntu-latest' }}
+    timeout-minutes: 10
+    outputs:
+      matrix: ${{ steps.declared.outputs.matrix }}
+      wheel: ${{ steps.declared.outputs.wheel }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+
+      - name: Read the declared platforms and Python versions
+        id: declared
+        run: |
+          python ci/matrix.py --event "$GITHUB_EVENT_NAME" --github-output matrix
+          python ci/matrix.py --system wheel --event "$GITHUB_EVENT_NAME" --github-output wheel
+
+  # macOS runs on Intel runners, as MKL has no Apple silicon build; Jenkins ignores it.
+  build:
+    name: ${{ matrix.name }} Python ${{ matrix.python }}
+    needs: matrix
+    runs-on: ${{ matrix.platform == 'windows' && (vars.GH_CI_WINDOWS_RUNNER || 'windows-2022') || matrix.platform == 'macos' && (vars.GH_CI_MACOS_RUNNER || 'macos-26-intel') || (vars.GH_CI_RUNNER || 'ubuntu-latest') }}
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.matrix.outputs.matrix) }}
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          # The recipe takes its version from git describe: all commits and tags, no blobs.
+          fetch-depth: 0
+          filter: blob:none
+
+      # Miniforge 26.9.4-0 fails setup-miniconda's conda init on Windows runners; 26.7.2-0 works.
+      - uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
+        with:
+          miniforge-version: 26.7.2-0
+          activate-environment: ""
+          conda-remove-defaults: "true"
+
+      - name: Install conda-build
+        run: conda install -y -q -n base --override-channels -c conda-forge conda-build "py-lief<0.17"
+
+      - name: Build and run the recipe tests
+        env:
+          PYTHON_VERSION: ${{ matrix.python }}
+        run: python ci/build.py --python "$PYTHON_VERSION" --output "$RUNNER_TEMP/output"
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: dpnp ${{ matrix.name }} Python ${{ matrix.python }}
+          path: ${{ runner.temp }}/output/*.conda
+          if-no-files-found: error
+          # Jenkins downloads them within minutes of the run; tags keep them 30 days.
+          retention-days: ${{ startsWith(github.ref, 'refs/tags/') && 30 || 3 }}
+
+  test:
+    name: Test ${{ matrix.name }} Python ${{ matrix.python }}
+    needs: [matrix, build]
+    runs-on: ${{ matrix.platform == 'windows' && (vars.GH_CI_WINDOWS_RUNNER || 'windows-2022') || matrix.platform == 'macos' && (vars.GH_CI_MACOS_RUNNER || 'macos-26-intel') || (vars.GH_CI_RUNNER || 'ubuntu-latest') }}
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.matrix.outputs.matrix) }}
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      # The suites use more memory than a runner has; without swap it is shut down.
+      - uses: pierotofy/set-swap-space@49819abfb41bd9b44fb781159c033dba90353a7c # v1.0
+        if: runner.os == 'Linux'
+        with:
+          swap-size-gb: 8
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: dpnp ${{ matrix.name }} Python ${{ matrix.python }}
+          path: ${{ runner.temp }}/artifacts
+
+      - uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
+        with:
+          miniforge-version: 26.7.2-0
+          activate-environment: ""
+          conda-remove-defaults: "true"
+
+      - name: Install the package and run ci/test.py
+        env:
+          PYTHON_VERSION: ${{ matrix.python }}
+          EVENT: ${{ startsWith(github.ref, 'refs/tags/') && 'tag' || github.event_name == 'pull_request' && 'pr' || 'push' }}
+          COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: >-
+          python ci/hooks.py --python "$PYTHON_VERSION" --artifacts "$RUNNER_TEMP/artifacts"
+          --work "$RUNNER_TEMP/hooks" --event "$EVENT" --commit "$COMMIT"
+
+  build-wheel:
+    name: ${{ matrix.name }} Wheels Python ${{ matrix.python }}
+    needs: matrix
+    runs-on: ${{ matrix.platform == 'windows' && (vars.GH_CI_WINDOWS_RUNNER || 'windows-2022') || matrix.platform == 'macos' && (vars.GH_CI_MACOS_RUNNER || 'macos-26-intel') || (vars.GH_CI_RUNNER || 'ubuntu-latest') }}
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.matrix.outputs.wheel) }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          # The wheel takes its version from git describe: all commits and tags, no blobs.
+          fetch-depth: 0
+          filter: blob:none
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+
+      - name: Install cibuildwheel
+        run: python -m pip install --no-input cibuildwheel==4.3.5
+
+      - name: Build the wheel
+        env:
+          PYTHON_VERSION: ${{ matrix.python }}
+        run: python ci/build.py --system wheel --python "$PYTHON_VERSION" --output "$RUNNER_TEMP/output"
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: dpnp ${{ matrix.name }} Wheels Python ${{ matrix.python }}
+          path: ${{ runner.temp }}/output/*.whl
+          if-no-files-found: error
+          retention-days: ${{ startsWith(github.ref, 'refs/tags/') && 30 || 3 }}
+
+  test-wheel:
+    name: Test ${{ matrix.name }} Wheels Python ${{ matrix.python }}
+    needs: [matrix, build-wheel]
+    runs-on: ${{ matrix.platform == 'windows' && (vars.GH_CI_WINDOWS_RUNNER || 'windows-2022') || matrix.platform == 'macos' && (vars.GH_CI_MACOS_RUNNER || 'macos-26-intel') || (vars.GH_CI_RUNNER || 'ubuntu-latest') }}
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.matrix.outputs.wheel) }}
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      # The suites use more memory than a runner has; without swap it is shut down.
+      - uses: pierotofy/set-swap-space@49819abfb41bd9b44fb781159c033dba90353a7c # v1.0
+        if: runner.os == 'Linux'
+        with:
+          swap-size-gb: 8
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: dpnp ${{ matrix.name }} Wheels Python ${{ matrix.python }}
+          path: ${{ runner.temp }}/artifacts
+
+      - uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
+        with:
+          miniforge-version: 26.7.2-0
+          activate-environment: ""
+          conda-remove-defaults: "true"
+
+      - name: Install the wheel and run ci/test.py
+        env:
+          PYTHON_VERSION: ${{ matrix.python }}
+          EVENT: ${{ startsWith(github.ref, 'refs/tags/') && 'tag' || github.event_name == 'pull_request' && 'pr' || 'push' }}
+          COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: >-
+          python ci/hooks.py --kind wheel --python "$PYTHON_VERSION" --artifacts "$RUNNER_TEMP/artifacts"
+          --work "$RUNNER_TEMP/hooks" --event "$EVENT" --commit "$COMMIT"
+
+  # Dev builds for anaconda.org, from pushes to master and tags in this repository only.
+  upload:
+    name: Upload to anaconda.org
+    needs: [test, test-wheel]
+    if: github.repository == 'IntelPython/dpnp' && github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: dpnp *
+          merge-multiple: true
+          path: ${{ runner.temp }}/packages
+
+      - uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
+        with:
+          miniforge-version: 26.7.2-0
+          conda-remove-defaults: "true"
+          environment-file: environments/upload_cleanup_conda_pkg.yml
+          activate-environment: upload
+
+      - name: Upload the conda packages
+        env:
+          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+        run: anaconda --token "$ANACONDA_TOKEN" upload --user dppy --label dev "$RUNNER_TEMP"/packages/dpnp-*.conda
+
+      - name: Upload the wheels
+        env:
+          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+        run: |
+          conda_packages=("$RUNNER_TEMP"/packages/dpnp-*.conda)
+          version=$(basename "${conda_packages[0]}" | sed 's/^dpnp-\([^-]*\).*/\1/')
+          anaconda --token "$ANACONDA_TOKEN" upload --user dppy --label dev "$RUNNER_TEMP"/packages/dpnp-*.whl --version "$version"
+
+  cleanup-packages:
+    name: Clean up anaconda.org
+    needs: upload
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
+        with:
+          miniforge-version: 26.7.2-0
+          conda-remove-defaults: "true"
+          environment-file: environments/upload_cleanup_conda_pkg.yml
+          activate-environment: cleanup
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          repository: IntelPython/devops-tools
+          ref: 08ffddf88627957e8b094817aac4ce0bde7cff63
+          path: devops-tools
+
+      - name: Clean up old dev packages
+        working-directory: devops-tools
+        env:
+          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+        run: python scripts/cleanup-old-packages.py --verbose --force --token "$ANACONDA_TOKEN" --package dppy/dpnp --label dev

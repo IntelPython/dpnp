@@ -32,7 +32,7 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
-  "Programming Language :: Python :: 3.15",
+  # No 3.15: dpctl has no cp315 wheel yet, which the wheels build against
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Free Threading :: 2 - Beta",
@@ -111,6 +111,35 @@ Repository = "https://github.com/IntelPython/dpnp.git"
 line-length = 80
 target-version = ['py310', 'py311', 'py312', 'py313', 'py314', 'py315']
 
+[tool.cibuildwheel]
+build-verbosity = 1
+
+[tool.cibuildwheel.linux]
+# Intel's icpx, from Intel's repository, and oneMKL, oneDPL and oneTBB from conda-forge;
+# dpctl's wheel, imported at build time, needs a libstdc++ newer than the image's
+before-all = [
+  "git config --global --add safe.directory '*'",
+  "rpm --import https://yum.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB",
+  "printf '[oneAPI]\\nname=Intel oneAPI\\nbaseurl=https://yum.repos.intel.com/oneapi\\nenabled=1\\ngpgcheck=1\\nrepo_gpgcheck=1\\ngpgkey=https://yum.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB\\n' > /etc/yum.repos.d/oneAPI.repo",
+  "dnf install -y intel-oneapi-compiler-dpcpp-cpp-2026.2",
+  "curl -fsSL -o /usr/local/bin/micromamba https://github.com/mamba-org/micromamba-releases/releases/download/2.10.0-0/micromamba-linux-64",
+  "echo '701f39c06f8e6a670a0e186c8479b9e5c0502a2f0cda6cef65d83bdd2875e8bd  /usr/local/bin/micromamba' | sha256sum -c -",
+  "chmod +x /usr/local/bin/micromamba",
+  "micromamba create -y -r /tmp/micromamba -p /opt/sdk --override-channels -c conda-forge 'mkl-devel-dpcpp>=2026.0,<2027' onedpl-devel tbb-devel",
+  "mkdir /opt/stdcxx && cp -a /opt/sdk/lib/libstdc++.so.6* /opt/stdcxx/"
+]
+environment = { LD_LIBRARY_PATH = "/opt/stdcxx", CPATH = "/opt/sdk/include", CC = "/opt/intel/oneapi/compiler/2026.2/bin/icx", CXX = "/opt/intel/oneapi/compiler/2026.2/bin/icpx", CMAKE_GENERATOR = "Ninja", CMAKE_ARGS = "-DDPNP_WITH_REDIST:BOOL=ON", CMAKE_BUILD_PARALLEL_LEVEL = "4", CMAKE_PREFIX_PATH = "/opt/sdk", MKLROOT = "/opt/sdk" }
+# The SYCL runtime, oneMKL and the compiler's libraries come from wheels at run time, see [tool.gh-ci].
+# libstdc++ is as new as dpctl's wheel needs, which auditwheel's policy refuses, so the tag is set here.
+repair-wheel-command = "python -m pip install -q wheel && python -m wheel tags --remove --platform-tag manylinux_2_28_x86_64 {wheel} && mv \"$(dirname {wheel})\"/*-manylinux_2_28_x86_64.whl {dest_dir}"
+
+[tool.cibuildwheel.windows]
+# Intel's icx, and oneMKL, oneDPL and oneTBB, from conda-forge; DLLs come from wheels at run time, see [tool.gh-ci]
+before-all = "python {project}/ci/install_icx.py C:/sdk"
+environment = { CC = "C:/sdk/Library/bin/icx.exe", CXX = "C:/sdk/Library/bin/icx.exe", CMAKE_GENERATOR = "Ninja", CMAKE_ARGS = "-DCMAKE_INTERPROCEDURAL_OPTIMIZATION:BOOL=FALSE", CMAKE_BUILD_PARALLEL_LEVEL = "4", CMAKE_PREFIX_PATH = "C:/sdk/Library", MKLROOT = "C:/sdk/Library", TBB_ROOT_HINT = "C:/sdk/Library", DPL_ROOT_HINT = "C:/sdk/Library", LIB = "C:/sdk/Library/lib;$LIB", INCLUDE = "C:/sdk/Library/include;$INCLUDE", PATH = "C:/sdk/Library/bin;$PATH" }
+# The DLLs come from wheels at run time, so there is nothing to bundle
+repair-wheel-command = ""
+
 [tool.codespell]
 builtin = "clear,rare,informal,names"
 check-filenames = true
@@ -143,6 +172,21 @@ source = [
 
 [tool.cython-lint]
 max-line-length = 80
+
+[tool.gh-ci]
+# What the wheels need at run time, which conda packages get from the recipe
+wheel-requires = [
+  "dpcpp-cpp-rt >=2026.2,<2027",
+  "intel-cmplr-lib-rt >=2026.2,<2027",
+  "intel-sycl-rt >=2026.2,<2027",
+  "mkl >=2026.2,<2027",
+  "onemkl-sycl-blas >=2026.2,<2027",
+  "onemkl-sycl-dft >=2026.2,<2027",
+  "onemkl-sycl-lapack >=2026.2,<2027",
+  "onemkl-sycl-rng >=2026.2,<2027",
+  "onemkl-sycl-sparse >=2026.2,<2027",
+  "onemkl-sycl-vm >=2026.2,<2027"
+]
 
 [tool.isort]
 ensure_newline_before_comments = true
