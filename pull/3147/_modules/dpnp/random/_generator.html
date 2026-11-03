@@ -1203,6 +1203,13 @@
 <span class="n">_POISSON_LAM_MAX</span> <span class="o">=</span> <span class="n">_INT64_MAX</span> <span class="o">-</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">_INT64_MAX</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span>
 <span class="n">_HYPERGEOM_MAX</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="mi">9</span>
 
+<span class="c1"># bounds keeping valid host parameters valid once rounded to float32; the</span>
+<span class="c1"># smallest normal also survives a device flushing subnormals to zero</span>
+<span class="n">_F32_GT_0</span> <span class="o">=</span> <span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">tiny</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="n">_F32_GT_1</span> <span class="o">=</span> <span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">nextafter</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="mi">2</span><span class="p">)),</span> <span class="kc">None</span><span class="p">)</span>
+<span class="n">_F32_LT_1</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">nextafter</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
+<span class="n">_F32_LT_2_63</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">nextafter</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="mi">63</span><span class="p">),</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
+
 <span class="c1"># the messages of Generator.choice</span>
 <span class="n">_CHOICE_MSGS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">"a_type"</span><span class="p">:</span> <span class="s2">"a must be a sequence or an integer, not </span><span class="si">{}</span><span class="s2">"</span><span class="p">,</span>
@@ -1414,6 +1421,21 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> value too large"</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">xp</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">val</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> &lt; 0 or </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> contains NaNs"</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_host_float32</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">bounds</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Round a host parameter to ``float32`` and clip it to `bounds`, which</span>
+<span class="sd">    rounding a valid parameter to the nearest ``float32`` may cross.</span>
+
+<span class="sd">    """</span>
+
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">value</span>
+    <span class="k">with</span> <span class="n">numpy</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">over</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="o">*</span><span class="n">bounds</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">ndim</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_as_int64</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
@@ -1709,13 +1731,15 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">kernel_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">param_types</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">f32_bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Draw ``int64`` samples of a discrete distribution.</span>
 
 <span class="sd">        A ``None`` in `param_types` stands for the floating-point type the</span>
 <span class="sd">        distribution computes in, which is also the default for every</span>
-<span class="sd">        parameter.</span>
+<span class="sd">        parameter. When that type is ``float32``, the host kernel parameters</span>
+<span class="sd">        are clipped to the matching `f32_bounds`, unless they are ``None``.</span>
 
 <span class="sd">        """</span>
 
@@ -1723,6 +1747,11 @@
         <span class="n">ft</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_discrete_float_type</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">kernel_params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">kernel_params</span> <span class="o">=</span> <span class="n">params</span>
+        <span class="k">if</span> <span class="n">f32_bounds</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ft</span> <span class="o">==</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="p">:</span>
+            <span class="n">kernel_params</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+                <span class="n">p</span> <span class="k">if</span> <span class="n">b</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">_host_float32</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">kernel_params</span><span class="p">,</span> <span class="n">f32_bounds</span><span class="p">)</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="n">param_types</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">param_types</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">kernel_params</span><span class="p">)</span>
         <span class="n">param_types</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ft</span> <span class="k">if</span> <span class="n">t</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">param_types</span><span class="p">)</span>
@@ -2471,7 +2500,9 @@
             <span class="n">_is_scalar_path</span><span class="p">(</span><span class="n">lam</span><span class="p">),</span>
             <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_check_device</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_discrete_sample</span><span class="p">(</span><span class="n">ri</span><span class="o">.</span><span class="n">_poisson</span><span class="p">,</span> <span class="p">(</span><span class="n">lam</span><span class="p">,),</span> <span class="n">size</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_discrete_sample</span><span class="p">(</span>
+            <span class="n">ri</span><span class="o">.</span><span class="n">_poisson</span><span class="p">,</span> <span class="p">(</span><span class="n">lam</span><span class="p">,),</span> <span class="n">size</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">,</span> <span class="n">f32_bounds</span><span class="o">=</span><span class="p">(</span><span class="n">_F32_LT_2_63</span><span class="p">,)</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Generator.binomial">
@@ -2567,7 +2598,9 @@
             <span class="n">_is_scalar_path</span><span class="p">(</span><span class="n">p</span><span class="p">),</span>
             <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_check_device</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_discrete_sample</span><span class="p">(</span><span class="n">ri</span><span class="o">.</span><span class="n">_geometric</span><span class="p">,</span> <span class="p">(</span><span class="n">p</span><span class="p">,),</span> <span class="n">size</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_discrete_sample</span><span class="p">(</span>
+            <span class="n">ri</span><span class="o">.</span><span class="n">_geometric</span><span class="p">,</span> <span class="p">(</span><span class="n">p</span><span class="p">,),</span> <span class="n">size</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">,</span> <span class="n">f32_bounds</span><span class="o">=</span><span class="p">(</span><span class="n">_F32_GT_0</span><span class="p">,)</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Generator.logseries">
@@ -2593,7 +2626,9 @@
             <span class="n">_is_scalar_path</span><span class="p">(</span><span class="n">p</span><span class="p">),</span>
             <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_check_device</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_discrete_sample</span><span class="p">(</span><span class="n">ri</span><span class="o">.</span><span class="n">_logseries</span><span class="p">,</span> <span class="p">(</span><span class="n">p</span><span class="p">,),</span> <span class="n">size</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_discrete_sample</span><span class="p">(</span>
+            <span class="n">ri</span><span class="o">.</span><span class="n">_logseries</span><span class="p">,</span> <span class="p">(</span><span class="n">p</span><span class="p">,),</span> <span class="n">size</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">,</span> <span class="n">f32_bounds</span><span class="o">=</span><span class="p">(</span><span class="n">_F32_LT_1</span><span class="p">,)</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Generator.zipf">
@@ -2606,7 +2641,10 @@
 
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
-<span class="sd">        `usm_type` is not in NumPy's signature.</span>
+<span class="sd">        `usm_type` is not in NumPy's signature. The samples follow the Zipf</span>
+<span class="sd">        distribution truncated to the largest ``int64``, while NumPy's</span>
+<span class="sd">        rejection test rounds to accepting every sample above ``2**53``,</span>
+<span class="sd">        which makes its tail too heavy for `a` close to 1.</span>
 
 <span class="sd">        """</span>
 
@@ -2614,7 +2652,9 @@
         <span class="n">_check_constraint</span><span class="p">(</span>
             <span class="n">a</span><span class="p">,</span> <span class="s2">"a"</span><span class="p">,</span> <span class="n">_CONS_GT_1</span><span class="p">,</span> <span class="n">_is_scalar_path</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_check_device</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_discrete_sample</span><span class="p">(</span><span class="n">ri</span><span class="o">.</span><span class="n">_zipf</span><span class="p">,</span> <span class="p">(</span><span class="n">a</span><span class="p">,),</span> <span class="n">size</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_discrete_sample</span><span class="p">(</span>
+            <span class="n">ri</span><span class="o">.</span><span class="n">_zipf</span><span class="p">,</span> <span class="p">(</span><span class="n">a</span><span class="p">,),</span> <span class="n">size</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">,</span> <span class="n">f32_bounds</span><span class="o">=</span><span class="p">(</span><span class="n">_F32_GT_1</span><span class="p">,)</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Generator.hypergeometric">

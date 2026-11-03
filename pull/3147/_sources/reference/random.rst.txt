@@ -24,17 +24,18 @@ built on it.
 
 A generator draws all its samples on one SYCL queue, chosen with the
 ``device`` or ``sycl_queue`` keyword when it is created, and the samples
-depend only on the seed, not on the device. All samples are
+depend only on the seed, not on the device, except that the discrete
+distributions also depend on its support of double precision. All samples are
 :class:`dpnp.ndarray`, zero-dimensional when ``size`` is ``None``.
 
 Differences from NumPy
 ----------------------
 
-* The same seed gives the same stream on every device. The streams differ
-  from NumPy's, except that :class:`PCG64DXSM` gives NumPy's raw values,
-  :meth:`Generator.random`, :meth:`Generator.uniform` and
-  :meth:`Generator.bytes`, and can exchange states with
-  :class:`numpy.random.PCG64DXSM`.
+* The same seed gives the same stream on every device, but for the discrete
+  distributions noted below. The streams differ from NumPy's, except that
+  :class:`PCG64DXSM` gives NumPy's raw values, :meth:`Generator.random`,
+  :meth:`Generator.uniform` and :meth:`Generator.bytes`, and can exchange
+  states with :class:`numpy.random.PCG64DXSM`.
 * The floating-point distributions take a ``dtype`` keyword, as in CuPy,
   which defaults to the default floating-point type of the device. All
   methods take a ``usm_type`` keyword.
@@ -47,8 +48,20 @@ Differences from NumPy
   are converted as by :meth:`dpnp.ndarray.astype`, whose result for NaN and
   out-of-range values is undefined.
 * The discrete distributions return ``int64`` values. They compute in double
-  precision on devices supporting it, and in single precision otherwise,
-  where the samples for very large parameters are less accurate.
+  precision on devices supporting it, and in single precision otherwise.
+  There, the streams differ from the ones of devices with double precision,
+  and some samples are only multiples of a power of two: the ones above
+  ``2**24`` of ``geometric``, ``logseries`` and ``zipf``, and the ones of
+  ``poisson`` and ``binomial`` with a standard deviation above about
+  ``2**22``.
+* ``zipf`` follows the Zipf distribution truncated to the largest ``int64``.
+  NumPy's rejection test rounds to accepting every sample above ``2**53``,
+  which makes its tail too heavy for ``a`` close to 1.
+* :meth:`RandomState.randint` and :func:`randint` return ``int64`` values by
+  default, as do :meth:`RandomState.random_integers`,
+  :func:`random_integers` and :meth:`RandomState.tomaxint`, whose values
+  reach the largest ``int64``. NumPy returns a C ``long`` instead, which is
+  ``int32`` on Windows.
 * ``hypergeometric`` requires ``ngood`` and ``nbad`` below ``10**9``, also in
   :class:`RandomState`.
 * :meth:`Generator.shuffle` and :func:`shuffle` only accept a

@@ -1127,7 +1127,10 @@
 <dd><p>Draw samples from a Zipf distribution.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.zipf.html#numpy.random.Generator.zipf" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator.zipf</span></code></a>.</p>
 <p class="rubric">Limitations</p>
-<p><cite>usm_type</cite> is not in NumPy's signature.</p>
+<p><cite>usm_type</cite> is not in NumPy's signature. The samples follow the Zipf
+distribution truncated to the largest <code class="docutils literal notranslate"><span class="pre">int64</span></code>, while NumPy's
+rejection test rounds to accepting every sample above <code class="docutils literal notranslate"><span class="pre">2**53</span></code>,
+which makes its tail too heavy for <cite>a</cite> close to 1.</p>
 </dd></dl>
 
 </section>

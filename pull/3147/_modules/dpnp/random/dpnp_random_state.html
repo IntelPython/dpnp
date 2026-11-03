@@ -1477,6 +1477,11 @@
 <span class="sd">        For full documentation refer to</span>
 <span class="sd">        :obj:`numpy.random.RandomState.randint`.</span>
 
+<span class="sd">        Limitations</span>
+<span class="sd">        -----------</span>
+<span class="sd">        ``dtype=int`` gives ``int64`` values, not a C ``long``, which is</span>
+<span class="sd">        ``int32`` on Windows.</span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generator</span><span class="o">.</span><span class="n">_integers</span><span class="p">(</span>
             <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">,</span> <span class="s2">"randint"</span>
@@ -1491,6 +1496,11 @@
 
 <span class="sd">        For full documentation refer to</span>
 <span class="sd">        :obj:`numpy.random.RandomState.random_integers`.</span>
+
+<span class="sd">        Limitations</span>
+<span class="sd">        -----------</span>
+<span class="sd">        The values are ``int64``, not a C ``long``, which is ``int32`` on</span>
+<span class="sd">        Windows.</span>
 
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="n">high</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1551,6 +1561,11 @@
 
 <span class="sd">        For full documentation refer to</span>
 <span class="sd">        :obj:`numpy.random.RandomState.tomaxint`.</span>
+
+<span class="sd">        Limitations</span>
+<span class="sd">        -----------</span>
+<span class="sd">        The values are ``int64``, not a C ``long``, which is ``int32`` on</span>
+<span class="sd">        Windows.</span>
 
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generator</span><span class="o">.</span><span class="n">_integers</span><span class="p">(</span>
@@ -2216,6 +2231,13 @@
 <span class="sd">        Draw samples from a Zipf distribution.</span>
 
 <span class="sd">        For full documentation refer to :obj:`numpy.random.RandomState.zipf`.</span>
+
+<span class="sd">        Limitations</span>
+<span class="sd">        -----------</span>
+<span class="sd">        The samples follow the Zipf distribution truncated to the largest</span>
+<span class="sd">        ``int64``, while NumPy's rejection test rounds to accepting every</span>
+<span class="sd">        sample above ``2**53``, which makes its tail too heavy for `a` close</span>
+<span class="sd">        to 1.</span>
 
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generator</span><span class="o">.</span><span class="n">zipf</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span></div>
