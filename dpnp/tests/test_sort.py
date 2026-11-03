@@ -670,7 +670,6 @@ class TestSortComplex:
 
 
 # TODO: compare against numpy.top_k in all tests once NumPy 2.6 is released
-@testing.with_requires("numpy>=2.5")
 class TestTopK:
     @staticmethod
     def _expected_values(a, k, axis, mode):
@@ -699,6 +698,7 @@ class TestTopK:
             expected = numpy.sort(expected, axis=axis)
         assert_array_equal(values, expected)
 
+    @testing.with_requires("numpy>=2.5")
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("axis", [0, 1, -1])
     @pytest.mark.parametrize("mode", ["largest", "smallest"])
@@ -710,30 +710,63 @@ class TestTopK:
         for k in [0, 1, 4, a.shape[axis]]:
             self._check(a, ia, k, axis, mode, sorted)
 
+    @testing.with_requires("numpy>=2.5")
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     @pytest.mark.parametrize("mode", ["largest", "smallest"])
     @pytest.mark.parametrize("sorted", [True, False])
     def test_nan(self, dtype, mode, sorted):
-        a = generate_random_numpy_array((3, 10), dtype)
-        a[:, ::3] = numpy.nan
+        # mostly NaN, so that k <= n/2 selects NaN before sorting
+        a = generate_random_numpy_array((3, 100), dtype)
+        a[:, numpy.arange(100) % 3 != 0] = numpy.nan
         ia = dpnp.array(a)
 
-        for k in [2, 6, 10]:
+        for k in [2, 40, 50, 60, 100]:
             self._check(a, ia, k, -1, mode, sorted)
 
+    @testing.with_requires("numpy>=2.5")
     @pytest.mark.parametrize("dtype", [dpnp.int16, dpnp.float32])
     @pytest.mark.parametrize("axis", [0, 1, -1])
     @pytest.mark.parametrize("mode", ["largest", "smallest"])
     @pytest.mark.parametrize("sorted", [True, False])
     def test_long_rows(self, dtype, axis, mode, sorted):
         # long enough for dpnp.tensor.top_k to return the elements unsorted
-        a = generate_random_numpy_array((300, 1100), dtype)
+        a = generate_random_numpy_array((70, 80, 90), dtype)
         ia = dpnp.array(a)
 
         n = a.shape[axis]
-        for k in [2, 100, n // 2, n // 2 + 1, n]:
+        for k in [2, 20, n // 2, n // 2 + 1, n]:
             self._check(a, ia, k, axis, mode, sorted)
 
+    @testing.with_requires("numpy>=2.5")
+    @pytest.mark.parametrize(
+        "shape, axis, k",
+        [
+            ((0, 5), -1, 2),
+            ((0, 5), 0, 0),
+            ((5, 0), -1, 0),
+            ((5, 0), 0, 3),
+            ((0, 5), None, 0),
+        ],
+    )
+    @pytest.mark.parametrize("sorted", [True, False])
+    def test_empty(self, shape, axis, k, sorted):
+        a = numpy.empty(shape, dtype=dpnp.int32)
+        ia = dpnp.array(a)
+
+        for mode in ["largest", "smallest"]:
+            self._check(a, ia, k, axis, mode, sorted)
+
+    @pytest.mark.parametrize(
+        "shape, axis", [((5, 0), -1), ((0, 5), 0), ((0, 0), None)]
+    )
+    def test_empty_axis(self, shape, axis):
+        ia = dpnp.empty(shape, dtype=dpnp.int32)
+
+        # numpy.top_k returns empty arrays, dpnp raises as for any k > n
+        with pytest.raises(ValueError, match="out of bounds"):
+            dpnp.top_k(ia, 1, axis=axis)
+
+    @testing.with_requires("numpy>=2.5")
     @pytest.mark.parametrize("mode", ["largest", "smallest"])
     @pytest.mark.parametrize("sorted", [True, False])
     def test_axis_none(self, mode, sorted):
@@ -752,9 +785,10 @@ class TestTopK:
     def test_numpy_examples(self):
         a = dpnp.array([[1, 2, 3, 4], [4, 3, 2, 1]])
 
-        values, indices = dpnp.top_k(a, 2)
-        assert_array_equal(values, [[4, 3], [4, 3]])
-        assert_array_equal(indices, [[3, 2], [0, 1]])
+        res = dpnp.top_k(a, 2)
+        assert res._fields == ("values", "indices")
+        assert_array_equal(res.values, [[4, 3], [4, 3]])
+        assert_array_equal(res.indices, [[3, 2], [0, 1]])
 
         values, indices = dpnp.top_k(a, 2, axis=0)
         assert_array_equal(values, [[4, 3, 3, 4], [1, 2, 2, 1]])
@@ -795,7 +829,8 @@ class TestTopK:
         ia = dpnp.arange(10).reshape(2, 5)
 
         # k is negative or out of bounds
-        assert_raises(ValueError, dpnp.top_k, ia, -1)
+        with pytest.raises(ValueError, match="non-negative"):
+            dpnp.top_k(ia, -1)
         assert_raises(ValueError, dpnp.top_k, ia, 6)
         assert_raises(TypeError, dpnp.top_k, ia, 1.0)
 

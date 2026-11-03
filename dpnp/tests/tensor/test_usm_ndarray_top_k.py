@@ -477,8 +477,7 @@ def test_top_k_axis0():
 def test_top_k_validation():
     get_queue_or_skip()
     x = dpt.ones(10, dtype=dpt.int64)
-    with pytest.raises(ValueError):
-        # k must be positive
+    with pytest.raises(ValueError, match="non-negative"):
         dpt.top_k(x, -1)
     with pytest.raises(TypeError):
         # argument should be usm_ndarray

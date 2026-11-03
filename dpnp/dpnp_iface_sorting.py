@@ -41,6 +41,7 @@ it contains:
 
 import operator
 from collections.abc import Sequence
+from typing import NamedTuple
 
 import dpnp
 import dpnp.tensor as dpt
@@ -54,6 +55,12 @@ from .dpnp_utils import (
     map_dtype_to_device,
 )
 from .tensor._numpy_helper import normalize_axis_index
+
+
+# pylint:disable=missing-class-docstring
+class TopKResult(NamedTuple):
+    values: dpnp.ndarray
+    indices: dpnp.ndarray
 
 
 def _wrap_sort_argsort(
@@ -488,12 +495,19 @@ def top_k(a, k, /, *, axis=-1, mode="largest", sorted=True):
 
     Returns
     -------
-    out : tuple of dpnp.ndarray
-        A tuple ``(values, indices)``, where `values` are the top `k` values
-        of `a` and `indices` are their indices along `axis`. Both arrays have
-        the shape of `a` with the dimension along `axis` replaced by `k`.
-        `values` has the same data type as `a` and `indices` has the default
-        array index data type.
+    values : dpnp.ndarray
+        The top `k` values of `a`, with the same data type as `a`. The shape
+        is that of `a` with the dimension along `axis` replaced by `k`.
+    indices : dpnp.ndarray
+        The indices of `values` along `axis`, with the same shape as `values`
+        and the default array index data type.
+
+    See Also
+    --------
+    :obj:`dpnp.tensor.top_k` : Array API version; returns the elements in an
+        unspecified order.
+    :obj:`dpnp.partition` : Partial sort.
+    :obj:`dpnp.sort` : Full sorting.
 
     Notes
     -----
@@ -501,31 +515,43 @@ def top_k(a, k, /, *, axis=-1, mode="largest", sorted=True):
     the indices of equal values is not guaranteed to match their order in
     `a`. This is the case regardless of the value of `sorted`.
 
-    See Also
-    --------
-    :obj:`dpnp.tensor.top_k` : Strictly Array API compatible version; flattens
-        by default and returns the elements in an unspecified order.
-    :obj:`dpnp.partition` : Partial sort.
-    :obj:`dpnp.sort` : Full sorting.
+    In contrast to :obj:`numpy.top_k`, which returns empty arrays when `axis`
+    is empty, :obj:`dpnp.top_k` raises ``ValueError`` for an empty `axis` and
+    ``k > 0``, as it does for any `k` greater than the size of `axis`.
 
     Examples
     --------
     >>> import dpnp as np
     >>> a = np.array([[1, 2, 3, 4], [4, 3, 2, 1]])
-    >>> np.top_k(a, 2)
-    (array([[4, 3],
-           [4, 3]]), array([[3, 2],
-           [0, 1]]))
-    >>> np.top_k(a, 2, axis=0)
-    (array([[4, 3, 3, 4],
-           [1, 2, 2, 1]]), array([[1, 1, 0, 0],
-           [0, 0, 1, 1]]))
-    >>> np.top_k(a, 2, axis=1, mode="smallest")
-    (array([[1, 2],
-           [1, 2]]), array([[0, 1],
-           [3, 2]]))
-    >>> np.top_k(np.array([1.0, 2.0, 3.0, np.nan]), 2)
-    (array([3., 2.]), array([2, 1]))
+    >>> res = np.top_k(a, 2)
+    >>> res.values
+    array([[4, 3],
+           [4, 3]])
+    >>> res.indices
+    array([[3, 2],
+           [0, 1]])
+
+    >>> values, indices = np.top_k(a, 2, axis=0)
+    >>> values
+    array([[4, 3, 3, 4],
+           [1, 2, 2, 1]])
+    >>> indices
+    array([[1, 1, 0, 0],
+           [0, 0, 1, 1]])
+
+    >>> values, indices = np.top_k(a, 2, axis=1, mode="smallest")
+    >>> values
+    array([[1, 2],
+           [1, 2]])
+    >>> indices
+    array([[0, 1],
+           [3, 2]])
+
+    >>> values, indices = np.top_k(np.array([1.0, 2.0, 3.0, np.nan]), 2)
+    >>> values
+    array([3., 2.])
+    >>> indices
+    array([2, 1])
 
     """
 
@@ -559,7 +585,7 @@ def top_k(a, k, /, *, axis=-1, mode="largest", sorted=True):
             usm_vals = dpt.take_along_axis(usm_vals, sort_inds, axis=axis)
             usm_inds = dpt.take_along_axis(usm_inds, sort_inds, axis=axis)
 
-    return (
+    return TopKResult(
         dpnp_array._create_from_usm_ndarray(usm_vals),
         dpnp_array._create_from_usm_ndarray(usm_inds),
     )

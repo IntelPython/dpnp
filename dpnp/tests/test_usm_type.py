@@ -1291,7 +1291,7 @@ def test_unique(axis, usm_type):
         assert x.usm_type == usm_type
 
 
-@pytest.mark.parametrize("k", [1, 3])
+@pytest.mark.parametrize("k", [1, 2, 3])
 @pytest.mark.parametrize("sorted", [True, False])
 @pytest.mark.parametrize("usm_type", list_of_usm_types)
 def test_top_k(k, sorted, usm_type):

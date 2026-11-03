@@ -1498,7 +1498,7 @@ def test_unique(axis, device):
         assert_sycl_queue_equal(iv.sycl_queue, ia.sycl_queue)
 
 
-@pytest.mark.parametrize("k", [1, 3])
+@pytest.mark.parametrize("k", [1, 2, 3])
 @pytest.mark.parametrize("sorted", [True, False])
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_top_k(k, sorted, device):

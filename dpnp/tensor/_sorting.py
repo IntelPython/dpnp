@@ -309,7 +309,7 @@ def top_k(x, k, /, *, axis=None, mode="largest"):
         x (usm_ndarray):
             input array.
         k (int):
-            number of elements to find. Must be a positive integer value.
+            number of elements to find. Must be a non-negative integer value.
         axis (Optional[int]):
             axis along which to search. If `None`, the search will be performed
             over the flattened array. Default: ``None``.
@@ -350,7 +350,7 @@ def top_k(x, k, /, *, axis=None, mode="largest"):
 
     k = operator.index(k)
     if k < 0:
-        raise ValueError("`k` must be a positive integer value")
+        raise ValueError("`k` must be a non-negative integer value")
 
     nd = x.ndim
     if axis is None:
