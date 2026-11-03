@@ -43,9 +43,8 @@ it contains:
 # pylint: disable=no-name-in-module
 
 import dpnp
-import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
+import dpnp.libtensor._tensor_elementwise_impl as ti
 import dpnp.tensor as dpt
-import dpnp.tensor._tensor_elementwise_impl as ti
 import dpnp.tensor._type_utils as dtu
 
 from .dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
@@ -996,8 +995,8 @@ array(3.14159265)
 
 deg2rad = DPNPUnaryFunc(
     "deg2rad",
-    ufi._radians_result_type,
-    ufi._radians,
+    ti._radians_result_type,
+    ti._radians,
     _DEG2RAD_DOCSTRING,
 )
 
@@ -1067,8 +1066,8 @@ array(True)
 
 degrees = DPNPUnaryFunc(
     "degrees",
-    ufi._degrees_result_type,
-    ufi._degrees,
+    ti._degrees_result_type,
+    ti._degrees,
     _DEGREES_DOCSTRING,
 )
 
@@ -1817,8 +1816,8 @@ array(3.5e-50)
 
 logaddexp2 = DPNPBinaryFunc(
     "logaddexp2",
-    ufi._logaddexp2_result_type,
-    ufi._logaddexp2,
+    ti._logaddexp2_result_type,
+    ti._logaddexp2,
     _LOGADDEXP2_DOCSTRING,
 )
 
@@ -1974,8 +1973,8 @@ array(90.)
 
 rad2deg = DPNPUnaryFunc(
     "rad2deg",
-    ufi._degrees_result_type,
-    ufi._degrees,
+    ti._degrees_result_type,
+    ti._degrees,
     _RAD2DEG_DOCSTRING,
 )
 
@@ -2046,8 +2045,8 @@ True
 
 radians = DPNPUnaryFunc(
     "radians",
-    ufi._radians_result_type,
-    ufi._radians,
+    ti._radians_result_type,
+    ti._radians,
     _RADIANS_DOCSTRING,
 )
 

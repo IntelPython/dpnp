@@ -50,9 +50,8 @@ import dpctl.utils as dpu
 import numpy
 
 import dpnp
-import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
+import dpnp.libtensor._tensor_elementwise_impl as ti
 import dpnp.tensor as dpt
-import dpnp.tensor._tensor_elementwise_impl as ti
 import dpnp.tensor._type_utils as dtu
 
 from .dpnp_algo.dpnp_elementwise_common import (
@@ -1634,8 +1633,8 @@ for ``np.divmod`` on :class:`dpnp.ndarray`.
 
 divmod = DPNPBinaryTwoOutputsFunc(
     "divmod",
-    ufi._divmod_result_type,
-    ufi._divmod,
+    ti._divmod_result_type,
+    ti._divmod,
     _DIVMOD_DOCSTRING,
 )
 
@@ -1786,8 +1785,8 @@ array([1.2, 1.2])
 
 fabs = DPNPUnaryFunc(
     "fabs",
-    ufi._fabs_result_type,
-    ufi._fabs,
+    ti._fabs_result_type,
+    ti._fabs,
     _FABS_DOCSTRING,
     mkl_fn_to_call="_mkl_abs_to_call",
     mkl_impl_fn="_abs",
@@ -1967,7 +1966,7 @@ array([1.1924881e-08-1.j, 9.5399045e-08-8.j], dtype=complex64)
 
 float_power = DPNPBinaryFunc(
     "float_power",
-    ufi._float_power_result_type,
+    ti._float_power_result_type,
     ti._pow,
     _FLOAT_POWER_DOCSTRING,
     mkl_fn_to_call="_mkl_pow_to_call",
@@ -2209,8 +2208,8 @@ array([ 0.,  0., nan])
 
 fmax = DPNPBinaryFunc(
     "fmax",
-    ufi._fmax_result_type,
-    ufi._fmax,
+    ti._fmax_result_type,
+    ti._fmax,
     _FMAX_DOCSTRING,
     mkl_fn_to_call="_mkl_fmax_to_call",
     mkl_impl_fn="_fmax",
@@ -2302,8 +2301,8 @@ array([ 0.,  0., nan])
 
 fmin = DPNPBinaryFunc(
     "fmin",
-    ufi._fmin_result_type,
-    ufi._fmin,
+    ti._fmin_result_type,
+    ti._fmin,
     _FMIN_DOCSTRING,
     mkl_fn_to_call="_mkl_fmin_to_call",
     mkl_impl_fn="_fmin",
@@ -2387,8 +2386,8 @@ array([[-1,  0],
 
 fmod = DPNPBinaryFunc(
     "fmod",
-    ufi._fmod_result_type,
-    ufi._fmod,
+    ti._fmod_result_type,
+    ti._fmod,
     _FMOD_DOCSTRING,
     mkl_fn_to_call="_mkl_fmod_to_call",
     mkl_impl_fn="_fmod",
@@ -2467,8 +2466,8 @@ array([0., 1., 2., 3., 4., 5., 6., 7., 8.])
 
 frexp = DPNPUnaryTwoOutputsFunc(
     "frexp",
-    ufi._frexp_result_type,
-    ufi._frexp,
+    ti._frexp_result_type,
+    ti._frexp,
     _FREXP_DOCSTRING,
 )
 
@@ -2530,8 +2529,8 @@ array([20,  1,  2,  1,  4,  5])
 
 gcd = DPNPBinaryFunc(
     "gcd",
-    ufi._gcd_result_type,
-    ufi._gcd,
+    ti._gcd_result_type,
+    ti._gcd,
     _GCD_DOCSTRING,
     acceptance_fn=acceptance_fn_gcd_lcm,
 )
@@ -2803,8 +2802,8 @@ array([0., 1., 1.])
 
 heaviside = DPNPBinaryFunc(
     "heaviside",
-    ufi._heaviside_result_type,
-    ufi._heaviside,
+    ti._heaviside_result_type,
+    ti._heaviside,
     _HEAVISIDE_DOCSTRING,
 )
 
@@ -2853,8 +2852,8 @@ array([1.        , 1.26606588, 2.2795853 , 4.88079259])
 
 i0 = DPNPI0(
     "i0",
-    ufi._i0_result_type,
-    ufi._i0,
+    ti._i0_result_type,
+    ti._i0,
     _I0_DOCSTRING,
     mkl_fn_to_call="_mkl_i0_to_call",
     mkl_impl_fn="_i0",
@@ -3084,7 +3083,7 @@ def interp(x, xp, fp, left=None, right=None, period=None):
     right_usm = right.get_array() if right is not None else None
 
     _manager = dpu.SequentialOrderManager[exec_q]
-    mem_ev, ht_ev = ufi._interpolate(
+    mem_ev, ht_ev = ti._interpolate(
         x.get_array(),
         idx.get_array(),
         xp.get_array(),
@@ -3157,8 +3156,8 @@ array([ 0, 20, 20, 60, 20, 20])
 
 lcm = DPNPBinaryFunc(
     "lcm",
-    ufi._lcm_result_type,
-    ufi._lcm,
+    ti._lcm_result_type,
+    ti._lcm,
     _LCM_DOCSTRING,
     acceptance_fn=acceptance_fn_gcd_lcm,
 )
@@ -3229,8 +3228,8 @@ array([ 5., 10., 20., 40.])
 
 ldexp = DPNPBinaryFunc(
     "ldexp",
-    ufi._ldexp_result_type,
-    ufi._ldexp,
+    ti._ldexp_result_type,
+    ti._ldexp,
     _LDEXP_DOCSTRING,
     weak_type_resolver=resolve_weak_types_2nd_arg_int,
 )
@@ -3509,8 +3508,8 @@ Examples
 
 modf = DPNPUnaryTwoOutputsFunc(
     "modf",
-    ufi._modf_result_type,
-    ufi._modf,
+    ti._modf_result_type,
+    ti._modf,
     _MODF_DOCSTRING,
     mkl_fn_to_call="_mkl_modf_to_call",
     mkl_impl_fn="_modf",
@@ -3743,7 +3742,7 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
         q = x.sycl_queue
         _manager = dpu.SequentialOrderManager[q]
 
-        h_ev, comp_ev = ufi._nan_to_num(
+        h_ev, comp_ev = ti._nan_to_num(
             x_ary,
             nan,
             max_f,
@@ -4776,8 +4775,8 @@ Examples
 
 sinc = DPNPSinc(
     "sinc",
-    ufi._sinc_result_type,
-    ufi._sinc,
+    ti._sinc_result_type,
+    ti._sinc,
     _SINC_DOCSTRING,
 )
 
@@ -4837,8 +4836,8 @@ array(True)
 
 spacing = DPNPUnaryFunc(
     "spacing",
-    ufi._spacing_result_type,
-    ufi._spacing,
+    ti._spacing_result_type,
+    ti._spacing,
     _SPACING_DOCSTRING,
 )
 

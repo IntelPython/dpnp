@@ -30,8 +30,8 @@ from __future__ import annotations
 
 import numpy as np
 
+import dpnp.libtensor._tensor_impl as ti
 import dpnp.tensor as dpt
-import dpnp.tensor._tensor_impl as ti
 
 
 def _all_data_types(_fp16, _fp64):

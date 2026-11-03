@@ -33,14 +33,18 @@ from numpy import floating as np_floating
 from numpy import integer as np_integer
 from numpy import issubdtype as np_issubdtype
 
-from ._tensor_impl import (
+from dpnp.libtensor._tensor_impl import (
     default_device_bool_type as ti_default_device_bool_type,
 )
-from ._tensor_impl import (
+from dpnp.libtensor._tensor_impl import (
     default_device_complex_type as ti_default_device_complex_type,
 )
-from ._tensor_impl import default_device_fp_type as ti_default_device_fp_type
-from ._tensor_impl import default_device_int_type as ti_default_device_int_type
+from dpnp.libtensor._tensor_impl import (
+    default_device_fp_type as ti_default_device_fp_type,
+)
+from dpnp.libtensor._tensor_impl import (
+    default_device_int_type as ti_default_device_int_type,
+)
 
 bool = dtype("bool")
 int8 = dtype("int8")

@@ -29,7 +29,7 @@
 import pytest
 
 import dpnp.tensor as dpt
-from dpnp.tensor._tensor_impl import default_device_fp_type
+from dpnp.libtensor._tensor_impl import default_device_fp_type
 
 from .helper import (
     get_queue_or_skip,

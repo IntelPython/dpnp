@@ -48,7 +48,7 @@ import numpy
 import dpnp
 
 # pylint: disable=no-name-in-module
-import dpnp.backend.extensions.statistics._statistics_impl as statistics_ext
+import dpnp.libtensor._statistics_impl as statistics_ext
 from dpnp.dpnp_utils.dpnp_utils_common import (
     result_type_for_device,
     to_supported_dtypes,
