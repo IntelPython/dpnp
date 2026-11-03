@@ -1119,6 +1119,14 @@ class TestMinMax:
         with pytest.raises(ValueError, match="read-only"):
             dpnp.minmax(ia, axis=0, out=(None, out_read_only))
 
+        # read-only out entry of another dtype is rejected before any write
+        ia_orig = ia.copy()
+        out_read_only = dpnp.empty(4, dtype=dpnp.default_float_type())
+        out_read_only.flags.writable = False
+        with pytest.raises(ValueError, match="read-only"):
+            dpnp.minmax(ia, axis=0, out=(ia[-1], out_read_only))
+        assert_array_equal(ia, ia_orig)
+
         # out entry is allocated on another queue
         out_q = dpnp.empty_like(out, sycl_queue=dpctl.SyclQueue())
         with pytest.raises((ValueError, ExecutionPlacementError)):

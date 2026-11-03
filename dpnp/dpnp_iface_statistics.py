@@ -39,6 +39,7 @@ it contains:
 
 """
 
+# pylint: disable=protected-access
 # pylint: disable=no-name-in-module
 
 import math
@@ -135,7 +136,6 @@ def _divide_by_scalar(a, v):
     _manager = dpu.SequentialOrderManager[queue]
     dep_evs = _manager.submitted_events
 
-    # pylint: disable=protected-access
     ht_ev, div_ev = ti._divide_by_scalar(
         src=usm_a, scalar=v, dst=usm_a, sycl_queue=queue, depends=dep_evs
     )
@@ -1519,7 +1519,6 @@ def minmax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     out_arrays = [res for res in out if res is not None]
     dpnp.check_supported_arrays_type(*out_arrays)
-    # pylint: disable=protected-access
     if len(out_arrays) == 2 and dti._array_overlap(
         *map(dpnp.get_usm_ndarray, out_arrays)
     ):
@@ -1530,6 +1529,9 @@ def minmax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
         if res is not None:
             # the result is computed in the data type of `a`
             if res.dtype != a.dtype:
+                # the cast to a writable temporary would hide the flag
+                if not res.flags.writable:
+                    raise ValueError("provided `out` array is read-only")
                 res = dpnp.astype(res, a.dtype, copy=False)
             res = dpnp.get_usm_ndarray(res)
         usm_out.append(res)
