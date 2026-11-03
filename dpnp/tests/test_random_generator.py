@@ -1152,7 +1152,7 @@ class TestDiscreteMethods:
         assert abs(res.mean() - mean) <= 5 * math.sqrt(var / n) + eps * mean
         assert abs(res.var() - var) <= var_tol * var
 
-    def test_edge_values(self):
+    def test_edge_values(self, discrete_precision):
         rng = default_rng(5)
         assert (dpnp.asnumpy(rng.poisson(0.0, size=100)) == 0).all()
         assert (dpnp.asnumpy(rng.binomial(0, 0.5, size=100)) == 0).all()
@@ -1169,6 +1169,21 @@ class TestDiscreteMethods:
         res = dpnp.asnumpy(rng.geometric(1e-300, size=1000))
         assert (res > 0).all()
         res = dpnp.asnumpy(rng.zipf(1.0001, size=1000))
+        assert (res > 0).all()
+
+    @pytest.mark.parametrize(
+        "name, param",
+        [
+            ("geometric", [1e-300, 0.5]),
+            ("logseries", 1 - 1e-9),
+            ("zipf", 1 + 1e-9),
+            # NumPy's largest valid lam
+            ("poisson", 2**63 - 1 - 10 * math.sqrt(2**63 - 1)),
+        ],
+    )
+    def test_param_near_bound(self, name, param, discrete_precision):
+        # rounding to float32 must not take a valid parameter out of bounds
+        res = dpnp.asnumpy(getattr(default_rng(5), name)(param, size=(100, 2)))
         assert (res > 0).all()
 
     def test_array_params(self, discrete_precision):

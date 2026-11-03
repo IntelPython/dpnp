@@ -89,6 +89,13 @@ _CONS_GTE_1 = 9
 _POISSON_LAM_MAX = _INT64_MAX - numpy.sqrt(_INT64_MAX) * 10
 _HYPERGEOM_MAX = 10**9
 
+# bounds keeping valid host parameters valid once rounded to float32; the
+# smallest normal also survives a device flushing subnormals to zero
+_F32_GT_0 = (numpy.finfo(numpy.float32).tiny, None)
+_F32_GT_1 = (numpy.nextafter(numpy.float32(1), numpy.float32(2)), None)
+_F32_LT_1 = (None, numpy.nextafter(numpy.float32(1), numpy.float32(0)))
+_F32_LT_2_63 = (None, numpy.nextafter(numpy.float32(2**63), numpy.float32(0)))
+
 # the messages of Generator.choice
 _CHOICE_MSGS = {
     "a_type": "a must be a sequence or an integer, not {}",
@@ -300,6 +307,21 @@ def _check_constraint(value, name, cons, scalar, device=False):
                 raise ValueError(f"{name} value too large")
             if not xp.all(val >= 0):
                 raise ValueError(f"{name} < 0 or {name} contains NaNs")
+
+
+def _host_float32(value, bounds):
+    """
+    Round a host parameter to ``float32`` and clip it to `bounds`, which
+    rounding a valid parameter to the nearest ``float32`` may cross.
+
+    """
+
+    if dpnp.is_supported_array_type(value):
+        return value
+    with numpy.errstate(over="ignore"):
+        value = numpy.asarray(value, dtype=numpy.float64).astype(numpy.float32)
+    value = numpy.clip(value, *bounds)
+    return value if value.ndim else float(value)
 
 
 def _as_int64(x):
@@ -590,13 +612,15 @@ class Generator:
         *,
         kernel_params=None,
         param_types=None,
+        f32_bounds=None,
     ):
         """
         Draw ``int64`` samples of a discrete distribution.
 
         A ``None`` in `param_types` stands for the floating-point type the
         distribution computes in, which is also the default for every
-        parameter.
+        parameter. When that type is ``float32``, the host kernel parameters
+        are clipped to the matching `f32_bounds`, unless they are ``None``.
 
         """
 
@@ -604,6 +628,11 @@ class Generator:
         ft = self._discrete_float_type()
         if kernel_params is None:
             kernel_params = params
+        if f32_bounds is not None and ft == numpy.float32:
+            kernel_params = tuple(
+                p if b is None else _host_float32(p, b)
+                for p, b in zip(kernel_params, f32_bounds)
+            )
         if param_types is None:
             param_types = (None,) * len(kernel_params)
         param_types = tuple(ft if t is None else t for t in param_types)
@@ -1272,7 +1301,9 @@ class Generator:
             _is_scalar_path(lam),
             device=self._check_device,
         )
-        return self._discrete_sample(ri._poisson, (lam,), size, usm_type)
+        return self._discrete_sample(
+            ri._poisson, (lam,), size, usm_type, f32_bounds=(_F32_LT_2_63,)
+        )
 
     def binomial(self, n, p, size=None, *, usm_type="device"):
         """
@@ -1359,7 +1390,9 @@ class Generator:
             _is_scalar_path(p),
             device=self._check_device,
         )
-        return self._discrete_sample(ri._geometric, (p,), size, usm_type)
+        return self._discrete_sample(
+            ri._geometric, (p,), size, usm_type, f32_bounds=(_F32_GT_0,)
+        )
 
     def logseries(self, p, size=None, *, usm_type="device"):
         """
@@ -1382,7 +1415,9 @@ class Generator:
             _is_scalar_path(p),
             device=self._check_device,
         )
-        return self._discrete_sample(ri._logseries, (p,), size, usm_type)
+        return self._discrete_sample(
+            ri._logseries, (p,), size, usm_type, f32_bounds=(_F32_LT_1,)
+        )
 
     def zipf(self, a, size=None, *, usm_type="device"):
         """
@@ -1400,7 +1435,9 @@ class Generator:
         _check_constraint(
             a, "a", _CONS_GT_1, _is_scalar_path(a), device=self._check_device
         )
-        return self._discrete_sample(ri._zipf, (a,), size, usm_type)
+        return self._discrete_sample(
+            ri._zipf, (a,), size, usm_type, f32_bounds=(_F32_GT_1,)
+        )
 
     def hypergeometric(
         self, ngood, nbad, nsample, size=None, *, usm_type="device"
