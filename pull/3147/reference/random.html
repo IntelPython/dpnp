@@ -921,6 +921,7 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.BitGenerator.html">dpnp.random.BitGenerator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.Philox4x3210.html">dpnp.random.Philox4x3210</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.PCG64DXSM.html">dpnp.random.PCG64DXSM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.MRG32k3a.html">dpnp.random.MRG32k3a</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.SeedSequence.html">dpnp.random.SeedSequence</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.RandomState.html">dpnp.random.RandomState</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.seed.html">dpnp.random.seed</a></li>
@@ -1125,7 +1126,8 @@
 </div>
 <p>DPNP draws random numbers on the SYCL device, by default with the
 counter-based Philox4x32x10 generator of the oneMKL device RNG API, or with
-NumPy's PCG64DXSM generator. It provides both NumPy random APIs: the <a class="reference internal" href="generated/dpnp.random.Generator.html#dpnp.random.Generator" title="dpnp.random.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></a> API recommended for new code,
+NumPy's PCG64DXSM generator or the MRG32k3a generator of the oneMKL device
+RNG API. It provides both NumPy random APIs: the <a class="reference internal" href="generated/dpnp.random.Generator.html#dpnp.random.Generator" title="dpnp.random.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></a> API recommended for new code,
 and the legacy <a class="reference internal" href="generated/dpnp.random.RandomState.html#dpnp.random.RandomState" title="dpnp.random.RandomState"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomState</span></code></a> API with the module-level functions
 built on it.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
@@ -1354,7 +1356,10 @@ where the samples for very large parameters are less accurate.</p></li>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.PCG64DXSM.html#dpnp.random.PCG64DXSM" title="dpnp.random.PCG64DXSM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PCG64DXSM</span></code></a></p></td>
 <td><p>NumPy's PCG64DXSM bit generator on the device.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.SeedSequence.html#dpnp.random.SeedSequence" title="dpnp.random.SeedSequence"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SeedSequence</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.MRG32k3a.html#dpnp.random.MRG32k3a" title="dpnp.random.MRG32k3a"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MRG32k3a</span></code></a></p></td>
+<td><p>An MRG32k3a combined multiple recursive bit generator on the device.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.SeedSequence.html#dpnp.random.SeedSequence" title="dpnp.random.SeedSequence"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SeedSequence</span></code></a></p></td>
 <td><p>SeedSequence mixes sources of entropy in a reproducible way to set the initial state for independent and very probably non-overlapping BitGenerators.</p></td>
 </tr>
 </tbody>

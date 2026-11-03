@@ -920,6 +920,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.BitGenerator.html">dpnp.random.BitGenerator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Philox4x3210.html">dpnp.random.Philox4x3210</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.PCG64DXSM.html">dpnp.random.PCG64DXSM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.MRG32k3a.html">dpnp.random.MRG32k3a</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.SeedSequence.html">dpnp.random.SeedSequence</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.RandomState.html">dpnp.random.RandomState</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.seed.html">dpnp.random.seed</a></li>
@@ -1153,6 +1154,7 @@
 <span class="c1"># pylint: disable=no-name-in-module</span>
 <span class="c1"># pylint: disable=protected-access</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">operator</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
 
@@ -1162,7 +1164,13 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.libtensor._rng_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ri</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"BitGenerator"</span><span class="p">,</span> <span class="s2">"PCG64DXSM"</span><span class="p">,</span> <span class="s2">"Philox4x3210"</span><span class="p">,</span> <span class="s2">"SeedSequence"</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"BitGenerator"</span><span class="p">,</span>
+    <span class="s2">"MRG32k3a"</span><span class="p">,</span>
+    <span class="s2">"PCG64DXSM"</span><span class="p">,</span>
+    <span class="s2">"Philox4x3210"</span><span class="p">,</span>
+    <span class="s2">"SeedSequence"</span><span class="p">,</span>
+<span class="p">]</span>
 
 <span class="c1"># NumPy's SeedSequence is pure host-side code, so it is reused as is</span>
 <span class="n">SeedSequence</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">SeedSequence</span>
@@ -1264,6 +1272,10 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""The state of the bit generator, as a dictionary."""</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_num_work_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""The work-items of a strided launch producing `size` values."""</span>
+        <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="o">-</span><span class="n">size</span> <span class="o">//</span> <span class="n">ri</span><span class="o">.</span><span class="n">items_per_work_item</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_engine</span><span class="p">])</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_launch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -1503,7 +1515,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_launch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
         <span class="c1"># every work-item takes a block of 2**64 counter values</span>
-        <span class="n">n_blocks</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="o">-</span><span class="n">size</span> <span class="o">//</span> <span class="n">ri</span><span class="o">.</span><span class="n">items_per_work_item</span><span class="p">)</span>
+        <span class="n">n_blocks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_work_items</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
             <span class="n">counter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_counter</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_counter</span> <span class="o">=</span> <span class="p">(</span><span class="n">counter</span> <span class="o">+</span> <span class="p">(</span><span class="n">n_blocks</span> <span class="o">&lt;&lt;</span> <span class="mi">64</span><span class="p">))</span> <span class="o">&amp;</span> <span class="n">_MASK128</span>
@@ -1736,9 +1748,188 @@
                     <span class="n">state</span> <span class="o">=</span> <span class="n">_pcg_advance</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">inc</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># work-item w draws from the stream jumped w times</span>
-                <span class="n">n_wi</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="o">-</span><span class="n">size</span> <span class="o">//</span> <span class="n">ri</span><span class="o">.</span><span class="n">items_per_work_item</span><span class="p">)</span>
+                <span class="n">n_wi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_work_items</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
                 <span class="n">state</span> <span class="o">=</span> <span class="n">_pcg_advance</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">inc</span><span class="p">,</span> <span class="n">_PCG_JUMP</span> <span class="o">*</span> <span class="n">n_wi</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">=</span> <span class="n">state</span>
+        <span class="k">return</span> <span class="n">words</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span></div>
+
+
+
+<span class="c1"># L'Ecuyer's MRG32k3a: the moduli of its two components, and their</span>
+<span class="c1"># transition matrices, which map the state (x[n-3], x[n-2], x[n-1]) of a</span>
+<span class="c1"># component to the next one</span>
+<span class="n">_MRG_M1</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">32</span> <span class="o">-</span> <span class="mi">209</span>
+<span class="n">_MRG_M2</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">32</span> <span class="o">-</span> <span class="mi">22853</span>
+<span class="n">_MRG_A1</span> <span class="o">=</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="n">_MRG_M1</span> <span class="o">-</span> <span class="mi">810728</span><span class="p">,</span> <span class="mi">1403580</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">_MRG_A2</span> <span class="o">=</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="n">_MRG_M2</span> <span class="o">-</span> <span class="mi">1370589</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">527612</span><span class="p">))</span>
+
+<span class="c1"># A substream is 2**76 values long</span>
+<span class="n">_MRG_SUBSTREAM_BITS</span> <span class="o">=</span> <span class="mi">76</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_mat_mul</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span>
+        <span class="nb">tuple</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">b</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span> <span class="o">%</span> <span class="n">m</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_mat_vec</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span> <span class="o">%</span> <span class="n">m</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+
+
+<span class="nd">@functools</span><span class="o">.</span><span class="n">cache</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_mrg_substream_jump</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    The transition matrices of both components to the start of the</span>
+<span class="sd">    ``2**k``-th next substream.</span>
+
+<span class="sd">    """</span>
+
+    <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span> <span class="o">=</span> <span class="n">_MRG_A1</span><span class="p">,</span> <span class="n">_MRG_A2</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">_MRG_SUBSTREAM_BITS</span><span class="p">):</span>
+            <span class="n">a1</span> <span class="o">=</span> <span class="n">_mat_mul</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">_MRG_M1</span><span class="p">)</span>
+            <span class="n">a2</span> <span class="o">=</span> <span class="n">_mat_mul</span><span class="p">(</span><span class="n">a2</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">_MRG_M2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span>
+    <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span> <span class="o">=</span> <span class="n">_mrg_substream_jump</span><span class="p">(</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_mat_mul</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">_MRG_M1</span><span class="p">),</span> <span class="n">_mat_mul</span><span class="p">(</span><span class="n">a2</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">_MRG_M2</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_mrg_skip_substreams</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""The state `(s1, s2)` moved to the start of the `n`-th next substream."""</span>
+
+    <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">n</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span> <span class="o">=</span> <span class="n">_mrg_substream_jump</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="n">s1</span> <span class="o">=</span> <span class="n">_mat_vec</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">_MRG_M1</span><span class="p">)</span>
+            <span class="n">s2</span> <span class="o">=</span> <span class="n">_mat_vec</span><span class="p">(</span><span class="n">a2</span><span class="p">,</span> <span class="n">s2</span><span class="p">,</span> <span class="n">_MRG_M2</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">&gt;&gt;=</span> <span class="mi">1</span>
+        <span class="n">k</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">s1</span><span class="p">,</span> <span class="n">s2</span>
+
+
+<div class="viewcode-block" id="MRG32k3a">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.random.MRG32k3a.html#dpnp.random.MRG32k3a">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MRG32k3a</span><span class="p">(</span><span class="n">BitGenerator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    An MRG32k3a combined multiple recursive bit generator on the device.</span>
+
+<span class="sd">    The generator of L'Ecuyer (1999), with a period of about 2**191, as</span>
+<span class="sd">    implemented by the oneMKL device RNG API. Its state is two components</span>
+<span class="sd">    of three 32-bit words each.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    seed : {None, int, array_like[ints], SeedSequence}, optional</span>
+<span class="sd">        The entropy the state is derived from. See</span>
+<span class="sd">        :class:`dpnp.random.BitGenerator`.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
+<span class="sd">        See :class:`dpnp.random.BitGenerator`.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
+<span class="sd">        See :class:`dpnp.random.BitGenerator`.</span>
+
+<span class="sd">        Default: ``None``.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The engine gives values in ``[1, 2**32 - 209]``, which are spread over</span>
+<span class="sd">    the 32-bit range to give the raw 32-bit words, so that 209 words never</span>
+<span class="sd">    occur. A raw 64-bit value is two words, the first in the high half.</span>
+
+<span class="sd">    The stream is split into substreams of 2**76 values, as in L'Ecuyer et</span>
+<span class="sd">    al. (2002). Every call that produces ``n`` values takes ``ceil(n /</span>
+<span class="sd">    128)`` substreams, one for each work-item of the kernel, and every</span>
+<span class="sd">    work-item draws as many values as its rejection samplers need from its</span>
+<span class="sd">    own substream. The values therefore depend only on the state and the</span>
+<span class="sd">    output size, and are the same on every device, but not the same as</span>
+<span class="sd">    CuPy's.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] P. L'Ecuyer, "Good Parameters and Implementations for Combined</span>
+<span class="sd">           Multiple Recursive Random Number Generators", Operations</span>
+<span class="sd">           Research, 47(1), pp. 159-164, 1999.</span>
+<span class="sd">    .. [2] P. L'Ecuyer, R. Simard, E. J. Chen and W. D. Kelton, "An</span>
+<span class="sd">           Object-Oriented Random-Number Package with Many Long Streams and</span>
+<span class="sd">           Substreams", Operations Research, 50(6), pp. 1073-1075, 2002.</span>
+
+<span class="sd">    """</span>
+
+    <span class="n">_engine</span> <span class="o">=</span> <span class="n">ri</span><span class="o">.</span><span class="n">engine_id</span><span class="o">.</span><span class="n">mrg32k3a</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">seed</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">)</span>
+
+        <span class="c1"># values in [1, m - 1], which can't make a component all zero</span>
+        <span class="n">words</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seed_seq</span><span class="o">.</span><span class="n">generate_state</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uint64</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_s1</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">w</span> <span class="o">%</span> <span class="p">(</span><span class="n">_MRG_M1</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">words</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_s2</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">w</span> <span class="o">%</span> <span class="p">(</span><span class="n">_MRG_M2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">words</span><span class="p">[</span><span class="mi">3</span><span class="p">:])</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_component</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">words</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> must be a sequence of 3 integers"</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">words</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> must be a sequence of 3 integers"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">w</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">w</span> <span class="o">&gt;=</span> <span class="n">m</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">words</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">words</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> must be in the range [0, </span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s2">) and not all zero"</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">words</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        The state of the bit generator.</span>
+
+<span class="sd">        A dictionary ``{"bit_generator": "MRG32k3a", "state": {"s1": s1,</span>
+<span class="sd">        "s2": s2}}``, where `s1` and `s2` are the lists of the three words</span>
+<span class="sd">        of each component, the oldest first. The words of `s1` are less than</span>
+<span class="sd">        ``2**32 - 209``, those of `s2` less than ``2**32 - 22853``, and</span>
+<span class="sd">        neither is all zero.</span>
+
+<span class="sd">        """</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">"bit_generator"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                <span class="s2">"state"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"s1"</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s1</span><span class="p">),</span> <span class="s2">"s2"</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s2</span><span class="p">)},</span>
+            <span class="p">}</span>
+
+    <span class="nd">@state</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"state must be a dict"</span><span class="p">)</span>
+
+        <span class="n">bitgen</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"bit_generator"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">bitgen</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"state must be for a </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> PRNG"</span>
+            <span class="p">)</span>
+
+        <span class="n">state</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s2">"state"</span><span class="p">]</span>
+        <span class="n">s1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_component</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s2">"s1"</span><span class="p">],</span> <span class="n">_MRG_M1</span><span class="p">,</span> <span class="s2">"s1"</span><span class="p">)</span>
+        <span class="n">s2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_component</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s2">"s2"</span><span class="p">],</span> <span class="n">_MRG_M2</span><span class="p">,</span> <span class="s2">"s2"</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_s1</span> <span class="o">=</span> <span class="n">s1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_s2</span> <span class="o">=</span> <span class="n">s2</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_launch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+        <span class="c1"># work-item w draws from the w-th next substream</span>
+        <span class="n">n_wi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_work_items</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="n">words</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s2</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_s1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s2</span> <span class="o">=</span> <span class="n">_mrg_skip_substreams</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s2</span><span class="p">,</span> <span class="n">n_wi</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">words</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span></div>
 
 </pre></div>
