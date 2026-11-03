@@ -33,7 +33,7 @@ import pytest
 from dpctl.utils import SequentialOrderManager
 
 import dpnp.tensor as dpt
-from dpnp.tensor._tensor_elementwise_impl import _divide_by_scalar
+from dpnp.libtensor._tensor_elementwise_impl import _divide_by_scalar
 from dpnp.tensor._type_utils import _can_cast
 
 from ..helper import (

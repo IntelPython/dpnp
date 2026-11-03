@@ -31,11 +31,9 @@ from typing import NamedTuple
 
 import dpctl.utils as du
 
+import dpnp.libtensor._tensor_impl as ti
 import dpnp.tensor as dpt
-import dpnp.tensor._tensor_impl as ti
-
-from ._numpy_helper import normalize_axis_index
-from ._tensor_sorting_impl import (
+from dpnp.libtensor._tensor_sorting_impl import (
     _argsort_ascending,
     _argsort_descending,
     _radix_argsort_ascending,
@@ -47,6 +45,8 @@ from ._tensor_sorting_impl import (
     _sort_descending,
     _topk,
 )
+
+from ._numpy_helper import normalize_axis_index
 
 __all__ = ["sort", "argsort", "top_k"]
 

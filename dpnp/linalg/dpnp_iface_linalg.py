@@ -47,7 +47,7 @@ from typing import NamedTuple
 import numpy
 
 import dpnp
-from dpnp.backend.extensions.lapack._lapack_impl import LinAlgError
+from dpnp.libtensor._lapack_impl import LinAlgError
 from dpnp.tensor._numpy_helper import normalize_axis_tuple
 
 from .dpnp_utils_linalg import (

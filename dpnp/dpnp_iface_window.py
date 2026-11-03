@@ -46,7 +46,7 @@ it contains:
 import dpctl.utils as dpu
 
 import dpnp
-import dpnp.backend.extensions.window._window_impl as wi
+import dpnp.libtensor._window_impl as wi
 
 
 def _call_window_kernel(

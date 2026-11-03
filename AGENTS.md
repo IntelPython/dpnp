@@ -1,6 +1,6 @@
 # AGENTS.md - dpnp
 
-dpnp is a NumPy-compatible array library for SYCL devices. Its main namespace, `dpnp.fft` and `dpnp.linalg` also conform to the Python Array API standard (2025.12, `doc/reference/array_api.rst`). The Python layer (`dpnp/`) is built on `dpnp.tensor` (Array API, `dpnp/tensor/`) and pybind11 SYCL extensions (`dpnp/backend/extensions/`); `dpctl` provides devices, queues and USM memory.
+dpnp is a NumPy-compatible array library for SYCL devices. Its main namespace, `dpnp.fft` and `dpnp.linalg` also conform to the Python Array API standard (2025.12, `doc/reference/array_api.rst`). The Python layer (`dpnp/`) is built on `dpnp.tensor` (Array API, `dpnp/tensor/`) and the pybind11 SYCL modules of `dpnp/libtensor/`; `dpctl` provides devices, queues and USM memory.
 
 ## Rules for Changes
 
@@ -31,7 +31,7 @@ python scripts/build_locally.py    # in-place build + editable install
 python -m pytest -ra dpnp/tests/test_<area>.py
 ```
 
-The build needs the packages in `environments/build_with_oneapi.yml`, `environments/oneapi_pkgs.yml` and `environments/dpctl_pkg.yml`. The `no-commit-to-branch` hook fails on `master` and `maintenance/*`, so work on a branch. Full-suite commands and test env vars are in `dpnp/tests/AGENTS.md`; build options in `dpnp/backend/AGENTS.md`.
+The build needs the packages in `environments/build_with_oneapi.yml`, `environments/oneapi_pkgs.yml` and `environments/dpctl_pkg.yml`. The `no-commit-to-branch` hook fails on `master` and `maintenance/*`, so work on a branch. Full-suite commands and test env vars are in `dpnp/tests/AGENTS.md`; build options in `dpnp/libtensor/AGENTS.md`.
 
 ### Changelog format
 
@@ -68,8 +68,9 @@ Read the `AGENTS.md` nearest the files you change. When editing these files, eve
 
 - [dpnp/AGENTS.md](dpnp/AGENTS.md): Python layer, adding a function, docstrings
 - [dpnp/tests/AGENTS.md](dpnp/tests/AGENTS.md): test helpers, fp64, CuPy tests, running the suite
-- [dpnp/backend/AGENTS.md](dpnp/backend/AGENTS.md): pybind11 SYCL extensions, C++ rules, build options
-- [dpnp/tensor/AGENTS.md](dpnp/tensor/AGENTS.md): `dpnp.tensor` and libtensor
+- [dpnp/libtensor/AGENTS.md](dpnp/libtensor/AGENTS.md): libtensor kernels, pybind11 SYCL modules and extensions, C++ rules, build options
+- [dpnp/backend/AGENTS.md](dpnp/backend/AGENTS.md): legacy `dpnp_backend_c`
+- [dpnp/tensor/AGENTS.md](dpnp/tensor/AGENTS.md): `dpnp.tensor`
 - [doc/AGENTS.md](doc/AGENTS.md): Sphinx docs
 - [benchmarks/AGENTS.md](benchmarks/AGENTS.md): ASV benchmarks
 - [.github/AGENTS.md](.github/AGENTS.md): workflow hardening rules

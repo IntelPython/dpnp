@@ -26,7 +26,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import dpnp.tensor._tensor_elementwise_impl as ti
+import dpnp.libtensor._tensor_elementwise_impl as ti
 
 from ._elementwise_common import BinaryElementwiseFunc, UnaryElementwiseFunc
 from ._type_utils import (

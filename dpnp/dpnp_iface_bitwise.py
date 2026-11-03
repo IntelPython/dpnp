@@ -45,8 +45,7 @@ it contains:
 
 import numpy
 
-import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
-import dpnp.tensor._tensor_elementwise_impl as ti
+import dpnp.libtensor._tensor_elementwise_impl as ti
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
 
 
@@ -260,8 +259,8 @@ array([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15],
 
 bitwise_count = DPNPUnaryFunc(
     "bitwise_count",
-    ufi._bitwise_count_result_type,
-    ufi._bitwise_count,
+    ti._bitwise_count_result_type,
+    ti._bitwise_count,
     _BITWISE_COUNT_DOCSTRING,
 )
 

@@ -80,7 +80,7 @@ import dpnp
 
 # pylint cannot introspect the compiled extension.
 # pylint: disable-next=no-name-in-module
-import dpnp.backend.extensions.blas._blas_impl as bi
+import dpnp.libtensor._blas_impl as bi
 import dpnp.tensor as dpt
 from dpnp.exceptions import ExecutionPlacementError
 
