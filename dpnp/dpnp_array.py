@@ -95,6 +95,21 @@ def _get_unwrapped_index_key(key):
     return _unwrap_index_element(key)
 
 
+def _reconstruct_from_host(array_class, host_array, usm_type):
+    """
+    Rebuild an unpickled array from its host copy on the default device.
+
+    Pickles refer to this function, so keep its name and signature.
+
+    """
+
+    # explicit dtype raises instead of downcasting on devices without fp64
+    res = dpnp.asarray(host_array, dtype=host_array.dtype, usm_type=usm_type)
+    if array_class is not dpnp_array:
+        res = res.view(type=array_class)
+    return res
+
+
 # pylint: disable=too-many-public-methods
 class dpnp_array:
     """
@@ -259,7 +274,16 @@ class dpnp_array:
         """
         return self.copy(order="K")
 
-    # '__deepcopy__',
+    def __deepcopy__(self, memo, /):  # pylint: disable=unused-argument
+        """
+        Used if :func:`copy.deepcopy` is called on an array. Return a copy of
+        the array.
+
+        Equivalent to ``a.copy(order="K")``.
+
+        """
+        return self.copy(order="K")
+
     # '__dir__',
 
     def __divmod__(self, other, /):
@@ -549,7 +573,25 @@ class dpnp_array:
         """Return ``divmod(value, self)``."""
         return dpnp.divmod(other, self)
 
-    # '__reduce__',
+    def __reduce__(self):
+        """
+        Used by :mod:`pickle` to serialize the array.
+
+        The data is copied to the host and pickled together with the array
+        type and the USM type. Unpickling allocates the array on the default
+        SYCL device with the original USM type, so it may end up on a
+        different device than the one it was pickled from.
+
+        Unpickling raises ``ValueError`` if the default device does not
+        support the data type, e.g. ``float64`` on a device without
+        double-precision support.
+
+        """
+        return (
+            _reconstruct_from_host,
+            (type(self), self.asnumpy(order="A"), self.usm_type),
+        )
+
     # '__reduce_ex__',
 
     def __repr__(self):

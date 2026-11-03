@@ -1,4 +1,5 @@
 import copy
+import pickle
 import tempfile
 
 import dpctl
@@ -210,11 +211,22 @@ def test_copy_method(device_x, device_y):
     assert_sycl_queue_equal(y.sycl_queue, q)
 
 
+@pytest.mark.parametrize(
+    "func", [copy.copy, copy.deepcopy], ids=["copy", "deepcopy"]
+)
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
-def test_copy_operation(device):
+def test_copy_operation(func, device):
     x = dpnp.array([[1, 2, 3], [4, 5, 6]], device=device)
-    y = copy.copy(x)
+    y = func(x)
     assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
+
+
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
+def test_pickle(device):
+    x = dpnp.array([[1, 2, 3], [4, 5, 6]], device=device)
+    y = pickle.loads(pickle.dumps(x))
+    # unpickled arrays go to the default device, not the original one
+    assert_sycl_queue_equal(y.sycl_queue, dpnp.empty(0).sycl_queue)
 
 
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)

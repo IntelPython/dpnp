@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import io
 import pickle
 import unittest
@@ -7,11 +9,10 @@ import pytest
 import dpnp as cupy
 from dpnp.tests.third_party.cupy import testing
 
-pytest.skip("text functions are not supported yet", allow_module_level=True)
-
 
 class TestNpz(unittest.TestCase):
 
+    @pytest.mark.skip("save() and load() are not supported yet")
     @testing.for_all_dtypes()
     def test_save_load(self, dtype):
         a = testing.shaped_arange((2, 3, 4), dtype=dtype)
@@ -26,6 +27,7 @@ class TestNpz(unittest.TestCase):
 
         testing.assert_array_equal(a, b)
 
+    @pytest.mark.skip("save() is not supported yet")
     def test_save_pickle(self):
         data = object()
 
@@ -38,6 +40,7 @@ class TestNpz(unittest.TestCase):
         cupy.save(sio, data, allow_pickle=True)
         sio.close()
 
+    @pytest.mark.skip("dump() and load() are not supported yet")
     def test_load_pickle(self):
         a = testing.shaped_arange((2, 3, 4), dtype=cupy.float32)
 
@@ -75,19 +78,25 @@ class TestNpz(unittest.TestCase):
         testing.assert_array_equal(a1, b1)
         testing.assert_array_equal(a2, b2)
 
+    @pytest.mark.skip("savez() and load() are not supported yet")
     def test_savez(self):
         self.check_savez(cupy.savez)
 
+    @pytest.mark.skip("savez_compressed() and load() are not supported yet")
     def test_savez_compressed(self):
         self.check_savez(cupy.savez_compressed)
 
     @testing.for_all_dtypes()
     def test_pickle(self, dtype):
-        a = testing.shaped_arange((2, 3, 4), dtype=dtype)
-        s = pickle.dumps(a)
-        b = pickle.loads(s)
-        testing.assert_array_equal(a, b)
+        for order in ["C", "F"]:
+            a = testing.shaped_arange((2, 3, 4), dtype=dtype, order=order)
+            s = pickle.dumps(a)
+            b = pickle.loads(s)
+            testing.assert_array_equal(a, b)
+            assert a.flags.c_contiguous == b.flags.c_contiguous
+            assert a.flags.f_contiguous == b.flags.f_contiguous
 
+    @pytest.mark.skip("dump() and load() are not supported yet")
     @testing.for_all_dtypes()
     def test_dump(self, dtype):
         a = testing.shaped_arange((2, 3, 4), dtype=dtype)
