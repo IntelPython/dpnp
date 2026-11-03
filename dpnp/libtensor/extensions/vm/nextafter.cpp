@@ -103,6 +103,10 @@ static sycl::event
     using resTy = typename OutputType<T1, T2>::value_type;
     resTy *y = reinterpret_cast<resTy *>(out_y);
 
+    // On a CPU device oneMKL VM waits on `depends` and computes on the
+    // calling thread, so release the GIL for host tasks that need it
+    py::gil_scoped_release lock{};
+
     return mkl_vm::nextafter(
         exec_q,
         n, // number of elements to be calculated

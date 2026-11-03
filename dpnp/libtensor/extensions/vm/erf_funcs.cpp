@@ -106,6 +106,10 @@ using ew_cmn_ns::unary_contig_impl_fn_ptr_t;
         using resTy = typename OutputType<T>::value_type;                      \
         resTy *y = reinterpret_cast<resTy *>(out_y);                           \
                                                                                \
+        /* On a CPU device oneMKL VM waits on `depends` and computes on the */ \
+        /* calling thread, so release the GIL for host tasks that need it */   \
+        py::gil_scoped_release lock{};                                         \
+                                                                               \
         return mkl_vm::__name__(                                               \
             exec_q, n, /* number of elements to be calculated*/                \
             a,         /* pointer `a` containing input vector of size n*/      \
