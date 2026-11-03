@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.dtype.newbyteorder
+=======================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: dtype.newbyteorder
