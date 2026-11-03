@@ -964,5 +964,12 @@ class RandomState:
 
         For full documentation refer to :obj:`numpy.random.RandomState.zipf`.
 
+        Limitations
+        -----------
+        The samples follow the Zipf distribution truncated to the largest
+        ``int64``, while NumPy's rejection test rounds to accepting every
+        sample above ``2**53``, which makes its tail too heavy for `a` close
+        to 1.
+
         """
         return self._generator.zipf(a, size, usm_type=usm_type)

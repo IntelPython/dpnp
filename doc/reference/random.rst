@@ -49,8 +49,14 @@ Differences from NumPy
   out-of-range values is undefined.
 * The discrete distributions return ``int64`` values. They compute in double
   precision on devices supporting it, and in single precision otherwise.
-  There, the samples for very large parameters are less accurate, and the
-  streams differ from the ones of devices with double precision.
+  There, the streams differ from the ones of devices with double precision,
+  and some samples are only multiples of a power of two: the ones above
+  ``2**24`` of ``geometric``, ``logseries`` and ``zipf``, and the ones of
+  ``poisson`` and ``binomial`` with a standard deviation above about
+  ``2**22``.
+* ``zipf`` follows the Zipf distribution truncated to the largest ``int64``.
+  NumPy's rejection test rounds to accepting every sample above ``2**53``,
+  which makes its tail too heavy for ``a`` close to 1.
 * :meth:`RandomState.randint` and :func:`randint` return ``int64`` values by
   default, as do :meth:`RandomState.random_integers`,
   :func:`random_integers` and :meth:`RandomState.tomaxint`, whose values

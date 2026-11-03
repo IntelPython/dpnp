@@ -1427,7 +1427,10 @@ class Generator:
 
         Limitations
         -----------
-        `usm_type` is not in NumPy's signature.
+        `usm_type` is not in NumPy's signature. The samples follow the Zipf
+        distribution truncated to the largest ``int64``, while NumPy's
+        rejection test rounds to accepting every sample above ``2**53``,
+        which makes its tail too heavy for `a` close to 1.
 
         """
 

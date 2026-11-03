@@ -1121,6 +1121,7 @@ class TestDiscreteMethods:
             ("poisson", (1e7,), 1e7, 1e7),
             ("poisson", (1e15,), 1e15, 1e15),
             ("binomial", (10**9, 0.3), 3e8, 2.1e8),
+            ("binomial", (2**40, 0.5), 2.0**39, 2.0**38),
             ("binomial", (10**7, 1e-6), 10.0, 10.0),
             ("negative_binomial", (1e6, 0.5), 1e6, 2e6),
             ("geometric", (1e-6,), 1e6, (1 - 1e-6) / 1e-12),
@@ -1131,12 +1132,27 @@ class TestDiscreteMethods:
                 2.5e5,
                 10**6 * 0.25 * 0.75 * (4e8 - 1e6) / (4e8 - 1),
             ),
+            (
+                "hypergeometric",
+                (5 * 10**8, 4 * 10**8, 3 * 10**8),
+                3e8 * 5 / 9,
+                3e8 * (5 / 9) * (4 / 9) * 6e8 / (9e8 - 1),
+            ),
         ],
     )
     def test_large_params(self, name, params, mean, var, discrete_precision):
         n = 10**6
         res = dpnp.asnumpy(getattr(default_rng(4), name)(*params, size=n))
         assert (res >= 0).all()
+        # the draws are not limited to the integers of the compute type,
+        # but for a deviation from the mean drawn by a float32 sampler
+        # above about 2**22
+        large = res[res >= 2**25]
+        if large.size > 1000 and (
+            discrete_precision == "double" or var < 2**44
+        ):
+            odd = (large % 2).mean()
+            assert abs(odd - 0.5) <= 5 * math.sqrt(0.25 / large.size)
         if name == "logseries":
             p = params[0]
             mean = -p / ((1 - p) * math.log1p(-p))
@@ -1151,6 +1167,19 @@ class TestDiscreteMethods:
         eps = 2**-23 if discrete_precision == "single" else 2**-52
         assert abs(res.mean() - mean) <= 5 * math.sqrt(var / n) + eps * mean
         assert abs(res.var() - var) <= var_tol * var
+
+    @pytest.mark.parametrize("a", [1.1, 1.5])
+    def test_zipf_tail(self, a, discrete_precision):
+        # NumPy's (1 + 1/X)**(a - 1) - 1 rounds to 0 above 2**53, which makes
+        # its tail too heavy for a close to 1; this is the Zipf distribution
+        # truncated to INT64_MAX
+        n, x = 2**20, 2**25
+        # the sum of k**-a over k >= x, by Euler-Maclaurin
+        tail = lambda x: x ** (1 - a) / (a - 1) + 0.5 * x**-a
+        prob = (tail(x) - tail(2.0**63)) / (_zeta(a) - tail(2.0**63))
+        res = dpnp.asnumpy(default_rng(7).zipf(a, size=n))
+        count = (res >= x).sum()
+        assert abs(count - n * prob) <= 5 * math.sqrt(n * prob * (1 - prob))
 
     def test_edge_values(self, discrete_precision):
         rng = default_rng(5)

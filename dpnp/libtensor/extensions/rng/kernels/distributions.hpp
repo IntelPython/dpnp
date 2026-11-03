@@ -378,6 +378,20 @@ T bd0(const T x, const T np, const T d)
     return x * sycl::log(x / np) - d;
 }
 
+// log(a!) - log(b!) - (a - b)*log(a), for a and b of at least 16, with
+// log(n!) = stirlerr(n) + (n + 1/2)*log(n) - n + log(sqrt(2*pi)). Its terms
+// are small for b close to a, so a sum of such differences can gather the
+// large (a - b)*log(a) terms into one which does not cancel.
+template <typename T>
+T logfactorial_diff_rest(const std::int64_t a, const std::int64_t b)
+{
+    const T af = static_cast<T>(a);
+    const T bf = static_cast<T>(b);
+    const T d = static_cast<T>(a - b);
+    return stirlerr(af) - stirlerr(bf) - bd0(bf, af, -d) +
+           T(0.5) * sycl::log1p(d / bf);
+}
+
 // log(a!) - log(b!). The terms of the difference are of the order of
 // (a - b) * log(a), not of a * log(a), so the result keeps its precision
 // for large a and b, where lgamma(a + 1) - lgamma(b + 1) loses all of it.
@@ -391,13 +405,8 @@ T logfactorial_diff(const std::int64_t a, const std::int64_t b)
         return sycl::lgamma(static_cast<T>(a) + T(1)) -
                sycl::lgamma(static_cast<T>(b) + T(1));
     }
-
-    // with log(n!) = stirlerr(n) + (n + 1/2)*log(n) - n + log(sqrt(2*pi))
-    const T af = static_cast<T>(a);
-    const T bf = static_cast<T>(b);
-    const T d = static_cast<T>(a - b);
-    return stirlerr(af) - stirlerr(bf) - bd0(bf, af, -d) +
-           T(0.5) * sycl::log1p(d / bf) + d * sycl::log(af);
+    return logfactorial_diff_rest<T>(a, b) +
+           static_cast<T>(a - b) * sycl::log(static_cast<T>(a));
 }
 
 template <typename T, typename BitGenT>
@@ -702,30 +711,82 @@ std::int64_t binomial_inversion(BitGenT &bg, const std::int64_t n, const T p)
     return X;
 }
 
+// floor((n + 1) * r) for 0 < r < 1, with its fractional part in `frac`,
+// exactly: r = M * 2**-k, and the 128-bit product (n + 1) * M is shifted
+template <typename T>
+std::int64_t binomial_mode(const std::int64_t n, const T r, T &frac)
+{
+    using UIntT = std::conditional_t<std::is_same_v<T, double>, std::uint64_t,
+                                     std::uint32_t>;
+    constexpr int mant_bits = std::numeric_limits<T>::digits - 1;
+    constexpr int bias = std::numeric_limits<T>::max_exponent - 1;
+
+    const UIntT bits = sycl::bit_cast<UIntT>(r);
+    const int e = static_cast<int>(bits >> mant_bits);
+    std::uint64_t M =
+        static_cast<std::uint64_t>(bits & ((UIntT(1) << mant_bits) - 1));
+    if (e != 0) {
+        M |= std::uint64_t(1) << mant_bits;
+    }
+    // k >= mant_bits + 1, as r < 1
+    const int k = bias + mant_bits - ((e != 0) ? e : 1);
+
+    const std::uint64_t n1 = static_cast<std::uint64_t>(n) + 1;
+    const std::uint64_t lo = n1 * M;
+    const std::uint64_t hi = umul_hi(n1, M);
+
+    std::uint64_t m;
+    std::uint64_t rem_hi = 0;
+    std::uint64_t rem_lo = lo;
+    if (k < 64) {
+        m = (hi << (64 - k)) | (lo >> k);
+        rem_lo = lo & ((std::uint64_t(1) << k) - 1);
+    }
+    else if (k < 128) {
+        m = hi >> (k - 64);
+        rem_hi = hi & ((std::uint64_t(1) << (k - 64)) - 1);
+    }
+    else {
+        m = 0;
+        rem_hi = hi;
+    }
+    frac = sycl::ldexp(static_cast<T>(rem_hi), 64 - k) +
+           sycl::ldexp(static_cast<T>(rem_lo), -k);
+    return static_cast<std::int64_t>(m);
+}
+
 // Kachitvichyanukul and Schmeiser's BTPE algorithm, for p <= 0.5. The steps
 // are numbered as in NumPy's random_binomial_btpe().
+//
+// Unlike NumPy's, the mode m is computed exactly in integers, every draw as
+// m plus an offset computed in floats, and the final acceptance test from
+// log-factorials whose large terms are gathered into one. Otherwise, above
+// 2**24 in single precision, or 2**53 in double, the draws would only take
+// the values of floats, and the test would cancel to noise.
 template <typename T, typename BitGenT>
 std::int64_t binomial_btpe(BitGenT &bg, const std::int64_t n, const T p)
 {
     const T nf = static_cast<T>(n);
     const T r = sycl::fmin(p, T(1) - p);
     const T q = T(1) - r;
-    const T fm = nf * r + r;
-    const std::int64_t m = static_cast<std::int64_t>(sycl::floor(fm));
+    // fm = (n + 1) * r = m + g
+    T g;
+    const std::int64_t m = binomial_mode<T>(n, r, g);
     const T mf = static_cast<T>(m);
+    const T nmf = static_cast<T>(n - m);
     const T p1 =
         sycl::floor(T(2.195) * sycl::sqrt(nf * r * q) - T(4.6) * q) + T(0.5);
-    const T xm = mf + T(0.5);
+    // xm = m + 1/2, xl = xm - p1 and xr = xm + p1, all relative to m
+    const T xm = T(0.5);
     const T xl = xm - p1;
     const T xr = xm + p1;
     const T c = T(0.134) + T(20.5) / (T(15.3) + mf);
-    // fm - xl and xr - fm, without the cancellation which makes both zero
-    // in single precision for n * p above about 1e15, where every draw
-    // would be rejected
-    const T dm = fm - xm;
-    T a = (p1 + dm) / (fm - xl * r);
+    // fm - xl = p1 + dm, xr - fm = p1 - dm and fm - xl * r = (n + 1 - xl) * r
+    // in absolute terms
+    const T dm = g - xm;
+    T a = (p1 + dm) / ((nmf + T(1) - xl) * r);
     const T laml = a * (T(1) + a / T(2));
-    a = (p1 - dm) / (xr * q);
+    a = (p1 - dm) / ((mf + xr) * q);
     const T lamr = a * (T(1) + a / T(2));
     const T p2 = p1 * (T(1) + T(2) * c);
     const T p3 = p2 + c / laml;
@@ -738,27 +799,30 @@ std::int64_t binomial_btpe(BitGenT &bg, const std::int64_t n, const T p)
         T v = bg.template next_uniform<T>();
         std::int64_t y;
         if (u <= p1) {
-            return static_cast<std::int64_t>(sycl::floor(xm - p1 * v + u));
+            return m + static_cast<std::int64_t>(sycl::floor(xm - p1 * v + u));
         }
         else if (u <= p2) {
             // Step 20
             const T x = xl + (u - p1) / c;
-            v = v * c + T(1) - sycl::fabs(mf - x + T(0.5)) / p1;
+            v = v * c + T(1) - sycl::fabs(xm - x) / p1;
             if (v > T(1)) {
                 continue;
             }
-            y = static_cast<std::int64_t>(sycl::floor(x));
+            y = m + static_cast<std::int64_t>(sycl::floor(x));
         }
         else if (u <= p3) {
             // Step 30; reject v == 0 before the undefined cast
             if (v == T(0)) {
                 continue;
             }
-            const T yf = sycl::floor(xl + sycl::log(v) / laml);
-            if (yf < T(0)) {
+            const T dy = sycl::floor(xl + sycl::log(v) / laml);
+            if (!(dy >= -mf - T(1))) {
                 continue;
             }
-            y = static_cast<std::int64_t>(yf);
+            y = m + static_cast<std::int64_t>(dy);
+            if (y < 0) {
+                continue;
+            }
             v = v * (u - p2) * laml;
         }
         else {
@@ -766,11 +830,14 @@ std::int64_t binomial_btpe(BitGenT &bg, const std::int64_t n, const T p)
             if (v == T(0)) {
                 continue;
             }
-            const T yf = sycl::floor(xr - sycl::log(v) / lamr);
-            if (yf > nf) {
+            const T dy = sycl::floor(xr - sycl::log(v) / lamr);
+            if (!(dy <= nmf + T(1))) {
                 continue;
             }
-            y = static_cast<std::int64_t>(yf);
+            y = m + static_cast<std::int64_t>(dy);
+            if (y > n) {
+                continue;
+            }
             v = v * (u - p3) * lamr;
         }
 
@@ -812,27 +879,22 @@ std::int64_t binomial_btpe(BitGenT &bg, const std::int64_t n, const T p)
             continue;
         }
 
-        const T yf = static_cast<T>(y);
-        const T x1 = yf + T(1);
-        const T f1 = mf + T(1);
-        const T z = nf + T(1) - mf;
-        const T w = nf - yf + T(1);
-        const T x2 = x1 * x1;
-        const T f2 = f1 * f1;
-        const T z2 = z * z;
-        const T w2 = w * w;
-
-        auto stirling = [](const T v1, const T v2) {
-            return (T(13680) -
-                    (T(462) - (T(132) - (T(99) - T(140) / v2) / v2) / v2) /
-                        v2) /
-                   v1 / T(166320);
-        };
-
-        if (A >
-            (xm * sycl::log(f1 / x1) + (nf - mf + T(0.5)) * sycl::log(z / w) +
-             (yf - mf) * sycl::log(w * r / (x1 * q)) + stirling(f1, f2) +
-             stirling(z, z2) + stirling(x1, x2) + stirling(w, w2))) {
+        // log(f(y) / f(m)) = log(m! (n - m)! / (y! (n - y)!)) + d*log(r / q)
+        // with d = y - m, whose large terms make d*log((n - m)*r / (m*q)),
+        // where (n - m)*r - m*q = g - r
+        const T d = static_cast<T>(y - m);
+        T log_ratio;
+        if (sycl::min(sycl::min(m, y), sycl::min(n - m, n - y)) >= 16) {
+            log_ratio = logfactorial_diff_rest<T>(m, y) +
+                        logfactorial_diff_rest<T>(n - m, n - y) +
+                        d * sycl::log1p((g - r) / (mf * q));
+        }
+        else {
+            log_ratio = logfactorial_diff<T>(m, y) +
+                        logfactorial_diff<T>(n - m, n - y) +
+                        d * sycl::log(r / q);
+        }
+        if (A > log_ratio) {
             continue;
         }
         return y;
@@ -970,8 +1032,10 @@ std::int64_t zipf(BitGenT &bg, const T a)
         if (!(X >= T(1) && X < int64_bound)) {
             continue;
         }
-        const T t = sycl::pow(T(1) + T(1) / X, am1);
-        if (V * X * (t - T(1)) / (b - T(1)) <= t / b) {
+        // t = (1 + 1/X)**(a - 1), whose t - 1 would round to 0 for large X
+        const T tm1 = sycl::expm1(am1 * sycl::log1p(T(1) / X));
+        const T t = T(1) + tm1;
+        if (V * X * tm1 / (b - T(1)) <= t / b) {
             return static_cast<std::int64_t>(X);
         }
     }
@@ -1070,12 +1134,34 @@ std::int64_t hypergeometric_hrua(BitGenT &bg,
         }
 
         // g - gp, where g and gp are sums of four log-factorials at m and K
-        const T t =
-            logfactorial_diff<T>(m, K) +
-            logfactorial_diff<T>(mingoodbad - m, mingoodbad - K) +
-            logfactorial_diff<T>(computed_sample - m, computed_sample - K) +
-            logfactorial_diff<T>(maxgoodbad - computed_sample + m,
-                                 maxgoodbad - computed_sample + K);
+        const std::int64_t a1 = m;
+        const std::int64_t a2 = mingoodbad - m;
+        const std::int64_t a3 = computed_sample - m;
+        const std::int64_t a4 = maxgoodbad - computed_sample + m;
+        const std::int64_t b1 = K;
+        const std::int64_t b2 = mingoodbad - K;
+        const std::int64_t b3 = computed_sample - K;
+        const std::int64_t b4 = maxgoodbad - computed_sample + K;
+        T t;
+        if (sycl::min(sycl::min(sycl::min(a1, a2), sycl::min(a3, a4)),
+                      sycl::min(sycl::min(b1, b2), sycl::min(b3, b4))) >= 16) {
+            // The terms (m - K)*log(a1 * a4 / (a2 * a3)) of the differences
+            // are each about |m - K|*log(popsize), while their sum is small,
+            // as m is the mode; gather them with the exact difference of the
+            // integer products, below 2 * 10**18 for good and bad below 10**9
+            const std::int64_t num = a1 * a4;
+            const std::int64_t den = a2 * a3;
+            t = logfactorial_diff_rest<T>(a1, b1) +
+                logfactorial_diff_rest<T>(a2, b2) +
+                logfactorial_diff_rest<T>(a3, b3) +
+                logfactorial_diff_rest<T>(a4, b4) +
+                static_cast<T>(m - K) * sycl::log1p(static_cast<T>(num - den) /
+                                                    static_cast<T>(den));
+        }
+        else {
+            t = logfactorial_diff<T>(a1, b1) + logfactorial_diff<T>(a2, b2) +
+                logfactorial_diff<T>(a3, b3) + logfactorial_diff<T>(a4, b4);
+        }
 
         // fast acceptance
         if ((U * (T(4) - U) - T(3)) <= t) {
