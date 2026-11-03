@@ -1,0 +1,10 @@
+﻿
+
+dpnp.array\_equiv
+=================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: array_equiv
