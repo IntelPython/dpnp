@@ -1517,16 +1517,17 @@ def minmax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     elif len(out) != 2:
         raise ValueError("'out' tuple must have exactly two entries")
 
-    if all(res is not None for res in out):
-        dpnp.check_supported_arrays_type(*out)
-        # pylint: disable=protected-access
-        if dti._array_overlap(*map(dpnp.get_usm_ndarray, out)):
-            raise ValueError("Output arrays cannot overlap")
+    out_arrays = [res for res in out if res is not None]
+    dpnp.check_supported_arrays_type(*out_arrays)
+    # pylint: disable=protected-access
+    if len(out_arrays) == 2 and dti._array_overlap(
+        *map(dpnp.get_usm_ndarray, out_arrays)
+    ):
+        raise ValueError("Output arrays cannot overlap")
 
     usm_out = []
     for res in out:
         if res is not None:
-            dpnp.check_supported_arrays_type(res)
             # the result is computed in the data type of `a`
             if res.dtype != a.dtype:
                 res = dpnp.astype(res, a.dtype, copy=False)
