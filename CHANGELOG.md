@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Added support for boolean input in `dpnp.positive` and the `+` operator of `dpnp.ndarray` [#3128](https://github.com/IntelPython/dpnp/pull/3128)
 * Added `dpnp.top_k` to return the `k` largest or smallest elements and their indices along an axis, with a `sorted` keyword to return them in sorted order [#3133](https://github.com/IntelPython/dpnp/pull/3133)
+* Added the `dpnp.random.Generator` API with `default_rng`, `BitGenerator`, `SeedSequence` and the `Philox4x3210` bit generator, on the oneMKL device RNG API [#3147](https://github.com/IntelPython/dpnp/pull/3147)
+* Added the `dpnp.random.PCG64DXSM` bit generator, which matches `numpy.random.PCG64DXSM` for raw values, `random`, `uniform` and `bytes` [#3147](https://github.com/IntelPython/dpnp/pull/3147)
+* Added `dpnp.random.get_bit_generator` and `dpnp.random.set_bit_generator`, and support for a bit generator as the seed of `dpnp.random.RandomState` [#3147](https://github.com/IntelPython/dpnp/pull/3147)
+* Added the `dpnp.random.MRG32k3a` bit generator [#3147](https://github.com/IntelPython/dpnp/pull/3147)
 
 ### Changed
 
@@ -18,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Merged the `ufunc` and `indexing` extensions into `dpnp.libtensor._tensor_elementwise_impl` and `dpnp.libtensor._tensor_impl`, while `statistics` and `window` extensions became part of libtensor [#3131](https://github.com/IntelPython/dpnp/pull/3131)
 * Moved `blas`, `fft`, `lapack`, `sparse` and `vm` extensions into `dpnp/libtensor/extensions` [#3131](https://github.com/IntelPython/dpnp/pull/3131)
 * Moved the libtensor headers shipped with dpnp from `dpnp/tensor/libtensor/include` to `dpnp/libtensor/include`, and changed `dpnp.get_include` to return that directory [#3131](https://github.com/IntelPython/dpnp/pull/3131)
+* Reimplemented `dpnp.random.RandomState` and the `dpnp.random` functions on device kernels, giving the same values on every device. `device`, `usm_type` and `sycl_queue` are now keyword-only, `randint(dtype=int)` returns `int64` and `shuffle` requires a `dpnp.ndarray` [#3147](https://github.com/IntelPython/dpnp/pull/3147)
 
 ### Deprecated
 
@@ -29,6 +34,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 * Removed the unused `FourZeroOffsets_Indexer`, `FixedDimStridedIndexer` and `ThreeOffsets_FixedDimStridedIndexer` from the libtensor header `utils/offset_utils.hpp` [#3131](https://github.com/IntelPython/dpnp/pull/3131)
+* Removed the legacy backend implementation of `dpnp.random`, which no longer needs `onemkl-sycl-rng` [#3147](https://github.com/IntelPython/dpnp/pull/3147)
+* Removed the unused parts of the legacy `dpnp_backend_c` library, including its empty GTest suite, the `DPNP_BACKEND_TESTS` CMake option and the NumPy fallback helper `call_origin` [#3147](https://github.com/IntelPython/dpnp/pull/3147)
 
 ### Fixed
 
