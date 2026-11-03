@@ -1,0 +1,10 @@
+﻿
+
+dpnp.real
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: real

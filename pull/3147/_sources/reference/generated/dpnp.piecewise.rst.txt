@@ -1,0 +1,10 @@
+﻿
+
+dpnp.piecewise
+==============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: piecewise

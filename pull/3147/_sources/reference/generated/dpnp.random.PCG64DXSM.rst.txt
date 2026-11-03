@@ -1,0 +1,32 @@
+﻿dpnp.random.PCG64DXSM
+=====================
+
+.. currentmodule:: dpnp.random
+
+.. autoclass:: PCG64DXSM
+
+   
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         PCG64DXSM.advance
+         PCG64DXSM.jumped
+         PCG64DXSM.random_raw
+         PCG64DXSM.spawn
+
+
+
+   
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         PCG64DXSM.lock
+         PCG64DXSM.seed_seq
+         PCG64DXSM.state
+         PCG64DXSM.sycl_device
+         PCG64DXSM.sycl_queue
+

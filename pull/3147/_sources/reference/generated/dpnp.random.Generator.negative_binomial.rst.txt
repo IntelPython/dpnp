@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.random.Generator.negative\_binomial
+========================================
+
+.. currentmodule:: dpnp.random
+
+method
+
+.. automethod:: Generator.negative_binomial
