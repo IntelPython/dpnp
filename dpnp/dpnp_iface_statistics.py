@@ -47,9 +47,9 @@ import dpctl.utils as dpu
 import numpy
 
 import dpnp
-import dpnp.backend.extensions.statistics._statistics_impl as statistics_ext
+import dpnp.libtensor._statistics_impl as statistics_ext
+import dpnp.libtensor._tensor_elementwise_impl as ti
 import dpnp.tensor as dpt
-import dpnp.tensor._tensor_elementwise_impl as ti
 
 from .dpnp_utils import get_usm_allocations
 from .dpnp_utils.dpnp_utils_common import (

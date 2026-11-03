@@ -42,7 +42,6 @@ set(DPNP_SRC
 set(_trgt "dpnp_backend_c")
 
 add_library(${_trgt} SHARED ${DPNP_SRC})
-set_target_properties(${_trgt} PROPERTIES CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 target_include_directories(${_trgt} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_include_directories(${_trgt} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)

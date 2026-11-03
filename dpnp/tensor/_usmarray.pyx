@@ -54,9 +54,10 @@ from . cimport _dlpack as c_dlpack
 
 from enum import IntEnum
 
+from dpnp.libtensor._tensor_impl import default_device_fp_type
+
 from . import _flags
 from ._dlpack import get_build_dlpack_version
-from ._tensor_impl import default_device_fp_type
 
 from ._slicing cimport _is_buffer
 

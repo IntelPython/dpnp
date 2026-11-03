@@ -2,6 +2,8 @@ import os
 import subprocess
 import sys
 
+import dpnp
+
 
 def test_includes():
     res = subprocess.run(
@@ -37,6 +39,19 @@ def test_tensor_includes():
     assert res.stdout
     dir = res.stdout.decode("utf-8")
     assert flags == "-I " + dir
+    assert os.path.isdir(os.path.join(dir.strip(), "kernels"))
+
+
+def test_get_include():
+    res = subprocess.run(
+        [sys.executable, "-m", "dpnp", "--tensor-include-dir"],
+        capture_output=True,
+    )
+    assert res.returncode == 0
+    tensor_include_dir = res.stdout.decode("utf-8").strip()
+    include_dir = dpnp.get_include()
+    assert os.path.realpath(include_dir) == os.path.realpath(tensor_include_dir)
+    assert os.path.isdir(os.path.join(include_dir, "kernels"))
 
 
 def test_cmakedir():

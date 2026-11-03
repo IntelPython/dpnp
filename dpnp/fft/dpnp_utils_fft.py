@@ -45,8 +45,8 @@ import dpctl.utils as dpu
 import numpy
 
 import dpnp
-import dpnp.backend.extensions.fft._fft_impl as fi
-import dpnp.tensor._tensor_impl as ti
+import dpnp.libtensor._fft_impl as fi
+import dpnp.libtensor._tensor_impl as ti
 from dpnp.exceptions import ExecutionPlacementError
 from dpnp.tensor import get_execution_queue
 from dpnp.tensor._numpy_helper import (
