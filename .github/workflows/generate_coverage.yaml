@@ -6,16 +6,17 @@ on:
 
 permissions: read-all
 
+# Cancel superseded PR runs only; master runs always complete
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   generate-coverage:
     name: Generate coverage and push to Coveralls.io
 
     runs-on: ubuntu-latest
     timeout-minutes: 180
-
-    permissions:
-      # Needed to cancel any previous runs that are not completed for a given workflow
-      actions: write
 
     defaults:
       run:
@@ -34,11 +35,6 @@ jobs:
       dpctl-pkg-txt: 'environments/dpctl_pkg.txt'
 
     steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@d07a454dad7609a92316b57b23c9ccfd4f59af66 # 0.13.1
-        with:
-          access_token: ${{ github.token }}
-
       - name: Add Intel repository
         if: env.oneapi-pkgs-env == ''
         run: |
