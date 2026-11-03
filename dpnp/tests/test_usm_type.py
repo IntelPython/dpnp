@@ -1291,6 +1291,16 @@ def test_unique(axis, usm_type):
         assert x.usm_type == usm_type
 
 
+@pytest.mark.parametrize("k", [1, 2, 3])
+@pytest.mark.parametrize("sorted", [True, False])
+@pytest.mark.parametrize("usm_type", list_of_usm_types)
+def test_top_k(k, sorted, usm_type):
+    a = dpnp.array([[3, 1, 4, 1], [5, 9, 2, 6]], usm_type=usm_type)
+    res = dpnp.top_k(a, k, sorted=sorted)
+    for x in res:
+        assert x.usm_type == usm_type
+
+
 @pytest.mark.parametrize("copy", [True, False])
 @pytest.mark.parametrize("usm_type_a", list_of_usm_types)
 def test_nan_to_num(copy, usm_type_a):
