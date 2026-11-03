@@ -338,6 +338,11 @@ class RandomState:
         For full documentation refer to
         :obj:`numpy.random.RandomState.randint`.
 
+        Limitations
+        -----------
+        ``dtype=int`` gives ``int64`` values, not a C ``long``, which is
+        ``int32`` on Windows.
+
         """
         return self._generator._integers(
             low, high, size, dtype, False, usm_type, "randint"
@@ -349,6 +354,11 @@ class RandomState:
 
         For full documentation refer to
         :obj:`numpy.random.RandomState.random_integers`.
+
+        Limitations
+        -----------
+        The values are ``int64``, not a C ``long``, which is ``int32`` on
+        Windows.
 
         """
         if high is None:
@@ -400,6 +410,11 @@ class RandomState:
 
         For full documentation refer to
         :obj:`numpy.random.RandomState.tomaxint`.
+
+        Limitations
+        -----------
+        The values are ``int64``, not a C ``long``, which is ``int32`` on
+        Windows.
 
         """
         return self._generator._integers(

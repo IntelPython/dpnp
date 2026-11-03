@@ -6,7 +6,7 @@ from numpy.testing import assert_allclose, assert_array_equal, assert_equal
 
 import dpnp.random
 
-from .helper import has_support_aspect64
+from .helper import get_all_dtypes, has_support_aspect64
 
 
 class TestDistribution(unittest.TestCase):
@@ -1042,7 +1042,7 @@ class TestDistributionsZipf(TestDistribution):
 
 class TestPermutationsTestShuffle:
     @pytest.mark.parametrize(
-        "dtype", [dpnp.float32, dpnp.float64, dpnp.int32, dpnp.int64]
+        "dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True)
     )
     def test_shuffle(self, dtype):
         seed = 28041990
@@ -1059,7 +1059,7 @@ class TestPermutationsTestShuffle:
         assert_array_equal(actual_x, desired_x)
 
     @pytest.mark.parametrize(
-        "dtype", [dpnp.float32, dpnp.float64, dpnp.int32, dpnp.int64]
+        "dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True)
     )
     def test_no_miss_numbers(self, dtype):
         seed = 28041990

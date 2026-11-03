@@ -8,10 +8,15 @@ import pytest
 
 import dpnp as cupy
 from dpnp import random
+from dpnp.tests.helper import has_support_aspect64
 from dpnp.tests.third_party.cupy import testing
 from dpnp.tests.third_party.cupy.testing import _condition
 
 from . import common_distributions
+
+_requires_fp64 = pytest.mark.skipif(
+    not has_support_aspect64(), reason="fp64 is required"
+)
 
 
 class GeneratorTestCase(common_distributions.BaseGeneratorTestCase):
@@ -47,12 +52,15 @@ class InvalidOutsMixin:
         with pytest.raises(ValueError):
             self.generate(size=(3, 2), out=out, **kwargs)
 
+    @_requires_fp64
     def test_invalid_dtype_out(self):
         self.invalid_dtype_out()
 
+    @_requires_fp64
     def test_invalid_contiguity(self):
         self.invalid_contiguity()
 
+    @_requires_fp64
     def test_invalid_shape(self):
         self.invalid_shape()
 
@@ -125,9 +133,11 @@ class TestStandardGammaInvalid(InvalidOutsMixin, GeneratorTestCase):
 
     target_method = "standard_gamma"
 
+    @_requires_fp64
     def test_invalid_dtype_out(self):
         self.invalid_dtype_out(shape=1.0)
 
+    @_requires_fp64
     def test_invalid_contiguity(self):
         self.invalid_contiguity(shape=1.0)
 
@@ -135,6 +145,7 @@ class TestStandardGammaInvalid(InvalidOutsMixin, GeneratorTestCase):
         with pytest.raises(ValueError):
             self.generate(size=(4, 6), out=out, shape=1.0)
 
+    @_requires_fp64
     def test_invalid_shape(self):
         self.invalid_shape(shape=1.0)
 

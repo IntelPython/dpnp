@@ -1874,9 +1874,11 @@ class TestDeviceIndependence:
             for a, b in zip(ref[3:5], res[3:5]):
                 assert_allclose(a, b, rtol=1e-4, atol=1e-5)
             # and so may flip a rejection test, which shifts the rest of
-            # the work-item's stream
-            for a, b in zip(ref[5:], res[5:]):
-                assert (a != b).mean() < 0.05
+            # the work-item's stream; the discrete samplers compute in
+            # float32 without fp64, so their values differ from fp64 devices
+            if dev.has_aspect_fp64 == devices[0].has_aspect_fp64:
+                for a, b in zip(ref[5:], res[5:]):
+                    assert (a != b).mean() < 0.05
 
     def test_queue(self):
         for dev in _all_devices():

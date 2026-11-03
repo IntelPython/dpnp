@@ -765,6 +765,7 @@ class TestDistributionsStandardGamma(RandomDistributionsTestCase):
         shape = numpy.ones(self.shape_shape, dtype=shape_dtype)
         self.check_distribution("standard_gamma", {"shape": shape})
 
+    @pytest.mark.skipif(not has_support_aspect64(), reason="fp64 is required")
     @testing.for_float_dtypes("dtype", no_float16=True)
     @testing.for_float_dtypes("shape_dtype")
     def test_standard_gamma_generator(self, shape_dtype, dtype):

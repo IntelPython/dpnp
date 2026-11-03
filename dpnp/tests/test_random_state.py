@@ -66,6 +66,11 @@ def _all_devices():
     ]
 
 
+def _device_id(device):
+    # str() holds the address, which differs between pytest-xdist workers
+    return device.filter_string
+
+
 class TestAPI:
     def test_methods(self):
         public = lambda c: {n for n in dir(c) if not n.startswith("_")}
@@ -313,14 +318,14 @@ class TestBitGeneratorSeed:
 
 
 class TestQueue:
-    @pytest.mark.parametrize("device", _all_devices(), ids=str)
+    @pytest.mark.parametrize("device", _all_devices(), ids=_device_id)
     def test_device(self, device):
         rs = RandomState(1, device=device)
         assert rs.get_sycl_device() == device
         res = rs.normal(size=5)
         assert res.sycl_device == device
 
-    @pytest.mark.parametrize("device", _all_devices(), ids=str)
+    @pytest.mark.parametrize("device", _all_devices(), ids=_device_id)
     def test_sycl_queue(self, device):
         queue = dpctl.SyclQueue(device)
         rs = RandomState(1, sycl_queue=queue)
@@ -338,14 +343,15 @@ class TestQueue:
             rs = RandomState(1234, device=device)
             kw = {"dtype": dpnp.float32} if is_float else {}
             results.append(dpnp.asnumpy(getattr(rs, name)(*params, 64, **kw)))
-        for res in results[1:]:
+        for dev, res in zip(devices[1:], results[1:]):
             if is_float:
                 # the streams match, but the math functions of the devices
                 # round differently, which e.g. vonmises amplifies
                 assert_allclose(res, results[0], rtol=1e-3, atol=1e-5)
-            else:
-                # a float rounding may rarely take a rejection sampler down
-                # another path
+            elif dev.has_aspect_fp64 == devices[0].has_aspect_fp64:
+                # the discrete samplers compute in float32 without fp64,
+                # and a float rounding may rarely take a rejection sampler
+                # down another path
                 assert numpy.mean(res != results[0]) < 0.05
 
     def test_follows_param_queue(self):
@@ -402,6 +408,11 @@ class TestDistributions:
         # deviations
         n = 2**16
         np_res = getattr(numpy.random.RandomState(0), name)(*params, n)
+        if name == "tomaxint" and numpy.dtype("l").itemsize < 8:
+            # NumPy draws C longs, which are 32-bit on Windows
+            np_res = numpy.random.RandomState(0).randint(
+                0, 2**63 - 1, n, dtype=numpy.int64
+            )
         res = dpnp.asnumpy(getattr(RandomState(0), name)(*params, n))
         if name == "standard_cauchy":
             np_res, res = numpy.median(np_res), numpy.median(res)
@@ -517,7 +528,8 @@ class TestIntegers:
     def test_bounds(self, low, high):
         res = dpnp.asnumpy(RandomState(0).randint(low, high, 2**12))
         exp = numpy.random.RandomState(0).randint(low, high, 2**12)
-        assert_equal(numpy.unique(res), numpy.unique(exp))
+        # NumPy's default is a C long, which is int32 on Windows
+        assert_equal(numpy.unique(res), numpy.unique(exp), strict=False)
 
     def test_one_bound(self):
         res = dpnp.asnumpy(RandomState(0).randint(5, size=2**12))
@@ -573,7 +585,10 @@ class TestIntegers:
             res = RandomState(0).random_integers(*args, size=2**12)
         assert str(dp_warn[0].message) == str(np_warn[0].message)
         assert res.dtype == dpnp.int64
-        assert_equal(numpy.unique(dpnp.asnumpy(res)), numpy.unique(exp))
+        # NumPy returns C longs, which are int32 on Windows
+        assert_equal(
+            numpy.unique(dpnp.asnumpy(res)), numpy.unique(exp), strict=False
+        )
 
     def test_tomaxint(self):
         res = RandomState(0).tomaxint(2**12)
