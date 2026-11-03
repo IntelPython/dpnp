@@ -1,5 +1,0 @@
-<map id="dpnp::kernels::i0::impl::cyl_bessel_ij_0_series" name="dpnp::kernels::i0::impl::cyl_bessel_ij_0_series">
-<area shape="rect" id="Node000001" title="This routine returns the cylindrical Bessel functions of order 0 by series expansion." alt="" coords="183,5,308,61"/>
-<area shape="rect" id="Node000002" href="$namespacedpnp_1_1kernels_1_1i0_1_1impl.html#a4797a054c5eb5eb061445fb926910af3" title="Return the regular modified Bessel function of order 0." alt="" coords="5,13,135,54"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="167,36,135,36,135,30,167,30"/>
-</map>
