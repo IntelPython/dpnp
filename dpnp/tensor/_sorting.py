@@ -27,6 +27,7 @@
 # *****************************************************************************
 
 import operator
+import warnings
 from typing import NamedTuple
 
 import dpctl.utils as du
@@ -299,7 +300,11 @@ class TopKResult(NamedTuple):
     indices: dpt.usm_ndarray
 
 
-def top_k(x, k, /, *, axis=None, mode="largest"):
+# TODO: default to `axis=-1` once the deprecation period ends
+_NO_AXIS = object()
+
+
+def top_k(x, k, /, *, axis=_NO_AXIS, mode="largest"):
     """top_k(x, k, axis=None, mode="largest")
 
     Returns the `k` largest or smallest values and their indices in the input
@@ -313,6 +318,12 @@ def top_k(x, k, /, *, axis=None, mode="largest"):
         axis (Optional[int]):
             axis along which to search. If `None`, the search will be performed
             over the flattened array. Default: ``None``.
+
+            .. deprecated:: 0.22.0
+                Omitting `axis` for an input that is not 1-D is deprecated.
+                The default will change to ``-1``, as in the Array API
+                standard. Pass ``axis=None`` to keep searching the flattened
+                array.
         mode (Literal["largest", "smallest"]):
             search mode. Must be one of the following modes:
 
@@ -353,6 +364,18 @@ def top_k(x, k, /, *, axis=None, mode="largest"):
         raise ValueError("`k` must be a non-negative integer value")
 
     nd = x.ndim
+    if axis is _NO_AXIS:
+        if nd != 1:
+            warnings.warn(
+                "Omitting `axis` in `dpnp.tensor.top_k` for an input that is "
+                "not 1-D is deprecated. The default will change from `None` "
+                "(search the flattened array) to `-1` (search the last axis), "
+                "as in the Array API standard. Pass `axis=None` to keep the "
+                "current behavior or `axis=-1` to adopt the new one.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+        axis = None
     if axis is None:
         sz = x.size
         if nd == 0:
