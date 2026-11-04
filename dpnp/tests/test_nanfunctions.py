@@ -526,6 +526,21 @@ class TestNanMedian:
         assert result is out_dp
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    @pytest.mark.parametrize("axis", [None, 1, (0, 2)])
+    def test_out_keepdims(self, dtype, axis):
+        a = generate_random_numpy_array((2, 3, 4), dtype=dtype)
+        a[0, 1, ::2] = a[1, 2, 1] = numpy.nan
+        ia = dpnp.array(a)
+        out_shape = numpy.nanmedian(a, axis=axis, keepdims=True).shape
+
+        out_np = numpy.empty_like(a, shape=out_shape)
+        out_dp = dpt.empty(out_shape, dtype=dtype)
+        expected = numpy.nanmedian(a, axis=axis, keepdims=True, out=out_np)
+        result = dpnp.nanmedian(ia, axis=axis, keepdims=True, out=out_dp)
+        assert result.get_array() is out_dp
+        assert_dtype_allclose(result, expected)
+
     def test_error(self):
         a = dpnp.arange(6.0).reshape(2, 3)
         a[0, 0] = a[-1, -1] = numpy.nan

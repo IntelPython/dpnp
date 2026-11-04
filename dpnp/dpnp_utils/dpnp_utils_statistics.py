@@ -64,10 +64,10 @@ def _calc_median(a, axis, out=None):
     return res
 
 
-def _calc_median_by_select(a, ignore_nan, out_shape, out=None):
+def _calc_median_by_select(a, ignore_nan, out=None):
     """
     Compute the median of an array along its last axis by radix select,
-    ignoring NaNs if `ignore_nan`, with the result of shape `out_shape`.
+    ignoring NaNs if `ignore_nan`.
 
     """
 
@@ -79,9 +79,10 @@ def _calc_median_by_select(a, ignore_nan, out_shape, out=None):
             raise ExecutionPlacementError(
                 "Input and output allocation queues are not compatible"
             )
-        if out.shape != out_shape:
+        if out.shape != usm_a.shape[:-1]:
             raise ValueError(
-                f"Output array of shape {out_shape} is needed, got {out.shape}."
+                f"Output array of shape {usm_a.shape[:-1]} is needed, "
+                f"got {out.shape}."
             )
 
     _manager = dpu.SequentialOrderManager[exec_q]
@@ -131,7 +132,7 @@ def _calc_median_by_select(a, ignore_nan, out_shape, out=None):
     if ignore_nan and dpt.asnumpy(usm_all_nan)[0]:
         warnings.warn("All-NaN slice encountered", RuntimeWarning, stacklevel=4)
 
-    res = dpnp_array._create_from_usm_ndarray(usm_res).reshape(out_shape)
+    res = dpnp_array._create_from_usm_ndarray(usm_res)
     if out is None:
         return res
     out[...] = res
@@ -340,19 +341,37 @@ def dpnp_median(
             )
         axis = -1
 
+    res_out = out
     if keepdims:
         res_shape = list(a_shape)
         for i in _axis:
             res_shape[i] = 1
         res_shape = tuple(res_shape)
 
+        if out is not None:
+            dpnp.check_supported_arrays_type(out)
+            if out.shape != res_shape:
+                raise ValueError(
+                    f"Output array of shape {res_shape} is needed, "
+                    f"got {out.shape}."
+                )
+            # the medians go to a view of `out` without the reduced axes
+            res_out = out[
+                tuple(0 if i in _axis else slice(None) for i in range(a_ndim))
+            ]
+
     if use_select:
         assert axis == -1
-        out_shape = res_shape if keepdims else a.shape[:-1]
-        res = _calc_median_by_select(a, ignore_nan, out_shape, out=out)
+        res = _calc_median_by_select(a, ignore_nan, out=res_out)
     else:
-        res = _calc_median_by_sort(a, axis, out, overwrite_input, ignore_nan)
+        res = _calc_median_by_sort(
+            a, axis, res_out, overwrite_input, ignore_nan
+        )
+
+    if out is None:
         if keepdims:
             res = res.reshape(res_shape)
+        return dpnp.get_result_array(res)
 
-    return dpnp.get_result_array(res, out)
+    dpnp.get_result_array(res, res_out)
+    return dpnp.get_result_array(out)

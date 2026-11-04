@@ -971,6 +971,27 @@ class TestMedian:
         assert result is out_dp
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("axis", [None, 1, (0, 2)])
+    def test_out_keepdims(self, dtype, axis):
+        a = generate_random_numpy_array((2, 3, 4), dtype=dtype)
+        ia = dpnp.array(a)
+        out_shape = numpy.median(a, axis=axis, keepdims=True).shape
+
+        out_np = numpy.empty_like(a, shape=out_shape)
+        out_dp = dpnp.empty_like(ia, shape=out_shape)
+        expected = numpy.median(a, axis=axis, keepdims=True, out=out_np)
+        result = dpnp.median(ia, axis=axis, keepdims=True, out=out_dp)
+        assert result is out_dp
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", [dpnp.int32, dpnp.complex64])
+    def test_out_keepdims_wrong_shape(self, dtype):
+        ia = dpnp.ones((4, 3), dtype=dtype)
+        out = dpnp.empty(3, dtype=dtype)
+        with pytest.raises(ValueError, match="Output array of shape"):
+            dpnp.median(ia, axis=0, keepdims=True, out=out)
+
     def test_0d_array(self):
         a = numpy.array(20)
         ia = dpnp.array(a)
