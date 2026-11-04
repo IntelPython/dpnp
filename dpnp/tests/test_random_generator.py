@@ -925,6 +925,12 @@ class TestIntegers:
         rng = default_rng(0)
         assert_raises(TypeError, rng.integers, 0, 5, dtype=numpy.float32)
 
+    def test_bytes(self):
+        rng = default_rng(11)
+        b = rng.bytes(10)
+        assert isinstance(b, bytes) and len(b) == 10
+        assert default_rng(11).bytes(10) == b
+
 
 def _zeta(a, n=10**5):
     """The Riemann zeta function, by a partial sum and Euler-Maclaurin."""
@@ -1224,6 +1230,8 @@ class TestDiscreteMethods:
         rng.negative_binomial(dpnp.asarray([inf, nan]), 0.5)
         rng.noncentral_chisquare(1.0, dpnp.asarray([inf, nan]))
         rng.noncentral_f(1.0, 1.0, dpnp.asarray([inf, nan]))
+        res = rng.multinomial(10, dpnp.asarray([nan, 0.5, nan]))
+        assert res.shape == (3,)
 
         # a shape just below zero would reject nearly every draw
         shape = dpnp.asarray([-1e-8, -1e-12, -1e-30, -1.0])
@@ -1243,6 +1251,8 @@ class TestDiscreteMethods:
         res = rng.binomial([25 * 10**14, 10**17], [0.5, 0.05], size=(8, 2))
         mean = numpy.array([12.5e14, 5e15])
         assert_allclose(dpnp.asnumpy(res).mean(axis=0), mean, rtol=1e-3)
+        res = rng.multinomial(10**16, [0.5, 0.5], size=4)
+        assert_array_equal(res.sum(axis=-1), 10**16, strict=False)
 
 
 def _assert_same_error(np_call, dp_call):
@@ -1356,6 +1366,49 @@ class TestChecks:
             ("hypergeometric", (5, 3, -1)),
             ("hypergeometric", ([5], [3], [-1])),
             ("hypergeometric", (nan, 3, 1)),
+            ("dirichlet", ([-1.0, 1.0],)),
+            ("dirichlet", ([[1.0, 2.0]],)),
+            ("dirichlet", (1.0,)),
+            ("multinomial", (5, 0.5)),
+            ("multinomial", (5, [])),
+            ("multinomial", (5, [0.7, 0.7, 0.1])),
+            ("multinomial", (5, [[0.7, 0.7, 0.1]])),
+            ("multinomial", (-1, [0.2, 0.8])),
+            ("multinomial", (5, [-0.1, 1.1])),
+            ("multinomial", (5, [nan, 1.0])),
+            ("multivariate_hypergeometric", ([1, 2], 5, None, "x")),
+            ("multivariate_hypergeometric", ([1, 2], 1.5)),
+            ("multivariate_hypergeometric", ([1, 2], -1)),
+            ("multivariate_hypergeometric", ([1.0, 2.0], 1)),
+            ("multivariate_hypergeometric", ([[1, 2]], 1)),
+            ("multivariate_hypergeometric", ([1, -2], 1)),
+            ("multivariate_hypergeometric", ([1, 2], 4)),
+            ("multivariate_hypergeometric", ([10**9], 1)),
+            ("multivariate_normal", ([[0.0, 0.0]], numpy.eye(2))),
+            ("multivariate_normal", ([0.0, 0.0], [1.0, 1.0])),
+            ("multivariate_normal", ([0.0, 0.0], numpy.ones((2, 3)))),
+            ("multivariate_normal", ([0.0, 0.0], numpy.eye(3))),
+            ("multivariate_normal", ([0j, 0.0], numpy.eye(2))),
+            ("multivariate_normal", ([0.0, 0.0], numpy.eye(2), None, "x")),
+            (
+                "multivariate_normal",
+                ([0.0, 0.0], [[1.0, 2.0], [2.0, 1.0]], None, "raise"),
+            ),
+            ("permutation", (1.5,)),
+            ("permutation", (numpy.zeros(()),)),
+            ("permutation", (numpy.zeros((2, 3)), 2)),
+            ("choice", (0,)),
+            ("choice", (-1,)),
+            ("choice", (1.5,)),
+            ("choice", (numpy.array(1.5),)),
+            ("choice", ([],)),
+            ("choice", (3, 4, False)),
+            ("choice", (3, None, True, [0.5, 0.6, -0.1])),
+            ("choice", (3, None, True, [0.5, 0.6, 0.1])),
+            ("choice", (3, None, True, [0.5, nan, 0.5])),
+            ("choice", (3, None, True, [0.5, 0.5])),
+            ("choice", (3, None, True, [[0.5, 0.5, 0.0]])),
+            ("choice", (3, 2, False, [1.0, 0.0, 0.0])),
             ("poisson", (None,)),
             ("normal", (0.0, None)),
             ("uniform", (None, 1.0)),
@@ -1402,6 +1455,402 @@ class TestChecks:
         # as in NumPy, None is NaN when another parameter is an array
         res = getattr(default_rng(0), name)(*args)
         assert dpnp.isnan(res).any()
+
+    def test_multivariate_hypergeometric_method(self):
+        _assert_same_error(
+            lambda: numpy.random.default_rng(0).multivariate_hypergeometric(
+                [10**9], 1, method="x"
+            ),
+            lambda: default_rng(0).multivariate_hypergeometric(
+                [10**9], 1, method="x"
+            ),
+        )
+        # unlike NumPy, the count method is limited as the marginals one is
+        assert_raises_regex(
+            ValueError,
+            'When method is "count", sum',
+            default_rng(0).multivariate_hypergeometric,
+            [10**9],
+            1,
+            method="count",
+        )
+
+    def test_multivariate_normal_method(self):
+        _assert_same_error(
+            lambda: numpy.random.default_rng(0).multivariate_normal(
+                [0.0], [[1.0]], method="x"
+            ),
+            lambda: default_rng(0).multivariate_normal(
+                [0.0], [[1.0]], method="x"
+            ),
+        )
+
+    def test_shuffle(self):
+        np_rng = numpy.random.default_rng(0)
+        rng = default_rng(0)
+        _assert_same_error(
+            lambda: np_rng.shuffle(numpy.zeros(())),
+            lambda: rng.shuffle(dpnp.zeros(())),
+        )
+        _assert_same_error(
+            lambda: np_rng.shuffle(numpy.zeros(3), axis=1),
+            lambda: rng.shuffle(dpnp.zeros(3), axis=1),
+        )
+        assert_raises(TypeError, rng.shuffle, [1, 2, 3])
+        assert_raises(TypeError, rng.shuffle, numpy.arange(3))
+
+    def test_permuted(self):
+        np_rng = numpy.random.default_rng(0)
+        rng = default_rng(0)
+        _assert_same_error(
+            lambda: np_rng.permuted(numpy.zeros(())),
+            lambda: rng.permuted(dpnp.zeros(())),
+        )
+        _assert_same_error(
+            lambda: np_rng.permuted(numpy.zeros(3), axis=1),
+            lambda: rng.permuted(dpnp.zeros(3), axis=1),
+        )
+        _assert_same_error(
+            lambda: np_rng.permuted(numpy.zeros(3), out=numpy.zeros(4)),
+            lambda: rng.permuted(dpnp.zeros(3), out=dpnp.zeros(4)),
+        )
+        assert_raises(
+            TypeError, rng.permuted, dpnp.zeros(3), out=numpy.zeros(3)
+        )
+        assert_raises(
+            TypeError,
+            rng.permuted,
+            dpnp.zeros(3),
+            out=dpnp.zeros(3, dtype=dpnp.int32),
+        )
+
+    def test_choice_axis(self):
+        # NumPy raises IndexError, and AxisError is one
+        assert_raises(IndexError, default_rng(0).choice, [1, 2], axis=1)
+
+    def test_cholesky_not_positive_definite(self):
+        rng = default_rng(0)
+        assert_raises(
+            dpnp.linalg.LinAlgError,
+            rng.multivariate_normal,
+            [0.0, 0.0],
+            [[1.0, 2.0], [2.0, 1.0]],
+            method="cholesky",
+        )
+
+    def test_not_positive_semidefinite_warns(self):
+        rng = default_rng(0)
+        cov = [[1.0, 2.0], [2.0, 1.0]]
+        for method in ("svd", "eigh"):
+            with pytest.warns(
+                RuntimeWarning, match="positive-semidefinite"
+            ) as w:
+                rng.multivariate_normal([0.0, 0.0], cov, method=method)
+            assert w[0].filename == __file__
+            rng.multivariate_normal(
+                [0.0, 0.0], cov, check_valid="ignore", method=method
+            )
+
+
+class TestMultivariate:
+    @pytest.mark.parametrize("dtype", float_dtypes)
+    @pytest.mark.parametrize(
+        "alpha", [[0.5, 1.0, 2.0], [0.01, 0.05, 0.02], [3.0], [0.0, 1.0, 0.5]]
+    )
+    def test_dirichlet(self, alpha, dtype):
+        n = 10**5
+        res = default_rng(7).dirichlet(alpha, size=(n, 2), dtype=dtype)
+        assert res.shape == (n, 2, len(alpha))
+        assert res.dtype == dtype
+        res = dpnp.asnumpy(res).reshape(-1, len(alpha)).astype(numpy.float64)
+        assert ((res >= 0) & (res <= 1)).all()
+        assert_allclose(res.sum(axis=-1), numpy.ones(2 * n), rtol=1e-5)
+
+        alpha = numpy.asarray(alpha)
+        a0 = alpha.sum()
+        mean = alpha / a0
+        var = mean * (1 - mean) / (a0 + 1)
+        assert (
+            abs(res.mean(axis=0) - mean) <= 5 * numpy.sqrt(var / (2 * n))
+        ).all()
+
+    @pytest.mark.parametrize(
+        "alpha", [[0.0], [0.0, 0.0], [0.05, 0.0], [0.0, 0.0, 0.05], [0.0, 2.0]]
+    )
+    def test_dirichlet_degenerate(self, alpha):
+        expected = numpy.random.default_rng(0).dirichlet(alpha)
+        res = default_rng(0).dirichlet(alpha, size=3)
+        assert_allclose(
+            dpnp.asnumpy(res), numpy.tile(expected, (3, 1)), rtol=1e-15
+        )
+
+    def test_dirichlet_shapes(self):
+        rng = default_rng(0)
+        assert rng.dirichlet([1.0, 2.0]).shape == (2,)
+        assert rng.dirichlet([]).shape == (0,)
+        assert rng.dirichlet([], size=3).shape == (3, 0)
+        assert rng.dirichlet(dpnp.asarray([1.0, 2.0]), size=3).shape == (3, 2)
+        res = dpnp.asnumpy(rng.dirichlet([1.0, numpy.nan], size=3))
+        assert numpy.isnan(res).all()
+
+    def test_multinomial(self, discrete_precision):
+        n = 10**5
+        pvals = [0.2, 0.3, 0.0, 0.5]
+        res = default_rng(8).multinomial(100, pvals, size=n)
+        assert res.shape == (n, 4)
+        assert res.dtype == dpnp.int64
+        res = dpnp.asnumpy(res)
+        assert (res.sum(axis=1) == 100).all()
+        assert (res[:, 2] == 0).all()
+
+        p = numpy.asarray(pvals)
+        assert (
+            abs(res.mean(axis=0) - 100 * p)
+            <= 5 * numpy.sqrt(100 * p * (1 - p) / n) + 1e-12
+        ).all()
+        assert_allclose(
+            res.var(axis=0), 100 * p * (1 - p), rtol=0.05, atol=1e-12
+        )
+
+    def test_multinomial_shapes(self, discrete_precision):
+        rng = default_rng(9)
+        assert rng.multinomial(5, [0.5, 0.5]).shape == (2,)
+        assert rng.multinomial(5, [0.5, 0.5], size=(3, 2)).shape == (3, 2, 2)
+        assert rng.multinomial([3, 5], [0.2, 0.8], size=(4, 2)).shape == (
+            4,
+            2,
+            2,
+        )
+
+        n = [[1], [20]]
+        pvals = [[0.5, 0.5], [0.2, 0.8], [0.0, 1.0]]
+        for pv in (pvals, dpnp.asarray(pvals)):
+            res = rng.multinomial(n, pv)
+            assert res.shape == (2, 3, 2)
+            res = dpnp.asnumpy(res)
+            assert_array_equal(res.sum(axis=-1), numpy.broadcast_to(n, (2, 3)))
+            assert (res[:, 2, 0] == 0).all()
+
+        res = rng.multinomial(dpnp.asarray([4, 7]), [0.3, 0.7])
+        assert_array_equal(dpnp.asnumpy(res).sum(axis=-1), [4, 7])
+        assert_raises(ValueError, rng.multinomial, [3, 5], [0.2, 0.8], size=3)
+
+    @pytest.mark.parametrize("method", ["marginals", "count"])
+    @pytest.mark.parametrize("nsample", [0, 7, 25, 45, 60])
+    def test_multivariate_hypergeometric(
+        self, method, nsample, discrete_precision
+    ):
+        n = 10**5
+        colors = numpy.array([10, 20, 0, 30])
+        res = default_rng(10).multivariate_hypergeometric(
+            colors, nsample, size=n, method=method
+        )
+        assert res.shape == (n, 4)
+        assert res.dtype == dpnp.int64
+        res = dpnp.asnumpy(res)
+        assert (res.sum(axis=1) == nsample).all()
+        assert ((res >= 0) & (res <= colors)).all()
+
+        total = colors.sum()
+        p = colors / total
+        mean = nsample * p
+        var = mean * (1 - p) * (total - nsample) / (total - 1)
+        assert (
+            abs(res.mean(axis=0) - mean) <= 5 * numpy.sqrt(var / n) + 1e-12
+        ).all()
+
+    def test_multivariate_hypergeometric_shapes(self):
+        rng = default_rng(0)
+        assert rng.multivariate_hypergeometric([1, 2], 2).shape == (2,)
+        assert rng.multivariate_hypergeometric([], 0).shape == (0,)
+        assert rng.multivariate_hypergeometric([], 0, size=3).shape == (3, 0)
+        res = rng.multivariate_hypergeometric(
+            dpnp.asarray([3, 4]), 7, size=(2, 3)
+        )
+        assert res.shape == (2, 3, 2)
+        assert (dpnp.asnumpy(res) == [3, 4]).all()
+
+    @pytest.mark.parametrize("dtype", float_dtypes)
+    @pytest.mark.parametrize("method", ["svd", "eigh", "cholesky"])
+    def test_multivariate_normal(self, method, dtype):
+        n = 10**5
+        mean = numpy.array([1.0, -2.0, 3.0])
+        cov = numpy.array([[2.0, 0.5, 0.0], [0.5, 1.0, -0.3], [0.0, -0.3, 0.5]])
+        res = default_rng(11).multivariate_normal(
+            mean, cov, size=(n, 2), method=method, dtype=dtype
+        )
+        assert res.shape == (n, 2, 3)
+        assert res.dtype == dtype
+        res = dpnp.asnumpy(res).reshape(-1, 3).astype(numpy.float64)
+        assert_allclose(res.mean(axis=0), mean, atol=0.02)
+        assert_allclose(numpy.cov(res.T), cov, atol=0.02)
+
+    def test_multivariate_normal_shapes(self):
+        rng = default_rng(0)
+        mean = dpnp.zeros(2)
+        cov = dpnp.eye(2)
+        assert rng.multivariate_normal(mean, cov).shape == (2,)
+        assert rng.multivariate_normal(mean, cov, size=3).shape == (3, 2)
+        assert rng.multivariate_normal([0.0], [[1.0]], size=0).shape == (0, 1)
+        res = rng.multivariate_normal(
+            [0.0, 0.0], [[1.0, 0.0], [0.0, 0.0]], size=100
+        )
+        assert (dpnp.asnumpy(res)[:, 1] == 0).all()
+        res = rng.multivariate_normal(mean, cov, size=2, usm_type="host")
+        assert res.usm_type == "host"
+
+
+class TestPermutations:
+    def test_permutation(self):
+        rng = default_rng(12)
+        res = rng.permutation(10)
+        assert res.dtype == dpnp.int64
+        assert_array_equal(numpy.sort(dpnp.asnumpy(res)), numpy.arange(10))
+        assert rng.permutation(-3).shape == (0,)
+        assert rng.permutation(0).shape == (0,)
+
+        x = dpnp.arange(12).reshape(3, 4)
+        res = rng.permutation(x)
+        assert_array_equal(
+            numpy.sort(dpnp.asnumpy(res), axis=0), dpnp.asnumpy(x)
+        )
+        # the rows are moved whole
+        assert (
+            dpnp.asnumpy(res)[:, 1:] - dpnp.asnumpy(res)[:, :1] == [1, 2, 3]
+        ).all()
+
+        res = dpnp.asnumpy(rng.permutation(x, axis=-1))
+        assert (res[1:] - res[:1] == [[4], [8]]).all()
+
+        res = rng.permutation([1.5, 2.5, 3.5])
+        assert isinstance(res, dpnp.ndarray)
+        assert_array_equal(numpy.sort(dpnp.asnumpy(res)), [1.5, 2.5, 3.5])
+
+        # a copy is returned
+        x = dpnp.arange(5)
+        rng.permutation(x)[...] = 0
+        assert_array_equal(x, dpnp.arange(5))
+
+    def test_permutation_uniform(self):
+        # all 6 permutations of 3 values are equally likely
+        rng = default_rng(13)
+        n = 6000
+        keys = [tuple(dpnp.asnumpy(rng.permutation(3))) for _ in range(n)]
+        _, counts = numpy.unique(keys, axis=0, return_counts=True)
+        assert len(counts) == 6
+        assert (abs(counts - n / 6) < 5 * numpy.sqrt(n / 6)).all()
+
+    def test_shuffle(self):
+        rng = default_rng(14)
+        x = dpnp.arange(20)
+        assert rng.shuffle(x) is None
+        assert not (x == dpnp.arange(20)).all()
+        assert_array_equal(numpy.sort(dpnp.asnumpy(x)), numpy.arange(20))
+
+        x = dpnp.arange(12).reshape(3, 4)
+        rng.shuffle(x, axis=1)
+        res = dpnp.asnumpy(x)
+        assert (res[1:] - res[:1] == [[4], [8]]).all()
+
+    def test_permuted(self):
+        rng = default_rng(15)
+        x = dpnp.arange(24).reshape(4, 6)
+        res = dpnp.asnumpy(rng.permuted(x))
+        assert res.shape == (4, 6)
+        assert_array_equal(numpy.sort(res, axis=None), numpy.arange(24))
+
+        res = dpnp.asnumpy(rng.permuted(x, axis=1))
+        assert_array_equal(numpy.sort(res, axis=1), dpnp.asnumpy(x))
+        # the rows are shuffled independently
+        assert len({tuple(r - r.min()) for r in res}) > 1
+
+        out = dpnp.empty((4, 6), dtype=dpnp.float32)
+        res = rng.permuted(x.astype(dpnp.int16), axis=0, out=out)
+        assert res is out
+        assert_array_equal(
+            numpy.sort(dpnp.asnumpy(out), axis=0), dpnp.asnumpy(x), strict=False
+        )
+
+        # in place
+        x = dpnp.arange(10)
+        rng.permuted(x, out=x)
+        assert_array_equal(numpy.sort(dpnp.asnumpy(x)), numpy.arange(10))
+
+        # out may be a usm_ndarray
+        out = dpnp.get_usm_ndarray(dpnp.empty(10, dtype=x.dtype))
+        assert rng.permuted(x, out=out) is out
+        assert_array_equal(numpy.sort(dpnp.asnumpy(out)), numpy.arange(10))
+
+        res = rng.permuted([[1, 2], [3, 4]], axis=0)
+        assert isinstance(res, dpnp.ndarray)
+
+
+class TestChoice:
+    def test_int(self):
+        rng = default_rng(16)
+        res = rng.choice(5, size=1000)
+        assert res.dtype == dpnp.int64
+        assert_array_equal(numpy.unique(dpnp.asnumpy(res)), numpy.arange(5))
+
+        res = rng.choice(5)
+        assert isinstance(res, dpnp.ndarray) and res.shape == ()
+        assert rng.choice(5, size=()).shape == ()
+        assert rng.choice(0, size=0).shape == (0,)
+        assert rng.choice(5, size=(2, 3)).shape == (2, 3)
+
+    def test_without_replacement(self):
+        rng = default_rng(17)
+        res = dpnp.asnumpy(rng.choice(100, size=(10, 10), replace=False))
+        assert_array_equal(numpy.sort(res, axis=None), numpy.arange(100))
+        res = dpnp.asnumpy(rng.choice(1000, size=5, replace=False))
+        assert len(numpy.unique(res)) == 5
+
+    def test_weighted(self):
+        n = 10**5
+        p = numpy.array([0.1, 0.0, 0.3, 0.6])
+        rng = default_rng(18)
+        for pp in (p, dpnp.asarray(p)):
+            res = dpnp.asnumpy(rng.choice(4, size=n, p=pp))
+            freq = numpy.bincount(res, minlength=4) / n
+            assert (abs(freq - p) <= 5 * numpy.sqrt(p * (1 - p) / n)).all()
+
+    def test_weighted_without_replacement(self):
+        n = 20000
+        p = numpy.array([0.1, 0.0, 0.3, 0.6])
+        rng = default_rng(19)
+        res = numpy.array(
+            [
+                dpnp.asnumpy(rng.choice(4, size=2, replace=False, p=p))
+                for _ in range(n)
+            ]
+        )
+        assert (res != 1).all()
+        assert (res[:, 0] != res[:, 1]).all()
+
+        # the first draw is from p, and the second from p conditioned on
+        # not being the first
+        freq = numpy.bincount(res[:, 0], minlength=4) / n
+        assert (abs(freq - p) <= 5 * numpy.sqrt(p * (1 - p) / n)).all()
+        pair = (res[:, 0] == 3) & (res[:, 1] == 2)
+        prob = 0.6 * 0.3 / 0.4
+        assert abs(pair.mean() - prob) <= 5 * numpy.sqrt(prob * (1 - prob) / n)
+
+    def test_array(self):
+        rng = default_rng(20)
+        a = dpnp.asarray([10, 20, 30])
+        res = rng.choice(a, size=100)
+        assert set(dpnp.asnumpy(res)) <= {10, 20, 30}
+        res = rng.choice(a)
+        assert res.shape == ()
+
+        a = numpy.arange(12).reshape(3, 4)
+        res = dpnp.asnumpy(rng.choice(a, size=5))
+        assert res.shape == (5, 4)
+        assert (res[:, 1:] - res[:, :1] == [1, 2, 3]).all()
+        res = dpnp.asnumpy(rng.choice(a, size=(2, 2), axis=1, replace=False))
+        assert res.shape == (3, 2, 2)
+        assert_array_equal(numpy.sort(res[0], axis=None), a[0])
+        assert rng.choice(a, axis=1).shape == (3,)
 
 
 @pytest.mark.skipif(len(_all_devices()) < 2, reason="needs two devices")
