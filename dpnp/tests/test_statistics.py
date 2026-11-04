@@ -1147,8 +1147,14 @@ class TestMedianSelect:
         src = dpt.empty((0, 5), dtype="f4")
         dst = dpt.empty((0,), dtype="f4")
         all_nan = dpt.full(1, 7, dtype="u4")
+        mgr = dpctl.utils.SequentialOrderManager[src.sycl_queue]
         ht_ev, ev = statistics_ext._median(
-            src, True, dst, sycl_queue=src.sycl_queue, all_nan=all_nan
+            src,
+            True,
+            dst,
+            sycl_queue=src.sycl_queue,
+            all_nan=all_nan,
+            depends=mgr.submitted_events,
         )
         ht_ev.wait()
         ev.wait()
