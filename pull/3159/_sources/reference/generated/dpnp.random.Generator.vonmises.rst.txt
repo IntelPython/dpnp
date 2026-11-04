@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.random.Generator.vonmises
+==============================
+
+.. currentmodule:: dpnp.random
+
+method
+
+.. automethod:: Generator.vonmises

@@ -1,0 +1,10 @@
+﻿
+
+dpnp.abs
+========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: abs

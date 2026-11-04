@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.random.SeedSequence.pool
+=============================
+
+.. currentmodule:: dpnp.random
+
+attribute
+
+.. autoattribute:: SeedSequence.pool

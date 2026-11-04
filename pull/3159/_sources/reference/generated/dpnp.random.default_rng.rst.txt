@@ -1,0 +1,10 @@
+﻿
+
+dpnp.random.default\_rng
+========================
+
+.. currentmodule:: dpnp.random
+
+
+
+.. autofunction:: default_rng
