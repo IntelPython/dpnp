@@ -64,10 +64,10 @@ def _calc_median(a, axis, out=None):
     return res
 
 
-def _calc_median_by_select(a, ignore_nan, out=None):
+def _calc_median_by_select(a, ignore_nan, out_shape, out=None):
     """
     Compute the median of an array along its last axis by radix select,
-    ignoring NaNs if `ignore_nan`.
+    ignoring NaNs if `ignore_nan`, with the result of shape `out_shape`.
 
     """
 
@@ -78,6 +78,10 @@ def _calc_median_by_select(a, ignore_nan, out=None):
         if dpt.get_execution_queue((exec_q, out.sycl_queue)) is None:
             raise ExecutionPlacementError(
                 "Input and output allocation queues are not compatible"
+            )
+        if out.shape != out_shape:
+            raise ValueError(
+                f"Output array of shape {out_shape} is needed, got {out.shape}."
             )
 
     _manager = dpu.SequentialOrderManager[exec_q]
@@ -127,7 +131,7 @@ def _calc_median_by_select(a, ignore_nan, out=None):
     if ignore_nan and dpt.asnumpy(usm_all_nan)[0]:
         warnings.warn("All-NaN slice encountered", RuntimeWarning, stacklevel=4)
 
-    res = dpnp_array._create_from_usm_ndarray(usm_res)
+    res = dpnp_array._create_from_usm_ndarray(usm_res).reshape(out_shape)
     if out is None:
         return res
     out[...] = res
@@ -336,16 +340,19 @@ def dpnp_median(
             )
         axis = -1
 
-    if use_select:
-        assert axis == -1
-        res = _calc_median_by_select(a, ignore_nan, out=out)
-    else:
-        res = _calc_median_by_sort(a, axis, out, overwrite_input, ignore_nan)
-
     if keepdims:
         res_shape = list(a_shape)
         for i in _axis:
             res_shape[i] = 1
-        res = res.reshape(tuple(res_shape))
+        res_shape = tuple(res_shape)
+
+    if use_select:
+        assert axis == -1
+        out_shape = res_shape if keepdims else a.shape[:-1]
+        res = _calc_median_by_select(a, ignore_nan, out_shape, out=out)
+    else:
+        res = _calc_median_by_sort(a, axis, out, overwrite_input, ignore_nan)
+        if keepdims:
+            res = res.reshape(res_shape)
 
     return dpnp.get_result_array(res, out)
