@@ -15,6 +15,7 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Added implementation of `dpnp.minmax`, computing the minimum and the maximum of an array in a single pass by a new fused reduction kernel [#3135](https://github.com/IntelPython/dpnp/pull/3135)
 * Added implementation of `dpnp.scipy.linalg.cho_factor` and `dpnp.scipy.linalg.cho_solve` (SciPy-compatible) [#3116](https://github.com/IntelPython/dpnp/pull/3116)
 * Added the `dpnp.random.Generator` API with `default_rng`, `BitGenerator`, `SeedSequence` and the `Philox4x3210` bit generator, sampling on the device with the device RNG API of oneMKL or oneMath [#3157](https://github.com/IntelPython/dpnp/pull/3157)
+* Added the continuous distributions of `numpy.random.Generator`, such as `gamma`, `beta` and `vonmises`, to `dpnp.random.Generator` [#3158](https://github.com/IntelPython/dpnp/pull/3158)
 
 ### Changed
 
