@@ -589,6 +589,31 @@ class TestNanMedianSelect:
         assert_dtype_allclose(result, numpy.nanmedian(a, axis=-1))
         assert not [w for w in recwarn if "All-NaN" in str(w.message)]
 
+    @pytest.mark.parametrize("keepdims", [False, True])
+    def test_out(self, keepdims):
+        a = generate_random_numpy_array((4, 3))
+        a[1, 2] = numpy.nan
+        ia = dpnp.array(a)
+        shape = (1, 3) if keepdims else (3,)
+
+        out_np = numpy.empty_like(a, shape=shape)
+        out_dp = dpnp.empty_like(ia, shape=shape)
+        expected = numpy.nanmedian(a, axis=0, keepdims=keepdims, out=out_np)
+        result = dpnp.nanmedian(ia, axis=0, keepdims=keepdims, out=out_dp)
+        assert result is out_dp
+        assert_dtype_allclose(result, expected)
+
+    # NumPy broadcasts the result into these, dpnp requires the exact shape
+    @pytest.mark.parametrize(
+        "axis, out_shape", [(0, (2, 3)), (0, (1, 3)), (None, (3,))]
+    )
+    def test_out_wrong_shape(self, axis, out_shape):
+        a = dpnp.arange(12.0).reshape(4, 3)
+        a[1, 2] = dpnp.nan
+        out = dpnp.empty(out_shape)
+        with pytest.raises(ValueError, match="Output array of shape"):
+            dpnp.nanmedian(a, axis=axis, out=out)
+
 
 @pytest.mark.parametrize("func", ["nanprod", "nansum"])
 class TestNanProdSum:
