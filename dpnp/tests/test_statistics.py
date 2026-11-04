@@ -1086,6 +1086,21 @@ class TestMedianSelect:
         result = dpnp.median(ia, axis=-1)
         assert_dtype_allclose(result, expected)
 
+    # NumPy's mean gives +0.0 for zeros of either sign
+    @pytest.mark.parametrize("n", [1, 2, 3, 64, 1000, 2**16 + 1])
+    @pytest.mark.parametrize("dtype", get_float_dtypes(no_float16=False))
+    def test_zero_sign(self, n, dtype):
+        a = numpy.full((3, n), -0.0, dtype=dtype)
+        a[1, ::2] = 0.0
+        a[2, : n // 3] = -1
+        a[2, n - n // 3 :] = 1
+        ia = dpnp.array(a)
+
+        expected = numpy.median(a, axis=-1)
+        result = dpnp.median(ia, axis=-1)
+        assert_dtype_allclose(result, expected)
+        assert_array_equal(dpnp.signbit(result), numpy.signbit(expected))
+
     @pytest.mark.parametrize("axis", [0, 1, 2, (0, 2), None])
     def test_non_contiguous(self, axis):
         a = generate_random_numpy_array((70, 3, 90), dtype="f4")

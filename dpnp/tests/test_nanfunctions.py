@@ -581,6 +581,21 @@ class TestNanMedianSelect:
         result = dpnp.nanmedian(ia, axis=-1)
         assert_dtype_allclose(result, expected)
 
+    # NumPy's mean gives +0.0 for zeros of either sign
+    @pytest.mark.parametrize("n", [2, 3, 64, 1000, 2**16 + 1])
+    @pytest.mark.parametrize("dtype", get_float_dtypes(no_float16=False))
+    def test_zero_sign(self, n, dtype):
+        a = numpy.full((3, n), -0.0, dtype=dtype)
+        a[:, 1::4] = numpy.nan
+        a[1, ::3] = 0.0
+        a[2, : n // 4] = -1
+        ia = dpnp.array(a)
+
+        expected = numpy.nanmedian(a, axis=-1)
+        result = dpnp.nanmedian(ia, axis=-1)
+        assert_dtype_allclose(result, expected)
+        assert_array_equal(dpnp.signbit(result), numpy.signbit(expected))
+
     @pytest.mark.parametrize("n", [3, 1000, 2**16 + 1])
     def test_all_nan_rows(self, n):
         a = generate_random_numpy_array((3, n), dtype="f4")
