@@ -39,7 +39,9 @@ it contains:
 
 """
 
+import operator
 from collections.abc import Sequence
+from typing import NamedTuple
 
 import dpnp
 import dpnp.tensor as dpt
@@ -53,6 +55,12 @@ from .dpnp_utils import (
     map_dtype_to_device,
 )
 from .tensor._numpy_helper import normalize_axis_index
+
+
+# pylint:disable=missing-class-docstring
+class TopKResult(NamedTuple):
+    values: dpnp.ndarray
+    indices: dpnp.ndarray
 
 
 def _wrap_sort_argsort(
@@ -448,3 +456,136 @@ def sort_complex(a):
             b_dt = map_dtype_to_device(dpnp.complex128, b.sycl_device)
         return b.astype(b_dt)
     return b
+
+
+def top_k(a, k, /, *, axis=-1, mode="largest", sorted=True):
+    """
+    Returns the `k` largest or smallest elements and their indices along an
+    axis.
+
+    For full documentation refer to :obj:`numpy.top_k`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    k : int
+        The number of largest or smallest elements to return. `k` must be
+        a non-negative integer not greater than the size of `a` along `axis`.
+    axis : {None, int}, optional
+        Axis along which to find the largest or smallest elements. If
+        ``None``, the flattened array is used.
+
+        Default: ``-1``.
+    mode : {"largest", "smallest"}, optional
+        If ``"largest"``, the largest elements are returned. If
+        ``"smallest"``, the smallest elements are returned. NaN values (and
+        complex values with a NaN component) are ordered to the end regardless
+        of `mode`, so they are only returned if they are among the top `k`
+        values.
+
+        Default: ``"largest"``.
+    sorted : bool, optional
+        If ``True``, the top `k` elements are returned in sorted order:
+        largest-first for ``mode="largest"`` and smallest-first for
+        ``mode="smallest"``. If ``False``, the order of the elements is
+        unspecified.
+
+        Default: ``True``.
+
+    Returns
+    -------
+    values : dpnp.ndarray
+        The top `k` values of `a`, with the same data type as `a`. The shape
+        is that of `a` with the dimension along `axis` replaced by `k`.
+    indices : dpnp.ndarray
+        The indices of `values` along `axis`, with the same shape as `values`
+        and the default array index data type.
+
+    See Also
+    --------
+    :obj:`dpnp.tensor.top_k` : Array API version; returns the elements in an
+        unspecified order.
+    :obj:`dpnp.partition` : Partial sort.
+    :obj:`dpnp.sort` : Full sorting.
+
+    Notes
+    -----
+    The returned indices are not guaranteed to be stable, i.e., the order of
+    the indices of equal values is not guaranteed to match their order in
+    `a`. This is the case regardless of the value of `sorted`.
+
+    In contrast to :obj:`numpy.top_k`, which returns empty arrays when `axis`
+    is empty, :obj:`dpnp.top_k` raises ``ValueError`` for an empty `axis` and
+    ``k > 0``, as it does for any `k` greater than the size of `axis`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([[1, 2, 3, 4], [4, 3, 2, 1]])
+    >>> res = np.top_k(a, 2)
+    >>> res.values
+    array([[4, 3],
+           [4, 3]])
+    >>> res.indices
+    array([[3, 2],
+           [0, 1]])
+
+    >>> values, indices = np.top_k(a, 2, axis=0)
+    >>> values
+    array([[4, 3, 3, 4],
+           [1, 2, 2, 1]])
+    >>> indices
+    array([[1, 1, 0, 0],
+           [0, 0, 1, 1]])
+
+    >>> values, indices = np.top_k(a, 2, axis=1, mode="smallest")
+    >>> values
+    array([[1, 2],
+           [1, 2]])
+    >>> indices
+    array([[0, 1],
+           [3, 2]])
+
+    >>> values, indices = np.top_k(np.array([1.0, 2.0, 3.0, np.nan]), 2)
+    >>> values
+    array([3., 2.])
+    >>> indices
+    array([2, 1])
+
+    """
+
+    if mode not in ("largest", "smallest"):
+        raise ValueError(
+            f'mode(="{mode}") must be either "largest" or "smallest".'
+        )
+
+    usm_a = dpnp.get_usm_ndarray(a)
+    if axis is None:
+        usm_a = dpt.reshape(usm_a, (-1,))
+        axis = 0
+    else:
+        axis = normalize_axis_index(axis, ndim=usm_a.ndim)
+
+    k = operator.index(k)
+    n = usm_a.shape[axis]
+    descending = mode == "largest"
+
+    if sorted and 1 < k <= n < 2 * k:
+        # for large k a full sort is cheaper than selecting and then sorting
+        usm_inds = dpt.argsort(usm_a, axis=axis, descending=descending)
+        usm_inds = usm_inds[(slice(None),) * axis + (slice(k),)]
+        usm_vals = dpt.take_along_axis(usm_a, usm_inds, axis=axis)
+    else:
+        usm_vals, usm_inds = dpt.top_k(usm_a, k, axis=axis, mode=mode)
+
+        # tensor.top_k returns the elements in an unspecified order
+        if sorted and k > 1:
+            sort_inds = dpt.argsort(usm_vals, axis=axis, descending=descending)
+            usm_vals = dpt.take_along_axis(usm_vals, sort_inds, axis=axis)
+            usm_inds = dpt.take_along_axis(usm_inds, sort_inds, axis=axis)
+
+    return TopKResult(
+        dpnp_array._create_from_usm_ndarray(usm_vals),
+        dpnp_array._create_from_usm_ndarray(usm_inds),
+    )
