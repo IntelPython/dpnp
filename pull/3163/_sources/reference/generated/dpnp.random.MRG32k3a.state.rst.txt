@@ -1,0 +1,14 @@
+
+:orphan:
+
+
+dpnp.random.MRG32k3a.state
+==========================
+
+.. currentmodule:: dpnp.random
+
+
+property
+
+
+.. autoproperty:: MRG32k3a.state

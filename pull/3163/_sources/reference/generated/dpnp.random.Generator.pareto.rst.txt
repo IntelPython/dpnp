@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.random.Generator.pareto
+============================
+
+.. currentmodule:: dpnp.random
+
+method
+
+.. automethod:: Generator.pareto

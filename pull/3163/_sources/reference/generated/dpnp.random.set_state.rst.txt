@@ -1,0 +1,10 @@
+﻿
+
+dpnp.random.set\_state
+======================
+
+.. currentmodule:: dpnp.random
+
+
+
+.. autofunction:: set_state
