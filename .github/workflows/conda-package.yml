@@ -667,7 +667,7 @@ jobs:
 
     defaults:
       run:
-        shell: ${{ matrix.os == 'windows-2022' && 'cmd /C CALL {0}' || 'bash -el {0}' }}
+        shell: bash -el {0}
 
     env:
       upload-conda-pkg-env: 'environments/upload_cleanup_conda_pkg.yml'
@@ -717,19 +717,18 @@ jobs:
           activate-environment: ${{ env.upload-env-name }}
 
       - name: Package version
-        shell: bash -el {0}
         run: |
           echo "PACKAGE_VERSION=$(basename ${{ env.package-name }}-*.conda | sed 's/^${{ env.package-name }}-\([^-]*\).*/\1/')" >> "$GITHUB_ENV"
 
       - name: Upload
         run: |
-          anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.package-name }}-*.conda
+          anaconda --token "${ANACONDA_TOKEN}" upload --user dppy --label dev ${{ env.package-name }}-*.conda
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
 
       - name: Upload wheels
         run: |
-          anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.package-name }}-*.whl --version ${{ env.PACKAGE_VERSION }}
+          anaconda --token "${ANACONDA_TOKEN}" upload --user dppy --label dev ${{ env.package-name }}-*.whl --version "${PACKAGE_VERSION}"
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
 
@@ -959,5 +958,7 @@ jobs:
       - name: Cleanup old packages
         run: |
           python scripts/cleanup-old-packages.py \
-          --verbose --force --token ${{ secrets.ANACONDA_TOKEN }} \
+          --verbose --force --token "${ANACONDA_TOKEN}" \
           --package dppy/${{ env.package-name }} --label dev
+        env:
+          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
