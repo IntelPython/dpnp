@@ -584,11 +584,18 @@ class TestIntegers:
         with pytest.warns(DeprecationWarning) as dp_warn:
             res = RandomState(0).random_integers(*args, size=2**12)
         assert str(dp_warn[0].message) == str(np_warn[0].message)
+        assert dp_warn[0].filename == __file__
         assert res.dtype == dpnp.int64
         # NumPy returns C longs, which are int32 on Windows
         assert_equal(
             numpy.unique(dpnp.asnumpy(res)), numpy.unique(exp), strict=False
         )
+
+    @pytest.mark.parametrize("args", [(5,), (-2, 3)])
+    def test_random_integers_module_warning(self, args):
+        with pytest.warns(DeprecationWarning, match="randint") as w:
+            dpnp.random.random_integers(*args)
+        assert w[0].filename == __file__
 
     def test_tomaxint(self):
         res = RandomState(0).tomaxint(2**12)
@@ -763,8 +770,12 @@ class TestLegacy:
 
     def test_not_positive_semidefinite_warns(self):
         cov = [[1.0, 2.0], [2.0, 1.0]]
-        with pytest.warns(RuntimeWarning, match="positive-semidefinite"):
+        with pytest.warns(RuntimeWarning, match="positive-semidefinite") as w:
             RandomState(0).multivariate_normal([0.0, 0.0], cov)
+        assert w[0].filename == __file__
+        with pytest.warns(RuntimeWarning, match="positive-semidefinite") as w:
+            dpnp.random.multivariate_normal([0.0, 0.0], cov)
+        assert w[0].filename == __file__
 
 
 class TestPermutations:

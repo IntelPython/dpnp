@@ -760,9 +760,10 @@ def multivariate_normal(
     :obj:`dpnp.random.RandomState.multivariate_normal`
 
     """
+    # pylint: disable=protected-access
     rs = _get_random_state(device, sycl_queue, (mean, cov))
-    return rs.multivariate_normal(
-        mean, cov, size, check_valid, tol, dtype=dtype, usm_type=usm_type
+    return rs._multivariate_normal(
+        mean, cov, size, check_valid, tol, dtype, usm_type, stacklevel=3
     )
 
 
@@ -1099,9 +1100,9 @@ def random_integers(
     :obj:`dpnp.random.RandomState.random_integers`
 
     """
+    # pylint: disable=protected-access
     rs = _get_random_state(device, sycl_queue, (low, high))
-    with_warning = rs.random_integers
-    return with_warning(low, high, size, usm_type=usm_type)
+    return rs._random_integers(low, high, size, usm_type, stacklevel=3)
 
 
 @_params_doc

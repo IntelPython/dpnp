@@ -175,6 +175,9 @@ class TestRandomIntegers(unittest.TestCase):
 
 
 @testing.fix_random()
+@pytest.mark.filterwarnings(
+    "ignore:This function is deprecated:DeprecationWarning"
+)
 class TestRandomIntegers2(unittest.TestCase):
 
     @_condition.repeat(3, 10)

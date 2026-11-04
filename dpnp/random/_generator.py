@@ -1808,7 +1808,30 @@ class Generator:
         :obj:`dpnp.float32`.
 
         """
+        return self._multivariate_normal(
+            mean,
+            cov,
+            size,
+            check_valid,
+            tol,
+            method,
+            dtype,
+            usm_type,
+            stacklevel=3,
+        )
 
+    def _multivariate_normal(
+        self,
+        mean,
+        cov,
+        size,
+        check_valid,
+        tol,
+        method,
+        dtype,
+        usm_type,
+        stacklevel,
+    ):
         if method not in {"eigh", "svd", "cholesky"}:
             raise ValueError(
                 "method must be one of {'eigh', 'svd', 'cholesky'}"
@@ -1864,7 +1887,7 @@ class Generator:
         if not psd:
             msg = "covariance is not symmetric positive-semidefinite."
             if check_valid == "warn":
-                warnings.warn(msg, RuntimeWarning, stacklevel=2)
+                warnings.warn(msg, RuntimeWarning, stacklevel=stacklevel)
             else:
                 raise ValueError(msg)
 

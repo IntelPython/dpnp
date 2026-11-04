@@ -361,12 +361,15 @@ class RandomState:
         Windows.
 
         """
+        return self._random_integers(low, high, size, usm_type, stacklevel=3)
+
+    def _random_integers(self, low, high, size, usm_type, stacklevel):
         if high is None:
             warnings.warn(
                 "This function is deprecated. Please call "
                 f"randint(1, {low} + 1) instead",
                 DeprecationWarning,
-                stacklevel=2,
+                stacklevel=stacklevel,
             )
             high = low
             low = 1
@@ -375,7 +378,7 @@ class RandomState:
                 "This function is deprecated. Please call "
                 f"randint({low}, {high} + 1) instead",
                 DeprecationWarning,
-                stacklevel=2,
+                stacklevel=stacklevel,
             )
         if dpnp.is_supported_array_type(high):
             high = high + 1
@@ -727,15 +730,23 @@ class RandomState:
         :meth:`dpnp.random.Generator.multivariate_normal`.
 
         """
-        return self._generator.multivariate_normal(
+        return self._multivariate_normal(
+            mean, cov, size, check_valid, tol, dtype, usm_type, stacklevel=3
+        )
+
+    def _multivariate_normal(
+        self, mean, cov, size, check_valid, tol, dtype, usm_type, stacklevel
+    ):
+        return self._generator._multivariate_normal(
             mean,
             cov,
             size,
             check_valid,
             tol,
-            method="svd",
-            dtype=dtype,
-            usm_type=usm_type,
+            "svd",
+            dtype,
+            usm_type,
+            stacklevel=stacklevel + 1,
         )
 
     def negative_binomial(self, n, p, size=None, *, usm_type="device"):

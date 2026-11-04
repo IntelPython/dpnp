@@ -855,7 +855,12 @@ def test_vecmat(device, shape1, shape2):
         pytest.param("randn", [20], {}),
         pytest.param("random", [], {"size": (35, 45)}),
         pytest.param(
-            "random_integers", [], {"low": -17, "high": 3, "size": (12, 16)}
+            "random_integers",
+            [],
+            {"low": -17, "high": 3, "size": (12, 16)},
+            marks=pytest.mark.filterwarnings(
+                "ignore:This function is deprecated:DeprecationWarning"
+            ),
         ),
         pytest.param("random_sample", [], {"size": (7, 7)}),
         pytest.param("ranf", [], {"size": (10, 7, 12)}),

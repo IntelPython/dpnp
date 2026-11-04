@@ -1252,8 +1252,10 @@ class TestDiscreteMethods:
         rng = default_rng(0)
         nan, inf = numpy.nan, numpy.inf
         int64_min = numpy.iinfo(numpy.int64).min
+        finfo = numpy.finfo(dpnp.default_float_type(sycl_queue=rng.sycl_queue))
+        fmax, tiny = float(finfo.max), float(finfo.tiny)
 
-        res = rng.poisson(dpnp.asarray([inf, 1e300, 2.0**63]), size=(8, 3))
+        res = rng.poisson(dpnp.asarray([inf, fmax, 2.0**63]), size=(8, 3))
         assert_array_equal(res, int64_min, strict=False)
         res = rng.binomial(5, dpnp.asarray([nan, -1.0, 2.0]), size=(8, 3))
         assert_array_equal(res, int64_min, strict=False)
@@ -1282,7 +1284,7 @@ class TestDiscreteMethods:
         rng.negative_binomial(shape, 0.5)
         rng.noncentral_chisquare(shape, dpnp.asarray([1e-30] * 4))
 
-        p = dpnp.asarray([nan, -0.0, -1e-300, 0.0, -inf])
+        p = dpnp.asarray([nan, -0.0, -tiny, 0.0, -inf])
         res = rng.geometric(p, size=(8, 5))
         assert_array_equal(res, int64_min, strict=False)
 
@@ -1571,8 +1573,11 @@ class TestChecks:
         rng = default_rng(0)
         cov = [[1.0, 2.0], [2.0, 1.0]]
         for method in ("svd", "eigh"):
-            with pytest.warns(RuntimeWarning, match="positive-semidefinite"):
+            with pytest.warns(
+                RuntimeWarning, match="positive-semidefinite"
+            ) as w:
                 rng.multivariate_normal([0.0, 0.0], cov, method=method)
+            assert w[0].filename == __file__
             rng.multivariate_normal(
                 [0.0, 0.0], cov, check_valid="ignore", method=method
             )
