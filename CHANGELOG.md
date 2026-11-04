@@ -14,6 +14,7 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Added `dpnp.top_k` to return the `k` largest or smallest elements and their indices along an axis, with a `sorted` keyword to return them in sorted order [#3133](https://github.com/IntelPython/dpnp/pull/3133)
 * Added implementation of `dpnp.minmax`, computing the minimum and the maximum of an array in a single pass by a new fused reduction kernel [#3135](https://github.com/IntelPython/dpnp/pull/3135)
 * Added implementation of `dpnp.scipy.linalg.cho_factor` and `dpnp.scipy.linalg.cho_solve` (SciPy-compatible) [#3116](https://github.com/IntelPython/dpnp/pull/3116)
+* Added `dpnp.argpartition` and `dpnp.ndarray.argpartition` to return the indices that would partition an array [#3138](https://github.com/IntelPython/dpnp/pull/3138)
 
 ### Changed
 
@@ -26,6 +27,7 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Reduced the overhead of `dpnp.ndarray.flags` and `dpnp.tensor.usm_ndarray.flags` [#3168](https://github.com/IntelPython/dpnp/pull/3168)
 * Changed `dpnp.linalg.LinAlgError` to derive from `numpy.linalg.LinAlgError`, so `except numpy.linalg.LinAlgError` also catches errors raised by dpnp linear algebra functions [#3184](https://github.com/IntelPython/dpnp/pull/3184)
 * Bumped the minimum required `dpctl` version to `0.24.0` [#3169](https://github.com/IntelPython/dpnp/pull/3169)
+* Changed `dpnp.partition`, `dpnp.median` and `dpnp.nanmedian` to use a radix select instead of a full sort for all but complex data types [#3138](https://github.com/IntelPython/dpnp/pull/3138)
 
 ### Deprecated
 
@@ -39,6 +41,7 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Removed the unused `FourZeroOffsets_Indexer`, `FixedDimStridedIndexer` and `ThreeOffsets_FixedDimStridedIndexer` from the libtensor header `utils/offset_utils.hpp` [#3131](https://github.com/IntelPython/dpnp/pull/3131)
 * Dropped support for Python 3.10 [#3173](https://github.com/IntelPython/dpnp/pull/3173)
 * Removed the `USE_GROUP_LOAD_STORE` macro from the libtensor header `utils/sycl_utils.hpp`, so `sub_group_load` and `sub_group_store` always use the `sycl_ext_oneapi_group_load_store` extension; the `sycl::sub_group` member load/store fallback it selected does not compile with DPC++ 2026.0, the minimum supported compiler [#3174](https://github.com/IntelPython/dpnp/pull/3174)
+* Removed the legacy implementation of `dpnp.partition` from the backend [#3138](https://github.com/IntelPython/dpnp/pull/3138)
 
 ### Fixed
 
