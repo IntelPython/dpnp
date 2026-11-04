@@ -1919,7 +1919,7 @@ class TestLinAlgebra:
 )
 @pytest.mark.parametrize("usm_type", list_of_usm_types)
 def test_generator(func, args, kwargs, usm_type):
-    for rng in (dpnp.random.default_rng(1),):
+    for rng in (dpnp.random.default_rng(1), dpnp.random.RandomState(1)):
         meth = getattr(rng, func, None)
         if meth is None:  # a Generator method RandomState doesn't have
             continue
@@ -1971,6 +1971,7 @@ def test_generator_permutations(usm_type):
     assert rng.permutation(x, axis=1).usm_type == usm_type
     assert rng.permuted(x).usm_type == usm_type
     assert rng.permuted(x, axis=1).usm_type == usm_type
+    assert dpnp.random.RandomState(1).permutation(x).usm_type == usm_type
 
     rng.shuffle(x)
     assert x.usm_type == usm_type
