@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Added support for boolean input in `dpnp.positive` and the `+` operator of `dpnp.ndarray` [#3128](https://github.com/IntelPython/dpnp/pull/3128)
 * Added `dpnp.top_k` to return the `k` largest or smallest elements and their indices along an axis, with a `sorted` keyword to return them in sorted order [#3133](https://github.com/IntelPython/dpnp/pull/3133)
+* Added `dpnp.argpartition` and `dpnp.ndarray.argpartition` to return the indices that would partition an array [#3138](https://github.com/IntelPython/dpnp/pull/3138)
 
 ### Changed
 
@@ -18,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Merged the `ufunc` and `indexing` extensions into `dpnp.libtensor._tensor_elementwise_impl` and `dpnp.libtensor._tensor_impl`, while `statistics` and `window` extensions became part of libtensor [#3131](https://github.com/IntelPython/dpnp/pull/3131)
 * Moved `blas`, `fft`, `lapack`, `sparse` and `vm` extensions into `dpnp/libtensor/extensions` [#3131](https://github.com/IntelPython/dpnp/pull/3131)
 * Moved the libtensor headers shipped with dpnp from `dpnp/tensor/libtensor/include` to `dpnp/libtensor/include`, and changed `dpnp.get_include` to return that directory [#3131](https://github.com/IntelPython/dpnp/pull/3131)
+* Changed `dpnp.partition`, `dpnp.median` and `dpnp.nanmedian` to use a radix select instead of a full sort for all but complex data types [#3138](https://github.com/IntelPython/dpnp/pull/3138)
 
 ### Deprecated
 
@@ -29,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 * Removed the unused `FourZeroOffsets_Indexer`, `FixedDimStridedIndexer` and `ThreeOffsets_FixedDimStridedIndexer` from the libtensor header `utils/offset_utils.hpp` [#3131](https://github.com/IntelPython/dpnp/pull/3131)
+* Removed the legacy implementation of `dpnp.partition` from the backend [#3138](https://github.com/IntelPython/dpnp/pull/3138)
 
 ### Fixed
 
