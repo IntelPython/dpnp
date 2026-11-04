@@ -6,6 +6,7 @@
 - `dpnp_algo/dpnp_elementwise_common.py`: ufunc wrapper classes (`DPNPUnaryFunc`, `DPNPBinaryFunc`, two-output and specialised variants)
 - `dpnp_utils/`: shared helpers (`get_usm_allocations`, `map_dtype_to_device`, reduction wrappers)
 - `linalg/`, `fft/`, `random/`, `scipy/`, `lib/`: subpackages, each exporting through its own `__init__.py`
+- `random/`: `_bit_generator.py` (`BitGenerator`, `Philox4x3210`; `SeedSequence` is NumPy's) and `_generator.py` (`Generator`, which implements every distribution). The kernels are in `dpnp.libtensor._rng_impl`.
 - Legacy, don't extend: the Cython `dpnp_algo` path and `dpnp_backend_c` (still used by `dpnp.partition` and `dpnp.random`), and the NumPy fallback `call_origin`. New kernels go into `dpnp/libtensor` (see `dpnp/libtensor/AGENTS.md`).
 
 ## Adding a Public Function
@@ -20,6 +21,7 @@
 - Extension calls are ordered with `_manager = dpctl.utils.SequentialOrderManager[exec_q]`: pass `depends=_manager.submitted_events`, then `_manager.add_event_pair(ht_ev, ev)`. Don't add blocking waits.
 - Use `dpnp.default_float_type(...)` or `map_dtype_to_device(...)` for the default float type.
 - Deprecated ufuncs use `DPNPDeprecatedUnaryFunc(..., deprecated_msg=...)`.
+- A `dpnp.random` distribution is a `Generator` method: it calls `self._check_queues(...)` on its array parameters (raises `ExecutionPlacementError`), checks host parameters as NumPy does, and draws through `_cont` or `_float_sample` into `BitGenerator._fill`. Parameters on the device are not checked, as the check waits for the device. Temporaries take the output's `usm_type`.
 - Unsupported NumPy keywords raise `NotImplementedError` (`dpnp.check_limitations`) and are listed under `Limitations` in the docstring.
 - The Array API spec version is set in three places that change together: `__array_api_version__` in `dpnp/tensor/_array_api.py`, `ARRAY_API_TESTS_VERSION` in `.github/workflows/conda-package.yml` and `doc/reference/array_api.rst` (plus the version test in `dpnp/tests/test_ndarray.py`). Inspection utilities come from `__array_namespace_info__` in `dpnp_array_api_info.py`.
 - `dpnp.tensor` replaces `dpctl.tensor`, which no longer exists here; `SyclQueue`, `SyclDevice`, `dpctl.memory` and `SequentialOrderManager` still come from `dpctl`.
