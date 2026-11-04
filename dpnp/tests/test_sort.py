@@ -3,6 +3,8 @@ import pytest
 from numpy.testing import assert_array_equal, assert_equal, assert_raises
 
 import dpnp
+import dpnp.libtensor._tensor_sorting_impl as sorting_ext
+import dpnp.tensor as dpt
 from dpnp.exceptions import AxisError
 
 from .helper import (
@@ -418,6 +420,22 @@ class TestPartitionSelect:
         p = dpnp.partition(ia, 1234)
         idx = dpnp.argpartition(ia, 1234)
         assert_array_equal(p, dpnp.take_along_axis(ia, idx, axis=-1))
+
+    # the extension validates an empty batch like a non-empty one
+    @pytest.mark.parametrize("fn", ["_partition", "_argpartition"])
+    @pytest.mark.parametrize("shape", [(0, 5), (3, 0)])
+    def test_ext_empty_kth_error(self, fn, shape):
+        src = dpt.empty(shape, dtype="i4")
+        dst = dpt.empty(shape, dtype="i4" if fn == "_partition" else "i8")
+        with pytest.raises(ValueError, match="out of bounds"):
+            getattr(sorting_ext, fn)(src, 5, dst, sycl_queue=src.sycl_queue)
+
+    @pytest.mark.parametrize("fn", ["_partition", "_argpartition"])
+    def test_ext_empty_dtype_error(self, fn):
+        src = dpt.empty((0, 5), dtype="c8")
+        dst = dpt.empty((0, 5), dtype="c8" if fn == "_partition" else "i8")
+        with pytest.raises(ValueError, match="No partition implementation"):
+            getattr(sorting_ext, fn)(src, 1, dst, sycl_queue=src.sycl_queue)
 
 
 class TestArgpartition:

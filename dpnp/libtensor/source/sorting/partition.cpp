@@ -151,9 +151,6 @@ std::pair<sycl::event, sycl::event>
     check_queue({&src, &dst}, names, exec_q);
     check_writable({&dst}, names);
 
-    if (n_iters == 0 || n_values == 0) {
-        return {sycl::event(), sycl::event()};
-    }
     if (kth >= n_values) {
         throw py::value_error("`kth` is out of bounds for the last axis");
     }
@@ -170,6 +167,10 @@ std::pair<sycl::event, sycl::event>
     if (fn == nullptr) {
         throw py::value_error("No partition implementation is available for "
                               "the data type of the input array");
+    }
+
+    if (n_iters == 0) {
+        return {sycl::event(), sycl::event()};
     }
 
     sycl::event comp_ev = fn(exec_q, n_iters, n_values, kth, src.get_data(),

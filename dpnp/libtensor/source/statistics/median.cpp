@@ -144,7 +144,7 @@ std::pair<sycl::event, sycl::event>
                 static_cast<int>(td_ns::typenum_t::UINT32)) {
             throw py::value_error("`all_nan` must be a single uint32 element");
         }
-        check_no_overlap(&dst, &flag, names);
+        check_no_overlap({&src, &dst}, {&flag}, names);
         all_nan_p = reinterpret_cast<std::uint32_t *>(flag.get_data());
     }
     else {
@@ -152,10 +152,7 @@ std::pair<sycl::event, sycl::event>
         check_writable({&dst}, names);
     }
 
-    if (n_iters == 0) {
-        return {sycl::event(), sycl::event()};
-    }
-    if (n_values == 0) {
+    if (n_iters != 0 && n_values == 0) {
         throw py::value_error("The median of an empty axis is undefined");
     }
 
@@ -179,6 +176,17 @@ std::pair<sycl::event, sycl::event>
         median_deps.push_back(
             exec_q.fill<std::uint32_t>(all_nan_p, 0, 1, depends));
     }
+    if (n_iters == 0) {
+        // no row has NaNs only
+        if (all_nan_p == nullptr) {
+            return {sycl::event(), sycl::event()};
+        }
+        sycl::event fill_ev = median_deps.back();
+        sycl::event ht_ev =
+            dpnp::utils::keep_args_alive(exec_q, {all_nan.value()}, {fill_ev});
+        return std::make_pair(ht_ev, fill_ev);
+    }
+
     sycl::event comp_ev =
         fn(exec_q, n_iters, n_values, ignore_nan, src.get_data(),
            dst.get_data(), all_nan_p, median_deps);
