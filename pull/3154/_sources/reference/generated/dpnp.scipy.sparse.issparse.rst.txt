@@ -1,0 +1,10 @@
+﻿
+
+dpnp.scipy.sparse.issparse
+==========================
+
+.. currentmodule:: dpnp.scipy.sparse
+
+
+
+.. autofunction:: issparse
