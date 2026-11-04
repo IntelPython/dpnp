@@ -405,11 +405,9 @@ def get_dpnp_descriptor(
         if ext_obj.strides != shape_offsets or ext_obj_offset != 0:
             ext_obj = dpnp.array(ext_obj, order="C")
 
-    # while dpnp functions are based on DPNP_QUEUE
-    # we need to create a copy on device associated with DPNP_QUEUE
-    # if function get implementation for different queue
-    # then this behavior can be disabled with setting
-    # "copy_when_nondefault_queue"
+    # legacy backend functions ran on the default SYCL queue, so the input
+    # is copied to that queue; a function implemented for any queue can
+    # disable this by setting "copy_when_nondefault_queue"
     queue = getattr(ext_obj, "sycl_queue", None)
     if queue is not None and copy_when_nondefault_queue:
         default_queue = dpctl.SyclQueue()

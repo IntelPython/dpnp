@@ -42,7 +42,6 @@ option(
     "Build dpnp tensor pybind11 offloading extensions with coverage instrumentation"
     OFF
 )
-option(DPNP_BACKEND_TESTS "Enable building of DPNP backend test suite" OFF)
 option(
     DPNP_WITH_REDIST
     "Build DPNP assuming DPC++ redistributable is installed into Python prefix"
