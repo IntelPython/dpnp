@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 * Fixed `flags[key]` of `dpnp.ndarray` and `dpnp.tensor.usm_ndarray` to raise `KeyError` for an unknown key [#3141](https://github.com/IntelPython/dpnp/pull/3141)
+* Released the GIL around the oneMKL VM calls in the VM extension, which deadlocked on an in-order queue of a CPU device [#3156](https://github.com/IntelPython/dpnp/pull/3156)
 
 ### Security
 
