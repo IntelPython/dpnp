@@ -37,7 +37,6 @@ This module contains different helpers and utilities
 """
 
 import dpctl
-import numpy
 
 import dpnp
 import dpnp.config as config
@@ -45,9 +44,6 @@ import dpnp.dpnp_container as dpnp_container
 from dpnp.dpnp_array import dpnp_array
 from dpnp.tensor import get_coerced_usm_type, get_execution_queue
 
-cimport cpython
-cimport cython
-cimport numpy
 from libcpp cimport bool as cpp_bool
 
 from dpnp.dpnp_algo.dpnp_algo cimport (
@@ -56,15 +52,12 @@ from dpnp.dpnp_algo.dpnp_algo cimport (
 
 # Python import functions
 __all__ = [
-    "call_origin",
     "checker_throw_type_error",
     "checker_throw_value_error",
     "convert_item",
     "dpnp_descriptor",
     "get_usm_allocations",
     "map_dtype_to_device",
-    "_object_to_tuple",
-    "unwrap_array",
     "use_origin_backend"
 ]
 
@@ -98,159 +91,6 @@ def convert_list_args(input_list):
         result_list.append(item_converted)
 
     return result_list
-
-
-def copy_from_origin(dst, src):
-    """Copy origin result to output result."""
-    if hasattr(dst, "__sycl_usm_array_interface__"):
-        if src.size:
-            dst_dpt = unwrap_array(dst)
-            dst_dpt[...] = src
-    else:
-        for i in range(dst.size):
-            dst.flat[i] = src.item(i)
-
-
-def call_origin(function, *args, **kwargs):
-    """
-    Call fallback function for unsupported cases
-    """
-
-    allow_fallback = kwargs.pop("allow_fallback", False)
-
-    if (
-        not allow_fallback
-        and config.__DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__ == 1
-    ):
-        raise NotImplementedError(
-            f"Requested function={function.__name__} "
-            f"with args={args} and kwargs={kwargs} "
-            "isn't currently supported and would fall "
-            "back on NumPy implementation. "
-            "Define environment variable "
-            "`DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK` "
-            "to `0` if the fall back is required to be "
-            "supported without raising an exception."
-        )
-
-    dpnp_inplace = kwargs.pop("dpnp_inplace", False)
-    sycl_queue = kwargs.pop("sycl_queue", None)
-    # print(f"DPNP call_origin(): Fallback called. "
-    #       f"\n\t function={function}, "
-    #       f"\n\t args={args}, "
-    #       f"\n\t kwargs={kwargs}, "
-    #       f"\n\t dpnp_inplace={dpnp_inplace}")
-
-    kwargs_out = kwargs.get("out", None)
-    alloc_queues = [sycl_queue] if sycl_queue else []
-    if (kwargs_out is not None):
-        if isinstance(kwargs_out, numpy.ndarray):
-            kwargs["out"] = kwargs_out
-        else:
-            if hasattr(kwargs_out, "sycl_queue"):
-                alloc_queues.append(kwargs_out.sycl_queue)
-            kwargs["out"] = dpnp.asnumpy(kwargs_out)
-
-    args_new_list = []
-    for arg in args:
-        if hasattr(arg, "sycl_queue"):
-            alloc_queues.append(arg.sycl_queue)
-        argx = convert_item(arg)
-        args_new_list.append(argx)
-    args_new = tuple(args_new_list)
-
-    kwargs_new = {}
-    for key, kwarg in kwargs.items():
-        if hasattr(kwarg, "sycl_queue"):
-            alloc_queues.append(kwarg.sycl_queue)
-        kwargx = convert_item(kwarg)
-        kwargs_new[key] = kwargx
-
-    exec_q = get_execution_queue(alloc_queues)
-    if exec_q is None:
-        exec_q = dpnp.get_normalized_queue_device(
-            sycl_queue=sycl_queue
-        )
-    # print(f"DPNP call_origin(): backend called. "
-    #       f"\n\t function={function}, "
-    #       f"\n\t args_new={args_new}, "
-    #       f"\n\t kwargs_new={kwargs_new}, "
-    #       f"\n\t dpnp_inplace={dpnp_inplace}")
-    # TODO need to put array memory into NumPy call
-    result_origin = function(*args_new, **kwargs_new)
-    # print(f"DPNP call_origin(): result from backend. "
-    #       f"\n\t result_origin={result_origin}, "
-    #       f"\n\t args_new={args_new}, "
-    #       f"\n\t kwargs_new={kwargs_new}, "
-    #       f"\n\t dpnp_inplace={dpnp_inplace}")
-    result = result_origin
-    if dpnp_inplace:
-        # enough to modify only first argument in place
-        if args and args_new:
-            arg, arg_new = args[0], args_new[0]
-            if isinstance(arg_new, numpy.ndarray):
-                copy_from_origin(arg, arg_new)
-            elif isinstance(arg_new, list):
-                for i, val in enumerate(arg_new):
-                    arg[i] = val
-
-    elif isinstance(result, numpy.ndarray):
-        if kwargs_out is None:
-            # use dtype from input arguments if present
-            # or from the result otherwise
-            result_dtype = (
-                kwargs.get("dtype", None) or result_origin.dtype
-            )
-
-            if exec_q is not None:
-                result_dtype = map_dtype_to_device(
-                    result_origin.dtype, exec_q.sycl_device
-                )
-
-            result = dpnp_container.empty(
-                result_origin.shape,
-                dtype=result_dtype,
-                sycl_queue=exec_q,
-            )
-        else:
-            result = kwargs_out
-
-        copy_from_origin(result, result_origin)
-
-    elif isinstance(result, tuple):
-        # convert tuple(fallback_array) to tuple(result_array)
-        result_list = []
-        for res_origin in result:
-            res = res_origin
-            if isinstance(res_origin, numpy.ndarray):
-                if exec_q is not None:
-                    result_dtype = map_dtype_to_device(
-                        res_origin.dtype,
-                        exec_q.sycl_device,
-                    )
-                else:
-                    result_dtype = res_origin.d_type
-                res = dpnp_container.empty(
-                    res_origin.shape,
-                    dtype=result_dtype,
-                    sycl_queue=exec_q,
-                )
-                copy_from_origin(res, res_origin)
-            result_list.append(res)
-
-        result = tuple(result_list)
-
-    return result
-
-
-def unwrap_array(x1):
-    """
-    Get array from input object.
-    """
-    if isinstance(x1, dpnp_array):
-        return x1.get_array()
-
-    return x1
 
 
 def _get_coerced_usm_type(objects):
@@ -428,53 +268,6 @@ cdef dpnp_descriptor create_output_descriptor(
     return result_desc
 
 
-@cython.profile(False)
-cpdef inline tuple _object_to_tuple(object obj):
-    """ Converts Python object into tuple
-
-    """
-
-    if obj is None:
-        return ()
-
-    # dpnp.ndarray unconditionally succeeds in
-    # PySequence_Check as it implements __getitem__
-    if (
-        cpython.PySequence_Check(obj)
-        and not dpnp.is_supported_array_type(obj)
-    ):
-        if isinstance(obj, numpy.ndarray):
-            obj = numpy.atleast_1d(obj)
-
-        nd = len(obj)
-        shape = []
-
-        for i in range(0, nd):
-            if cpython.PyBool_Check(obj[i]):
-                raise TypeError(
-                    "DPNP object_to_tuple(): "
-                    "no item in size can be bool"
-                )
-
-            # Assumes each item is castable to Py_ssize_t,
-            # otherwise TypeError will be raised
-            shape.append(<Py_ssize_t> obj[i])
-        return tuple(shape)
-
-    if dpnp.isscalar(obj):
-        if cpython.PyBool_Check(obj):
-            raise TypeError(
-                "DPNP object_to_tuple(): "
-                "'obj' can't be bool"
-            )
-        return (obj, )
-
-    raise ValueError(
-        "DPNP object_to_tuple(): 'obj' should be "
-        "'None', collections.abc.Sequence, or 'int'"
-    )
-
-
 cpdef cpp_bool use_origin_backend(
     input1=None, size_t compute_size=0
 ):
@@ -497,43 +290,6 @@ cpdef cpp_bool use_origin_backend(
         return True
 
     return False
-
-
-cdef tuple get_common_usm_allocation(
-    dpnp_descriptor x1, dpnp_descriptor x2
-):
-    """
-    Get common USM allocation in the form of
-    (sycl_device, usm_type, sycl_queue).
-    """
-    array1_obj = x1.get_array()
-    array2_obj = x2.get_array()
-
-    common_usm_type = get_coerced_usm_type(
-        (array1_obj.usm_type, array2_obj.usm_type)
-    )
-    if common_usm_type is None:
-        raise ValueError(
-            "could not recognize common USM type "
-            f"for inputs of USM types {array1_obj.usm_type} "
-            f"and {array2_obj.usm_type}"
-        )
-
-    common_sycl_queue = get_execution_queue(
-        (array1_obj.sycl_queue, array2_obj.sycl_queue)
-    )
-    if common_sycl_queue is None:
-        raise ValueError(
-            "could not recognize common SYCL queue "
-            f"for inputs in SYCL queues {array1_obj.sycl_queue} "
-            f"and {array2_obj.sycl_queue}"
-        )
-
-    return (
-        common_sycl_queue.sycl_device,
-        common_usm_type,
-        common_sycl_queue,
-    )
 
 
 cdef class dpnp_descriptor:
