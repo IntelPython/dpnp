@@ -9,6 +9,7 @@ from numpy.testing import (
 )
 
 import dpnp
+import dpnp.libtensor._statistics_impl as statistics_ext
 import dpnp.tensor as dpt
 
 from .helper import (
@@ -1105,6 +1106,23 @@ class TestMedianSelect:
         out = xp.empty(out_shape)
         with pytest.raises(ValueError):
             xp.median(a, axis=axis, out=out)
+
+    def test_ext_empty_batch_clears_all_nan(self):
+        src = dpt.empty((0, 5), dtype="f4")
+        dst = dpt.empty((0,), dtype="f4")
+        all_nan = dpt.full(1, 7, dtype="u4")
+        ht_ev, ev = statistics_ext._median(
+            src, True, dst, sycl_queue=src.sycl_queue, all_nan=all_nan
+        )
+        ht_ev.wait()
+        ev.wait()
+        assert dpt.asnumpy(all_nan)[0] == 0
+
+    def test_ext_empty_batch_dtype_error(self):
+        src = dpt.empty((0, 5), dtype="c8")
+        dst = dpt.empty((0,), dtype="c8")
+        with pytest.raises(ValueError, match="No median implementation"):
+            statistics_ext._median(src, False, dst, sycl_queue=src.sycl_queue)
 
 
 class TestPtp:
