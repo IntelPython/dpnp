@@ -21,6 +21,7 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Added the multivariate distributions, `permutation`, `shuffle`, `permuted`, `choice` and `bytes` to `dpnp.random.Generator` [#3160](https://github.com/IntelPython/dpnp/pull/3160)
 * Added the `dpnp.random.PCG64DXSM` bit generator, which matches `numpy.random.PCG64DXSM` for raw values, `random`, `uniform` and `bytes` [#3161](https://github.com/IntelPython/dpnp/pull/3161)
 * Added the `dpnp.random.MRG32k3a` bit generator [#3161](https://github.com/IntelPython/dpnp/pull/3161)
+* Added `dpnp.random.get_state`, `dpnp.random.set_state`, `dpnp.random.get_bit_generator` and `dpnp.random.set_bit_generator`, and support for a bit generator as the seed of `dpnp.random.RandomState` [#3162](https://github.com/IntelPython/dpnp/pull/3162)
 
 ### Changed
 
@@ -35,6 +36,7 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Bumped the minimum required `dpctl` version to `0.24.0` [#3169](https://github.com/IntelPython/dpnp/pull/3169)
 * Changed `dpnp.median`, `dpnp.nanmedian` and `dpnp.partition` with a single `kth` to use a radix select instead of a full sort for all but complex data types and, on a GPU, `dpnp.partition` of rows of 65 to 128 elements of 8-byte integers [#3138](https://github.com/IntelPython/dpnp/pull/3138)
 * Improved performance of `dpnp.top_k` and `dpnp.tensor.top_k` on a GPU for batches of rows of 65536 to about 10^6 elements that occupy it with a work-group per row [#3138](https://github.com/IntelPython/dpnp/pull/3138)
+* Reimplemented `dpnp.random.RandomState` and the `dpnp.random` functions on device kernels, drawing on the queue of the generator. `device`, `usm_type` and `sycl_queue` are now keyword-only, `randint(dtype=int)` returns `int64` and `shuffle` requires a `dpnp.ndarray` [#3162](https://github.com/IntelPython/dpnp/pull/3162)
 
 ### Deprecated
 
