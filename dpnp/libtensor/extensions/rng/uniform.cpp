@@ -34,6 +34,11 @@ namespace dpnp::extensions::rng
 {
 static sample_dispatch_table_t uniform_dispatch_table;
 static sample_dispatch_table_t random_raw_dispatch_table;
+static sample_dispatch_table_t laplace_dispatch_table;
+static sample_dispatch_table_t gumbel_dispatch_table;
+static sample_dispatch_table_t logistic_dispatch_table;
+static sample_dispatch_table_t triangular_dispatch_table;
+static sample_dispatch_table_t vonmises_dispatch_table;
 
 void init_uniform(py::module_ m)
 {
@@ -46,5 +51,35 @@ void init_uniform(py::module_ m)
         "Fill the result with the raw 64-bit output of the engine, or with "
         "its 32-bit halves, high half first",
         random_raw_dispatch_table);
+
+    def_sampler<rng_ns::LaplaceSampler, RealTypes>(
+        m, "_laplace",
+        "Fill the result with Laplace samples of location loc and scale "
+        "scale",
+        laplace_dispatch_table);
+
+    def_sampler<rng_ns::GumbelSampler, RealTypes>(
+        m, "_gumbel",
+        "Fill the result with Gumbel samples of location loc and scale "
+        "scale",
+        gumbel_dispatch_table);
+
+    def_sampler<rng_ns::LogisticSampler, RealTypes>(
+        m, "_logistic",
+        "Fill the result with logistic samples of location loc and scale "
+        "scale",
+        logistic_dispatch_table);
+
+    def_sampler<rng_ns::TriangularSampler, RealTypes>(
+        m, "_triangular",
+        "Fill the result with triangular samples on [left, right] with mode "
+        "mode",
+        triangular_dispatch_table);
+
+    def_sampler<rng_ns::VonmisesSampler, RealTypes>(
+        m, "_vonmises",
+        "Fill the result with von Mises samples of mode mu and "
+        "concentration kappa",
+        vonmises_dispatch_table);
 }
 } // namespace dpnp::extensions::rng

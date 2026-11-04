@@ -133,4 +133,388 @@ public:
         return loc_[i] + scale_[i] * normal_(bg);
     }
 };
+
+// Log-normal: exp of a normal with mean `mean` and standard deviation `sigma`
+template <typename T>
+class LognormalSampler : public SamplerBase<T, T, T>
+{
+private:
+    Param<T> mean_;
+    Param<T> sigma_;
+    StandardNormal<T> normal_{};
+
+public:
+    // one normal, half a pair of uniform values, per element
+    static constexpr unsigned words_per_item = uniform_words<T>;
+
+    LognormalSampler(const Param<T> &mean, const Param<T> &sigma)
+        : mean_(mean), sigma_(sigma)
+    {
+    }
+
+    template <typename BitGenT>
+    T operator()(BitGenT &bg, const std::size_t i)
+    {
+        return sycl::exp(mean_[i] + sigma_[i] * normal_(bg));
+    }
+};
+
+template <typename T>
+class StandardCauchySampler : public SamplerBase<T>
+{
+private:
+    StandardNormal<T> normal_{};
+
+public:
+    // two normals per element
+    static constexpr unsigned words_per_item = 2 * uniform_words<T>;
+
+    template <typename BitGenT>
+    T operator()(BitGenT &bg, const std::size_t)
+    {
+        return standard_cauchy<T>(bg, normal_);
+    }
+};
+
+// Wald (inverse Gaussian) with mean `mean` and shape `scale`
+template <typename T>
+class WaldSampler : public SamplerBase<T, T, T>
+{
+private:
+    Param<T> mean_;
+    Param<T> scale_;
+    StandardNormal<T> normal_{};
+
+public:
+    // one normal and one uniform value per element
+    static constexpr unsigned words_per_item = 2 * uniform_words<T>;
+
+    WaldSampler(const Param<T> &mean, const Param<T> &scale)
+        : mean_(mean), scale_(scale)
+    {
+    }
+
+    template <typename BitGenT>
+    T operator()(BitGenT &bg, const std::size_t i)
+    {
+        return wald<T>(bg, normal_, mean_[i], scale_[i]);
+    }
+};
+
+// Exponential with scale `scale`
+template <typename T>
+class ExponentialSampler : public SamplerBase<T, T>
+{
+private:
+    Param<T> scale_;
+
+public:
+    // one uniform value per element
+    static constexpr unsigned words_per_item = uniform_words<T>;
+
+    explicit ExponentialSampler(const Param<T> &scale) : scale_(scale) {}
+
+    template <typename BitGenT>
+    T operator()(BitGenT &bg, const std::size_t i)
+    {
+        return scale_[i] * standard_exponential<T>(bg);
+    }
+};
+
+// Pareto II (Lomax) with shape `a`
+template <typename T>
+class ParetoSampler : public SamplerBase<T, T>
+{
+private:
+    Param<T> a_;
+
+public:
+    // one uniform value per element
+    static constexpr unsigned words_per_item = uniform_words<T>;
+
+    explicit ParetoSampler(const Param<T> &a) : a_(a) {}
+
+    template <typename BitGenT>
+    T operator()(BitGenT &bg, const std::size_t i)
+    {
+        return sycl::expm1(standard_exponential<T>(bg) / a_[i]);
+    }
+};
+
+// Weibull with shape `a`
+template <typename T>
+class WeibullSampler : public SamplerBase<T, T>
+{
+private:
+    Param<T> a_;
+
+public:
+    // one uniform value per element
+    static constexpr unsigned words_per_item = uniform_words<T>;
+
+    explicit WeibullSampler(const Param<T> &a) : a_(a) {}
+
+    template <typename BitGenT>
+    T operator()(BitGenT &bg, const std::size_t i)
+    {
+        const T a = a_[i];
+        const T E = standard_exponential<T>(bg);
+        if (a == T(0)) {
+            return T(0);
+        }
+        return sycl::pow(E, T(1) / a);
+    }
+};
+
+// Power distribution with exponent `a` - 1, on [0, 1]
+template <typename T>
+class PowerSampler : public SamplerBase<T, T>
+{
+private:
+    Param<T> a_;
+
+public:
+    // one uniform value per element
+    static constexpr unsigned words_per_item = uniform_words<T>;
+
+    explicit PowerSampler(const Param<T> &a) : a_(a) {}
+
+    template <typename BitGenT>
+    T operator()(BitGenT &bg, const std::size_t i)
+    {
+        const T E = standard_exponential<T>(bg);
+        return sycl::pow(-sycl::expm1(-E), T(1) / a_[i]);
+    }
+};
+
+// Rayleigh with mode `scale`
+template <typename T>
+class RayleighSampler : public SamplerBase<T, T>
+{
+private:
+    Param<T> scale_;
+
+public:
+    // one uniform value per element
+    static constexpr unsigned words_per_item = uniform_words<T>;
+
+    explicit RayleighSampler(const Param<T> &scale) : scale_(scale) {}
+
+    template <typename BitGenT>
+    T operator()(BitGenT &bg, const std::size_t i)
+    {
+        return scale_[i] * sycl::sqrt(T(2) * standard_exponential<T>(bg));
+    }
+};
+
+// Gamma with shape `shape` and scale `scale`
+template <typename T>
+class GammaSampler : public SamplerBase<T, T, T>
+{
+private:
+    Param<T> shape_;
+    Param<T> scale_;
+    StandardNormal<T> normal_{};
+
+public:
+    GammaSampler(const Param<T> &shape, const Param<T> &scale)
+        : shape_(shape), scale_(scale)
+    {
+    }
+
+    template <typename BitGenT>
+    T operator()(BitGenT &bg, const std::size_t i)
+    {
+        return scale_[i] * standard_gamma<T>(bg, normal_, shape_[i]);
+    }
+};
+
+// Beta with shape parameters `a` and `b`
+template <typename T>
+class BetaSampler : public SamplerBase<T, T, T>
+{
+private:
+    Param<T> a_;
+    Param<T> b_;
+    StandardNormal<T> normal_{};
+
+public:
+    BetaSampler(const Param<T> &a, const Param<T> &b) : a_(a), b_(b) {}
+
+    template <typename BitGenT>
+    T operator()(BitGenT &bg, const std::size_t i)
+    {
+        return beta<T>(bg, normal_, a_[i], b_[i]);
+    }
+};
+
+// Chi-square with `df` degrees of freedom
+template <typename T>
+class ChisquareSampler : public SamplerBase<T, T>
+{
+private:
+    Param<T> df_;
+    StandardNormal<T> normal_{};
+
+public:
+    explicit ChisquareSampler(const Param<T> &df) : df_(df) {}
+
+    template <typename BitGenT>
+    T operator()(BitGenT &bg, const std::size_t i)
+    {
+        return chisquare<T>(bg, normal_, df_[i]);
+    }
+};
+
+// Student's t with `df` degrees of freedom
+template <typename T>
+class StandardTSampler : public SamplerBase<T, T>
+{
+private:
+    Param<T> df_;
+    StandardNormal<T> normal_{};
+
+public:
+    explicit StandardTSampler(const Param<T> &df) : df_(df) {}
+
+    template <typename BitGenT>
+    T operator()(BitGenT &bg, const std::size_t i)
+    {
+        return standard_t<T>(bg, normal_, df_[i]);
+    }
+};
+
+// F with `dfnum` and `dfden` degrees of freedom
+template <typename T>
+class FSampler : public SamplerBase<T, T, T>
+{
+private:
+    Param<T> dfnum_;
+    Param<T> dfden_;
+    StandardNormal<T> normal_{};
+
+public:
+    FSampler(const Param<T> &dfnum, const Param<T> &dfden)
+        : dfnum_(dfnum), dfden_(dfden)
+    {
+    }
+
+    template <typename BitGenT>
+    T operator()(BitGenT &bg, const std::size_t i)
+    {
+        return f<T>(bg, normal_, dfnum_[i], dfden_[i]);
+    }
+};
+
+// Laplace with location `loc` and scale `scale`
+template <typename T>
+class LaplaceSampler : public SamplerBase<T, T, T>
+{
+private:
+    Param<T> loc_;
+    Param<T> scale_;
+
+public:
+    LaplaceSampler(const Param<T> &loc, const Param<T> &scale)
+        : loc_(loc), scale_(scale)
+    {
+    }
+
+    template <typename BitGenT>
+    T operator()(BitGenT &bg, const std::size_t i)
+    {
+        return laplace<T>(bg, loc_[i], scale_[i]);
+    }
+};
+
+// Gumbel with location `loc` and scale `scale`
+template <typename T>
+class GumbelSampler : public SamplerBase<T, T, T>
+{
+private:
+    Param<T> loc_;
+    Param<T> scale_;
+
+public:
+    GumbelSampler(const Param<T> &loc, const Param<T> &scale)
+        : loc_(loc), scale_(scale)
+    {
+    }
+
+    template <typename BitGenT>
+    T operator()(BitGenT &bg, const std::size_t i)
+    {
+        return gumbel<T>(bg, loc_[i], scale_[i]);
+    }
+};
+
+// Logistic with location `loc` and scale `scale`
+template <typename T>
+class LogisticSampler : public SamplerBase<T, T, T>
+{
+private:
+    Param<T> loc_;
+    Param<T> scale_;
+
+public:
+    LogisticSampler(const Param<T> &loc, const Param<T> &scale)
+        : loc_(loc), scale_(scale)
+    {
+    }
+
+    template <typename BitGenT>
+    T operator()(BitGenT &bg, const std::size_t i)
+    {
+        return logistic<T>(bg, loc_[i], scale_[i]);
+    }
+};
+
+// Triangular on [left, right] with mode `mode`
+template <typename T>
+class TriangularSampler : public SamplerBase<T, T, T, T>
+{
+private:
+    Param<T> left_;
+    Param<T> mode_;
+    Param<T> right_;
+
+public:
+    // one uniform value per element
+    static constexpr unsigned words_per_item = uniform_words<T>;
+
+    TriangularSampler(const Param<T> &left,
+                      const Param<T> &mode,
+                      const Param<T> &right)
+        : left_(left), mode_(mode), right_(right)
+    {
+    }
+
+    template <typename BitGenT>
+    T operator()(BitGenT &bg, const std::size_t i)
+    {
+        return triangular<T>(bg, left_[i], mode_[i], right_[i]);
+    }
+};
+
+// von Mises with mode `mu` and concentration `kappa`, on [-pi, pi]
+template <typename T>
+class VonmisesSampler : public SamplerBase<T, T, T>
+{
+private:
+    Param<T> mu_;
+    Param<T> kappa_;
+    StandardNormal<T> normal_{};
+
+public:
+    VonmisesSampler(const Param<T> &mu, const Param<T> &kappa)
+        : mu_(mu), kappa_(kappa)
+    {
+    }
+
+    template <typename BitGenT>
+    T operator()(BitGenT &bg, const std::size_t i)
+    {
+        return vonmises<T>(bg, normal_, mu_[i], kappa_[i]);
+    }
+};
 } // namespace dpnp::kernels::rng

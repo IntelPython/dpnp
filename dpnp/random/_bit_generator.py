@@ -368,7 +368,8 @@ class Philox4x3210(BitGenerator):
     values depend on the output size: a draw is not a prefix of a larger
     one. For a given state, output size and data type, the raw bits and the
     uniform floats are the same on every device, while the samplers built on
-    transcendental functions, such as the normal one, agree to a few ULP.
+    transcendental functions agree to a few ULP, or differ where a rejection
+    sampler then takes another candidate.
 
     """
 

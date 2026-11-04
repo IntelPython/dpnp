@@ -56,4 +56,6 @@ PYBIND11_MODULE(_rng_impl, m, py::mod_gil_not_used())
 
     rng_ns::init_uniform(m);
     rng_ns::init_normal(m);
+    rng_ns::init_exponential(m);
+    rng_ns::init_gamma(m);
 }

@@ -37,11 +37,13 @@ driven by a oneMKL device engine. The values differ from NumPy's.
 
 # pylint: disable=no-name-in-module
 # pylint: disable=protected-access
+# pylint: disable=too-many-lines
 
 import numpy
 
 import dpnp
 import dpnp.libtensor._rng_impl as ri
+import dpnp.libtensor._tensor_impl as ti
 import dpnp.tensor as dpt
 from dpnp.exceptions import ExecutionPlacementError
 from dpnp.tensor import validate_usm_type
@@ -55,6 +57,7 @@ _float_types = (numpy.dtype(numpy.float32), numpy.dtype(numpy.float64))
 # numpy/random/_common.pyx
 _CONS_NONE = 0
 _CONS_NON_NEGATIVE = 1
+_CONS_POSITIVE = 2
 
 
 def _is_array(x):
@@ -118,6 +121,21 @@ def _as_host_float(value):
     return numpy.asarray(value, dtype=numpy.float64)
 
 
+def _check_arrays(params, dtype=None):
+    """
+    `params` as arrays of `dtype` to check, with the module to check them
+    by, which is ``None`` when some are on the device, as the check would
+    wait for the device.
+
+    """
+
+    if any(dpnp.is_supported_array_type(p) for p in params):
+        return None, [None] * len(params)
+    for p in params:
+        _check_host_cast(p)
+    return numpy, [numpy.asarray(p, dtype) for p in params]
+
+
 def _uniform_range(low, high, dtype, overflow_msg):
     """
     ``high - low``, raising OverflowError with `overflow_msg` unless it is
@@ -172,8 +190,12 @@ def _check_constraint(value, name, cons, scalar):
     if cons == _CONS_NON_NEGATIVE:
         if numpy.any(~numpy.isnan(val) & numpy.signbit(val)):
             raise ValueError(f"{name} < 0")
+    elif cons == _CONS_POSITIVE:
+        if numpy.any(val <= 0):
+            raise ValueError(f"{name} <= 0")
 
 
+# pylint: disable=too-many-public-methods
 class Generator:
     """
     A container for the bit generator and the distribution samplers.
@@ -392,7 +414,16 @@ class Generator:
                 p = dpnp.asarray(
                     p, dtype=dtype, usm_type=usm_type, sycl_queue=queue
                 )
-                return dpnp.ascontiguousarray(dpnp.broadcast_to(p, shape))
+                p = dpnp.ascontiguousarray(dpnp.broadcast_to(p, shape))
+                if out is not None:
+                    usm_p, usm_out = map(dpnp.get_usm_ndarray, (p, out))
+                    # the kernel reads element i of `p` before writing
+                    # element i of `out`, so only an exact alias is safe
+                    if ti._array_overlap(
+                        usm_p, usm_out
+                    ) and not ti._same_logical_tensors(usm_p, usm_out):
+                        p = dpnp.copy(p)
+                return p
             # as in NumPy, None is NaN along with array parameters
             return float(_as_host_float(p))
 
@@ -727,6 +758,465 @@ class Generator:
             usm_type,
             (loc, "loc", _CONS_NONE),
             (scale, "scale", _CONS_NON_NEGATIVE),
+        )
+
+    def lognormal(
+        self, mean=0.0, sigma=1.0, size=None, dtype=None, *, usm_type=None
+    ):
+        """
+        Draw samples from a log-normal distribution.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.lognormal`.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        """
+        return self._cont(
+            ri._lognormal,
+            "lognormal",
+            size,
+            dtype,
+            usm_type,
+            (mean, "mean", _CONS_NONE),
+            (sigma, "sigma", _CONS_NON_NEGATIVE),
+        )
+
+    def standard_cauchy(self, size=None, dtype=None, *, usm_type=None):
+        """
+        Draw samples from a standard Cauchy distribution with mode = 0.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.standard_cauchy`.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        """
+        return self._float_sample(
+            ri._standard_cauchy, (), size, dtype, usm_type, "standard_cauchy"
+        )
+
+    def wald(self, mean, scale, size=None, dtype=None, *, usm_type=None):
+        """
+        Draw samples from a Wald, or inverse Gaussian, distribution.
+
+        For full documentation refer to :obj:`numpy.random.Generator.wald`.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        """
+        return self._cont(
+            ri._wald,
+            "wald",
+            size,
+            dtype,
+            usm_type,
+            (mean, "mean", _CONS_POSITIVE),
+            (scale, "scale", _CONS_POSITIVE),
+        )
+
+    def standard_exponential(
+        self,
+        size=None,
+        dtype=None,
+        method="zig",
+        out=None,
+        *,
+        usm_type=None,
+    ):
+        """
+        Draw samples from the standard exponential distribution.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.standard_exponential`.
+
+        Limitations
+        -----------
+        Both methods use inversion; ``"zig"`` is accepted for compatibility.
+
+        """
+
+        if method not in ("zig", "inv"):
+            raise ValueError("method must be either 'inv' or 'zig'")
+        return self._float_sample(
+            ri._exponential,
+            (),
+            size,
+            dtype,
+            usm_type,
+            "standard_exponential",
+            out=out,
+            kernel_params=(1.0,),
+        )
+
+    def exponential(self, scale=1.0, size=None, dtype=None, *, usm_type=None):
+        """
+        Draw samples from an exponential distribution.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.exponential`.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        """
+        return self._cont(
+            ri._exponential,
+            "exponential",
+            size,
+            dtype,
+            usm_type,
+            (scale, "scale", _CONS_NON_NEGATIVE),
+        )
+
+    def pareto(self, a, size=None, dtype=None, *, usm_type=None):
+        """
+        Draw samples from a Pareto II (AKA Lomax) distribution with the
+        specified shape.
+
+        For full documentation refer to :obj:`numpy.random.Generator.pareto`.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        """
+        return self._cont(
+            ri._pareto,
+            "pareto",
+            size,
+            dtype,
+            usm_type,
+            (a, "a", _CONS_POSITIVE),
+        )
+
+    def weibull(self, a, size=None, dtype=None, *, usm_type=None):
+        """
+        Draw samples from a Weibull distribution.
+
+        For full documentation refer to :obj:`numpy.random.Generator.weibull`.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        """
+        return self._cont(
+            ri._weibull,
+            "weibull",
+            size,
+            dtype,
+            usm_type,
+            (a, "a", _CONS_NON_NEGATIVE),
+        )
+
+    def power(self, a, size=None, dtype=None, *, usm_type=None):
+        """
+        Draw samples in [0, 1] from a power distribution with positive
+        exponent ``a - 1``.
+
+        For full documentation refer to :obj:`numpy.random.Generator.power`.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        """
+        return self._cont(
+            ri._power, "power", size, dtype, usm_type, (a, "a", _CONS_POSITIVE)
+        )
+
+    def rayleigh(self, scale=1.0, size=None, dtype=None, *, usm_type=None):
+        """
+        Draw samples from a Rayleigh distribution.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.rayleigh`.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        """
+        return self._cont(
+            ri._rayleigh,
+            "rayleigh",
+            size,
+            dtype,
+            usm_type,
+            (scale, "scale", _CONS_NON_NEGATIVE),
+        )
+
+    def laplace(
+        self, loc=0.0, scale=1.0, size=None, dtype=None, *, usm_type=None
+    ):
+        """
+        Draw samples from the Laplace or double exponential distribution
+        with specified location (or mean) and scale (decay).
+
+        For full documentation refer to :obj:`numpy.random.Generator.laplace`.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        """
+        return self._cont(
+            ri._laplace,
+            "laplace",
+            size,
+            dtype,
+            usm_type,
+            (loc, "loc", _CONS_NONE),
+            (scale, "scale", _CONS_NON_NEGATIVE),
+        )
+
+    def gumbel(
+        self, loc=0.0, scale=1.0, size=None, dtype=None, *, usm_type=None
+    ):
+        """
+        Draw samples from a Gumbel distribution.
+
+        For full documentation refer to :obj:`numpy.random.Generator.gumbel`.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        """
+        return self._cont(
+            ri._gumbel,
+            "gumbel",
+            size,
+            dtype,
+            usm_type,
+            (loc, "loc", _CONS_NONE),
+            (scale, "scale", _CONS_NON_NEGATIVE),
+        )
+
+    def logistic(
+        self, loc=0.0, scale=1.0, size=None, dtype=None, *, usm_type=None
+    ):
+        """
+        Draw samples from a logistic distribution.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.logistic`.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        """
+        return self._cont(
+            ri._logistic,
+            "logistic",
+            size,
+            dtype,
+            usm_type,
+            (loc, "loc", _CONS_NONE),
+            (scale, "scale", _CONS_NON_NEGATIVE),
+        )
+
+    def triangular(
+        self, left, mode, right, size=None, dtype=None, *, usm_type=None
+    ):
+        """
+        Draw samples from the triangular distribution over the interval
+        [left, right].
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.triangular`.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        """
+
+        params = (left, mode, right)
+        self._check_queues(*params)
+        xp, (fleft, fmode, fright) = _check_arrays(params, numpy.float64)
+        if xp is not None:
+            if xp is numpy and _is_scalar_path(*params):
+                for p in params:
+                    _check_real(p)
+            if xp.any(fleft > fmode):
+                raise ValueError("left > mode")
+            if xp.any(fmode > fright):
+                raise ValueError("mode > right")
+            if xp.any(fleft == fright):
+                raise ValueError("left == right")
+        return self._float_sample(
+            ri._triangular, params, size, dtype, usm_type, "triangular"
+        )
+
+    def vonmises(self, mu, kappa, size=None, dtype=None, *, usm_type=None):
+        """
+        Draw samples from a von Mises distribution.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.vonmises`.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        """
+        return self._cont(
+            ri._vonmises,
+            "vonmises",
+            size,
+            dtype,
+            usm_type,
+            (mu, "mu", _CONS_NONE),
+            (kappa, "kappa", _CONS_NON_NEGATIVE),
+        )
+
+    def standard_gamma(
+        self, shape, size=None, dtype=None, out=None, *, usm_type=None
+    ):
+        """
+        Draw samples from a standard gamma distribution.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.standard_gamma`.
+
+        Limitations
+        -----------
+        `usm_type` is not in NumPy's signature.
+
+        """
+
+        self._check_queues(shape, out)
+        _check_constraint(
+            shape,
+            "shape",
+            _CONS_NON_NEGATIVE,
+            _is_scalar_path(shape),
+        )
+        return self._float_sample(
+            ri._gamma,
+            (shape,),
+            size,
+            dtype,
+            usm_type,
+            "standard_gamma",
+            out=out,
+            kernel_params=(shape, 1.0),
+        )
+
+    def gamma(self, shape, scale=1.0, size=None, dtype=None, *, usm_type=None):
+        """
+        Draw samples from a gamma distribution.
+
+        For full documentation refer to :obj:`numpy.random.Generator.gamma`.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        """
+        return self._cont(
+            ri._gamma,
+            "gamma",
+            size,
+            dtype,
+            usm_type,
+            (shape, "shape", _CONS_NON_NEGATIVE),
+            (scale, "scale", _CONS_NON_NEGATIVE),
+        )
+
+    def chisquare(self, df, size=None, dtype=None, *, usm_type=None):
+        """
+        Draw samples from a chi-square distribution.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.chisquare`.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        """
+        return self._cont(
+            ri._chisquare,
+            "chisquare",
+            size,
+            dtype,
+            usm_type,
+            (df, "df", _CONS_POSITIVE),
+        )
+
+    def standard_t(self, df, size=None, dtype=None, *, usm_type=None):
+        """
+        Draw samples from a standard Student's t distribution with `df`
+        degrees of freedom.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.standard_t`.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        """
+        return self._cont(
+            ri._standard_t,
+            "standard_t",
+            size,
+            dtype,
+            usm_type,
+            (df, "df", _CONS_POSITIVE),
+        )
+
+    def f(self, dfnum, dfden, size=None, dtype=None, *, usm_type=None):
+        """
+        Draw samples from an F distribution.
+
+        For full documentation refer to :obj:`numpy.random.Generator.f`.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        """
+        return self._cont(
+            ri._f,
+            "f",
+            size,
+            dtype,
+            usm_type,
+            (dfnum, "dfnum", _CONS_POSITIVE),
+            (dfden, "dfden", _CONS_POSITIVE),
+        )
+
+    def beta(self, a, b, size=None, dtype=None, *, usm_type=None):
+        """
+        Draw samples from a beta distribution.
+
+        For full documentation refer to :obj:`numpy.random.Generator.beta`.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        """
+        return self._cont(
+            ri._beta,
+            "beta",
+            size,
+            dtype,
+            usm_type,
+            (a, "a", _CONS_POSITIVE),
+            (b, "b", _CONS_POSITIVE),
         )
 
 

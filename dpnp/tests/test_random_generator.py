@@ -306,6 +306,26 @@ class TestFloatMethods:
         ("uniform", (-1.0, 2.0)),
         ("standard_normal", ()),
         ("normal", (1.0, 2.0)),
+        ("lognormal", (0.0, 0.5)),
+        ("standard_exponential", ()),
+        ("exponential", (2.0,)),
+        ("standard_gamma", (0.5,)),
+        ("gamma", (3.0, 2.0)),
+        ("chisquare", (3.0,)),
+        ("beta", (0.5, 2.0)),
+        ("standard_cauchy", ()),
+        ("wald", (1.0, 2.0)),
+        ("pareto", (3.0,)),
+        ("weibull", (2.0,)),
+        ("power", (3.0,)),
+        ("rayleigh", (2.0,)),
+        ("laplace", (1.0, 2.0)),
+        ("gumbel", (1.0, 2.0)),
+        ("logistic", (1.0, 2.0)),
+        ("triangular", (0.0, 1.0, 3.0)),
+        ("vonmises", (0.5, 2.0)),
+        ("standard_t", (5.0,)),
+        ("f", (5.0, 7.0)),
     ]
 
     @pytest.mark.parametrize("dtype", float_dtypes)
@@ -357,6 +377,47 @@ class TestFloatMethods:
             ("uniform", (-1.0, 3.0), 1.0, 16 / 12),
             ("standard_normal", (), 0.0, 1.0),
             ("normal", (1.0, 2.0), 1.0, 4.0),
+            (
+                "lognormal",
+                (0.0, 0.5),
+                numpy.exp(0.125),
+                (numpy.exp(0.25) - 1) * numpy.exp(0.25),
+            ),
+            ("standard_exponential", (), 1.0, 1.0),
+            ("exponential", (2.0,), 2.0, 4.0),
+            ("standard_gamma", (0.5,), 0.5, 0.5),
+            ("standard_gamma", (1.0,), 1.0, 1.0),
+            ("gamma", (3.0, 2.0), 6.0, 12.0),
+            ("chisquare", (3.0,), 3.0, 6.0),
+            ("beta", (0.5, 2.0), 0.2, 8.0 / 175),
+            ("beta", (0.5, 0.5), 0.5, 0.125),
+            ("beta", (2.0, 3.0), 0.4, 0.04),
+            ("wald", (1.0, 2.0), 1.0, 0.5),
+            ("wald", (3.0, 50.0), 3.0, 27 / 50),
+            ("pareto", (20.0,), 1 / 19, 20 / (19**2 * 18)),
+            (
+                "weibull",
+                (2.0,),
+                math.gamma(1.5),
+                math.gamma(2.0) - math.gamma(1.5) ** 2,
+            ),
+            ("weibull", (0.0,), 0.0, 0.0),
+            ("power", (3.0,), 0.75, 0.0375),
+            ("rayleigh", (2.0,), 2 * math.sqrt(math.pi / 2), 2 * (4 - math.pi)),
+            ("laplace", (1.0, 2.0), 1.0, 8.0),
+            (
+                "gumbel",
+                (1.0, 2.0),
+                1 + 2 * 0.5772156649015329,
+                math.pi**2 * 4 / 6,
+            ),
+            ("logistic", (1.0, 2.0), 1.0, math.pi**2 * 4 / 3),
+            ("triangular", (0.0, 1.0, 3.0), 4 / 3, 7 / 18),
+            ("triangular", (0.0, 0.0, 1.0), 1 / 3, 1 / 18),
+            # uniform on the circle, whatever mu is, as in NumPy
+            ("vonmises", (0.5, 0.0), 0.0, math.pi**2 / 3),
+            ("standard_t", (10.0,), 0.0, 1.25),
+            ("f", (10.0, 30.0), 30 / 28, 2 * 900 * 38 / (10 * 28**2 * 26)),
         ],
     )
     def test_moments(self, name, params, mean, var, dtype):
@@ -369,6 +430,86 @@ class TestFloatMethods:
         assert abs(res.mean() - mean) <= 5 * numpy.sqrt(var / n)
         assert abs(res.var() - var) <= 5 * var * numpy.sqrt(10 / n)
 
+    @pytest.mark.parametrize("dtype", float_dtypes)
+    def test_standard_cauchy(self, dtype):
+        res = default_rng(2).standard_cauchy(size=10**6, dtype=dtype)
+        q1, q2, q3 = numpy.quantile(dpnp.asnumpy(res), [0.25, 0.5, 0.75])
+        assert abs(q1 + 1) < 0.01 and abs(q2) < 0.01 and abs(q3 - 1) < 0.01
+
+    @pytest.mark.parametrize("dtype", float_dtypes)
+    @pytest.mark.parametrize("kappa", [1e-9, 1e-6, 0.5, 2.0, 50.0, 1e7])
+    def test_vonmises(self, kappa, dtype):
+        n = 10**6
+        mu = 3.0
+        res = default_rng(2).vonmises(mu, kappa, size=n, dtype=dtype)
+        res = dpnp.asnumpy(res).astype(numpy.float64)
+        assert ((res >= -numpy.pi) & (res <= numpy.pi)).all()
+
+        # E[cos(x - mu)] is I1(kappa) / I0(kappa)
+        t = numpy.linspace(0, numpy.pi, 20001)
+        w = numpy.exp(kappa * (numpy.cos(t) - 1))
+        expected = numpy.trapezoid(numpy.cos(t) * w, t) / numpy.trapezoid(w, t)
+        assert abs(numpy.cos(res - mu).mean() - expected) < 5 / numpy.sqrt(n)
+        # the angles are symmetric around mu
+        assert abs(numpy.sin(res - mu).mean()) < 5 / numpy.sqrt(n)
+
+    @pytest.mark.parametrize("dtype", float_dtypes)
+    @pytest.mark.parametrize(
+        "name, params, lo, hi",
+        [
+            ("pareto", (1e-3,), 0, numpy.inf),
+            ("weibull", (1e-3,), 0, numpy.inf),
+            ("power", (1e-3,), 0, 1),
+            ("power", (1e3,), 0, 1),
+            ("wald", (1e10, 1e-10), 0, numpy.inf),
+            ("wald", (1e-10, 1e10), 0, numpy.inf),
+            ("triangular", (0.0, 1.0, 1.0), 0, 1),
+            ("vonmises", (-3.0, 1e-3), -numpy.pi, numpy.pi),
+        ],
+    )
+    def test_extreme_range(self, name, params, lo, hi, dtype):
+        res = getattr(default_rng(1), name)(*params, size=10**5, dtype=dtype)
+        res = dpnp.asnumpy(res)
+        assert ((res >= lo) & (res <= hi)).all()
+
+    @pytest.mark.parametrize(
+        "name, params",
+        [
+            ("wald", (1.0, 1.0)),
+            ("pareto", (1.0,)),
+            ("weibull", (1.0,)),
+            ("power", (1.0,)),
+            ("rayleigh", (1.0,)),
+            ("laplace", (0.0, 1.0)),
+            ("gumbel", (0.0, 1.0)),
+            ("logistic", (0.0, 1.0)),
+            ("vonmises", (0.0, 1.0)),
+            ("chisquare", (1.0,)),
+            ("standard_t", (1.0,)),
+            ("f", (1.0, 1.0)),
+            ("gamma", (1.0, 1.0)),
+            ("beta", (1.0, 1.0)),
+        ],
+    )
+    def test_nan_param(self, name, params):
+        # NaN passes NumPy's checks and gives NaN; every parameter is tried
+        rng = default_rng(0)
+        for i in range(len(params)):
+            args = list(params)
+            args[i] = numpy.nan
+            res = dpnp.asnumpy(getattr(rng, name)(*args, size=100))
+            assert numpy.isnan(res).all()
+
+    @pytest.mark.parametrize("dtype", float_dtypes)
+    @pytest.mark.parametrize(
+        "a, b", [(1e-3, 1e-3), (0.01, 0.01), (0.3, 1e-4), (50.0, 0.01)]
+    )
+    def test_beta_range(self, a, b, dtype):
+        # the samples underflow, which devices flushing subnormals to zero
+        # and with inexact division once turned into inf or 1 + ulp
+        res = dpnp.asnumpy(default_rng(1).beta(a, b, size=10**5, dtype=dtype))
+        assert ((res >= 0) & (res <= 1)).all()
+
     def test_array_params(self):
         rng = default_rng(3)
         loc = dpnp.arange(4.0)[:, None] * 10
@@ -378,10 +519,19 @@ class TestFloatMethods:
             dpnp.asnumpy(res.mean(axis=1)), [0.0, 10.0, 20.0, 30.0], atol=0.1
         )
 
+        # the output shape is the broadcast shape of the parameters
+        res = rng.gamma(dpnp.ones(3), numpy.ones((2, 1)))
+        assert res.shape == (2, 3)
+
         # parameters given as lists
         res = rng.uniform([0.0, 10.0], [1.0, 11.0], size=(1000, 2))
         res = dpnp.asnumpy(res)
         assert (res[:, 0] < 1).all() and (res[:, 1] >= 10).all()
+
+    def test_array_params_chisquare(self):
+        df = dpnp.asarray([1.0, 10.0])
+        res = default_rng(4).chisquare(df, size=(10**5, 2))
+        assert_allclose(dpnp.asnumpy(res.mean(axis=0)), [1.0, 10.0], rtol=0.05)
 
     @pytest.mark.parametrize(
         "size",
@@ -426,6 +576,13 @@ class TestFloatMethods:
         "name, params, msg",
         [
             ("normal", (0.0, -1.0), "scale < 0"),
+            ("lognormal", (0.0, -1.0), "sigma < 0"),
+            ("exponential", (-1.0,), "scale < 0"),
+            ("standard_gamma", (-1.0,), "shape < 0"),
+            ("gamma", (1.0, -1.0), "scale < 0"),
+            ("chisquare", (0.0,), "df <= 0"),
+            ("beta", (0.0, 1.0), "a <= 0"),
+            ("beta", (1.0, 0.0), "b <= 0"),
         ],
     )
     def test_scalar_checks(self, name, params, msg):
@@ -504,12 +661,36 @@ class TestFloatMethods:
         # host parameters alone give a device array
         assert rng.normal([1.0, 2.0]).usm_type == "device"
 
+    def test_standard_exponential_method(self):
+        rng = default_rng(0)
+        rng.standard_exponential(3, method="inv")
+        assert_raises(ValueError, rng.standard_exponential, 3, method="x")
+
+    def test_out_overlapping_param(self):
+        # a parameter overlapping `out` is read before `out` is written
+        dt = dpnp.default_float_type()
+        x = dpnp.arange(1, 10, dtype=dt)
+        expected = default_rng(3).standard_gamma(dpnp.copy(x[:-1]))
+        out = x[1:]
+        res = default_rng(3).standard_gamma(x[:-1], out=out)
+        assert res is out
+        assert_array_equal(out, expected)
+        assert x[0] == 1
+
+        # an exact alias needs no copy
+        y = dpnp.arange(1, 9, dtype=dt)
+        expected = default_rng(3).standard_gamma(dpnp.copy(y))
+        default_rng(3).standard_gamma(y, out=y)
+        assert_array_equal(y, expected)
+
     @pytest.mark.parametrize("dtype", float_dtypes)
     @pytest.mark.parametrize(
         "name, params",
         [
             ("random", ()),
             ("standard_normal", ()),
+            ("standard_exponential", ()),
+            ("standard_gamma", (2.0,)),
         ],
     )
     def test_out(self, name, params, dtype):
@@ -581,6 +762,33 @@ class TestFloatMethods:
             out=out,
         )
 
+    def test_device_params_terminate(self):
+        # the parameters on which the rejection samplers could loop forever
+        # give NaN
+        rng = default_rng(0)
+        nan, inf = numpy.nan, numpy.inf
+
+        res = rng.beta(dpnp.asarray([-inf, -1.0, 0.0, nan]), 1.0, size=(8, 4))
+        assert dpnp.isnan(res).all()
+
+        # a shape just below zero would reject nearly every draw
+        shape = dpnp.asarray([-1e-8, -1e-12, -1e-30, -1.0])
+        res = rng.standard_gamma(shape, size=(8, 4))
+        assert dpnp.isnan(res).all()
+        res = rng.chisquare(shape, size=(8, 4))
+        assert dpnp.isnan(res).all()
+        res = rng.standard_gamma(shape.astype(dpnp.float32), dtype="f4")
+        assert dpnp.isnan(res).all()
+        rng.standard_t(shape)
+
+    def test_host_params_terminate(self):
+        # valid parameters on which rounding in single precision made every
+        # draw of the rejection sampler fail
+        rng = default_rng(0)
+        kappa = [5e-5, 1e-4, 3e-4, 4e-4]
+        res = rng.vonmises(0.0, kappa, size=(8, 4), dtype=dpnp.float32)
+        assert (dpnp.abs(res) <= numpy.pi).all()
+
 
 def _assert_same_error(np_call, dp_call):
     """Assert `dp_call` raises the same exception as `np_call`."""
@@ -607,6 +815,35 @@ class TestChecks:
             ("normal", (0.0, -1.0)),
             ("normal", (0.0, -0.0)),
             ("normal", (0.0, [1.0, -1.0])),
+            ("lognormal", (0.0, -1.0)),
+            ("exponential", (-1.0,)),
+            ("exponential", ([-1.0],)),
+            ("standard_gamma", (-0.0,)),
+            ("gamma", (1.0, -1.0)),
+            ("gamma", ([-1.0], 1.0)),
+            ("chisquare", (0.0,)),
+            ("chisquare", ([1.0, 0.0],)),
+            ("standard_t", (0.0,)),
+            ("f", (0.0, 1.0)),
+            ("f", (1.0, [0.0])),
+            ("beta", (0.0, 1.0)),
+            ("beta", (1.0, [0.0])),
+            ("pareto", (0.0,)),
+            ("power", (0.0,)),
+            ("weibull", (-1.0,)),
+            ("weibull", (-0.0,)),
+            ("rayleigh", (-1.0,)),
+            ("laplace", (0.0, -1.0)),
+            ("gumbel", (0.0, -1.0)),
+            ("logistic", (0.0, -1.0)),
+            ("wald", (0.0, 1.0)),
+            ("wald", (1.0, 0.0)),
+            ("wald", ([1.0], [0.0])),
+            ("vonmises", (0.0, -1.0)),
+            ("triangular", (1.0, 0.0, 2.0)),
+            ("triangular", (0.0, 2.0, 1.0)),
+            ("triangular", (1.0, 1.0, 1.0)),
+            ("triangular", ([0.0, 1.0], 1.0, [2.0, 1.0])),
             ("normal", (0.0, None)),
             ("uniform", (None, 1.0)),
             # complex and object arrays do not cast safely to float64
@@ -616,6 +853,9 @@ class TestChecks:
             ("normal", ([1j, 2j],)),
             ("uniform", (numpy.array([1j]), 2.0)),
             ("uniform", (0.0, numpy.array(2j))),
+            ("triangular", (0.0, None, 2.0)),
+            ("exponential", ("x",)),
+            ("exponential", (1j,)),
         ],
     )
     @pytest.mark.filterwarnings("ignore:overflow encountered:RuntimeWarning")
@@ -631,6 +871,9 @@ class TestChecks:
         "name, args",
         [
             ("normal", (None, [1.0, 2.0])),
+            ("laplace", (0.0, [None, 1.0])),
+            ("gamma", (None, [1.0, 2.0])),
+            ("triangular", (None, [1.0, 2.0], 3.0)),
         ],
     )
     def test_none_with_array_is_nan(self, name, args):
@@ -647,6 +890,7 @@ class TestDeviceIndependence:
             rng.random(1000, dtype=dpnp.float32),
             rng.bit_generator.random_raw(1000),
             rng.normal(size=1000, dtype=dpnp.float32),
+            rng.gamma(0.7, size=1000, dtype=dpnp.float32),
         )
 
     @pytest.mark.parametrize("bitgen", [Philox4x3210])

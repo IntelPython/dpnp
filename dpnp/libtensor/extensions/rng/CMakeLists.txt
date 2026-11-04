@@ -29,6 +29,8 @@
 
 set(python_module_name _rng_impl)
 set(_module_src
+    ${CMAKE_CURRENT_SOURCE_DIR}/exponential.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gamma.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/normal.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/rng_py.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sample.cpp
