@@ -25,7 +25,7 @@ jobs:
       contents: read # needed to clone the repo
 
     # Bump both SHAs together: `uses:` runs the workflow, `dokimi-ref` installs the same dokimi
-    uses: intel/dokimi/.github/workflows/repo-eval.yml@b084e47f9b88d12f5b3cd506a7e05be4c008a985 # main, 2026-11-03
+    uses: intel/dokimi/.github/workflows/repo-eval.yml@51bbc4df7036e06b4b559fa235d75af78d0366e0 # main, 2026-11-04
     with:
-      dokimi-ref: b084e47f9b88d12f5b3cd506a7e05be4c008a985
+      dokimi-ref: 51bbc4df7036e06b4b559fa235d75af78d0366e0
       manifest: .github/dokimi/repo.yaml
