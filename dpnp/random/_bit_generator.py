@@ -216,7 +216,7 @@ class BitGenerator:
         """
         raise NotImplementedError
 
-    def _fill(self, kernel, params, result):
+    def _fill(self, kernel, params, result, **kwargs):
         """
         Fill the C-contiguous array `result` by `kernel` of the extension,
         with the distribution parameters `params`.
@@ -224,7 +224,7 @@ class BitGenerator:
         Each parameter is either a Python scalar or a C-contiguous array of
         the data type the kernel expects for it, whose size divides the size
         of `result`. A smaller array repeats along `result`, which the kernel
-        reads cyclically.
+        reads cyclically. Keyword arguments are passed to `kernel` as is.
 
         """
 
@@ -249,6 +249,7 @@ class BitGenerator:
             params,
             result_usm,
             depends=_manager.submitted_events,
+            **kwargs,
         )
         _manager.add_event_pair(ht_ev, ev)
         return result
