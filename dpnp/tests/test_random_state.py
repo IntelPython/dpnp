@@ -595,6 +595,7 @@ class TestIntegers:
     def test_random_integers_module_warning(self, args):
         with pytest.warns(DeprecationWarning, match="randint") as w:
             dpnp.random.random_integers(*args)
+        assert len(w) == 1
         assert w[0].filename == __file__
 
     def test_tomaxint(self):
