@@ -18,6 +18,7 @@ Sorting
    sort_complex
    partition
    argpartition
+   top_k
 
 .. seealso::
    :func:`dpnp.ndarray.sort`

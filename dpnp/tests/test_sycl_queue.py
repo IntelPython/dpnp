@@ -1498,6 +1498,16 @@ def test_unique(axis, device):
         assert_sycl_queue_equal(iv.sycl_queue, ia.sycl_queue)
 
 
+@pytest.mark.parametrize("k", [1, 2, 3])
+@pytest.mark.parametrize("sorted", [True, False])
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
+def test_top_k(k, sorted, device):
+    ia = dpnp.array([[3, 1, 4, 1], [5, 9, 2, 6]], device=device)
+    result = dpnp.top_k(ia, k, sorted=sorted)
+    for iv in result:
+        assert_sycl_queue_equal(iv.sycl_queue, ia.sycl_queue)
+
+
 @pytest.mark.parametrize("copy", [True, False])
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_nan_to_num(copy, device):
