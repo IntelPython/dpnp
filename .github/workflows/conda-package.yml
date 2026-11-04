@@ -26,8 +26,8 @@ env:
   rerun-tests-timeout: 45
   rerun-tensor-tests-timeout: 15
   rerun-tensor-tests-max-attempts: 3
-  # Healthy Windows tensor runs take up to ~19 min
-  rerun-tensor-tests-timeout-win: 20
+  # Per-test limit to kill a test stuck at 99%: https://github.com/IntelPython/dpctl/issues/1954
+  tensor-test-timeout: 120
 
 jobs:
   build:
@@ -253,14 +253,14 @@ jobs:
         id: install_dpnp
         continue-on-error: true
         run: |
-          mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist "${{ env.python-install-spec }}" ${{ env.TEST_CHANNELS }}
+          mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-timeout pytest-xdist "${{ env.python-install-spec }}" ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.channels-list }}'
 
       - name: ReInstall dpnp
         if: steps.install_dpnp.outcome == 'failure'
         run: |
-          mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist "${{ env.python-install-spec }}" ${{ env.TEST_CHANNELS }}
+          mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-timeout pytest-xdist "${{ env.python-install-spec }}" ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.channels-list }}'
 
@@ -307,7 +307,7 @@ jobs:
       - name: Run tensor tests
         if: env.rerun-tests-on-failure != 'true'
         run: |
-          python -m pytest -n auto -ra --pyargs dpnp.tests.tensor
+          python -m pytest -n auto -ra --timeout=${{ env.tensor-test-timeout }} --timeout-method=thread --pyargs dpnp.tests.tensor
 
       - name: Run tensor tests
         if: env.rerun-tests-on-failure == 'true'
@@ -322,7 +322,7 @@ jobs:
             . $CONDA/etc/profile.d/mamba.sh
             mamba activate ${{ env.test-env-name }}
 
-            python -m pytest -n auto -ra --pyargs dpnp.tests.tensor
+            python -m pytest -n auto -ra --timeout=${{ env.tensor-test-timeout }} --timeout-method=thread --pyargs dpnp.tests.tensor
 
   test_examples_linux:
     name: Test examples
@@ -553,7 +553,7 @@ jobs:
       - name: Install dpnp
         run: |
           @echo on
-          mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist "${{ env.python-install-spec }}" ${{ env.TEST_CHANNELS }}
+          mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-timeout pytest-xdist "${{ env.python-install-spec }}" ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.channels-list }}'
           MAMBA_NO_LOW_SPEED_LIMIT: 1
@@ -616,19 +616,19 @@ jobs:
         if: env.rerun-tests-on-failure != 'true'
         shell: pwsh
         run: |
-          python -m pytest -n auto -ra --pyargs dpnp.tests.tensor
+          python -m pytest -n auto -ra --timeout=${{ env.tensor-test-timeout }} --timeout-method=thread --pyargs dpnp.tests.tensor
 
       - name: Run tensor tests
         if: env.rerun-tests-on-failure == 'true'
         id: run_tests_tensor_win
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
-          timeout_minutes: ${{ env.rerun-tensor-tests-timeout-win }}
+          timeout_minutes: ${{ env.rerun-tensor-tests-timeout }}
           max_attempts: ${{ env.rerun-tensor-tests-max-attempts }}
           retry_on: any
           shell: pwsh
           command: |
-            python -m pytest -n auto -ra --pyargs dpnp.tests.tensor
+            python -m pytest -n auto -ra --timeout=${{ env.tensor-test-timeout }} --timeout-method=thread --pyargs dpnp.tests.tensor
 
   upload:
     name: Upload
