@@ -927,16 +927,25 @@ def test_random_state(func, args, kwargs, device, usm_type):
 
 _generator_methods = [
     pytest.param("beta", [0.5, 2.0], {"size": (3, 4)}),
+    pytest.param("binomial", [10, 0.3], {"size": (3, 4)}),
     pytest.param("chisquare", [3.0], {"size": (3, 4)}),
     pytest.param("exponential", [2.0], {"size": (3, 4)}),
     pytest.param("f", [2.0, 3.0], {"size": (3, 4)}),
     pytest.param("gamma", [2.0], {"size": (3, 4)}),
+    pytest.param("geometric", [0.3], {"size": (3, 4)}),
     pytest.param("gumbel", [], {"size": (3, 4)}),
+    pytest.param("hypergeometric", [5, 7, 4], {"size": (3, 4)}),
+    pytest.param("integers", [0, 10], {"size": (3, 4)}),
     pytest.param("laplace", [], {"size": (3, 4)}),
     pytest.param("logistic", [], {"size": (3, 4)}),
     pytest.param("lognormal", [], {"size": (3, 4)}),
+    pytest.param("logseries", [0.5], {"size": (3, 4)}),
+    pytest.param("negative_binomial", [3, 0.4], {"size": (3, 4)}),
+    pytest.param("noncentral_chisquare", [3.0, 1.0], {"size": (3, 4)}),
+    pytest.param("noncentral_f", [2.0, 3.0, 1.0], {"size": (3, 4)}),
     pytest.param("normal", [], {"size": (3, 4)}),
     pytest.param("pareto", [2.0], {"size": (3, 4)}),
+    pytest.param("poisson", [3.0], {"size": (3, 4)}),
     pytest.param("power", [2.0], {"size": (3, 4)}),
     pytest.param("random", [], {"size": (3, 4)}),
     pytest.param("rayleigh", [], {"size": (3, 4)}),
@@ -950,6 +959,7 @@ _generator_methods = [
     pytest.param("vonmises", [0.0, 1.0], {"size": (3, 4)}),
     pytest.param("wald", [1.0, 2.0], {"size": (3, 4)}),
     pytest.param("weibull", [2.0], {"size": (3, 4)}),
+    pytest.param("zipf", [2.0], {"size": (3, 4)}),
 ]
 
 
@@ -983,10 +993,17 @@ def test_bit_generator(bit_generator, device):
 # "f", "i" and "p" stand for float, integer and probability arrays on another
 # queue than the generator's
 _diff_queue_methods = [
+    pytest.param("binomial", ["i", 0.5]),
+    pytest.param("geometric", ["p"]),
+    pytest.param("hypergeometric", ["i", "i", 1]),
+    pytest.param("logseries", ["p"]),
+    pytest.param("negative_binomial", ["f", 0.5]),
     pytest.param("normal", ["f"]),
+    pytest.param("poisson", ["f"]),
     pytest.param("standard_gamma", ["f"]),
     pytest.param("triangular", [0.0, "f", 5.0]),
     pytest.param("uniform", ["f", 5.0]),
+    pytest.param("zipf", ["f"]),
 ]
 
 
@@ -1004,6 +1021,7 @@ def _diff_queue_args(args, device):
     "func, args",
     _diff_queue_methods
     + [
+        pytest.param("integers", ["i"]),
         pytest.param("random", [4, None], id="random-out"),
     ],
 )

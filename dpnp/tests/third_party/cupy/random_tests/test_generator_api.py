@@ -82,7 +82,6 @@ class TestExponential(common_distributions.Exponential, GeneratorTestCase):
 @testing.parameterize(*common_distributions.poisson_params)
 @testing.with_requires("numpy>=1.17.0")
 @testing.fix_random()
-@pytest.mark.skip("discrete distributions are not supported yet")
 class TestPoisson(common_distributions.Poisson, GeneratorTestCase):
     pass
 
@@ -90,7 +89,6 @@ class TestPoisson(common_distributions.Poisson, GeneratorTestCase):
 @testing.parameterize(*common_distributions.binomial_params)
 @testing.with_requires("numpy>=1.17.0")
 @testing.fix_random()
-@pytest.mark.skip("discrete distributions are not supported yet")
 class TestBinomial(common_distributions.Binomial, GeneratorTestCase):
     pass
 
@@ -200,7 +198,6 @@ class TestStandardNormalInvalid(InvalidOutsMixin, GeneratorTestCase):
 
 @testing.with_requires("numpy>=1.17.0")
 @testing.fix_random()
-@pytest.mark.skip("discrete distributions are not supported yet")
 class TestIntegers(GeneratorTestCase):
     target_method = "integers"
 
@@ -255,7 +252,6 @@ class TestIntegers(GeneratorTestCase):
     ]
 )
 @testing.fix_random()
-@pytest.mark.skip("discrete distributions are not supported yet")
 class TestIntegersLargeBound(GeneratorTestCase):
     target_method = "integers"
 
@@ -282,7 +278,6 @@ class TestIntegersLargeBound(GeneratorTestCase):
 )
 @testing.with_requires("numpy>=1.17.0")
 @testing.fix_random()
-@pytest.mark.skip("discrete distributions are not supported yet")
 class TestIntegersLargeBoundKS(GeneratorTestCase):
     target_method = "integers"
 
@@ -312,7 +307,6 @@ class TestRandom(InvalidOutsMixin, GeneratorTestCase):
 @testing.parameterize(*common_distributions.geometric_params)
 @testing.with_requires("numpy>=1.17.0")
 @testing.fix_random()
-@pytest.mark.skip("discrete distributions are not supported yet")
 class TestGeometric(common_distributions.Geometric, GeneratorTestCase):
     pass
 
@@ -320,14 +314,12 @@ class TestGeometric(common_distributions.Geometric, GeneratorTestCase):
 @testing.parameterize(*common_distributions.hypergeometric_params)
 @testing.with_requires("numpy>=1.17.0")
 @testing.fix_random()
-@pytest.mark.skip("discrete distributions are not supported yet")
 class TestHypergeometric(
     common_distributions.Hypergeometric, GeneratorTestCase
 ):
     pass
 
 
-@pytest.mark.skip("discrete distributions are not supported yet")
 class TestHypergeometricValidation:
 
     @pytest.fixture(autouse=True)
@@ -420,7 +412,6 @@ class TestRandomStateThreadSafe(unittest.TestCase):
 
 @testing.parameterize(*common_distributions.logseries_params)
 @testing.fix_random()
-@pytest.mark.skip("discrete distributions are not supported yet")
 class TestLogseries(common_distributions.Logseries, GeneratorTestCase):
     pass
 

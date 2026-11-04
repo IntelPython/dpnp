@@ -17,7 +17,7 @@ host-side oneMKL RNG.
 
     rng = dpnp.random.default_rng(seed=42)
     x = rng.standard_normal((3, 4))                # on the default device
-    y = rng.random(5, usm_type="shared")
+    y = rng.integers(0, 10, size=5, usm_type="shared")
 
     rng = dpnp.random.default_rng(42, device="cpu")
 
@@ -32,7 +32,9 @@ Differences from NumPy
   type, the raw bits and the uniform floats are the same on every device.
   The other distributions use transcendental functions, which may round
   differently on another device: their samples agree to a few ULP, or
-  differ when a rejection sampler then takes another candidate.
+  differ when a rejection sampler then takes another candidate. The
+  discrete distributions also depend on the device's support of double
+  precision, as noted below.
 * The values depend on the output size: a draw is not a prefix of a
   larger one, and two draws of ``n`` values differ from one draw of
   ``2 * n``. Code splitting its draws into chunks gets other values.
@@ -48,7 +50,20 @@ Differences from NumPy
   not, since that would wait for the device.
   Invalid ones give undefined values, such as NaN or the smallest ``int64``,
   but the kernels handle them safely: they never loop without end or access
-  memory out of bounds.
+  memory out of bounds. Floating-point arrays given for integer parameters
+  are converted as by :meth:`dpnp.ndarray.astype`, whose result for NaN and
+  out-of-range values is undefined.
+* The discrete distributions return ``int64`` values. They compute in double
+  precision on devices supporting it, and in single precision otherwise.
+  There, the streams differ from the ones of devices with double precision,
+  and some samples are only multiples of a power of two: the ones above
+  ``2**24`` of ``geometric``, ``logseries`` and ``zipf``, and the ones of
+  ``poisson`` and ``binomial`` with a standard deviation above about
+  ``2**22``.
+* ``zipf`` follows the Zipf distribution truncated to the largest ``int64``.
+  NumPy's rejection test rounds to accepting every sample above ``2**53``,
+  which makes its tail too heavy for ``a`` close to 1.
+* ``hypergeometric`` requires ``ngood`` and ``nbad`` below ``10**9``.
 * Generators and bit generators cannot be pickled or copied, and the bit
   generators have no ``advance`` or ``jumped`` method.
 
@@ -79,6 +94,7 @@ Simple random data
    :toctree: generated/
    :nosignatures:
 
+   Generator.integers
    Generator.random
 
 Distributions
@@ -89,16 +105,24 @@ Distributions
    :nosignatures:
 
    Generator.beta
+   Generator.binomial
    Generator.chisquare
    Generator.exponential
    Generator.f
    Generator.gamma
+   Generator.geometric
    Generator.gumbel
+   Generator.hypergeometric
    Generator.laplace
    Generator.logistic
    Generator.lognormal
+   Generator.logseries
+   Generator.negative_binomial
+   Generator.noncentral_chisquare
+   Generator.noncentral_f
    Generator.normal
    Generator.pareto
+   Generator.poisson
    Generator.power
    Generator.rayleigh
    Generator.standard_cauchy
@@ -111,6 +135,7 @@ Distributions
    Generator.vonmises
    Generator.wald
    Generator.weibull
+   Generator.zipf
 
 Bit generators
 --------------

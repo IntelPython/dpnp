@@ -115,6 +115,14 @@ sample_fn_ptr_t lookup_sampler(const sample_dispatch_table_t &table,
     return fn;
 }
 
+sample_fn_ptr_t lookup_sampler(const discrete_dispatch_table_t &table,
+                               const int engine,
+                               const bool double_precision)
+{
+    check_engine(engine);
+    return table[engine][double_precision ? 1 : 0];
+}
+
 std::pair<sycl::event, sycl::event>
     py_sample(sycl::queue &exec_q,
               const std::vector<std::uint64_t> &seed,

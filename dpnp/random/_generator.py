@@ -53,11 +53,44 @@ from ._bit_generator import BitGenerator, Philox4x3210, _normalize_size
 __all__ = ["Generator", "default_rng"]
 
 _float_types = (numpy.dtype(numpy.float32), numpy.dtype(numpy.float64))
+_integer_types = tuple(
+    numpy.dtype(t)
+    for t in (
+        numpy.bool_,
+        numpy.int8,
+        numpy.uint8,
+        numpy.int16,
+        numpy.uint16,
+        numpy.int32,
+        numpy.uint32,
+        numpy.int64,
+        numpy.uint64,
+    )
+)
+_int64 = numpy.dtype(numpy.int64)
+_INT64_MAX = int(numpy.iinfo(numpy.int64).max)
+
 # The parameter constraints of NumPy's distributions, see
 # numpy/random/_common.pyx
 _CONS_NONE = 0
 _CONS_NON_NEGATIVE = 1
 _CONS_POSITIVE = 2
+_CONS_POSITIVE_NOT_NAN = 3
+_CONS_BOUNDED_0_1 = 4
+_CONS_BOUNDED_GT_0_1 = 5
+_CONS_BOUNDED_LT_0_1 = 6
+_CONS_GT_1 = 7
+_CONS_POISSON = 8
+
+_POISSON_LAM_MAX = _INT64_MAX - numpy.sqrt(_INT64_MAX) * 10
+_HYPERGEOM_MAX = 10**9
+
+# bounds keeping valid host parameters valid once rounded to float32; the
+# smallest normal also survives a device flushing subnormals to zero
+_F32_GT_0 = (numpy.finfo(numpy.float32).tiny, None)
+_F32_GT_1 = (numpy.nextafter(numpy.float32(1), numpy.float32(2)), None)
+_F32_LT_1 = (None, numpy.nextafter(numpy.float32(1), numpy.float32(0)))
+_F32_LT_2_63 = (None, numpy.nextafter(numpy.float32(2**63), numpy.float32(0)))
 
 
 def _is_array(x):
@@ -107,9 +140,16 @@ def _check_device_cast(value, dtype):
     Raise TypeError unless the device array `value` casts to `dtype` by the
     ``"same_kind"`` rule, which lets a float64 array feed a float32 draw.
 
+    An integer or boolean parameter only rejects a complex array, as it takes
+    floating-point arrays converted as by :meth:`dpnp.ndarray.astype`.
+
     """
 
-    if not dpnp.can_cast(value.dtype, dtype, "same_kind"):
+    if dtype.kind == "f":
+        castable = dpnp.can_cast(value.dtype, dtype, "same_kind")
+    else:
+        castable = value.dtype.kind != "c"
+    if not castable:
         raise TypeError(
             f"Cannot cast array data from {value.dtype!r} to {dtype!r} "
             "according to the rule 'same_kind'"
@@ -169,6 +209,14 @@ def _uniform_range(low, high, dtype, overflow_msg):
     return rng
 
 
+# pylint: disable=too-many-branches
+def _usm_type_of(*values):
+    """The coerced USM type of the arrays in `values`, or ``"device"``."""
+
+    usm_types = [x.usm_type for x in values if dpnp.is_supported_array_type(x)]
+    return dpt.get_coerced_usm_type(usm_types) if usm_types else "device"
+
+
 def _check_constraint(value, name, cons, scalar):
     """
     Raise ValueError, as NumPy does, when the parameter `value` violates the
@@ -187,12 +235,64 @@ def _check_constraint(value, name, cons, scalar):
     if cons == _CONS_NONE:
         return
 
+    nan_msg = "is NaN" if scalar else "contains NaNs"
     if cons == _CONS_NON_NEGATIVE:
         if numpy.any(~numpy.isnan(val) & numpy.signbit(val)):
             raise ValueError(f"{name} < 0")
-    elif cons == _CONS_POSITIVE:
+    elif cons in (_CONS_POSITIVE, _CONS_POSITIVE_NOT_NAN):
+        if cons == _CONS_POSITIVE_NOT_NAN and numpy.any(numpy.isnan(val)):
+            raise ValueError(f"{name} must not be NaN")
         if numpy.any(val <= 0):
             raise ValueError(f"{name} <= 0")
+    elif cons == _CONS_BOUNDED_0_1:
+        if not numpy.all((val >= 0) & (val <= 1)):
+            raise ValueError(f"{name} < 0, {name} > 1 or {name} {nan_msg}")
+    elif cons == _CONS_BOUNDED_GT_0_1:
+        if not numpy.all((val > 0) & (val <= 1)):
+            raise ValueError(f"{name} <= 0, {name} > 1 or {name} contains NaNs")
+    elif cons == _CONS_BOUNDED_LT_0_1:
+        if not numpy.all((val >= 0) & (val < 1)):
+            raise ValueError(f"{name} < 0, {name} >= 1 or {name} {nan_msg}")
+    elif cons == _CONS_GT_1:
+        if not numpy.all(val > 1):
+            raise ValueError(f"{name} <= 1 or {name} {nan_msg}")
+    elif cons == _CONS_POISSON:
+        # the array path checks the upper bound first, so NaN fails it
+        if scalar:
+            if not val >= 0:
+                raise ValueError(f"{name} < 0 or {name} is NaN")
+            if val > _POISSON_LAM_MAX:
+                raise ValueError(f"{name} value too large")
+        else:
+            if not numpy.all(val <= _POISSON_LAM_MAX):
+                raise ValueError(f"{name} value too large")
+            if not numpy.all(val >= 0):
+                raise ValueError(f"{name} < 0 or {name} contains NaNs")
+
+
+def _host_float32(value, bounds):
+    """
+    Round a host parameter to ``float32`` and clip it to `bounds`, which
+    rounding a valid parameter to the nearest ``float32`` may cross.
+
+    """
+
+    if dpnp.is_supported_array_type(value):
+        return value
+    with numpy.errstate(over="ignore"):
+        value = numpy.asarray(value, dtype=numpy.float64).astype(numpy.float32)
+    value = numpy.clip(value, *bounds)
+    return value if value.ndim else float(value)
+
+
+def _as_int64(x):
+    """Truncate an integer parameter to int64, as NumPy does."""
+
+    if dpnp.is_supported_array_type(x):
+        return dpnp.asarray(x).astype(_int64)
+    if numpy.ndim(x) > 0:
+        return numpy.asarray(x).astype(_int64)
+    return int(x)
 
 
 # pylint: disable=too-many-public-methods
@@ -226,8 +326,14 @@ class Generator:
 
     Parameters on the host (scalars, lists and NumPy arrays) are checked as
     in NumPy. Parameters on the device are not, since that would wait for
-    the device. Invalid ones give undefined values, such as NaN, but never
-    make the kernels loop without end or access memory out of bounds.
+    the device. Invalid ones give undefined values, such as NaN or the
+    smallest ``int64``, but never make the kernels loop without end or
+    access memory out of bounds.
+
+    The discrete distributions return ``int64`` values, and compute in
+    double precision on devices supporting it, and in single precision
+    otherwise. On the latter, the samples for very large parameters, such
+    as a Poisson `lam` beyond about ``1e7``, are less accurate than NumPy's.
 
     """
 
@@ -311,6 +417,13 @@ class Generator:
             raise TypeError(f"Unsupported dtype {dtype!r} for {name}")
         return dtype
 
+    def _discrete_float_type(self):
+        """The floating-point type the discrete distributions compute in."""
+
+        if self.sycl_device.has_aspect_fp64:
+            return numpy.dtype(numpy.float64)
+        return numpy.dtype(numpy.float32)
+
     def _prepare_out(self, out, size, dtype, name, *, allow_f=False):
         """
         Resolve `size` and `dtype` against a user-supplied `out`.
@@ -356,6 +469,8 @@ class Generator:
         *,
         out=None,
         kernel_params=None,
+        param_types=None,
+        **kwargs,
     ):
         """
         Draw samples by `kernel` of the extension into a new array, or into
@@ -363,8 +478,9 @@ class Generator:
 
         `params` are the user's distribution parameters, which set the output
         shape along with `size`. `kernel_params` are the parameters passed to
-        the kernel, `params` by default, of data type `dtype`. Every kernel
-        parameter that is an array is broadcast to the output shape.
+        the kernel, `params` by default, and `param_types` their data types,
+        `dtype` by default. Every kernel parameter that is an array is
+        broadcast to the output shape. `kwargs` are passed to the kernel.
 
         With ``usm_type=None``, the output and the temporaries take the USM
         type of the array parameters and `out`, or ``"device"``.
@@ -374,14 +490,7 @@ class Generator:
         self._check_queues(*params, *(kernel_params or ()), out)
         queue = self.sycl_queue
         if usm_type is None:
-            usm_types = [
-                x.usm_type
-                for x in (*params, *(kernel_params or ()), out)
-                if dpnp.is_supported_array_type(x)
-            ]
-            usm_type = (
-                dpt.get_coerced_usm_type(usm_types) if usm_types else "device"
-            )
+            usm_type = _usm_type_of(*params, *(kernel_params or ()), out)
 
         param_shape = numpy.broadcast_shapes(
             *(numpy.shape(p) if _is_array(p) else () for p in params)
@@ -402,17 +511,19 @@ class Generator:
 
         if kernel_params is None:
             kernel_params = params
+        if param_types is None:
+            param_types = (dtype,) * len(kernel_params)
 
-        def _to_kernel_param(p):
+        def _to_kernel_param(p, dt):
             if _is_array(p):
                 if dpnp.is_supported_array_type(p):
-                    _check_device_cast(p, dtype)
+                    _check_device_cast(p, dt)
                 else:
                     _check_host_cast(p)
                     # NumPy converts None to NaN, dpnp.asarray does not
-                    p = numpy.asarray(p, dtype=dtype)
+                    p = numpy.asarray(p, dtype=dt)
                 p = dpnp.asarray(
-                    p, dtype=dtype, usm_type=usm_type, sycl_queue=queue
+                    p, dtype=dt, usm_type=usm_type, sycl_queue=queue
                 )
                 p = dpnp.ascontiguousarray(dpnp.broadcast_to(p, shape))
                 if out is not None:
@@ -424,10 +535,16 @@ class Generator:
                     ) and not ti._same_logical_tensors(usm_p, usm_out):
                         p = dpnp.copy(p)
                 return p
-            # as in NumPy, None is NaN along with array parameters
-            return float(_as_host_float(p))
+            if dt.kind == "f":
+                # as in NumPy, None is NaN along with array parameters
+                return float(_as_host_float(p))
+            if dt.kind == "b":
+                return bool(p)
+            return int(p)
 
-        kernel_params = tuple(_to_kernel_param(p) for p in kernel_params)
+        kernel_params = tuple(
+            _to_kernel_param(p, dt) for p, dt in zip(kernel_params, param_types)
+        )
 
         if out is None:
             out = dpnp.empty(
@@ -441,7 +558,7 @@ class Generator:
             # filled in memory order, through its C-contiguous transpose
             usm_out = dpnp.get_usm_ndarray(out)
             target = dpt.permute_dims(usm_out, tuple(range(out.ndim))[::-1])
-        self._bit_generator._fill(kernel, kernel_params, target)
+        self._bit_generator._fill(kernel, kernel_params, target, **kwargs)
         return out
 
     def _float_sample(
@@ -487,6 +604,50 @@ class Generator:
             _check_constraint(value, pname, cons, scalar)
         return self._float_sample(
             kernel, values, size, dtype, usm_type, name, out=out
+        )
+
+    def _discrete_sample(
+        self,
+        kernel,
+        params,
+        size,
+        usm_type,
+        *,
+        kernel_params=None,
+        param_types=None,
+        f32_bounds=None,
+    ):
+        """
+        Draw ``int64`` samples of a discrete distribution.
+
+        A ``None`` in `param_types` stands for the floating-point type the
+        distribution computes in, which is also the default for every
+        parameter. When that type is ``float32``, the host kernel parameters
+        are clipped to the matching `f32_bounds`, unless they are ``None``.
+
+        """
+
+        validate_usm_type(usm_type, allow_none=True)
+        ft = self._discrete_float_type()
+        if kernel_params is None:
+            kernel_params = params
+        if f32_bounds is not None and ft == numpy.float32:
+            kernel_params = tuple(
+                p if b is None else _host_float32(p, b)
+                for p, b in zip(kernel_params, f32_bounds)
+            )
+        if param_types is None:
+            param_types = (None,) * len(kernel_params)
+        param_types = tuple(ft if t is None else t for t in param_types)
+        return self._sample(
+            kernel,
+            params,
+            size,
+            _int64,
+            usm_type,
+            kernel_params=kernel_params,
+            param_types=param_types,
+            double_precision=ft == numpy.float64,
         )
 
     def random(self, size=None, dtype=None, out=None, *, usm_type=None):
@@ -1155,6 +1316,30 @@ class Generator:
             (df, "df", _CONS_POSITIVE),
         )
 
+    def noncentral_chisquare(
+        self, df, nonc, size=None, dtype=None, *, usm_type=None
+    ):
+        """
+        Draw samples from a noncentral chi-square distribution.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.noncentral_chisquare`.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        """
+        return self._cont(
+            ri._noncentral_chisquare,
+            "noncentral_chisquare",
+            size,
+            dtype,
+            usm_type,
+            (df, "df", _CONS_POSITIVE),
+            (nonc, "nonc", _CONS_NON_NEGATIVE),
+        )
+
     def standard_t(self, df, size=None, dtype=None, *, usm_type=None):
         """
         Draw samples from a standard Student's t distribution with `df`
@@ -1198,6 +1383,31 @@ class Generator:
             (dfden, "dfden", _CONS_POSITIVE),
         )
 
+    def noncentral_f(
+        self, dfnum, dfden, nonc, size=None, dtype=None, *, usm_type=None
+    ):
+        """
+        Draw samples from the noncentral F distribution.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.noncentral_f`.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        """
+        return self._cont(
+            ri._noncentral_f,
+            "noncentral_f",
+            size,
+            dtype,
+            usm_type,
+            (dfnum, "dfnum", _CONS_POSITIVE),
+            (dfden, "dfden", _CONS_POSITIVE),
+            (nonc, "nonc", _CONS_NON_NEGATIVE),
+        )
+
     def beta(self, a, b, size=None, dtype=None, *, usm_type=None):
         """
         Draw samples from a beta distribution.
@@ -1217,6 +1427,322 @@ class Generator:
             usm_type,
             (a, "a", _CONS_POSITIVE),
             (b, "b", _CONS_POSITIVE),
+        )
+
+    def poisson(self, lam=1.0, size=None, *, usm_type=None):
+        """
+        Draw samples from a Poisson distribution.
+
+        For full documentation refer to :obj:`numpy.random.Generator.poisson`.
+
+        Limitations
+        -----------
+        `usm_type` is not in NumPy's signature.
+
+        """
+
+        self._check_queues(lam)
+        _check_constraint(
+            lam,
+            "lam",
+            _CONS_POISSON,
+            _is_scalar_path(lam),
+        )
+        return self._discrete_sample(
+            ri._poisson, (lam,), size, usm_type, f32_bounds=(_F32_LT_2_63,)
+        )
+
+    def binomial(self, n, p, size=None, *, usm_type=None):
+        """
+        Draw samples from a binomial distribution.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.binomial`.
+
+        Limitations
+        -----------
+        `usm_type` is not in NumPy's signature.
+
+        """
+
+        self._check_queues(n, p)
+        scalar = _is_scalar_path(n, p)
+        # NumPy converts both parameters before checking either
+        n = _as_int64(n)
+        _check_constraint(p, "p", _CONS_BOUNDED_0_1, scalar)
+        _check_constraint(n, "n", _CONS_NON_NEGATIVE, scalar)
+        return self._discrete_sample(
+            ri._binomial, (n, p), size, usm_type, param_types=(_int64, None)
+        )
+
+    def negative_binomial(self, n, p, size=None, *, usm_type=None):
+        """
+        Draw samples from a negative binomial distribution.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.negative_binomial`.
+
+        Limitations
+        -----------
+        `usm_type` is not in NumPy's signature.
+
+        """
+
+        self._check_queues(n, p)
+        # NumPy takes scalar parameters as arrays here, so None gives NaN
+        _check_constraint(n, "n", _CONS_POSITIVE_NOT_NAN, False)
+        _check_constraint(p, "p", _CONS_BOUNDED_GT_0_1, False)
+        if not (
+            dpnp.is_supported_array_type(n) or dpnp.is_supported_array_type(p)
+        ):
+            dn = numpy.asarray(n, dtype=numpy.float64)
+            dp = numpy.asarray(p, dtype=numpy.float64)
+            with numpy.errstate(all="ignore"):
+                max_lam = (1 - dp) / dp * (dn + 10 * numpy.sqrt(dn))
+            if numpy.any(max_lam > _POISSON_LAM_MAX):
+                raise ValueError(
+                    "n too large or p too small, see "
+                    "Generator.negative_binomial Notes"
+                )
+        return self._discrete_sample(
+            ri._negative_binomial, (n, p), size, usm_type
+        )
+
+    def geometric(self, p, size=None, *, usm_type=None):
+        """
+        Draw samples from the geometric distribution.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.geometric`.
+
+        Limitations
+        -----------
+        `usm_type` is not in NumPy's signature.
+
+        """
+
+        self._check_queues(p)
+        _check_constraint(
+            p,
+            "p",
+            _CONS_BOUNDED_GT_0_1,
+            _is_scalar_path(p),
+        )
+        return self._discrete_sample(
+            ri._geometric, (p,), size, usm_type, f32_bounds=(_F32_GT_0,)
+        )
+
+    def logseries(self, p, size=None, *, usm_type=None):
+        """
+        Draw samples from a logarithmic series distribution.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.logseries`.
+
+        Limitations
+        -----------
+        `usm_type` is not in NumPy's signature.
+
+        """
+
+        self._check_queues(p)
+        _check_constraint(
+            p,
+            "p",
+            _CONS_BOUNDED_LT_0_1,
+            _is_scalar_path(p),
+        )
+        return self._discrete_sample(
+            ri._logseries, (p,), size, usm_type, f32_bounds=(_F32_LT_1,)
+        )
+
+    def zipf(self, a, size=None, *, usm_type=None):
+        """
+        Draw samples from a Zipf distribution.
+
+        For full documentation refer to :obj:`numpy.random.Generator.zipf`.
+
+        Limitations
+        -----------
+        `usm_type` is not in NumPy's signature. The samples follow the Zipf
+        distribution truncated to the largest ``int64``, while NumPy's
+        rejection test rounds to accepting every sample above ``2**53``,
+        which makes its tail too heavy for `a` close to 1.
+
+        """
+
+        self._check_queues(a)
+        _check_constraint(a, "a", _CONS_GT_1, _is_scalar_path(a))
+        return self._discrete_sample(
+            ri._zipf, (a,), size, usm_type, f32_bounds=(_F32_GT_1,)
+        )
+
+    def hypergeometric(self, ngood, nbad, nsample, size=None, *, usm_type=None):
+        """
+        Draw samples from a hypergeometric distribution.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.hypergeometric`.
+
+        Limitations
+        -----------
+        `usm_type` is not in NumPy's signature.
+
+        """
+
+        self._check_queues(ngood, nbad, nsample)
+        params = tuple(_as_int64(x) for x in (ngood, nbad, nsample))
+        names = ("ngood", "nbad", "nsample")
+        scalar = _is_scalar_path(*params)
+
+        for x in params[:2]:
+            xp, (xa,) = _check_arrays((x,))
+            if xp is not None and xp.any(xa >= _HYPERGEOM_MAX):
+                raise ValueError(
+                    "both ngood and nbad must be less than " f"{_HYPERGEOM_MAX}"
+                )
+        xp, (good, bad, sample) = _check_arrays(params)
+        if xp is not None and xp.any(good + bad < sample):
+            raise ValueError("ngood + nbad < nsample")
+        for x, name in zip(params, names):
+            _check_constraint(x, name, _CONS_NON_NEGATIVE, scalar)
+
+        return self._discrete_sample(
+            ri._hypergeometric,
+            params,
+            size,
+            usm_type,
+            param_types=(_int64,) * 3,
+        )
+
+    def integers(
+        self,
+        low,
+        high=None,
+        size=None,
+        dtype=numpy.int64,
+        endpoint=False,
+        *,
+        usm_type=None,
+    ):
+        """
+        Return random integers from `low` (inclusive) to `high` (exclusive),
+        or if ``endpoint=True``, `low` (inclusive) to `high` (inclusive).
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.integers`.
+
+        Limitations
+        -----------
+        `usm_type` is not in NumPy's signature. The values drawn differ from
+        NumPy's for the same range, as there is no buffering of 32-bit
+        draws for the narrow types.
+
+        """
+
+        return self._integers(
+            low, high, size, dtype, endpoint, usm_type, "integers"
+        )
+
+    def _integers(self, low, high, size, dtype, endpoint, usm_type, name):
+        """The implementation of :meth:`integers`, for the method `name`."""
+
+        self._check_queues(low, high)
+        validate_usm_type(usm_type, allow_none=True)
+
+        if high is None:
+            low, high = 0, low
+        if usm_type is None:
+            # resolved here, as the bounds on the host become temporaries
+            usm_type = _usm_type_of(low, high)
+
+        dtype = numpy.dtype(dtype)
+        if dtype not in _integer_types:
+            raise TypeError(f"Unsupported dtype {dtype!r} for {name}")
+
+        # The bounds are passed to the kernel as a closed interval
+        if dtype == numpy.bool_:
+            lo_lim, hi_lim = 0, 1
+        else:
+            info = numpy.iinfo(dtype)
+            lo_lim, hi_lim = int(info.min), int(info.max)
+        dt_name = "bool" if dtype == numpy.bool_ else str(dtype)
+
+        def _check_bounds(low, high):
+            # the checks of NumPy, for host bounds only
+            if low is not None and numpy.any(numpy.less(low, lo_lim)):
+                raise ValueError(f"low is out of bounds for {dt_name}")
+            if high is not None and numpy.any(
+                numpy.greater(high, hi_lim if endpoint else hi_lim + 1)
+            ):
+                raise ValueError(f"high is out of bounds for {dt_name}")
+            if low is None or high is None:
+                return
+            if numpy.any(
+                numpy.greater(low, high)
+                if endpoint
+                else numpy.greater_equal(low, high)
+            ):
+                if not numpy.any(low):
+                    # low is 0 when only one bound is given
+                    raise ValueError("high < 0" if endpoint else "high <= 0")
+                raise ValueError("low > high" if endpoint else "low >= high")
+
+        if _is_array(low) or _is_array(high):
+            # Widen to 64 bits with the sign of the result type, so that an
+            # exclusive high of max + 1 survives the subtraction
+            wide = (
+                numpy.uint64
+                if dtype.kind == "u" or dtype == numpy.bool_
+                else numpy.int64
+            )
+            queue = self.sycl_queue
+            params = (low, high)
+
+            def _on_host(x):
+                # bounds on the device are not checked
+                return None if dpnp.is_supported_array_type(x) else x
+
+            _check_bounds(
+                *(
+                    None if x is None else numpy.asarray(x)
+                    for x in map(_on_host, params)
+                )
+            )
+
+            def _to_bound(x, shift):
+                if dpnp.is_supported_array_type(x):
+                    x = dpnp.asarray(x, dtype=wide, sycl_queue=queue)
+                    return (x - shift if shift else x).astype(dtype)
+                if not _is_array(x):
+                    return int(x) - shift
+                # exact integers, truncated as in NumPy, since max + 1 fits
+                # the wide type only after the shift
+                x = numpy.frompyfunc(int, 1, 1)(numpy.asarray(x)) - shift
+                x = dpnp.asarray(
+                    x.astype(wide), usm_type=usm_type, sycl_queue=queue
+                )
+                return x.astype(dtype)
+
+            low = _to_bound(low, 0)
+            high = _to_bound(high, 0 if endpoint else 1)
+            return self._sample(
+                ri._integers,
+                params,
+                size,
+                dtype,
+                usm_type,
+                kernel_params=(low, high),
+            )
+
+        low = int(low)
+        high = int(high)
+        _check_bounds(low, high)
+        if not endpoint:
+            high -= 1
+
+        return self._sample(
+            ri._integers, (), size, dtype, usm_type, kernel_params=(low, high)
         )
 
 

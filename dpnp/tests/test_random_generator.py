@@ -8,6 +8,7 @@ import pytest
 from numpy.testing import (
     assert_allclose,
     assert_array_equal,
+    assert_equal,
     assert_raises,
     assert_raises_regex,
 )
@@ -19,6 +20,17 @@ from dpnp.random import Generator, Philox4x3210, default_rng
 from .helper import get_float_dtypes, has_support_aspect64
 
 float_dtypes = get_float_dtypes(no_float16=True)
+integer_dtypes = [
+    numpy.bool_,
+    numpy.int8,
+    numpy.uint8,
+    numpy.int16,
+    numpy.uint16,
+    numpy.int32,
+    numpy.uint32,
+    numpy.int64,
+    numpy.uint64,
+]
 
 # the number of output elements each work-item of a kernel produces, with
 # Philox4x3210
@@ -324,8 +336,10 @@ class TestFloatMethods:
         ("logistic", (1.0, 2.0)),
         ("triangular", (0.0, 1.0, 3.0)),
         ("vonmises", (0.5, 2.0)),
+        ("noncentral_chisquare", (3.0, 2.0)),
         ("standard_t", (5.0,)),
         ("f", (5.0, 7.0)),
+        ("noncentral_f", (5.0, 7.0, 2.0)),
     ]
 
     @pytest.mark.parametrize("dtype", float_dtypes)
@@ -416,8 +430,17 @@ class TestFloatMethods:
             ("triangular", (0.0, 0.0, 1.0), 1 / 3, 1 / 18),
             # uniform on the circle, whatever mu is, as in NumPy
             ("vonmises", (0.5, 0.0), 0.0, math.pi**2 / 3),
+            ("noncentral_chisquare", (3.0, 2.0), 5.0, 14.0),
+            ("noncentral_chisquare", (0.5, 1.0), 1.5, 5.0),
+            ("noncentral_chisquare", (3.0, 0.0), 3.0, 6.0),
             ("standard_t", (10.0,), 0.0, 1.25),
             ("f", (10.0, 30.0), 30 / 28, 2 * 900 * 38 / (10 * 28**2 * 26)),
+            (
+                "noncentral_f",
+                (10.0, 30.0, 2.0),
+                30 * 12 / (10 * 28),
+                2 * 9 * (144 + 14 * 28) / (28**2 * 26),
+            ),
         ],
     )
     def test_moments(self, name, params, mean, var, dtype):
@@ -465,6 +488,8 @@ class TestFloatMethods:
             ("wald", (1e-10, 1e10), 0, numpy.inf),
             ("triangular", (0.0, 1.0, 1.0), 0, 1),
             ("vonmises", (-3.0, 1e-3), -numpy.pi, numpy.pi),
+            ("noncentral_chisquare", (1e-3, 1e-3), 0, numpy.inf),
+            ("noncentral_f", (1e-3, 1e-3, 1e3), 0, numpy.inf),
         ],
     )
     def test_extreme_range(self, name, params, lo, hi, dtype):
@@ -485,8 +510,10 @@ class TestFloatMethods:
             ("logistic", (0.0, 1.0)),
             ("vonmises", (0.0, 1.0)),
             ("chisquare", (1.0,)),
+            ("noncentral_chisquare", (1.0, 1.0)),
             ("standard_t", (1.0,)),
             ("f", (1.0, 1.0)),
+            ("noncentral_f", (1.0, 1.0, 1.0)),
             ("gamma", (1.0, 1.0)),
             ("beta", (1.0, 1.0)),
         ],
@@ -790,6 +817,434 @@ class TestFloatMethods:
         assert (dpnp.abs(res) <= numpy.pi).all()
 
 
+class TestIntegers:
+    @pytest.mark.parametrize("dtype", integer_dtypes)
+    def test_full_range(self, dtype):
+        if dtype == numpy.bool_:
+            lo, hi = 0, 1
+        else:
+            info = numpy.iinfo(dtype)
+            lo, hi = int(info.min), int(info.max)
+
+        rng = default_rng(6)
+        res = rng.integers(lo, hi, size=10**5, dtype=dtype, endpoint=True)
+        assert res.dtype == dtype
+        res = dpnp.asnumpy(res)
+        assert res.min() >= lo and res.max() <= hi
+
+        if numpy.dtype(dtype).itemsize == 1:
+            # every value of a small type is drawn
+            assert len(numpy.unique(res)) == hi - lo + 1
+
+        # an exclusive high may be one past the maximum
+        res = rng.integers(lo, hi + 1, size=10, dtype=dtype)
+        assert res.dtype == dtype
+
+    @pytest.mark.parametrize("dtype", integer_dtypes[1:])
+    def test_bounds(self, dtype):
+        rng = default_rng(7)
+        res = dpnp.asnumpy(rng.integers(3, 10, size=10**5, dtype=dtype))
+        assert_equal(numpy.unique(res), numpy.arange(3, 10, dtype=dtype))
+
+        res = dpnp.asnumpy(
+            rng.integers(3, 10, size=10**5, dtype=dtype, endpoint=True)
+        )
+        assert_equal(numpy.unique(res), numpy.arange(3, 11, dtype=dtype))
+
+        res = dpnp.asnumpy(rng.integers(5, size=1000, dtype=dtype))
+        assert_equal(numpy.unique(res), numpy.arange(5, dtype=dtype))
+
+        # a single-value range
+        res = dpnp.asnumpy(rng.integers(4, 5, size=10, dtype=dtype))
+        assert (res == 4).all()
+
+    def test_uniformity(self):
+        # a range that is not a power of two is not biased
+        n, k = 10**6, 3
+        res = dpnp.asnumpy(default_rng(8).integers(0, k, size=n))
+        counts = numpy.bincount(res, minlength=k)
+        assert (abs(counts - n / k) < 5 * numpy.sqrt(n / k)).all()
+
+    def test_large_range(self):
+        rng = default_rng(9)
+        hi = (1 << 64) - 12345
+        res = dpnp.asnumpy(rng.integers(0, hi, size=10**4, dtype=numpy.uint64))
+        assert (res < hi).all()
+        # about half of the values are at least 2**63
+        assert 0.4 < (res >= (1 << 63)).mean() < 0.6
+
+    def test_default_dtype(self):
+        res = default_rng(0).integers(10, size=3)
+        assert res.dtype == dpnp.int64
+
+    def test_array_bounds(self):
+        rng = default_rng(10)
+        high = dpnp.asarray([1, 10, 100])
+        res = rng.integers(0, high, size=(1000, 3))
+        assert res.shape == (1000, 3)
+        res = dpnp.asnumpy(res)
+        assert (res < dpnp.asnumpy(high)).all()
+        assert res[:, 0].max() == 0
+        assert res[:, 2].max() > 50
+
+        # an exclusive high of max + 1 does not overflow
+        res = rng.integers(numpy.array([0, 250]), 256, dtype=numpy.uint8)
+        assert res.dtype == numpy.uint8
+        assert dpnp.asnumpy(res)[1] >= 250
+
+        res = rng.integers(-1, [3, 2**63], size=(1000, 2))
+        res = dpnp.asnumpy(res)
+        assert res[:, 0].min() == -1 and res[:, 0].max() == 2
+        assert (res[:, 1] >= -1).all() and (res[:, 1] > 2**62).any()
+
+    def test_float_array_bounds(self):
+        # truncated to integers, as in NumPy
+        res = default_rng(0).integers([0.5, -0.5], 2.5, size=(1000, 2))
+        assert_equal(numpy.unique(dpnp.asnumpy(res)), [0, 1])
+
+    @pytest.mark.parametrize(
+        "args, kwargs, msg",
+        [
+            ((5, 5), {}, "low >= high"),
+            ((5, 4), {"endpoint": True}, "low > high"),
+            ((-1, 5), {"dtype": numpy.uint8}, "low is out of bounds for uint8"),
+            (
+                (0, 257),
+                {"dtype": numpy.uint8},
+                "high is out of bounds for uint8",
+            ),
+            ((0, 256), {"dtype": numpy.uint8, "endpoint": True}, "high is out"),
+            ((0, 3), {"dtype": numpy.bool_}, "high is out of bounds for bool"),
+        ],
+    )
+    def test_errors(self, args, kwargs, msg):
+        rng = default_rng(0)
+        assert_raises_regex(ValueError, msg, rng.integers, *args, **kwargs)
+
+    def test_bad_dtype(self):
+        rng = default_rng(0)
+        assert_raises(TypeError, rng.integers, 0, 5, dtype=numpy.float32)
+
+
+def _zeta(a, n=10**5):
+    """The Riemann zeta function, by a partial sum and Euler-Maclaurin."""
+    k = numpy.arange(1, n, dtype=numpy.float64)
+    return (k**-a).sum() + n ** (1 - a) / (a - 1) + 0.5 * n**-a
+
+
+def _lchoose(n, k):
+    return math.lgamma(n + 1) - math.lgamma(k + 1) - math.lgamma(n - k + 1)
+
+
+def _xlog1py(x, y):
+    """x * log1p(y), taking 0 * log(0) to be 0."""
+    if x == 0:
+        return 0.0
+    return -math.inf if y == -1 else x * math.log1p(y)
+
+
+# log-pmfs of the discrete distributions, for the support values k
+_log_pmfs = {
+    "poisson": lambda k, lam: k * math.log(lam) - lam - math.lgamma(k + 1),
+    "binomial": lambda k, n, p: (
+        _lchoose(n, k) + k * math.log(p) + _xlog1py(n - k, -p)
+        if k <= n
+        else -math.inf
+    ),
+    "negative_binomial": lambda k, n, p: (
+        math.lgamma(k + n)
+        - math.lgamma(k + 1)
+        - math.lgamma(n)
+        + n * math.log(p)
+        + k * math.log1p(-p)
+    ),
+    "geometric": lambda k, p: (
+        _xlog1py(k - 1, -p) + math.log(p) if k >= 1 else -math.inf
+    ),
+    "logseries": lambda k, p: (
+        k * math.log(p) - math.log(k) - math.log(-math.log1p(-p))
+        if k >= 1
+        else -math.inf
+    ),
+    "zipf": lambda k, a: (
+        -a * math.log(k) - math.log(_zeta(a)) if k >= 1 else -math.inf
+    ),
+    "hypergeometric": lambda k, g, b, s: (
+        _lchoose(g, k) + _lchoose(b, s - k) - _lchoose(g + b, s)
+        if max(0, s - b) <= k <= min(g, s)
+        else -math.inf
+    ),
+}
+
+
+@pytest.fixture(params=["double", "single"])
+def discrete_precision(request, monkeypatch):
+    """Run a test with both floating-point types of discrete sampling."""
+
+    if request.param == "double" and not has_support_aspect64():
+        pytest.skip("no fp64 support on the device")
+    if request.param == "single":
+        monkeypatch.setattr(
+            Generator,
+            "_discrete_float_type",
+            lambda self: numpy.dtype(numpy.float32),
+        )
+    return request.param
+
+    @pytest.mark.parametrize("usm_type", ["shared", "host"])
+    def test_usm_type_follows_bounds(self, usm_type):
+        # host bounds become temporaries of the device bound's USM type
+        rng = default_rng(0)
+        low = dpnp.zeros(3, dtype=dpnp.int64, usm_type=usm_type)
+        res = rng.integers(low, [5, 6, 7])
+        assert res.usm_type == usm_type
+        assert rng.integers([0, 1, 2], 10).usm_type == "device"
+
+
+class TestDiscreteMethods:
+    cases = [
+        ("poisson", (3.0,)),
+        ("binomial", (10, 0.3)),
+        ("negative_binomial", (5.0, 0.3)),
+        ("geometric", (0.5,)),
+        ("logseries", (0.6,)),
+        ("zipf", (2.5,)),
+        ("hypergeometric", (5, 7, 3)),
+    ]
+
+    @pytest.mark.parametrize("name, params", cases)
+    def test_shape_dtype(self, name, params):
+        rng = default_rng(0)
+        meth = getattr(rng, name)
+
+        res = meth(*params, size=(3, 4))
+        assert isinstance(res, dpnp.ndarray)
+        assert res.shape == (3, 4)
+        assert res.dtype == dpnp.int64
+        assert meth(*params).shape == ()
+        assert meth(*params, size=0).shape == (0,)
+
+        res = meth(*params, size=2, usm_type="host")
+        assert res.usm_type == "host"
+
+    @pytest.mark.parametrize(
+        "name, params",
+        [
+            ("poisson", (0.5,)),
+            ("poisson", (5.0,)),
+            ("poisson", (10.0,)),
+            ("poisson", (15.5,)),
+            ("poisson", (100.0,)),
+            ("binomial", (10, 0.3)),
+            ("binomial", (20, 0.9)),
+            ("binomial", (100, 0.4)),
+            ("binomial", (1000, 0.5)),
+            ("binomial", (5, 1.0)),
+            ("negative_binomial", (5.0, 0.3)),
+            ("negative_binomial", (0.5, 0.8)),
+            ("negative_binomial", (100.0, 0.5)),
+            ("geometric", (0.5,)),
+            ("geometric", (0.9,)),
+            ("geometric", (0.1,)),
+            ("geometric", (1.0,)),
+            ("logseries", (0.3,)),
+            ("logseries", (0.9,)),
+            ("zipf", (1.5,)),
+            ("zipf", (2.5,)),
+            ("zipf", (6.0,)),
+            ("hypergeometric", (5, 7, 3)),
+            ("hypergeometric", (7, 5, 10)),
+            ("hypergeometric", (100, 200, 50)),
+            ("hypergeometric", (1000, 5, 100)),
+            ("hypergeometric", (300, 300, 590)),
+        ],
+    )
+    def test_pmf(self, name, params, discrete_precision):
+        n = 10**6
+        res = dpnp.asnumpy(getattr(default_rng(3), name)(*params, size=n))
+        counts = numpy.bincount(res[res < 10**4], minlength=1)
+
+        for k in range(len(counts) + 1):
+            prob = math.exp(_log_pmfs[name](k, *params))
+            freq = counts[k] / n if k < len(counts) else 0.0
+            # five standard errors of the frequency
+            assert (
+                abs(freq - prob) <= 5 * math.sqrt(prob * (1 - prob) / n) + 5e-6
+            )
+
+    @pytest.mark.parametrize(
+        "name, params, mean, var",
+        [
+            ("poisson", (1e7,), 1e7, 1e7),
+            ("poisson", (1e15,), 1e15, 1e15),
+            ("binomial", (10**9, 0.3), 3e8, 2.1e8),
+            ("binomial", (2**40, 0.5), 2.0**39, 2.0**38),
+            ("binomial", (10**7, 1e-6), 10.0, 10.0),
+            ("negative_binomial", (1e6, 0.5), 1e6, 2e6),
+            ("geometric", (1e-6,), 1e6, (1 - 1e-6) / 1e-12),
+            ("logseries", (0.999,), None, None),
+            (
+                "hypergeometric",
+                (10**8, 3 * 10**8, 10**6),
+                2.5e5,
+                10**6 * 0.25 * 0.75 * (4e8 - 1e6) / (4e8 - 1),
+            ),
+            (
+                "hypergeometric",
+                (5 * 10**8, 4 * 10**8, 3 * 10**8),
+                3e8 * 5 / 9,
+                3e8 * (5 / 9) * (4 / 9) * 6e8 / (9e8 - 1),
+            ),
+        ],
+    )
+    def test_large_params(self, name, params, mean, var, discrete_precision):
+        n = 10**6
+        res = dpnp.asnumpy(getattr(default_rng(4), name)(*params, size=n))
+        assert (res >= 0).all()
+        # the draws are not limited to the integers of the compute type,
+        # but for a deviation from the mean drawn by a float32 sampler
+        # above about 2**22
+        large = res[res >= 2**25]
+        if large.size > 1000 and (
+            discrete_precision == "double" or var < 2**44
+        ):
+            odd = (large % 2).mean()
+            assert abs(odd - 0.5) <= 5 * math.sqrt(0.25 / large.size)
+        if name == "logseries":
+            p = params[0]
+            mean = -p / ((1 - p) * math.log1p(-p))
+            var = -p * (p + math.log1p(-p)) / ((1 - p) * math.log1p(-p)) ** 2
+            # a heavy tail
+            var_tol = 0.2
+        else:
+            var_tol = 5 * math.sqrt(10 / n)
+
+        res = res.astype(numpy.float64)
+        # the rounding of the parameter to the compute type
+        eps = 2**-23 if discrete_precision == "single" else 2**-52
+        assert abs(res.mean() - mean) <= 5 * math.sqrt(var / n) + eps * mean
+        assert abs(res.var() - var) <= var_tol * var
+
+    @pytest.mark.parametrize("a", [1.1, 1.5])
+    def test_zipf_tail(self, a, discrete_precision):
+        # NumPy's (1 + 1/X)**(a - 1) - 1 rounds to 0 above 2**53, which makes
+        # its tail too heavy for a close to 1; this is the Zipf distribution
+        # truncated to INT64_MAX
+        n, x = 2**20, 2**25
+        # the sum of k**-a over k >= x, by Euler-Maclaurin
+        tail = lambda x: x ** (1 - a) / (a - 1) + 0.5 * x**-a
+        prob = (tail(x) - tail(2.0**63)) / (_zeta(a) - tail(2.0**63))
+        res = dpnp.asnumpy(default_rng(7).zipf(a, size=n))
+        count = (res >= x).sum()
+        assert abs(count - n * prob) <= 5 * math.sqrt(n * prob * (1 - prob))
+
+    def test_edge_values(self, discrete_precision):
+        rng = default_rng(5)
+        assert (dpnp.asnumpy(rng.poisson(0.0, size=100)) == 0).all()
+        assert (dpnp.asnumpy(rng.binomial(0, 0.5, size=100)) == 0).all()
+        assert (dpnp.asnumpy(rng.binomial(7, 0.0, size=100)) == 0).all()
+        assert (dpnp.asnumpy(rng.binomial(7, 1.0, size=100)) == 7).all()
+        assert (dpnp.asnumpy(rng.geometric(1.0, size=100)) == 1).all()
+        assert (dpnp.asnumpy(rng.logseries(0.0, size=100)) == 1).all()
+        assert (dpnp.asnumpy(rng.zipf(1025.0, size=100)) == 1).all()
+        assert (dpnp.asnumpy(rng.hypergeometric(5, 0, 3, size=100)) == 3).all()
+        assert (dpnp.asnumpy(rng.hypergeometric(0, 5, 3, size=100)) == 0).all()
+        assert (dpnp.asnumpy(rng.hypergeometric(5, 5, 10, size=100)) == 5).all()
+
+        # values that do not fit an int64 are clamped or rejected
+        res = dpnp.asnumpy(rng.geometric(1e-300, size=1000))
+        assert (res > 0).all()
+        res = dpnp.asnumpy(rng.zipf(1.0001, size=1000))
+        assert (res > 0).all()
+
+    @pytest.mark.parametrize(
+        "name, param",
+        [
+            ("geometric", [1e-300, 0.5]),
+            ("logseries", 1 - 1e-9),
+            ("zipf", 1 + 1e-9),
+            # NumPy's largest valid lam
+            ("poisson", 2**63 - 1 - 10 * math.sqrt(2**63 - 1)),
+        ],
+    )
+    def test_param_near_bound(self, name, param, discrete_precision):
+        # rounding to float32 must not take a valid parameter out of bounds
+        res = dpnp.asnumpy(getattr(default_rng(5), name)(param, size=(100, 2)))
+        assert (res > 0).all()
+
+    def test_array_params(self, discrete_precision):
+        rng = default_rng(6)
+        lam = dpnp.asarray([1.0, 100.0, 1e6])
+        res = rng.poisson(lam, size=(10**5, 3))
+        assert_allclose(
+            dpnp.asnumpy(res.mean(axis=0)), [1.0, 100.0, 1e6], rtol=0.02
+        )
+
+        res = rng.binomial([10, 1000], dpnp.asarray([[0.5], [0.1]]))
+        assert res.shape == (2, 2)
+
+        res = rng.hypergeometric(numpy.array([5, 500]), 5, [3, 7], size=(4, 2))
+        assert res.shape == (4, 2)
+        res = dpnp.asnumpy(res)
+        assert (res[:, 0] <= 3).all() and (res[:, 1] <= 7).all()
+
+        # integer parameters are truncated, as in NumPy
+        res = dpnp.asnumpy(rng.binomial([2.9], 1.0, size=3))
+        assert (res == 2).all()
+        res = dpnp.asnumpy(rng.binomial(dpnp.asarray([2.9]), 1.0, size=3))
+        assert (res == 2).all()
+
+    def test_device_params_not_checked(self):
+        # invalid parameters on the device give undefined values
+        rng = default_rng(0)
+        rng.poisson(dpnp.asarray([-1.0, numpy.nan]))
+        rng.binomial(dpnp.asarray([-1]), 0.5)
+        rng.zipf(dpnp.asarray([0.5, numpy.nan]))
+        rng.hypergeometric(dpnp.asarray([10**10]), 1, 5)
+        rng.normal(0, dpnp.asarray([-1.0]))
+
+    def test_device_params_terminate(self):
+        # the parameters on which the rejection samplers could loop forever
+        # give INT64_MIN
+        rng = default_rng(0)
+        nan, inf = numpy.nan, numpy.inf
+        int64_min = numpy.iinfo(numpy.int64).min
+        finfo = numpy.finfo(dpnp.default_float_type(sycl_queue=rng.sycl_queue))
+        fmax, tiny = float(finfo.max), float(finfo.tiny)
+
+        res = rng.poisson(dpnp.asarray([inf, fmax, 2.0**63]), size=(8, 3))
+        assert_array_equal(res, int64_min, strict=False)
+        res = rng.binomial(5, dpnp.asarray([nan, -1.0, 2.0]), size=(8, 3))
+        assert_array_equal(res, int64_min, strict=False)
+        n = dpnp.asarray([2**40, -1], dtype=dpnp.int64)
+        res = rng.hypergeometric(n, n.max(), 10**9, size=(8, 2))
+        assert_array_equal(res, int64_min, strict=False)
+        res = rng.logseries(dpnp.asarray([1.0, 2.0, inf, nan]), size=(8, 4))
+        assert_array_equal(res, int64_min, strict=False)
+        rng.negative_binomial(dpnp.asarray([inf, nan]), 0.5)
+        rng.noncentral_chisquare(1.0, dpnp.asarray([inf, nan]))
+        rng.noncentral_f(1.0, 1.0, dpnp.asarray([inf, nan]))
+
+        # a shape just below zero would reject nearly every draw
+        shape = dpnp.asarray([-1e-8, -1e-12, -1e-30, -1.0])
+        rng.negative_binomial(shape, 0.5)
+        rng.noncentral_chisquare(shape, dpnp.asarray([1e-30] * 4))
+
+        p = dpnp.asarray([nan, -0.0, -tiny, 0.0, -inf])
+        res = rng.geometric(p, size=(8, 5))
+        assert_array_equal(res, int64_min, strict=False)
+
+    def test_host_params_terminate(self, discrete_precision):
+        # valid parameters on which rounding in single precision made every
+        # draw of a rejection sampler fail
+        rng = default_rng(0)
+        res = rng.zipf([129.0, 200.0, 1024.0], size=(8, 3))
+        assert_array_equal(res, 1, strict=False)
+        res = rng.binomial([25 * 10**14, 10**17], [0.5, 0.05], size=(8, 2))
+        mean = numpy.array([12.5e14, 5e15])
+        assert_allclose(dpnp.asnumpy(res).mean(axis=0), mean, rtol=1e-3)
+
+
 def _assert_same_error(np_call, dp_call):
     """Assert `dp_call` raises the same exception as `np_call`."""
 
@@ -798,6 +1253,18 @@ def _assert_same_error(np_call, dp_call):
     with pytest.raises(type(np_exc.value)) as dp_exc:
         dp_call()
     assert str(dp_exc.value) == str(np_exc.value)
+
+    def test_device_integer_param_dtype(self):
+        # floating-point arrays for integer parameters are converted, but
+        # complex ones raise
+        rng = default_rng(0)
+        n = dpnp.full(4, 5.0, dtype=dpnp.default_float_type())
+        res = rng.binomial(n, 0.5)
+        assert res.dtype == dpnp.int64
+        assert ((res >= 0) & (res <= 5)).all()
+        assert_raises_regex(
+            TypeError, "Cannot cast array data", rng.binomial, n * 1j, 0.5
+        )
 
 
 class TestChecks:
@@ -823,9 +1290,14 @@ class TestChecks:
             ("gamma", ([-1.0], 1.0)),
             ("chisquare", (0.0,)),
             ("chisquare", ([1.0, 0.0],)),
+            ("noncentral_chisquare", (0.0, 1.0)),
+            ("noncentral_chisquare", (1.0, -1.0)),
             ("standard_t", (0.0,)),
             ("f", (0.0, 1.0)),
             ("f", (1.0, [0.0])),
+            ("noncentral_f", (0.0, 1.0, 1.0)),
+            ("noncentral_f", (1.0, 0.0, 1.0)),
+            ("noncentral_f", (1.0, 1.0, -1.0)),
             ("beta", (0.0, 1.0)),
             ("beta", (1.0, [0.0])),
             ("pareto", (0.0,)),
@@ -844,6 +1316,47 @@ class TestChecks:
             ("triangular", (0.0, 2.0, 1.0)),
             ("triangular", (1.0, 1.0, 1.0)),
             ("triangular", ([0.0, 1.0], 1.0, [2.0, 1.0])),
+            ("poisson", (-1.0,)),
+            ("poisson", (nan,)),
+            ("poisson", ([nan],)),
+            ("poisson", ([-1.0],)),
+            ("poisson", (1e19,)),
+            ("poisson", ([1e19],)),
+            ("binomial", (-1, 0.5)),
+            ("binomial", ([-1], 0.5)),
+            ("binomial", (5, 1.5)),
+            ("binomial", (5, nan)),
+            ("binomial", ([5], [nan])),
+            ("binomial", (nan, 0.5)),
+            ("binomial", (-1, 2.0)),
+            ("negative_binomial", (0.0, 0.5)),
+            ("negative_binomial", (nan, 0.5)),
+            ("negative_binomial", ([nan], 0.5)),
+            ("negative_binomial", (1.0, 0.0)),
+            ("negative_binomial", (1.0, [1.5])),
+            ("negative_binomial", (-1.0, 2.0)),
+            ("negative_binomial", (1e20, 1e-10)),
+            ("negative_binomial", ([1e20], 1e-10)),
+            ("geometric", (0.0,)),
+            ("geometric", (1.5,)),
+            ("geometric", ([nan],)),
+            ("logseries", (1.0,)),
+            ("logseries", (-0.1,)),
+            ("logseries", (nan,)),
+            ("logseries", ([nan],)),
+            ("zipf", (1.0,)),
+            ("zipf", (nan,)),
+            ("zipf", ([nan],)),
+            ("hypergeometric", (10**9, 1, 1)),
+            ("hypergeometric", (1, [10**9], 1)),
+            ("hypergeometric", (1, 2, 4)),
+            ("hypergeometric", ([1], 2, 4)),
+            ("hypergeometric", (-1, 5, 3)),
+            ("hypergeometric", (5, -1, 3)),
+            ("hypergeometric", (5, 3, -1)),
+            ("hypergeometric", ([5], [3], [-1])),
+            ("hypergeometric", (nan, 3, 1)),
+            ("poisson", (None,)),
             ("normal", (0.0, None)),
             ("uniform", (None, 1.0)),
             # complex and object arrays do not cast safely to float64
@@ -853,9 +1366,18 @@ class TestChecks:
             ("normal", ([1j, 2j],)),
             ("uniform", (numpy.array([1j]), 2.0)),
             ("uniform", (0.0, numpy.array(2j))),
+            ("binomial", (5, None)),
             ("triangular", (0.0, None, 2.0)),
             ("exponential", ("x",)),
             ("exponential", (1j,)),
+            ("negative_binomial", (None, 0.5)),
+            ("binomial", (None, [0.5])),
+            ("integers", (1, [0, 1])),
+            ("integers", ([0, 1], 1)),
+            ("integers", (0, [0, 1])),
+            ("integers", (0, [-1, 1], None, numpy.int64, True)),
+            ("integers", ([-1], 3, None, numpy.uint8)),
+            ("integers", ([0], 256, None, numpy.uint8, True)),
         ],
     )
     @pytest.mark.filterwarnings("ignore:overflow encountered:RuntimeWarning")
@@ -888,9 +1410,14 @@ class TestDeviceIndependence:
         rng = Generator(bitgen(12, device=device))
         return (
             rng.random(1000, dtype=dpnp.float32),
+            rng.integers(0, 1000, size=1000),
             rng.bit_generator.random_raw(1000),
             rng.normal(size=1000, dtype=dpnp.float32),
             rng.gamma(0.7, size=1000, dtype=dpnp.float32),
+            rng.poisson([3.0, 50.0], size=(500, 2)),
+            rng.binomial(100, 0.3, size=1000),
+            rng.zipf(2.0, size=1000),
+            rng.hypergeometric(50, 70, 30, size=1000),
         )
 
     @pytest.mark.parametrize("bitgen", [Philox4x3210])
@@ -899,12 +1426,18 @@ class TestDeviceIndependence:
         ref = [dpnp.asnumpy(x) for x in self._draw(devices[0], bitgen)]
         for dev in devices[1:]:
             res = [dpnp.asnumpy(x) for x in self._draw(dev, bitgen)]
-            # uniform bits are exact
-            for a, b in zip(ref[:2], res[:2]):
+            # uniform bits and integers are exact
+            for a, b in zip(ref[:3], res[:3]):
                 assert_array_equal(a, b)
             # transcendental functions may differ in the last bits
-            for a, b in zip(ref[2:], res[2:]):
+            for a, b in zip(ref[3:5], res[3:5]):
                 assert_allclose(a, b, rtol=1e-4, atol=1e-5)
+            # and so may flip a rejection test, which shifts the rest of
+            # the work-item's stream; the discrete samplers compute in
+            # float32 without fp64, so their values differ from fp64 devices
+            if dev.has_aspect_fp64 == devices[0].has_aspect_fp64:
+                for a, b in zip(ref[5:], res[5:]):
+                    assert (a != b).mean() < 0.05
 
     def test_queue(self):
         for dev in _all_devices():
