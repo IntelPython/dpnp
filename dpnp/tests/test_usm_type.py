@@ -1832,3 +1832,36 @@ class TestLinAlgebra:
         assert result.usm_type == dpt.get_coerced_usm_type(
             [usm_type, usm_type_other]
         )
+
+
+@pytest.mark.parametrize(
+    "func, args, kwargs",
+    [
+        pytest.param("normal", [[1.0, 2.0]], {}),
+        pytest.param("random", [3], {}),
+        pytest.param("uniform", [], {"size": 3}),
+    ],
+)
+@pytest.mark.parametrize("usm_type", list_of_usm_types)
+def test_generator(func, args, kwargs, usm_type):
+    for rng in (dpnp.random.default_rng(1),):
+        meth = getattr(rng, func, None)
+        if meth is None:  # a Generator method RandomState doesn't have
+            continue
+        res = meth(*args, **kwargs, usm_type=usm_type)
+        assert res.usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types)
+def test_generator_array_params(usm_type):
+    rng = dpnp.random.default_rng(1)
+    x = dpnp.full(4, 2.0, usm_type=usm_type)
+
+    assert rng.normal(x, usm_type=usm_type).usm_type == usm_type
+
+
+@pytest.mark.parametrize("bit_generator", [dpnp.random.Philox4x3210])
+@pytest.mark.parametrize("usm_type", list_of_usm_types)
+def test_bit_generator(bit_generator, usm_type):
+    res = bit_generator(1).random_raw(5, usm_type=usm_type)
+    assert res.usm_type == usm_type
