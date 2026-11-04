@@ -1943,9 +1943,10 @@
 <span class="sd">    :obj:`dpnp.random.RandomState.multivariate_normal`</span>
 
 <span class="sd">    """</span>
+    <span class="c1"># pylint: disable=protected-access</span>
     <span class="n">rs</span> <span class="o">=</span> <span class="n">_get_random_state</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">,</span> <span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">cov</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span>
-        <span class="n">mean</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">check_valid</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">_multivariate_normal</span><span class="p">(</span>
+        <span class="n">mean</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">check_valid</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span>
     <span class="p">)</span></div>
 
 
@@ -2321,9 +2322,9 @@
 <span class="sd">    :obj:`dpnp.random.RandomState.random_integers`</span>
 
 <span class="sd">    """</span>
+    <span class="c1"># pylint: disable=protected-access</span>
     <span class="n">rs</span> <span class="o">=</span> <span class="n">_get_random_state</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">,</span> <span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">))</span>
-    <span class="n">with_warning</span> <span class="o">=</span> <span class="n">rs</span><span class="o">.</span><span class="n">random_integers</span>
-    <span class="k">return</span> <span class="n">with_warning</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">_random_integers</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span></div>
 
 
 

@@ -3038,7 +3038,31 @@
 <span class="sd">        :obj:`dpnp.float32`.</span>
 
 <span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multivariate_normal</span><span class="p">(</span>
+            <span class="n">mean</span><span class="p">,</span>
+            <span class="n">cov</span><span class="p">,</span>
+            <span class="n">size</span><span class="p">,</span>
+            <span class="n">check_valid</span><span class="p">,</span>
+            <span class="n">tol</span><span class="p">,</span>
+            <span class="n">method</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="p">,</span>
+            <span class="n">usm_type</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_multivariate_normal</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">mean</span><span class="p">,</span>
+        <span class="n">cov</span><span class="p">,</span>
+        <span class="n">size</span><span class="p">,</span>
+        <span class="n">check_valid</span><span class="p">,</span>
+        <span class="n">tol</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">stacklevel</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="k">if</span> <span class="n">method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"eigh"</span><span class="p">,</span> <span class="s2">"svd"</span><span class="p">,</span> <span class="s2">"cholesky"</span><span class="p">}:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">"method must be one of {'eigh', 'svd', 'cholesky'}"</span>
@@ -3094,7 +3118,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">psd</span><span class="p">:</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="s2">"covariance is not symmetric positive-semidefinite."</span>
             <span class="k">if</span> <span class="n">check_valid</span> <span class="o">==</span> <span class="s2">"warn"</span><span class="p">:</span>
-                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="n">stacklevel</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
@@ -3111,8 +3135,7 @@
         <span class="p">)</span>
         <span class="n">factor</span> <span class="o">=</span> <span class="n">factor</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">mean</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span> <span class="o">+</span> <span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">mean</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">@</span> <span class="n">factor</span><span class="o">.</span><span class="n">T</span>
-        <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span></div>
-
+        <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Generator.permutation">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.random.Generator.permutation.html#dpnp.random.Generator.permutation">[docs]</a>
