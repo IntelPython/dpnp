@@ -8,10 +8,9 @@ Random sampling (:mod:`dpnp.random`)
 DPNP draws random numbers on the SYCL device, by default with the
 counter-based Philox4x32x10 generator of the oneMKL device RNG API, or with
 NumPy's PCG64DXSM generator or the MRG32k3a generator of the oneMKL device
-RNG API. It provides the
-:class:`Generator` API of NumPy, recommended for new code. The legacy
-:class:`RandomState` API and the module-level functions still use the
-host-side oneMKL RNG.
+RNG API. It provides both NumPy random APIs: the :class:`Generator` API recommended for new code,
+and the legacy :class:`RandomState` API with the module-level functions
+built on it.
 
 .. code-block:: python
 
@@ -26,6 +25,8 @@ host-side oneMKL RNG.
 A generator draws all its samples on one SYCL queue, chosen with the
 ``device`` or ``sycl_queue`` keyword when it is created. All samples are
 :class:`dpnp.ndarray`, zero-dimensional when ``size`` is ``None``.
+
+.. _random-differences:
 
 Differences from NumPy
 ----------------------
@@ -52,8 +53,8 @@ Differences from NumPy
   default, the samples take the USM type of the array parameters, or
   ``"device"`` when there are none.
 * Parameters on the host (Python scalars, lists and NumPy arrays) are
-  checked as in NumPy. Parameters in :class:`dpnp.ndarray` are
-  not, since that would wait for the device.
+  checked as in NumPy. In :class:`Generator`, parameters in
+  :class:`dpnp.ndarray` are not, since that would wait for the device.
   Invalid ones give undefined values, such as NaN or the smallest ``int64``,
   but the kernels handle them safely: they never loop without end or access
   memory out of bounds. Floating-point arrays given for integer parameters
@@ -69,9 +70,15 @@ Differences from NumPy
 * ``zipf`` follows the Zipf distribution truncated to the largest ``int64``.
   NumPy's rejection test rounds to accepting every sample above ``2**53``,
   which makes its tail too heavy for ``a`` close to 1.
-* ``hypergeometric`` requires ``ngood`` and ``nbad`` below ``10**9``.
-* :meth:`Generator.shuffle` only accepts a :class:`dpnp.ndarray`, as in
-  CuPy.
+* :meth:`RandomState.randint` and :func:`randint` return ``int64`` values by
+  default, as do :meth:`RandomState.random_integers`,
+  :func:`random_integers` and :meth:`RandomState.tomaxint`, whose values
+  reach the largest ``int64``. NumPy returns a C ``long`` instead, which is
+  ``int32`` on Windows.
+* ``hypergeometric`` requires ``ngood`` and ``nbad`` below ``10**9``, also in
+  :class:`RandomState`.
+* :meth:`Generator.shuffle` and :func:`shuffle` only accept a
+  :class:`dpnp.ndarray`, as in CuPy.
 * Generators and bit generators cannot be pickled or copied, and
   :class:`Philox4x3210` and :class:`MRG32k3a` have no ``advance`` or
   ``jumped`` method.
@@ -184,6 +191,24 @@ Legacy random generation
 
 .. hint:: `NumPy API Reference: Legacy random generation <https://numpy.org/doc/stable/reference/random/legacy.html>`_
 
+:class:`RandomState` keeps the parameter checks of NumPy's legacy one, also
+for parameters in :class:`dpnp.ndarray`, as CuPy's does, so that a call with
+such parameters waits for the device to check them. The module-level
+functions use one :class:`RandomState` per SYCL queue: the
+queue given by the ``device`` or ``sycl_queue`` keyword, or else the queue of
+a :class:`dpnp.ndarray` parameter, or else the default queue.
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   RandomState
+   seed
+   get_state
+   set_state
+   get_bit_generator
+   set_bit_generator
+
 Simple random data
 ^^^^^^^^^^^^^^^^^^
 
@@ -254,15 +279,3 @@ Distributions
    wald
    weibull
    zipf
-
-Random generator
-^^^^^^^^^^^^^^^^
-
-.. autosummary::
-   :toctree: generated/
-   :nosignatures:
-
-   RandomState
-   seed
-   get_random_state
-   set_random_state
