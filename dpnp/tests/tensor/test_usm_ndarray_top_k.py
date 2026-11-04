@@ -26,6 +26,9 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+import math
+import warnings
+
 import numpy as np
 import pytest
 from numpy.testing import assert_array_equal
@@ -439,7 +442,7 @@ def test_top_k_0d():
     assert a.ndim == 0
     assert a.size == 1
 
-    r = dpt.top_k(a, 1)
+    r = dpt.top_k(a, 1, axis=None)
     assert r.values == a
     assert r.indices == dpt.zeros_like(a, dtype=r.indices.dtype)
 
@@ -477,8 +480,7 @@ def test_top_k_axis0():
 def test_top_k_validation():
     get_queue_or_skip()
     x = dpt.ones(10, dtype=dpt.int64)
-    with pytest.raises(ValueError):
-        # k must be positive
+    with pytest.raises(ValueError, match="non-negative"):
         dpt.top_k(x, -1)
     with pytest.raises(TypeError):
         # argument should be usm_ndarray
@@ -490,10 +492,36 @@ def test_top_k_validation():
         dpt.top_k(x2, 100, axis=1)
     with pytest.raises(ValueError):
         # for 0d arrays, k must be 1
-        dpt.top_k(x[0], 2)
+        dpt.top_k(x[0], 2, axis=None)
     with pytest.raises(ValueError):
         # mode must be "largest", or "smallest"
         dpt.top_k(x, 2, mode="invalid")
+
+
+@pytest.mark.parametrize("shape", [(), (4, 5), (2, 3, 4)])
+def test_top_k_default_axis_deprecated(shape):
+    get_queue_or_skip()
+    x = dpt.reshape(dpt.arange(math.prod(shape), dtype="i4"), shape)
+
+    with pytest.warns(DeprecationWarning, match="axis=None"):
+        r = dpt.top_k(x, 1)
+
+    # the input is still searched over the flattened array
+    expected = dpt.top_k(x, 1, axis=None)
+    assert dpt.all(r.values == expected.values)
+    assert dpt.all(r.indices == expected.indices)
+
+
+def test_top_k_axis_no_warning():
+    get_queue_or_skip()
+    x = dpt.reshape(dpt.arange(20, dtype="i4"), (4, 5))
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", DeprecationWarning)
+        dpt.top_k(x, 2, axis=None)
+        dpt.top_k(x, 2, axis=-1)
+        # the new default gives the same result for 1-D input
+        dpt.top_k(x[0], 2)
 
 
 @pytest.mark.parametrize("dtype", ["i4", "u4", "i8", "f4", "f8"])
