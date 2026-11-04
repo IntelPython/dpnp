@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.random.Generator.bytes
+===========================
+
+.. currentmodule:: dpnp.random
+
+method
+
+.. automethod:: Generator.bytes

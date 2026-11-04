@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.random.Generator.triangular
+================================
+
+.. currentmodule:: dpnp.random
+
+method
+
+.. automethod:: Generator.triangular

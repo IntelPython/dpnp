@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.random.PCG64DXSM.jumped
+============================
+
+.. currentmodule:: dpnp.random
+
+method
+
+.. automethod:: PCG64DXSM.jumped

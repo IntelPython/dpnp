@@ -1,0 +1,14 @@
+
+:orphan:
+
+
+dpnp.random.BitGenerator.sycl\_queue
+====================================
+
+.. currentmodule:: dpnp.random
+
+
+property
+
+
+.. autoproperty:: BitGenerator.sycl_queue

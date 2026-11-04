@@ -1,0 +1,14 @@
+
+:orphan:
+
+
+dpnp.random.Philox4x3210.state
+==============================
+
+.. currentmodule:: dpnp.random
+
+
+property
+
+
+.. autoproperty:: Philox4x3210.state
