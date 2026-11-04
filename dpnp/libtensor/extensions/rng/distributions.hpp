@@ -36,4 +36,6 @@ namespace py = pybind11;
 
 void init_uniform(py::module_ m);
 void init_normal(py::module_ m);
+void init_exponential(py::module_ m);
+void init_gamma(py::module_ m);
 } // namespace dpnp::extensions::rng
