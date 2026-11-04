@@ -9,9 +9,9 @@ on:
 permissions:
   contents: read
 
-# Cancel superseded PR runs only; master runs always complete
+# Cancel superseded PR runs only; other runs get a unique group and always complete
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
