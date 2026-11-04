@@ -988,7 +988,10 @@ def test_generator(func, args, kwargs, device):
     assert_sycl_queue_equal(res.sycl_queue, sycl_queue)
 
 
-@pytest.mark.parametrize("bit_generator", [dpnp.random.Philox4x3210])
+@pytest.mark.parametrize(
+    "bit_generator",
+    [dpnp.random.Philox4x3210, dpnp.random.PCG64DXSM, dpnp.random.MRG32k3a],
+)
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_bit_generator(bit_generator, device):
     sycl_queue = dpctl.SyclQueue(device, property="in_order")

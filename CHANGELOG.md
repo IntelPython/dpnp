@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added the continuous distributions of `numpy.random.Generator`, such as `gamma`, `beta` and `vonmises`, to `dpnp.random.Generator` [#3158](https://github.com/IntelPython/dpnp/pull/3158)
 * Added `integers` and the discrete distributions of `numpy.random.Generator`, such as `poisson`, `binomial` and `hypergeometric`, to `dpnp.random.Generator`, along with `noncentral_chisquare` and `noncentral_f` [#3159](https://github.com/IntelPython/dpnp/pull/3159)
 * Added the multivariate distributions, `permutation`, `shuffle`, `permuted`, `choice` and `bytes` to `dpnp.random.Generator` [#3160](https://github.com/IntelPython/dpnp/pull/3160)
+* Added the `dpnp.random.PCG64DXSM` bit generator, which matches `numpy.random.PCG64DXSM` for raw values, `random`, `uniform` and `bytes` [#3161](https://github.com/IntelPython/dpnp/pull/3161)
+* Added the `dpnp.random.MRG32k3a` bit generator [#3161](https://github.com/IntelPython/dpnp/pull/3161)
 
 ### Changed
 

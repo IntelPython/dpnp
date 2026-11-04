@@ -332,7 +332,8 @@ class Generator:
     Parameters
     ----------
     bit_generator : BitGenerator
-        The bit generator, such as :class:`dpnp.random.Philox4x3210`.
+        The bit generator, such as :class:`dpnp.random.Philox4x3210` or
+        :class:`dpnp.random.PCG64DXSM`.
 
     Limitations
     -----------
@@ -344,8 +345,9 @@ class Generator:
     takes the USM type of the array parameters, or ``"device"`` when there
     are none.
 
-    Pickling, copying, and the ``advance`` and ``jumped`` methods of NumPy's
-    bit generators are not supported.
+    Pickling and copying are not supported, and only
+    :class:`dpnp.random.PCG64DXSM` has the ``advance`` and ``jumped``
+    methods of NumPy's bit generators.
 
     Parameters on the host (scalars, lists and NumPy arrays) are checked as
     in NumPy. Parameters on the device are not, since that would wait for

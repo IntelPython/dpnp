@@ -45,13 +45,19 @@ PYBIND11_MODULE(_rng_impl, m, py::mod_gil_not_used())
     using dpnp::kernels::rng::engine_id;
 
     py::enum_<engine_id>(m, "engine_id")
-        .value("philox4x32x10", engine_id::philox4x32x10);
+        .value("philox4x32x10", engine_id::philox4x32x10)
+        .value("pcg64dxsm", engine_id::pcg64dxsm)
+        .value("mrg32k3a", engine_id::mrg32k3a);
 
     // The elements a work-item produces in the strided layout, by engine
     namespace kr = dpnp::kernels::rng;
     py::dict items_per_work_item;
     items_per_work_item[py::cast(engine_id::philox4x32x10)] =
         kr::Philox4x32x10::items_per_work_item;
+    items_per_work_item[py::cast(engine_id::pcg64dxsm)] =
+        kr::PCG64DXSM::items_per_work_item;
+    items_per_work_item[py::cast(engine_id::mrg32k3a)] =
+        kr::MRG32k3a::items_per_work_item;
     m.attr("items_per_work_item") = items_per_work_item;
 
     rng_ns::init_uniform(m);

@@ -36,12 +36,14 @@
 
 #include <oneapi/mkl/rng/device.hpp>
 
+#include "umul_hi.hpp"
+
 namespace dpnp::kernels::rng
 {
 namespace mkl_rng_dev = oneapi::mkl::rng::device;
 
 // The maximum number of 64-bit seed words any supported engine takes.
-inline constexpr std::size_t max_seed_words = 1;
+inline constexpr std::size_t max_seed_words = 10;
 
 // Host-side state of a bit generator, passed by value into kernels.
 //
@@ -51,7 +53,8 @@ inline constexpr std::size_t max_seed_words = 1;
 // other work-item, of this or any later launch, no matter how many draws a
 // rejection sampler takes. For Philox, work-item `w` of a launch owns the
 // counter block `counter + w * 2**64`, in units of 128-bit counter
-// increments.
+// increments. PCG64DXSM and MRG32k3a keep their whole state in the seed
+// words.
 struct EngineState
 {
     std::uint64_t seed[max_seed_words];
@@ -64,8 +67,10 @@ struct EngineState
 enum class engine_id : int
 {
     philox4x32x10 = 0,
+    pcg64dxsm = 1,
+    mrg32k3a = 2,
 };
-inline constexpr int num_engines = 1;
+inline constexpr int num_engines = 3;
 
 // The conversions of raw bits to uniform floating-point values, for a bit
 // generator `Derived` providing next_uint32() and next_uint64(). They are
@@ -170,6 +175,10 @@ struct Philox4x32x10
     using engine_t = mkl_rng_dev::philox4x32x10<1>;
     using bitgen_t = BitGen<engine_t>;
 
+    // Whether the fixed-consumption samplers draw the stream in order,
+    // see SampleFunctor
+    static constexpr bool ordered = false;
+
     // The elements a work-item produces in the strided and blocked layouts
     static constexpr std::size_t items_per_work_item = 8;
 
@@ -199,4 +208,225 @@ struct Philox4x32x10
     }
 };
 
+// An unsigned 128-bit integer, with the arithmetic modulo 2**128 the LCG of
+// PCG64 needs
+struct UInt128
+{
+    std::uint64_t lo;
+    std::uint64_t hi;
+};
+
+inline UInt128 operator+(const UInt128 &a, const UInt128 &b)
+{
+    const std::uint64_t lo = a.lo + b.lo;
+    return {lo, a.hi + b.hi + (lo < a.lo ? 1 : 0)};
+}
+
+inline UInt128 operator*(const UInt128 &a, const UInt128 &b)
+{
+    return {a.lo * b.lo, umul_hi(a.lo, b.lo) + a.lo * b.hi + a.hi * b.lo};
+}
+
+// The affine map x -> mult * x + inc modulo 2**128, as a step of an LCG
+struct Affine128
+{
+    UInt128 mult;
+    UInt128 inc;
+
+    UInt128 operator()(const UInt128 &x) const { return mult * x + inc; }
+};
+
+// The map `m` applied `k` times, in O(log k) steps (F. Brown, "Random
+// number generation with arbitrary stride", 1994)
+inline Affine128 affine_power(Affine128 m, std::uint64_t k)
+{
+    Affine128 acc{{1, 0}, {0, 0}};
+    while (k != 0) {
+        if (k & 1) {
+            acc = {acc.mult * m.mult, acc.inc * m.mult + m.inc};
+        }
+        m = {m.mult * m.mult, (m.mult + UInt128{1, 0}) * m.inc};
+        k >>= 1;
+    }
+    return acc;
+}
+
+// NumPy's PCG64DXSM: a 128-bit LCG with the cheap 64-bit multiplier and an
+// odd increment, whose output is the DXSM permutation of the state before
+// the step. 32-bit draws take the low half of an output, and keep its high
+// half for the next one, as NumPy does.
+class Pcg64Dxsm : public UniformBits<Pcg64Dxsm>
+{
+private:
+    UInt128 state_;
+    UInt128 inc_;
+    bool has_uint32_ = false;
+    std::uint32_t uinteger_ = 0;
+
+public:
+    static constexpr std::uint64_t cheap_multiplier = 0xda942042e4dd58b5ULL;
+
+    Pcg64Dxsm(const UInt128 &state, const UInt128 &inc)
+        : state_(state), inc_(inc)
+    {
+    }
+
+    // Use `value` for the next 32-bit draw
+    void set_buffered(std::uint32_t value)
+    {
+        has_uint32_ = true;
+        uinteger_ = value;
+    }
+
+    std::uint64_t next_uint64()
+    {
+        std::uint64_t hi = state_.hi;
+        const std::uint64_t lo = state_.lo | 1;
+        state_ = state_ * UInt128{cheap_multiplier, 0} + inc_;
+
+        hi ^= hi >> 32;
+        hi *= cheap_multiplier;
+        hi ^= hi >> 48;
+        hi *= lo;
+        return hi;
+    }
+
+    std::uint32_t next_uint32()
+    {
+        if (has_uint32_) {
+            has_uint32_ = false;
+            return uinteger_;
+        }
+        const std::uint64_t next = next_uint64();
+        set_buffered(static_cast<std::uint32_t>(next >> 32));
+        return static_cast<std::uint32_t>(next);
+    }
+};
+
+struct PCG64DXSM
+{
+    using bitgen_t = Pcg64Dxsm;
+
+    // The samplers that take a fixed number of 32-bit halves of raw outputs
+    // per element draw the stream in order, as NumPy does
+    static constexpr bool ordered = true;
+
+    // The elements a work-item produces in the strided layout
+    static constexpr std::size_t items_per_work_item = 8;
+
+    // No make_block
+    static constexpr unsigned max_block_words = 0;
+
+    // The seed words are the state, the increment, the map of the stride of
+    // NumPy's jumped() (the step applied (phi - 1) * 2**128 times), each as
+    // {lo, hi}, then NumPy's has_uint32 and uinteger.
+    static UInt128 word128(const EngineState &state, std::size_t i)
+    {
+        return {state.seed[i], state.seed[i + 1]};
+    }
+
+    // The stream jumped `subsequence` times, as by NumPy's jumped(), for the
+    // samplers whose draws per element vary
+    static bitgen_t make(const EngineState &state, std::uint64_t subsequence)
+    {
+        const Affine128 stride{word128(state, 4), word128(state, 6)};
+        return bitgen_t(affine_power(stride, subsequence)(word128(state, 0)),
+                        word128(state, 2));
+    }
+
+    // The stream at element `first` of a sampler taking `halves` 32-bit
+    // halves of raw outputs per element
+    static bitgen_t
+        make_at(const EngineState &state, std::uint64_t first, unsigned halves)
+    {
+        const UInt128 inc = word128(state, 2);
+        const Affine128 step{{Pcg64Dxsm::cheap_multiplier, 0}, inc};
+        const UInt128 start = word128(state, 0);
+
+        if (halves == 2) {
+            // 64-bit draws, which leave the buffered half alone
+            return bitgen_t(affine_power(step, first)(start), inc);
+        }
+
+        // 32-bit draws, the first of which is the buffered half, if any
+        const bool has_uint32 = state.seed[8] != 0;
+        if (has_uint32 && first == 0) {
+            bitgen_t bg(start, inc);
+            bg.set_buffered(static_cast<std::uint32_t>(state.seed[9]));
+            return bg;
+        }
+        const std::uint64_t half = has_uint32 ? first - 1 : first;
+        bitgen_t bg(affine_power(step, half / 2)(start), inc);
+        if (half % 2 != 0) {
+            // start with the high half of an output
+            bg.next_uint32();
+        }
+        return bg;
+    }
+};
+
+// Adapts oneMKL's mrg32k3a, whose raw values r are in [1, m1] with
+// m1 = 2**32 - 209, to uniform 32-bit words. v = r - 1 is spread over the
+// 32-bit range as v + floor(209 * v / 2**32), which increases strictly, so
+// every word has probability 1 / m1, except 209 words that never occur.
+template <typename EngineT>
+class Mrg32k3aBitGen : public UniformBits<Mrg32k3aBitGen<EngineT>>
+{
+private:
+    // 2**32 - m1
+    static constexpr std::uint64_t gap = 209;
+
+    EngineT engine_;
+    mkl_rng_dev::bits<std::uint32_t> bits_{};
+
+public:
+    explicit Mrg32k3aBitGen(const EngineT &engine) : engine_(engine) {}
+
+    std::uint32_t next_uint32()
+    {
+        const std::uint64_t v = mkl_rng_dev::generate(bits_, engine_) - 1;
+        return static_cast<std::uint32_t>(v + ((v * gap) >> 32));
+    }
+
+    std::uint64_t next_uint64()
+    {
+        const std::uint64_t hi = next_uint32();
+        const std::uint64_t lo = next_uint32();
+        return (hi << 32) | lo;
+    }
+};
+
+// L'Ecuyer's MRG32k3a combined multiple recursive generator, as implemented
+// by the oneMKL device RNG API
+struct MRG32k3a
+{
+    using engine_t = mkl_rng_dev::mrg32k3a<1>;
+    using bitgen_t = Mrg32k3aBitGen<engine_t>;
+
+    static constexpr bool ordered = false;
+
+    // The elements a work-item produces in the strided layout. Moving the
+    // engine to the substream of a work-item takes a 3x3 matrix product
+    // modulo each of m1 and m2 per base-8 digit of the work-item's index,
+    // which 8 elements per work-item made 2x (GPU) to 10x (CPU) slower than
+    // Philox. 128 is on par with Philox on both.
+    static constexpr std::size_t items_per_work_item = 128;
+
+    // No make_block: the engine computes its values one after another
+    static constexpr unsigned max_block_words = 0;
+
+    // The seed words are the state at the start of the launch, the three
+    // words of the first component, then those of the second. Work-item
+    // `w` draws from substream `w`, which starts 2**76 * w values later, as
+    // the substreams of L'Ecuyer et al.'s RngStreams.
+    static bitgen_t make(const EngineState &state, std::uint64_t subsequence)
+    {
+        const auto word = [&state](std::size_t i) {
+            return static_cast<std::uint32_t>(state.seed[i]);
+        };
+        return bitgen_t(
+            engine_t({word(0), word(1), word(2), word(3), word(4), word(5)},
+                     {std::uint64_t{0}, subsequence << 12, subsequence >> 52}));
+    }
+};
 } // namespace dpnp::kernels::rng

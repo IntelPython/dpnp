@@ -15,7 +15,13 @@ from numpy.testing import (
 
 import dpnp
 import dpnp.libtensor._rng_impl as ri
-from dpnp.random import Generator, Philox4x3210, default_rng
+from dpnp.random import (
+    PCG64DXSM,
+    Generator,
+    MRG32k3a,
+    Philox4x3210,
+    default_rng,
+)
 
 from .helper import get_float_dtypes, has_support_aspect64
 
@@ -33,8 +39,9 @@ integer_dtypes = [
 ]
 
 # the number of output elements each work-item of a kernel produces, with
-# Philox4x3210
+# Philox4x3210 and PCG64DXSM, and with MRG32k3a
 ITEMS_PER_WORK_ITEM = 8
+MRG_ITEMS_PER_WORK_ITEM = 128
 
 MASK32 = 0xFFFFFFFF
 
@@ -72,6 +79,66 @@ def _reference_raw(key, counter, n):
                 stream.extend(_philox4x32x10(key, block))
                 block = (block + 1) & ((1 << 128) - 1)
             hi, lo = stream.pop(0), stream.pop(0)
+            res[i] = (hi << 32) | lo
+    return res
+
+
+MRG_M1 = 2**32 - 209
+MRG_M2 = 2**32 - 22853
+MRG_A1 = ((0, 1, 0), (0, 0, 1), (MRG_M1 - 810728, 1403580, 0))
+MRG_A2 = ((0, 1, 0), (0, 0, 1), (MRG_M2 - 1370589, 0, 527612))
+
+
+def _mrg32k3a_values(s1, s2):
+    """
+    Reference MRG32k3a (L'Ecuyer, 1999): the values in [1, m1] from the
+    state (s1, s2), as the oneMKL host API gives them.
+
+    """
+
+    x, y = list(s1), list(s2)
+    while True:
+        xn = (1403580 * x[1] - 810728 * x[0]) % MRG_M1
+        yn = (527612 * y[2] - 1370589 * y[0]) % MRG_M2
+        x = [x[1], x[2], xn]
+        y = [y[1], y[2], yn]
+        yield (xn - yn) % MRG_M1 or MRG_M1
+
+
+def _mrg_skip(a, v, m, k):
+    """The state `v` of a component with transition `a` after `k` steps."""
+
+    def mul(a, b):
+        return [
+            [sum(a[i][t] * b[t][j] for t in range(3)) % m for j in range(3)]
+            for i in range(3)
+        ]
+
+    p = [[int(i == j) for j in range(3)] for i in range(3)]
+    while k:
+        if k & 1:
+            p = mul(p, a)
+        a = mul(a, a)
+        k >>= 1
+    return [sum(p[i][t] * v[t] for t in range(3)) % m for i in range(3)]
+
+
+def _mrg_reference_raw(s1, s2, n):
+    """The expected output of MRG32k3a.random_raw(n) from state (s1, s2)."""
+
+    def word(r):
+        v = r - 1
+        return v + ((v * 209) >> 32)
+
+    n_wi = -(-n // MRG_ITEMS_PER_WORK_ITEM)
+    res = numpy.empty(n, dtype=numpy.uint64)
+    for w in range(n_wi):
+        k = w << 76
+        values = _mrg32k3a_values(
+            _mrg_skip(MRG_A1, s1, MRG_M1, k), _mrg_skip(MRG_A2, s2, MRG_M2, k)
+        )
+        for i in range(w, n, n_wi):
+            hi, lo = word(next(values)), word(next(values))
             res[i] = (hi << 32) | lo
     return res
 
@@ -277,6 +344,279 @@ class TestPhilox4x3210:
         )
         _manager.add_event_pair(ht_ev, ev)
         assert dpnp.isfinite(dpnp.asarray(x)).all()
+
+
+class TestPCG64DXSM:
+    @staticmethod
+    def _pair(seed):
+        bg = PCG64DXSM(seed)
+        ref = numpy.random.PCG64DXSM(seed)
+        assert bg.state == ref.state
+        return bg, ref
+
+    @pytest.mark.parametrize("seed", [0, 1234, (1 << 70) + 5])
+    @pytest.mark.parametrize("n", [0, 1, 7, 8, 9, 100, 1001])
+    def test_random_raw(self, seed, n):
+        bg, ref = self._pair(seed)
+        assert_array_equal(dpnp.asnumpy(bg.random_raw(n)), ref.random_raw(n))
+        assert bg.state == ref.state
+
+        bg.random_raw(n, output=False)
+        ref.random_raw(n, output=False)
+        assert bg.state == ref.state
+
+    @pytest.mark.parametrize("dtype", float_dtypes)
+    @pytest.mark.parametrize("n", [1, 5, 8, 17, 1000])
+    def test_random(self, dtype, n):
+        bg, ref = self._pair(3)
+        rng, ref_rng = Generator(bg), numpy.random.Generator(ref)
+        for _ in range(3):
+            res = rng.random(n, dtype=dtype)
+            assert_array_equal(dpnp.asnumpy(res), ref_rng.random(n, dtype))
+            assert bg.state == ref.state
+
+    @pytest.mark.skipif(not has_support_aspect64(), reason="fp64 required")
+    def test_uniform(self):
+        bg, ref = self._pair(4)
+        rng, ref_rng = Generator(bg), numpy.random.Generator(ref)
+        res = rng.uniform(-3.0, 7.5, 1001)
+        assert_array_equal(dpnp.asnumpy(res), ref_rng.uniform(-3.0, 7.5, 1001))
+
+        low = numpy.arange(10.0)
+        res = rng.uniform(dpnp.asarray(low), 20.0, (3, 10))
+        assert_array_equal(
+            dpnp.asnumpy(res), ref_rng.uniform(low, 20.0, (3, 10))
+        )
+        assert bg.state == ref.state
+
+    def test_bytes(self):
+        bg, ref = self._pair(5)
+        rng, ref_rng = Generator(bg), numpy.random.Generator(ref)
+        for length in [0, 1, 3, 4, 5, 13, -1, -3, -5, 1000]:
+            assert rng.bytes(length) == ref_rng.bytes(length)
+            assert bg.state == ref.state
+
+    @pytest.mark.parametrize("seed", range(5))
+    def test_mixed_calls(self, seed):
+        bg, ref = self._pair(seed)
+        rng, ref_rng = Generator(bg), numpy.random.Generator(ref)
+        sizes = numpy.random.default_rng(seed).integers(0, 40, size=20).tolist()
+        for i, n in enumerate(sizes):
+            kind = i % 4
+            if kind == 0:
+                res, exp = bg.random_raw(n), ref.random_raw(n)
+            elif kind == 1:
+                res = rng.random(n, dtype=dpnp.float32)
+                exp = ref_rng.random(n, dtype=numpy.float32)
+            elif kind == 2:
+                res, exp = rng.bytes(n), ref_rng.bytes(n)
+            else:
+                bg.advance(n)
+                ref.advance(n)
+                res = exp = None
+            if res is not None and not isinstance(res, bytes):
+                res = dpnp.asnumpy(res)
+            assert_array_equal(res, exp)
+            assert bg.state == ref.state
+
+    def test_rejection_sampler_streams(self):
+        # work-item w of a sampler whose draws vary draws from the stream of
+        # jumped(w), and the state advances as jumped(n_wi)
+        bg, ref = self._pair(6)
+        rng = Generator(bg)
+        rng.random(1, dtype=dpnp.float32)
+        state = bg.state
+
+        n_wi = 5
+        res = rng.integers(0, 1000, size=n_wi * ITEMS_PER_WORK_ITEM)
+        exp = numpy.empty(n_wi * ITEMS_PER_WORK_ITEM, dtype=numpy.int64)
+        for w in range(n_wi):
+            ref.state = state
+            ref_rng = numpy.random.Generator(ref.jumped(w))
+            exp[w::n_wi] = ref_rng.integers(0, 1000, ITEMS_PER_WORK_ITEM)
+        assert_array_equal(dpnp.asnumpy(res), exp)
+
+        ref.state = state
+        jumped = ref.jumped(n_wi).state
+        assert bg.state["state"] == jumped["state"]
+        assert bg.state["has_uint32"] == state["has_uint32"] == 1
+        assert bg.state["uinteger"] == state["uinteger"]
+
+    def test_state_exchange(self):
+        ref = numpy.random.PCG64DXSM(8)
+        numpy.random.Generator(ref).random(3, dtype=numpy.float32)
+        bg = PCG64DXSM()
+        bg.state = ref.state
+        assert bg.state == ref.state
+        assert_array_equal(dpnp.asnumpy(bg.random_raw(9)), ref.random_raw(9))
+
+        ref.state = bg.state
+        assert_array_equal(dpnp.asnumpy(bg.random_raw(9)), ref.random_raw(9))
+
+    def test_advance_jumped(self):
+        bg, ref = self._pair(9)
+        bg.random_raw(3)
+        ref.random_raw(3)
+        assert bg.advance(12345) is bg
+        ref.advance(12345)
+        assert bg.state == ref.state
+
+        jumped = bg.jumped(3)
+        assert jumped is not bg
+        assert jumped.state == ref.jumped(3).state
+        assert jumped.sycl_queue == bg.sycl_queue
+        assert bg.state == ref.state
+
+    def test_state_errors(self):
+        bg = PCG64DXSM(42)
+        assert_raises(TypeError, setattr, bg, "state", 1)
+        assert_raises(
+            ValueError, setattr, bg, "state", {"bit_generator": "PCG64"}
+        )
+
+    def test_spawn(self):
+        children = PCG64DXSM(5).spawn(2)
+        ref = numpy.random.PCG64DXSM(5).spawn(2)
+        for c, r in zip(children, ref):
+            assert c.state == r.state
+
+
+class TestMRG32k3a:
+    @staticmethod
+    def _with_state(s1, s2):
+        bg = MRG32k3a()
+        bg.state = {"bit_generator": "MRG32k3a", "state": {"s1": s1, "s2": s2}}
+        return bg
+
+    @pytest.mark.parametrize("n", [1, 127, 128, 129, 2000])
+    @pytest.mark.parametrize(
+        "s1, s2",
+        [
+            ([12345] * 3, [12345] * 3),
+            ([0, 0, 1], [MRG_M2 - 1, 0, 0]),
+            ([MRG_M1 - 1] * 3, [MRG_M2 - 1] * 3),
+        ],
+    )
+    def test_known_answer(self, n, s1, s2):
+        res = self._with_state(s1, s2).random_raw(n)
+        assert res.dtype == dpnp.uint64
+        assert_array_equal(dpnp.asnumpy(res), _mrg_reference_raw(s1, s2, n))
+
+    def test_state_advance(self):
+        bg = MRG32k3a(1234)
+        state = bg.state
+        assert state["bit_generator"] == "MRG32k3a"
+        s1, s2 = state["state"]["s1"], state["state"]["s2"]
+
+        # a draw of 257 values takes 3 substreams
+        bg.random_raw(257)
+        bg.random_raw(output=False)
+        k = 4 << 76
+        assert bg.state["state"] == {
+            "s1": _mrg_skip(MRG_A1, s1, MRG_M1, k),
+            "s2": _mrg_skip(MRG_A2, s2, MRG_M2, k),
+        }
+
+        # an empty draw does not advance the state
+        state = bg.state
+        bg.random_raw((0, 5))
+        assert bg.state == state
+
+    def test_state_roundtrip(self):
+        bg = MRG32k3a(42)
+        bg.random_raw(10)
+        state = bg.state
+        a = bg.random_raw(50)
+        bg.state = state
+        b = bg.random_raw(50)
+        assert_array_equal(a, b)
+
+    @pytest.mark.parametrize(
+        "s1, s2",
+        [
+            ([1, 2], [1, 2, 3]),
+            ([1, 2, 3], [1, 2, 3, 4]),
+            ([0, 0, 0], [1, 2, 3]),
+            ([1, 2, 3], [0, 0, 0]),
+            ([MRG_M1, 2, 3], [1, 2, 3]),
+            ([1, 2, 3], [MRG_M2, 2, 3]),
+            ([-1, 2, 3], [1, 2, 3]),
+        ],
+    )
+    def test_state_value_errors(self, s1, s2):
+        assert_raises(ValueError, self._with_state, s1, s2)
+
+    def test_state_errors(self):
+        bg = MRG32k3a(42)
+        assert_raises(TypeError, setattr, bg, "state", 1)
+        assert_raises(
+            ValueError, setattr, bg, "state", {"bit_generator": "Philox4x3210"}
+        )
+        assert_raises(TypeError, self._with_state, 1, [1, 2, 3])
+        assert_raises(TypeError, self._with_state, [1.5, 2, 3], [1, 2, 3])
+
+    def test_seed_sequence(self):
+        ss = numpy.random.SeedSequence(7)
+        bg = MRG32k3a(ss)
+        assert bg.seed_seq is ss
+        words = [int(w) for w in ss.generate_state(6, numpy.uint64)]
+        assert bg.state["state"] == {
+            "s1": [1 + w % (MRG_M1 - 1) for w in words[:3]],
+            "s2": [1 + w % (MRG_M2 - 1) for w in words[3:]],
+        }
+        assert MRG32k3a(7).state == bg.state
+
+    def test_spawn(self):
+        bg = MRG32k3a(5)
+        children = bg.spawn(2)
+        states = {str(c.state) for c in children}
+        states.add(str(bg.state))
+        assert len(states) == 3
+        for c in children:
+            assert c.sycl_queue == bg.sycl_queue
+
+    @pytest.mark.parametrize(
+        "name, params, mean, var",
+        [
+            ("random", (), 0.5, 1 / 12),
+            ("standard_normal", (), 0.0, 1.0),
+            ("standard_exponential", (), 1.0, 1.0),
+            ("standard_gamma", (0.5,), 0.5, 0.5),
+            ("integers", (0, 10), 4.5, 99 / 12),
+            ("poisson", (3.0,), 3.0, 3.0),
+            ("binomial", (20, 0.3), 6.0, 4.2),
+        ],
+    )
+    def test_moments(self, name, params, mean, var):
+        n = 10**6
+        res = getattr(Generator(MRG32k3a(3)), name)(*params, size=n)
+        res = dpnp.asnumpy(res).astype(numpy.float64)
+        assert abs(res.mean() - mean) <= 5 * numpy.sqrt(var / n)
+        assert abs(res.var() - var) <= 5 * var * numpy.sqrt(10 / n)
+
+
+@pytest.mark.parametrize("bitgen", [PCG64DXSM, MRG32k3a])
+class TestBitGeneratorState:
+    def test_lock_is_reentrant(self, bitgen):
+        bg = bitgen(1)
+
+        def _use_state():
+            with bg.lock:
+                bg.state = bg.state
+
+        t = threading.Thread(target=_use_state)
+        t.start()
+        t.join(timeout=10)
+        assert not t.is_alive()
+
+    @pytest.mark.parametrize("output", [True, False])
+    @pytest.mark.parametrize("size", [-8, (2, -8), 2.0])
+    def test_random_raw_bad_size(self, bitgen, size, output):
+        bg = bitgen(1)
+        bg.random_raw(9)
+        state = bg.state
+        assert_raises((TypeError, ValueError), bg.random_raw, size, output)
+        assert bg.state == state
 
 
 class TestDefaultRng:
@@ -1869,7 +2209,7 @@ class TestDeviceIndependence:
             rng.hypergeometric(50, 70, 30, size=1000),
         )
 
-    @pytest.mark.parametrize("bitgen", [Philox4x3210])
+    @pytest.mark.parametrize("bitgen", [Philox4x3210, PCG64DXSM, MRG32k3a])
     def test_same_values(self, bitgen):
         devices = _all_devices()
         ref = [dpnp.asnumpy(x) for x in self._draw(devices[0], bitgen)]
