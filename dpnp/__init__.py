@@ -515,6 +515,7 @@ from .dpnp_iface_sorting import (
     partition,
     sort,
     sort_complex,
+    top_k,
 )
 
 # -----------------------------------------------------------------------------
@@ -995,6 +996,7 @@ __all__ += [
     "searchsorted",
     "sort",
     "sort_complex",
+    "top_k",
     "where",
 ]
 

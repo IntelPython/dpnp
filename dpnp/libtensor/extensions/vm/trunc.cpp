@@ -91,6 +91,8 @@ static sycl::event trunc_contig_impl(sycl::queue &exec_q,
     using resTy = typename OutputType<T>::value_type;
     resTy *y = reinterpret_cast<resTy *>(out_y);
 
+    vm_gil_release lock{};
+
     return mkl_vm::trunc(exec_q,
                          n, // number of elements to be calculated
                          a, // pointer `a` containing input vector of size n
