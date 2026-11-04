@@ -100,9 +100,7 @@ static sycl::event modf_contig_impl(sycl::queue &exec_q,
     fractT *y = reinterpret_cast<fractT *>(out_y);
     intT *z = reinterpret_cast<intT *>(out_z);
 
-    // On a CPU device oneMKL VM waits on `depends` and computes on the
-    // calling thread, so release the GIL for host tasks that need it
-    py::gil_scoped_release lock{};
+    vm_gil_release lock{};
 
     return mkl_vm::modf(exec_q,
                         n, // number of elements to be calculated
