@@ -192,6 +192,7 @@ def place(arr, mask, vals):
         axis_end=mask.ndim,
         rhs=rhs,
         sycl_queue=exec_q,
+        depends=_manager.submitted_events,
     )
     _manager.add_event_pair(hev, pl_ev)
 
