@@ -1450,20 +1450,25 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_has_sorted_indices</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">return</span>
 
-        <span class="n">nrows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span>
         <span class="n">row_lengths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indptr</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indptr</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">row_ids</span> <span class="o">=</span> <span class="n">_dpnp</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span>
-            <span class="n">_dpnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
-                <span class="n">nrows</span><span class="p">,</span>
-                <span class="n">dtype</span><span class="o">=</span><span class="n">indices</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
-                <span class="n">usm_type</span><span class="o">=</span><span class="n">indices</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
-                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">indices</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
-            <span class="p">),</span>
-            <span class="n">row_lengths</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="c1"># Lexsort by (row, col) via two stable passes.</span>
-        <span class="n">order</span> <span class="o">=</span> <span class="n">_dpnp</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">"stable"</span><span class="p">)</span>
-        <span class="n">order</span> <span class="o">=</span> <span class="n">order</span><span class="p">[</span><span class="n">_dpnp</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">row_ids</span><span class="p">[</span><span class="n">order</span><span class="p">],</span> <span class="n">kind</span><span class="o">=</span><span class="s2">"stable"</span><span class="p">)]</span>
+        <span class="c1"># int64 even for int32 indices, so neither branch can overflow.</span>
+        <span class="n">common</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"dtype"</span><span class="p">:</span> <span class="n">_dpnp</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span>
+            <span class="s2">"usm_type"</span><span class="p">:</span> <span class="n">indices</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+            <span class="s2">"sycl_queue"</span><span class="p">:</span> <span class="n">indices</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">nrows</span> <span class="o">*</span> <span class="n">ncols</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="o">**</span><span class="mi">63</span><span class="p">:</span>
+            <span class="c1"># One sort on row * ncols + col; check_format bounded the indices.</span>
+            <span class="n">row_keys</span> <span class="o">=</span> <span class="n">_dpnp</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span>
+                <span class="n">_dpnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">nrows</span> <span class="o">*</span> <span class="n">ncols</span><span class="p">,</span> <span class="n">ncols</span><span class="p">,</span> <span class="o">**</span><span class="n">common</span><span class="p">),</span> <span class="n">row_lengths</span>
+            <span class="p">)</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="n">_dpnp</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">row_keys</span> <span class="o">+</span> <span class="n">indices</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">"stable"</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># The key would overflow int64: lexsort in two stable passes.</span>
+            <span class="n">row_ids</span> <span class="o">=</span> <span class="n">_dpnp</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">_dpnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nrows</span><span class="p">,</span> <span class="o">**</span><span class="n">common</span><span class="p">),</span> <span class="n">row_lengths</span><span class="p">)</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="n">_dpnp</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">"stable"</span><span class="p">)</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="n">order</span><span class="p">[</span><span class="n">_dpnp</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">row_ids</span><span class="p">[</span><span class="n">order</span><span class="p">],</span> <span class="n">kind</span><span class="o">=</span><span class="s2">"stable"</span><span class="p">)]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">order</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indices</span><span class="p">[</span><span class="n">order</span><span class="p">]</span>
