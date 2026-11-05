@@ -1587,6 +1587,38 @@ class TestCsrMatrix:
         assert list(dpnp.asnumpy(m.indices)) == idx_after
         assert list(dpnp.asnumpy(m.data)) == data_after
 
+    def test_sort_indices_int32_key_overflow(self):
+        # Indices fit int32, but row * ncols + col does not.
+        data = dpnp.array([1.0, 2.0, 3.0, 4.0], dtype=dpnp.float32)
+        indices = dpnp.array([7, 5, 9, 2], dtype=dpnp.int32)
+        indptr = numpy.full(3002, 2, dtype=numpy.int32)
+        indptr[:2] = 0
+        indptr[-1] = 4
+        m = csr_matrix(
+            (data, indices, dpnp.asarray(indptr)), shape=(3001, 10**6)
+        )
+        m.sort_indices()
+        assert m.indices.dtype == dpnp.int32
+        assert list(dpnp.asnumpy(m.indices)) == [5, 7, 2, 9]
+        assert list(dpnp.asnumpy(m.data)) == [2.0, 1.0, 4.0, 3.0]
+
+    @pytest.mark.parametrize(
+        "shape",
+        [(7, (2**63 - 1) // 7), (2, 2**62), (3, 2**62)],
+        ids=["below-int64-key", "at-int64-key", "above-int64-key"],
+    )
+    def test_sort_indices_huge_shape(self, shape):
+        nrows, ncols = shape
+        data = dpnp.array([1.0, 2.0, 3.0, 4.0], dtype=dpnp.float32)
+        indices = dpnp.array([ncols - 1, 5, ncols - 2, 0], dtype=dpnp.int64)
+        indptr = numpy.full(nrows + 1, 2, dtype=numpy.int64)
+        indptr[0] = 0
+        indptr[-1] = 4
+        m = csr_matrix((data, indices, dpnp.asarray(indptr)), shape=shape)
+        m.sort_indices()
+        assert list(dpnp.asnumpy(m.indices)) == [5, ncols - 1, 0, ncols - 2]
+        assert list(dpnp.asnumpy(m.data)) == [2.0, 1.0, 4.0, 3.0]
+
     def test_check_sorted_detects_sorted_components(self):
         # Already-sorted components; lazy _check_sorted must report True.
         data = dpnp.array([1.0, 2.0, 3.0, 4.0], dtype=dpnp.default_float_type())
