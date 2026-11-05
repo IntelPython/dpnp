@@ -36,6 +36,7 @@ import numpy as np
 import pytest
 from numpy.testing import assert_raises_regex
 
+import dpnp.libtensor._tensor_impl as ti
 import dpnp.tensor as dpt
 from dpnp.tensor import Device
 
@@ -748,6 +749,64 @@ def test_setitem_scalar(dtype, usm_type):
     assert np.array_equal(
         dpt.to_numpy(Y), np.arange(Y.size).astype(dtype).reshape(Y.shape)
     )
+
+
+def _raise_on_host_copy(*args, **kwargs):
+    raise AssertionError("synchronizing host copy was used")
+
+
+@pytest.mark.parametrize("dtype", _all_dtypes)
+@pytest.mark.parametrize(
+    "key",
+    [Ellipsis, 2, slice(1, 4), slice(None, None, 2), (slice(None), 1)],
+    ids=["ellipsis", "int", "slice", "step", "column"],
+)
+def test_setitem_scalar_no_host_copy(monkeypatch, dtype, key):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+    X = dpt.zeros((6, 6), dtype=dtype, sycl_queue=q)
+    expected = np.zeros((6, 6), dtype=dtype)
+    expected[key] = 1
+
+    monkeypatch.setattr(
+        ti, "_copy_numpy_ndarray_into_usm_ndarray", _raise_on_host_copy
+    )
+    X[key] = 1
+    monkeypatch.undo()
+
+    assert np.array_equal(dpt.asnumpy(X), expected)
+
+
+# expected values are those of the copy kernel, which narrows floats to
+# integers through int64 and keeps the real part of complex values
+@pytest.mark.parametrize(
+    "val, dtype, expected",
+    [
+        (1e10, "i2", -7168),
+        (1e10, "u2", 58368),
+        (1e10, "i4", 1410065408),
+        (-1.0, "u1", 255),
+        (np.float32(-1), "u8", 2**64 - 1),
+        (300, "i1", 44),
+        (2.7, "i4", 2),
+        (1.5 - 2j, "f4", 1.5),
+        (1j, "?", True),
+        (0j, "?", False),
+        (float("nan"), "?", True),
+    ],
+)
+@pytest.mark.filterwarnings("error")
+def test_setitem_scalar_cast(monkeypatch, val, dtype, expected):
+    q = get_queue_or_skip()
+    X = dpt.zeros((), dtype=dtype, sycl_queue=q)
+
+    monkeypatch.setattr(
+        ti, "_copy_numpy_ndarray_into_usm_ndarray", _raise_on_host_copy
+    )
+    X[...] = val
+    monkeypatch.undo()
+
+    assert dpt.asnumpy(X) == np.asarray(expected, dtype=dtype)
 
 
 def test_setitem_errors():
