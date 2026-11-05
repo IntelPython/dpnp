@@ -50,7 +50,14 @@ namespace ext_ns = ext::common;
 namespace py = pybind11;
 namespace td_ns = dpnp::tensor::type_dispatch;
 
-namespace dpnp::extensions::vm::py_internal
+namespace dpnp::extensions::vm
+{
+// Releases the GIL around a oneMKL VM call. On a CPU device VM waits on its
+// `depends` and computes on the calling thread, so holding the GIL can
+// deadlock with host tasks that need it (e.g. on an in-order queue).
+using vm_gil_release = py::gil_scoped_release;
+
+namespace py_internal
 {
 template <typename output_typesT, typename contig_dispatchT>
 bool need_to_call_unary_ufunc(sycl::queue &exec_q,
@@ -487,4 +494,5 @@ bool need_to_call_binary_ufunc(sycl::queue &exec_q,
                                     __name__##_ContigFactory>(                 \
             contig_dispatch_vector);                                           \
     };
-} // namespace dpnp::extensions::vm::py_internal
+} // namespace py_internal
+} // namespace dpnp::extensions::vm
