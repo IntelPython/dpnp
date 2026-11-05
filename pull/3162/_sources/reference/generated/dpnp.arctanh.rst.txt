@@ -1,0 +1,10 @@
+﻿
+
+dpnp.arctanh
+============
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: arctanh

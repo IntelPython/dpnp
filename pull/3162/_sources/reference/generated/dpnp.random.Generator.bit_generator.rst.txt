@@ -1,0 +1,14 @@
+
+:orphan:
+
+
+dpnp.random.Generator.bit\_generator
+====================================
+
+.. currentmodule:: dpnp.random
+
+
+property
+
+
+.. autoproperty:: Generator.bit_generator

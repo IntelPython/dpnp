@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.random.Generator.weibull
+=============================
+
+.. currentmodule:: dpnp.random
+
+method
+
+.. automethod:: Generator.weibull

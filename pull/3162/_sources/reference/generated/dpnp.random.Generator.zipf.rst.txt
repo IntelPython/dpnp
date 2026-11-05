@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.random.Generator.zipf
+==========================
+
+.. currentmodule:: dpnp.random
+
+method
+
+.. automethod:: Generator.zipf

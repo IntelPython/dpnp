@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.random.Generator.multivariate\_hypergeometric
+==================================================
+
+.. currentmodule:: dpnp.random
+
+method
+
+.. automethod:: Generator.multivariate_hypergeometric

@@ -1,0 +1,10 @@
+﻿
+
+dpnp.random.get\_state
+======================
+
+.. currentmodule:: dpnp.random
+
+
+
+.. autofunction:: get_state
