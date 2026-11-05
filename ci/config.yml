@@ -9,6 +9,7 @@ test:
   # The wheels' requirements have no OpenCL CPU runtime of their own, which the tests need
   wheel_requires: [pytest, pytest-xdist, scipy, intel-opencl-rt]
 benchmark:
-  requires: [scipy]
+  # PyYAML, which asv needs, has no PyPI wheel for every Python the recipe declares.
+  requires: [scipy, pyyaml]
   # conda-forge lacks asv for some Python the recipe declares; the wheel on PyPI fits all.
   pip_requires: [asv]
