@@ -9,10 +9,6 @@ on:
 
 permissions: read-all
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 env:
   # Pinned: Miniforge3 26.9.4-0 fails 'conda init' on Windows runners
   miniforge-version: '26.7.2-1'
