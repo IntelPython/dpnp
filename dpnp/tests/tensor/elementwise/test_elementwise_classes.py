@@ -26,8 +26,10 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+import numpy as np
 import pytest
 
+import dpnp.libtensor._tensor_impl as ti
 import dpnp.tensor as dpt
 
 from ..helper import get_queue_or_skip
@@ -148,3 +150,31 @@ def test_binary_no_inplace_op():
 
     with pytest.raises(ValueError):
         dpt.logaddexp._inplace_op(x1, x2)
+
+
+def _raise_on_host_copy(*args, **kwargs):
+    raise AssertionError("synchronizing host copy was used")
+
+
+@pytest.mark.parametrize(
+    "op, expected",
+    [
+        (lambda x: x * 2, 2),
+        (lambda x: 2 * x, 2),
+        (lambda x: x == np.float32(2), False),
+        (lambda x: dpt.add(x, 2, out=x), 3),
+        (lambda x: x.__iadd__(2), 3),
+    ],
+    ids=["array_scalar", "scalar_array", "numpy_scalar", "out", "inplace"],
+)
+def test_binary_scalar_operand_no_host_copy(monkeypatch, op, expected):
+    q = get_queue_or_skip()
+    x = dpt.ones(16, dtype="f4", sycl_queue=q)
+
+    monkeypatch.setattr(
+        ti, "_copy_numpy_ndarray_into_usm_ndarray", _raise_on_host_copy
+    )
+    res = op(x)
+    monkeypatch.undo()
+
+    assert (dpt.asnumpy(res) == expected).all()

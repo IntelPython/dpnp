@@ -39,6 +39,7 @@ import dpnp.tensor as dpt
 
 from ._copy_utils import (
     _empty_like_orderK,
+    _fill_from_numpy_scalar,
     _from_numpy_empty_like_orderK,
 )
 from ._data_types import _get_dtype
@@ -128,6 +129,17 @@ def _asarray_from_numpy_ndarray(
         # deduce device-representable output data type
         dtype = _map_to_device_dtype(ary.dtype, copy_q)
     _ensure_native_dtype_device_support(dtype, copy_q.sycl_device)
+    if ary.ndim == 0:
+        # fill instead of a host copy, which waits for the whole queue
+        res = dpt.usm_ndarray(
+            (),
+            dtype=dtype,
+            buffer=usm_type,
+            buffer_ctor_kwargs={"queue": copy_q},
+        )
+        # populating new allocation, no dependent events
+        _fill_from_numpy_scalar(res, ary, [])
+        return res
     f_contig = ary.flags["F"]
     c_contig = ary.flags["C"]
     fc_contig = f_contig or c_contig

@@ -30,6 +30,7 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Bumped the minimum required `dpctl` version to `0.24.0` [#3169](https://github.com/IntelPython/dpnp/pull/3169)
 * Changed `dpnp.median`, `dpnp.nanmedian` and `dpnp.partition` with a single `kth` to use a radix select instead of a full sort for all but complex data types and, on a GPU, `dpnp.partition` of rows of 65 to 128 elements of 8-byte integers [#3138](https://github.com/IntelPython/dpnp/pull/3138)
 * Improved performance of `dpnp.top_k` and `dpnp.tensor.top_k` on a GPU for batches of rows of 65536 to about 10^6 elements that occupy it with a work-group per row [#3138](https://github.com/IntelPython/dpnp/pull/3138)
+* Changed `dpnp.asarray`, `dpnp.tensor.asarray` and assignment through basic indexing (e.g. `x[0] = 1`, `x[:, 0] = 0`) to fill a scalar or 0-d NumPy array on the device instead of copying it from the host, which waited for all work queued on the device, so binary operators and functions with a Python or NumPy scalar operand (e.g. `2 * x`, `x == 0`, `dpnp.clip(x, 0, 1)`) no longer block the host [#3182](https://github.com/IntelPython/dpnp/pull/3182)
 
 ### Deprecated
 

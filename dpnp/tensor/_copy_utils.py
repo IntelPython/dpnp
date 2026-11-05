@@ -101,12 +101,46 @@ def _copy_from_numpy(np_ary, usm_type="device", sycl_queue=None):
     return Xusm
 
 
+def _fill_from_numpy_scalar(dst, np_ary, depends):
+    """
+    Fills `dst` with the value of 0-d `np_ary`, cast on the host as
+    `_copy_numpy_ndarray_into_usm_ndarray` would cast it.
+    """
+    copy_q = dst.sycl_queue
+    if copy_q.sycl_device.has_aspect_fp64 is False:
+        if np_ary.dtype.char == "d":
+            np_ary = np_ary.astype(np.float32)
+        elif np_ary.dtype.char == "D":
+            np_ary = np_ary.astype(np.complex64)
+    dst_dt = dst.dtype
+    if np_ary.dtype.kind == "c" and dst_dt.kind not in "bc":
+        # the copy kernel keeps the real part, NumPy also warns
+        np_ary = np_ary.real
+    # the copy kernel casts NaN and out-of-range values without warning
+    with np.errstate(all="ignore"):
+        if np_ary.dtype.kind == "f" and dst_dt.kind in "iu":
+            # the copy kernel narrows through int64, so it wraps like NumPy
+            # integer casts where a direct NumPy float cast saturates
+            if dst_dt.itemsize < 8 or (dst_dt.kind == "u" and np_ary < 0):
+                np_ary = np_ary.astype(np.int64)
+        fill_val = np_ary.astype(dst_dt)[()].item()
+    hev, fill_ev = ti._full_usm_ndarray(
+        fill_val, dst, sycl_queue=copy_q, depends=depends
+    )
+    SequentialOrderManager[copy_q].add_event_pair(hev, fill_ev)
+
+
 def _copy_from_numpy_into(dst, np_ary):
     """Copies `np_ary` into `dst` of type :class:`dpnp.tensor.usm_ndarray"""
     if not isinstance(np_ary, np.ndarray):
         raise TypeError(f"Expected numpy.ndarray, got {type(np_ary)}")
     if not isinstance(dst, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray, got {type(dst)}")
+    if np_ary.ndim == 0:
+        # fill instead of the host copy, which waits for the whole queue
+        _manager = SequentialOrderManager[dst.sycl_queue]
+        _fill_from_numpy_scalar(dst, np_ary, _manager.submitted_events)
+        return
     if np_ary.flags["OWNDATA"]:
         Xnp = np_ary
     else:
