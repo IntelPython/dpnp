@@ -9,6 +9,7 @@ from numpy.testing import (
 )
 
 import dpnp
+import dpnp.libtensor._statistics_impl as statistics_ext
 import dpnp.tensor as dpt
 
 from .helper import (
@@ -970,6 +971,27 @@ class TestMedian:
         assert result is out_dp
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("axis", [None, 1, (0, 2)])
+    def test_out_keepdims(self, dtype, axis):
+        a = generate_random_numpy_array((2, 3, 4), dtype=dtype)
+        ia = dpnp.array(a)
+        out_shape = numpy.median(a, axis=axis, keepdims=True).shape
+
+        out_np = numpy.empty_like(a, shape=out_shape)
+        out_dp = dpnp.empty_like(ia, shape=out_shape)
+        expected = numpy.median(a, axis=axis, keepdims=True, out=out_np)
+        result = dpnp.median(ia, axis=axis, keepdims=True, out=out_dp)
+        assert result is out_dp
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", [dpnp.int32, dpnp.complex64])
+    def test_out_keepdims_wrong_shape(self, dtype):
+        ia = dpnp.ones((4, 3), dtype=dtype)
+        out = dpnp.empty(3, dtype=dtype)
+        with pytest.raises(ValueError, match="Output array of shape"):
+            dpnp.median(ia, axis=0, keepdims=True, out=out)
+
     def test_0d_array(self):
         a = numpy.array(20)
         ia = dpnp.array(a)
@@ -1004,8 +1026,8 @@ class TestMedian:
         result = dpnp.median(
             ib, axis=axis, keepdims=keepdims, overwrite_input=True
         )
+        # overwrite_input only allows the input to be modified
         assert not numpy.all(a == b)
-        assert not dpnp.all(ia == ib)
 
         assert_dtype_allclose(result, expected)
 
@@ -1018,6 +1040,131 @@ class TestMedian:
         expected = numpy.median(a, axis=axis, overwrite_input=overwrite_input)
         result = dpnp.median(ia, axis=axis, overwrite_input=overwrite_input)
         assert_dtype_allclose(result, expected)
+
+
+class TestMedianSelect:
+    # row lengths reaching the sub-group, the work-group and the multi-group
+    # kernels of radix select
+    @pytest.mark.parametrize(
+        "shape",
+        [(1,), (2,), (4, 3), (5, 64), (3, 65), (6, 1000), (2, 1001)]
+        + [(1, 2**16 + 3), (3, 2**17), (2, 2**17 + 1)],
+    )
+    @pytest.mark.parametrize("duplicates", [False, True])
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_complex=True, no_float16=False)
+    )
+    def test_basic(self, shape, duplicates, dtype):
+        rnd = numpy.random.RandomState(81)
+        if duplicates or dtype == dpnp.bool:
+            a = rnd.randint(0, 4, size=shape).astype(dtype)
+        elif dpnp.issubdtype(dtype, dpnp.integer):
+            # the median of two large integers must not overflow
+            info = numpy.iinfo(dtype)
+            a = rnd.randint(info.min, info.max, size=shape, dtype=dtype)
+        else:
+            a = rnd.standard_normal(size=shape).astype(dtype)
+        ia = dpnp.array(a)
+
+        expected = numpy.median(a, axis=-1)
+        result = dpnp.median(ia, axis=-1)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("n", [5, 64, 1000, 2**16 + 1])
+    @pytest.mark.parametrize("dtype", get_float_dtypes(no_float16=False))
+    def test_special_values(self, n, dtype):
+        a = numpy.zeros((4, n), dtype=dtype)
+        a[:, ::3] = -0.0
+        a[1, ::5] = numpy.inf
+        a[2, ::4] = -numpy.inf
+        a[3, : n // 2] = numpy.finfo(dtype).max
+        # a single NaN makes the median NaN
+        a[0, n // 3] = numpy.nan
+        ia = dpnp.array(a)
+
+        expected = numpy.median(a, axis=-1)
+        result = dpnp.median(ia, axis=-1)
+        assert_dtype_allclose(result, expected)
+
+    # NumPy's mean gives +0.0 for zeros of either sign
+    @pytest.mark.parametrize("n", [1, 2, 3, 64, 1000, 2**16 + 1])
+    @pytest.mark.parametrize("dtype", get_float_dtypes(no_float16=False))
+    def test_zero_sign(self, n, dtype):
+        a = numpy.full((3, n), -0.0, dtype=dtype)
+        a[1, ::2] = 0.0
+        a[2, : n // 3] = -1
+        a[2, n - n // 3 :] = 1
+        ia = dpnp.array(a)
+
+        expected = numpy.median(a, axis=-1)
+        result = dpnp.median(ia, axis=-1)
+        assert_dtype_allclose(result, expected)
+        assert_array_equal(dpnp.signbit(result), numpy.signbit(expected))
+
+    @pytest.mark.parametrize("axis", [0, 1, 2, (0, 2), None])
+    def test_non_contiguous(self, axis):
+        a = generate_random_numpy_array((70, 3, 90), dtype="f4")
+        ia = dpnp.array(a)[::-1, :, ::2]
+        a = a[::-1, :, ::2]
+
+        expected = numpy.median(a, axis=axis)
+        result = dpnp.median(ia, axis=axis)
+        assert_dtype_allclose(result, expected)
+
+    def test_input_unchanged(self):
+        a = generate_random_numpy_array((3, 1001), dtype="f4")
+        ia = dpnp.array(a)
+
+        result = dpnp.median(ia, axis=-1, overwrite_input=True)
+        assert_dtype_allclose(result, numpy.median(a, axis=-1))
+        assert_array_equal(ia, a)
+
+    @pytest.mark.parametrize("keepdims", [False, True])
+    def test_out(self, keepdims):
+        a = generate_random_numpy_array((4, 3))
+        ia = dpnp.array(a)
+        shape = (1, 3) if keepdims else (3,)
+
+        out_np = numpy.empty_like(a, shape=shape)
+        out_dp = dpnp.empty_like(ia, shape=shape)
+        expected = numpy.median(a, axis=0, keepdims=keepdims, out=out_np)
+        result = dpnp.median(ia, axis=0, keepdims=keepdims, out=out_dp)
+        assert result is out_dp
+        assert_dtype_allclose(result, expected)
+
+    # shapes the result broadcasts to
+    @pytest.mark.parametrize(
+        "axis, out_shape", [(0, (2, 3)), (0, (1, 3)), (None, (3,))]
+    )
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_out_wrong_shape(self, xp, axis, out_shape):
+        a = xp.arange(12.0).reshape(4, 3)
+        out = xp.empty(out_shape)
+        with pytest.raises(ValueError):
+            xp.median(a, axis=axis, out=out)
+
+    def test_ext_empty_batch_clears_all_nan(self):
+        src = dpt.empty((0, 5), dtype="f4")
+        dst = dpt.empty((0,), dtype="f4")
+        all_nan = dpt.full(1, 7, dtype="u4")
+        mgr = dpctl.utils.SequentialOrderManager[src.sycl_queue]
+        ht_ev, ev = statistics_ext._median(
+            src,
+            True,
+            dst,
+            sycl_queue=src.sycl_queue,
+            all_nan=all_nan,
+            depends=mgr.submitted_events,
+        )
+        ht_ev.wait()
+        ev.wait()
+        assert dpt.asnumpy(all_nan)[0] == 0
+
+    def test_ext_empty_batch_dtype_error(self):
+        src = dpt.empty((0, 5), dtype="c8")
+        dst = dpt.empty((0,), dtype="c8")
+        with pytest.raises(ValueError, match="No median implementation"):
+            statistics_ext._median(src, False, dst, sycl_queue=src.sycl_queue)
 
 
 class TestPtp:

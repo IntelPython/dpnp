@@ -610,6 +610,8 @@ def test_logic_op_2in(op, device):
     [
         pytest.param("searchsorted", [11, 12, 13, 14, 15], 13),
         pytest.param("broadcast_to", numpy.ones(7), (2, 7)),
+        pytest.param("partition", [[2.0, 1.0, 7.0], [4.0, 0.0, 3.0]], 1),
+        pytest.param("argpartition", [[2.0, 1.0, 7.0], [4.0, 0.0, 3.0]], 1),
     ],
 )
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
