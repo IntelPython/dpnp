@@ -938,6 +938,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.argsort.html">dpnp.argsort</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.sort_complex.html">dpnp.sort_complex</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.partition.html">dpnp.partition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.top_k.html">dpnp.top_k</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.argmax.html">dpnp.argmax</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.nanargmax.html">dpnp.nanargmax</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.argmin.html">dpnp.argmin</a></li>
@@ -1109,10 +1110,10 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.backend.extensions.statistics._statistics_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">statistics_ext</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.libtensor._statistics_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">statistics_ext</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.libtensor._tensor_elementwise_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.libtensor._tensor_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dti</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.tensor._tensor_elementwise_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.tensor._tensor_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dti</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_usm_allocations</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils.dpnp_utils_common</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>

@@ -939,6 +939,7 @@
 <li class="toctree-l4"><a class="reference internal" href="dpnp.argsort.html">dpnp.argsort</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.sort_complex.html">dpnp.sort_complex</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.partition.html">dpnp.partition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.top_k.html">dpnp.top_k</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.argmax.html">dpnp.argmax</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.nanargmax.html">dpnp.nanargmax</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.argmin.html">dpnp.argmin</a></li>
@@ -1070,9 +1071,12 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.get_include">
 <span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">get_include</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface.html#get_include"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.get_include" title="Link to this definition">¶</a></dt>
-<dd><p>Return the directory that contains *.h header files of dpnp C++ backend.</p>
-<p>An extension module that needs to be compiled against dpnp backend
-should use this function to locate the appropriate include directory.</p>
+<dd><p>Return the directory that contains the *.hpp header files of the dpnp
+C++ library (libtensor).</p>
+<p>An extension module that needs to be compiled against libtensor should
+use this function to locate the appropriate include directory.
+It is the same directory as returned by
+<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">dpnp</span> <span class="pre">--tensor-include-dir</span></code>.</p>
 </dd></dl>
 
 </section>

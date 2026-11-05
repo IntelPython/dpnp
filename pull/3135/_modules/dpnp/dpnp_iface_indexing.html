@@ -938,6 +938,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.argsort.html">dpnp.argsort</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.sort_complex.html">dpnp.sort_complex</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.partition.html">dpnp.partition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.top_k.html">dpnp.top_k</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.argmax.html">dpnp.argmax</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.nanargmax.html">dpnp.nanargmax</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.argmin.html">dpnp.argmin</a></li>
@@ -1111,11 +1112,8 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 
 <span class="c1"># pylint: disable=no-name-in-module</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.backend.extensions.indexing._indexing_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">indexing_ext</span>
-
-<span class="c1"># pylint: disable=no-name-in-module</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.libtensor._tensor_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.tensor._tensor_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_array</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_usm_allocations</span>
@@ -1206,7 +1204,7 @@
     <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpu</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
     <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
 
-    <span class="n">h_ev</span><span class="p">,</span> <span class="n">choose_ev</span> <span class="o">=</span> <span class="n">indexing_ext</span><span class="o">.</span><span class="n">_choose</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="n">chcs</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">dep_evs</span><span class="p">)</span>
+    <span class="n">h_ev</span><span class="p">,</span> <span class="n">choose_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_choose</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="n">chcs</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">dep_evs</span><span class="p">)</span>
     <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">h_ev</span><span class="p">,</span> <span class="n">choose_ev</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">out</span>
@@ -3028,7 +3026,7 @@
     <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpu</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">exec_q</span><span class="p">]</span>
     <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
 
-    <span class="n">h_ev</span><span class="p">,</span> <span class="n">putmask_ev</span> <span class="o">=</span> <span class="n">indexing_ext</span><span class="o">.</span><span class="n">_putmask</span><span class="p">(</span>
+    <span class="n">h_ev</span><span class="p">,</span> <span class="n">putmask_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_putmask</span><span class="p">(</span>
         <span class="n">usm_a</span><span class="p">,</span> <span class="n">usm_mask</span><span class="p">,</span> <span class="n">usm_values_1d</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">dep_evs</span>
     <span class="p">)</span>
     <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">h_ev</span><span class="p">,</span> <span class="n">putmask_ev</span><span class="p">)</span></div>

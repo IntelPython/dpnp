@@ -938,6 +938,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.argsort.html">dpnp.argsort</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.sort_complex.html">dpnp.sort_complex</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.partition.html">dpnp.partition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.top_k.html">dpnp.top_k</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.argmax.html">dpnp.argmax</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.nanargmax.html">dpnp.nanargmax</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.argmin.html">dpnp.argmin</a></li>
@@ -1100,7 +1101,9 @@
 
 <span class="sd">"""</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">operator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedTuple</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
@@ -1114,6 +1117,12 @@
     <span class="n">map_dtype_to_device</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.tensor._numpy_helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_axis_index</span>
+
+
+<span class="c1"># pylint:disable=missing-class-docstring</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TopKResult</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="n">values</span><span class="p">:</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">indices</span><span class="p">:</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_wrap_sort_argsort</span><span class="p">(</span>
@@ -1520,6 +1529,142 @@
             <span class="n">b_dt</span> <span class="o">=</span> <span class="n">map_dtype_to_device</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">b</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">b_dt</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">b</span></div>
+
+
+
+<div class="viewcode-block" id="top_k">
+<a class="viewcode-back" href="../../reference/generated/dpnp.top_k.html#dpnp.top_k">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">top_k</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"largest"</span><span class="p">,</span> <span class="nb">sorted</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Returns the `k` largest or smallest elements and their indices along an</span>
+<span class="sd">    axis.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.top_k`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    k : int</span>
+<span class="sd">        The number of largest or smallest elements to return. `k` must be</span>
+<span class="sd">        a non-negative integer not greater than the size of `a` along `axis`.</span>
+<span class="sd">    axis : {None, int}, optional</span>
+<span class="sd">        Axis along which to find the largest or smallest elements. If</span>
+<span class="sd">        ``None``, the flattened array is used.</span>
+
+<span class="sd">        Default: ``-1``.</span>
+<span class="sd">    mode : {"largest", "smallest"}, optional</span>
+<span class="sd">        If ``"largest"``, the largest elements are returned. If</span>
+<span class="sd">        ``"smallest"``, the smallest elements are returned. NaN values (and</span>
+<span class="sd">        complex values with a NaN component) are ordered to the end regardless</span>
+<span class="sd">        of `mode`, so they are only returned if they are among the top `k`</span>
+<span class="sd">        values.</span>
+
+<span class="sd">        Default: ``"largest"``.</span>
+<span class="sd">    sorted : bool, optional</span>
+<span class="sd">        If ``True``, the top `k` elements are returned in sorted order:</span>
+<span class="sd">        largest-first for ``mode="largest"`` and smallest-first for</span>
+<span class="sd">        ``mode="smallest"``. If ``False``, the order of the elements is</span>
+<span class="sd">        unspecified.</span>
+
+<span class="sd">        Default: ``True``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    values : dpnp.ndarray</span>
+<span class="sd">        The top `k` values of `a`, with the same data type as `a`. The shape</span>
+<span class="sd">        is that of `a` with the dimension along `axis` replaced by `k`.</span>
+<span class="sd">    indices : dpnp.ndarray</span>
+<span class="sd">        The indices of `values` along `axis`, with the same shape as `values`</span>
+<span class="sd">        and the default array index data type.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.tensor.top_k` : Array API version; returns the elements in an</span>
+<span class="sd">        unspecified order.</span>
+<span class="sd">    :obj:`dpnp.partition` : Partial sort.</span>
+<span class="sd">    :obj:`dpnp.sort` : Full sorting.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The returned indices are not guaranteed to be stable, i.e., the order of</span>
+<span class="sd">    the indices of equal values is not guaranteed to match their order in</span>
+<span class="sd">    `a`. This is the case regardless of the value of `sorted`.</span>
+
+<span class="sd">    In contrast to :obj:`numpy.top_k`, which returns empty arrays when `axis`</span>
+<span class="sd">    is empty, :obj:`dpnp.top_k` raises ``ValueError`` for an empty `axis` and</span>
+<span class="sd">    ``k &gt; 0``, as it does for any `k` greater than the size of `axis`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1, 2, 3, 4], [4, 3, 2, 1]])</span>
+<span class="sd">    &gt;&gt;&gt; res = np.top_k(a, 2)</span>
+<span class="sd">    &gt;&gt;&gt; res.values</span>
+<span class="sd">    array([[4, 3],</span>
+<span class="sd">           [4, 3]])</span>
+<span class="sd">    &gt;&gt;&gt; res.indices</span>
+<span class="sd">    array([[3, 2],</span>
+<span class="sd">           [0, 1]])</span>
+
+<span class="sd">    &gt;&gt;&gt; values, indices = np.top_k(a, 2, axis=0)</span>
+<span class="sd">    &gt;&gt;&gt; values</span>
+<span class="sd">    array([[4, 3, 3, 4],</span>
+<span class="sd">           [1, 2, 2, 1]])</span>
+<span class="sd">    &gt;&gt;&gt; indices</span>
+<span class="sd">    array([[1, 1, 0, 0],</span>
+<span class="sd">           [0, 0, 1, 1]])</span>
+
+<span class="sd">    &gt;&gt;&gt; values, indices = np.top_k(a, 2, axis=1, mode="smallest")</span>
+<span class="sd">    &gt;&gt;&gt; values</span>
+<span class="sd">    array([[1, 2],</span>
+<span class="sd">           [1, 2]])</span>
+<span class="sd">    &gt;&gt;&gt; indices</span>
+<span class="sd">    array([[0, 1],</span>
+<span class="sd">           [3, 2]])</span>
+
+<span class="sd">    &gt;&gt;&gt; values, indices = np.top_k(np.array([1.0, 2.0, 3.0, np.nan]), 2)</span>
+<span class="sd">    &gt;&gt;&gt; values</span>
+<span class="sd">    array([3., 2.])</span>
+<span class="sd">    &gt;&gt;&gt; indices</span>
+<span class="sd">    array([2, 1])</span>
+
+<span class="sd">    """</span>
+
+    <span class="k">if</span> <span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"largest"</span><span class="p">,</span> <span class="s2">"smallest"</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">'mode(="</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s1">") must be either "largest" or "smallest".'</span>
+        <span class="p">)</span>
+
+    <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,))</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="n">usm_a</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
+
+    <span class="n">k</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">usm_a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span>
+    <span class="n">descending</span> <span class="o">=</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">"largest"</span>
+
+    <span class="k">if</span> <span class="nb">sorted</span> <span class="ow">and</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="n">k</span> <span class="o">&lt;=</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">k</span><span class="p">:</span>
+        <span class="c1"># for large k a full sort is cheaper than selecting and then sorting</span>
+        <span class="n">usm_inds</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="n">descending</span><span class="p">)</span>
+        <span class="n">usm_inds</span> <span class="o">=</span> <span class="n">usm_inds</span><span class="p">[(</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">),)</span> <span class="o">*</span> <span class="n">axis</span> <span class="o">+</span> <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="n">k</span><span class="p">),)]</span>
+        <span class="n">usm_vals</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">take_along_axis</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">usm_inds</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">usm_vals</span><span class="p">,</span> <span class="n">usm_inds</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">top_k</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+
+        <span class="c1"># tensor.top_k returns the elements in an unspecified order</span>
+        <span class="k">if</span> <span class="nb">sorted</span> <span class="ow">and</span> <span class="n">k</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">sort_inds</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">usm_vals</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="n">descending</span><span class="p">)</span>
+            <span class="n">usm_vals</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">take_along_axis</span><span class="p">(</span><span class="n">usm_vals</span><span class="p">,</span> <span class="n">sort_inds</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+            <span class="n">usm_inds</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">take_along_axis</span><span class="p">(</span><span class="n">usm_inds</span><span class="p">,</span> <span class="n">sort_inds</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">TopKResult</span><span class="p">(</span>
+        <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_vals</span><span class="p">),</span>
+        <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_inds</span><span class="p">),</span>
+    <span class="p">)</span></div>
 
 </pre></div>
         </article>
