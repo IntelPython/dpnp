@@ -37,8 +37,8 @@ env:
   rerun-tests-timeout: 45
   rerun-tensor-tests-timeout: 15
   rerun-tensor-tests-max-attempts: 3
-  # Healthy Windows tensor runs take up to ~19 min
-  rerun-tensor-tests-timeout-win: 20
+  # Per-test limit to kill a test stuck at 99%: https://github.com/IntelPython/dpctl/issues/1954
+  tensor-test-timeout: 120
 
 jobs:
   build:
@@ -75,6 +75,8 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0
+          # Blobless: all commits and tags for git describe, no gh-pages blobs
+          filter: blob:none
 
       - name: Setup miniconda
         id: setup_miniconda
@@ -230,14 +232,14 @@ jobs:
         id: install_dpnp
         continue-on-error: true
         run: |
-          conda install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist "${{ env.python-install-spec }}" ${{ env.TEST_CHANNELS }}
+          conda install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-timeout pytest-xdist "${{ env.python-install-spec }}" ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ inputs.channels-list }}'
 
       - name: ReInstall dpnp
         if: steps.install_dpnp.outcome == 'failure'
         run: |
-          conda install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist "${{ env.python-install-spec }}" ${{ env.TEST_CHANNELS }}
+          conda install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-timeout pytest-xdist "${{ env.python-install-spec }}" ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ inputs.channels-list }}'
 
@@ -289,7 +291,7 @@ jobs:
         id: run_tests_tensor
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
-          timeout_minutes: ${{ runner.os == 'Windows' && env.rerun-tensor-tests-timeout-win || env.rerun-tensor-tests-timeout }}
+          timeout_minutes: ${{ env.rerun-tensor-tests-timeout }}
           max_attempts: ${{ env.rerun-tensor-tests-max-attempts }}
           retry_on: any
           shell: bash
@@ -298,4 +300,4 @@ jobs:
             . "$CONDA_UNIX/etc/profile.d/conda.sh"
             conda activate ${{ env.test-env-name }}
 
-            python -m pytest -n auto -ra --pyargs dpnp.tests.tensor
+            python -m pytest -n auto -ra --timeout=${{ env.tensor-test-timeout }} --timeout-method=thread --pyargs dpnp.tests.tensor

@@ -989,6 +989,21 @@ class TestTake:
         a = xp.empty((2, 3, 0, 4))
         assert_raises(IndexError, a.take, indices, axis=2, mode=mode)
 
+    @pytest.mark.parametrize("axis", [0, 1])
+    @pytest.mark.parametrize("mode", ["clip", "wrap"])
+    def test_empty_axis_empty_result(self, axis, mode):
+        a = numpy.empty((0, 0), dtype="i4")
+        ia = dpnp.array(a)
+
+        # NumPy raises only for a non-empty result
+        assert_raises(IndexError, ia.take, [0, 1], axis=axis, mode=mode)
+
+        # empty indices are allowed
+        ind = numpy.empty(0, dtype=numpy.intp)
+        result = ia.take(dpnp.array(ind), axis=axis, mode=mode)
+        expected = a.take(ind, axis=axis, mode=mode)
+        assert_array_equal(result, expected)
+
     def test_bool_axis(self):
         a = numpy.array([[[1]]])
         ia = dpnp.array(a)

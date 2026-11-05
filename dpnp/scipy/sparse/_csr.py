@@ -61,7 +61,7 @@ import numpy as _np
 import dpnp as _dpnp
 
 # pylint: disable-next=no-name-in-module
-import dpnp.backend.extensions.sparse._sparse_impl as _si
+import dpnp.libtensor._sparse_impl as _si
 import dpnp.tensor as _dpt
 from dpnp.exceptions import ExecutionPlacementError
 
@@ -75,7 +75,7 @@ from .._lib._sparse import SparseABC, issparse
 # pylint: disable=duplicate-code
 
 # Value dtypes the oneMKL sparse::gemv dispatch table registers
-# (see dpnp/backend/extensions/sparse/types_matrix.hpp). ``dot`` raises
+# (see dpnp/libtensor/extensions/sparse/types_matrix.hpp). ``dot`` raises
 # for anything outside this set.
 _SPMV_VALUE_DTYPES = frozenset("fdFD")
 # Index dtypes oneMKL accepts (int32, int64). Matches the second
