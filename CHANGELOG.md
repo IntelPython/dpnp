@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Merged the `ufunc` and `indexing` extensions into `dpnp.libtensor._tensor_elementwise_impl` and `dpnp.libtensor._tensor_impl`, while `statistics` and `window` extensions became part of libtensor [#3131](https://github.com/IntelPython/dpnp/pull/3131)
 * Moved `blas`, `fft`, `lapack`, `sparse` and `vm` extensions into `dpnp/libtensor/extensions` [#3131](https://github.com/IntelPython/dpnp/pull/3131)
 * Moved the libtensor headers shipped with dpnp from `dpnp/tensor/libtensor/include` to `dpnp/libtensor/include`, and changed `dpnp.get_include` to return that directory [#3131](https://github.com/IntelPython/dpnp/pull/3131)
+* Improved performance of `dpnp.scipy.sparse.csr_matrix.sort_indices` by sorting once on a combined row and column key instead of in two passes [#3134](https://github.com/IntelPython/dpnp/pull/3134)
 
 ### Deprecated
 
@@ -35,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Fixed `flags[key]` of `dpnp.ndarray` and `dpnp.tensor.usm_ndarray` to raise `KeyError` for an unknown key [#3141](https://github.com/IntelPython/dpnp/pull/3141)
 * Released the GIL around the oneMKL VM calls in the VM extension, which deadlocked on an in-order queue of a CPU device [#3156](https://github.com/IntelPython/dpnp/pull/3156)
+* Fixed `dpnp.place` and `dpnp.tensor.place` to order the write after the cast of `vals` to the array's data type, which could put wrong values into the array on an out-of-order queue [#3164](https://github.com/IntelPython/dpnp/pull/3164)
 
 ### Security
 

@@ -9,6 +9,11 @@ on:
 permissions:
   contents: read
 
+# Cancel superseded PR runs only; other runs get a unique group and always complete
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 env:
   # Pinned: Miniforge3 26.9.4-0 fails 'conda init' on Windows runners
   miniforge-version: '26.7.2-1'
@@ -31,10 +36,6 @@ jobs:
   build_env_file:
     name: Build conda env file
 
-    permissions:
-      # Needed to cancel any previous runs that are not completed for a given workflow
-      actions: write
-
     strategy:
       fail-fast: false
       matrix:
@@ -49,11 +50,6 @@ jobs:
       python-install-spec: "python ${{ matrix.python_spec || format('{0}.*', matrix.python) }}"
 
     steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@d07a454dad7609a92316b57b23c9ccfd4f59af66 # 0.13.1
-        with:
-          access_token: ${{ github.token }}
-
       - name: Checkout DPNP repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
