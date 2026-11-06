@@ -929,6 +929,11 @@ _generator_methods = [
     pytest.param("beta", [0.5, 2.0], {"size": (3, 4)}),
     pytest.param("binomial", [10, 0.3], {"size": (3, 4)}),
     pytest.param("chisquare", [3.0], {"size": (3, 4)}),
+    pytest.param(
+        "choice", [5], {"size": (3, 4), "p": [0.1, 0.2, 0.3, 0.2, 0.2]}
+    ),
+    pytest.param("choice", [5], {"size": 3, "replace": False}),
+    pytest.param("dirichlet", [[0.5, 1.5]], {"size": 3}),
     pytest.param("exponential", [2.0], {"size": (3, 4)}),
     pytest.param("f", [2.0, 3.0], {"size": (3, 4)}),
     pytest.param("gamma", [2.0], {"size": (3, 4)}),
@@ -940,11 +945,17 @@ _generator_methods = [
     pytest.param("logistic", [], {"size": (3, 4)}),
     pytest.param("lognormal", [], {"size": (3, 4)}),
     pytest.param("logseries", [0.5], {"size": (3, 4)}),
+    pytest.param("multinomial", [5, [0.2, 0.8]], {"size": 3}),
+    pytest.param("multivariate_hypergeometric", [[3, 4], 2], {"size": 3}),
+    pytest.param(
+        "multivariate_normal", [[0.0, 0.0], [[1.0, 0.0], [0.0, 1.0]]], {}
+    ),
     pytest.param("negative_binomial", [3, 0.4], {"size": (3, 4)}),
     pytest.param("noncentral_chisquare", [3.0, 1.0], {"size": (3, 4)}),
     pytest.param("noncentral_f", [2.0, 3.0, 1.0], {"size": (3, 4)}),
     pytest.param("normal", [], {"size": (3, 4)}),
     pytest.param("pareto", [2.0], {"size": (3, 4)}),
+    pytest.param("permutation", [5], {}),
     pytest.param("poisson", [3.0], {"size": (3, 4)}),
     pytest.param("power", [2.0], {"size": (3, 4)}),
     pytest.param("random", [], {"size": (3, 4)}),
@@ -990,16 +1001,35 @@ def test_bit_generator(bit_generator, device):
     assert bg.random_raw(5).sycl_device == device
 
 
+@pytest.mark.parametrize("func", ["permutation", "permuted", "shuffle"])
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
+def test_generator_permutations(func, device):
+    sycl_queue = dpctl.SyclQueue(device)
+    rng = dpnp.random.default_rng(1, sycl_queue=sycl_queue)
+    x = dpnp.arange(10, sycl_queue=sycl_queue)
+    res = getattr(rng, func)(x)
+    if res is None:
+        res = x
+    assert_sycl_queue_equal(res.sycl_queue, sycl_queue)
+
+
 # "f", "i" and "p" stand for float, integer and probability arrays on another
 # queue than the generator's
 _diff_queue_methods = [
     pytest.param("binomial", ["i", 0.5]),
+    pytest.param("choice", ["f"]),
+    pytest.param("choice", [4, None, True, "p"]),
+    pytest.param("dirichlet", ["f"]),
     pytest.param("geometric", ["p"]),
     pytest.param("hypergeometric", ["i", "i", 1]),
     pytest.param("logseries", ["p"]),
+    pytest.param("multinomial", [5, "p"]),
+    pytest.param("multivariate_normal", ["f", numpy.eye(4).tolist()]),
     pytest.param("negative_binomial", ["f", 0.5]),
     pytest.param("normal", ["f"]),
+    pytest.param("permutation", ["f"]),
     pytest.param("poisson", ["f"]),
+    pytest.param("shuffle", ["f"]),
     pytest.param("standard_gamma", ["f"]),
     pytest.param("triangular", [0.0, "f", 5.0]),
     pytest.param("uniform", ["f", 5.0]),
@@ -1022,6 +1052,9 @@ def _diff_queue_args(args, device):
     _diff_queue_methods
     + [
         pytest.param("integers", ["i"]),
+        pytest.param("multivariate_hypergeometric", ["i", 2]),
+        pytest.param("permuted", ["f"]),
+        pytest.param("permuted", [[1.0, 2.0, 3.0, 4.0]], id="permuted-out"),
         pytest.param("random", [4, None], id="random-out"),
     ],
 )

@@ -39,6 +39,9 @@ driven by a oneMKL device engine. The values differ from NumPy's.
 # pylint: disable=protected-access
 # pylint: disable=too-many-lines
 
+import operator
+import warnings
+
 import numpy
 
 import dpnp
@@ -47,6 +50,7 @@ import dpnp.libtensor._tensor_impl as ti
 import dpnp.tensor as dpt
 from dpnp.exceptions import ExecutionPlacementError
 from dpnp.tensor import validate_usm_type
+from dpnp.tensor._numpy_helper import normalize_axis_index
 
 from ._bit_generator import BitGenerator, Philox4x3210, _normalize_size
 
@@ -91,6 +95,25 @@ _F32_GT_0 = (numpy.finfo(numpy.float32).tiny, None)
 _F32_GT_1 = (numpy.nextafter(numpy.float32(1), numpy.float32(2)), None)
 _F32_LT_1 = (None, numpy.nextafter(numpy.float32(1), numpy.float32(0)))
 _F32_LT_2_63 = (None, numpy.nextafter(numpy.float32(2**63), numpy.float32(0)))
+
+# the messages of Generator.choice
+_CHOICE_MSGS = {
+    "a_type": "a must be a sequence or an integer, not {}",
+    "a_int": "a must be a positive integer unless no samples are taken",
+    "a_1d": None,
+    "a_empty": "a cannot be empty unless no samples are taken",
+    "p_1d": "p must be 1-dimensional",
+    "p_size": "a and p must have same size",
+    "p_nan": "Probabilities contain NaN",
+    "p_neg": "Probabilities are not non-negative",
+    "p_sum": (
+        "Probabilities do not sum to 1. See Notes section of docstring for "
+        "more information."
+    ),
+    "too_large": (
+        "Cannot take a larger sample than population when replace is False"
+    ),
+}
 
 
 def _is_array(x):
@@ -649,6 +672,16 @@ class Generator:
             param_types=param_types,
             double_precision=ft == numpy.float64,
         )
+
+    def _permutation_index(self, n, usm_type=None):
+        """
+        A random permutation of ``arange(n)``, as ``int64`` values allocated
+        with `usm_type`.
+
+        """
+
+        keys = self._bit_generator.random_raw(max(n, 0), usm_type=usm_type)
+        return dpnp.argsort(keys)
 
     def random(self, size=None, dtype=None, out=None, *, usm_type=None):
         """
@@ -1615,6 +1648,648 @@ class Generator:
             param_types=(_int64,) * 3,
         )
 
+    def dirichlet(self, alpha, size=None, dtype=None, *, usm_type=None):
+        """
+        Draw samples from the Dirichlet distribution.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.dirichlet`.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature. `alpha` is
+        copied to the host, where it is checked, and one kernel is launched
+        for every component when all of `alpha` is less than 0.1.
+
+        """
+
+        self._check_queues(alpha)
+        validate_usm_type(usm_type, allow_none=True)
+        if usm_type is None:
+            usm_type = _usm_type_of(alpha)
+        dtype = self._float_dtype(dtype, "dirichlet")
+        queue = self.sycl_queue
+
+        k = len(alpha)
+        if dpnp.is_supported_array_type(alpha):
+            alpha = dpnp.asnumpy(alpha)
+        alpha = numpy.asarray(alpha, dtype=numpy.float64)
+        if alpha.ndim != 1:
+            raise ValueError(
+                "setting an array element with a sequence. The requested "
+                "array would exceed the maximum number of dimension of 1."
+            )
+        if numpy.any(alpha < 0):
+            raise ValueError("alpha < 0")
+
+        size = _normalize_size(size)
+        shape = (() if size is None else size) + (k,)
+
+        if k == 0 or not alpha.max() < 0.1:
+            # normalize gamma variates, NaN in alpha giving NaN
+            res = self._float_sample(
+                ri._gamma,
+                (),
+                shape,
+                dtype,
+                usm_type,
+                "dirichlet",
+                kernel_params=(alpha, 1.0),
+            )
+            res /= res.sum(axis=-1, keepdims=True)
+            return res
+
+        # With small alpha the gamma variates underflow, so break a stick
+        # by beta variates instead, as NumPy does. csum[j] is sum(alpha[j:]).
+        csum = numpy.cumsum(alpha[::-1])[::-1]
+        res = dpnp.zeros(
+            shape, dtype=dtype, usm_type=usm_type, sycl_queue=queue
+        )
+        if csum[0] == 0:
+            return res
+
+        batch = shape[:-1]
+        acc = dpnp.ones(batch, dtype=dtype, usm_type=usm_type, sycl_queue=queue)
+        last = k - 1
+        for j in range(k - 1):
+            if csum[j + 1] == 0:
+                # the stick left goes to component j
+                last = j
+                break
+            if alpha[j] == 0:
+                continue
+            v = self._float_sample(
+                ri._beta,
+                (),
+                batch,
+                dtype,
+                usm_type,
+                "dirichlet",
+                kernel_params=(alpha[j], csum[j + 1]),
+            )
+            res[..., j] = acc * v
+            acc *= 1 - v
+        res[..., last] = acc
+        return res
+
+    def multinomial(self, n, pvals, size=None, *, usm_type=None):
+        """
+        Draw samples from a multinomial distribution.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.multinomial`.
+
+        Limitations
+        -----------
+        `usm_type` is not in NumPy's signature. One binomial kernel is
+        launched for every category but the last.
+
+        """
+
+        self._check_queues(n, pvals)
+        validate_usm_type(usm_type, allow_none=True)
+        if usm_type is None:
+            usm_type = _usm_type_of(n, pvals)
+        queue = self.sycl_queue
+        ft = self._discrete_float_type()
+
+        on_host = not dpnp.is_supported_array_type(pvals)
+        if on_host:
+            pvals = numpy.asarray(pvals, dtype=numpy.float64)
+        if pvals.ndim == 0 or pvals.shape[-1] == 0:
+            raise ValueError(
+                "pvals must have at least 1 dimension and the last dimension "
+                "of pvals must be greater than 0."
+            )
+        if on_host:
+            _check_constraint(pvals, "pvals", _CONS_BOUNDED_0_1, False)
+            if numpy.any(pvals[..., :-1].sum(axis=-1) > 1.0 + 1e-12):
+                raise ValueError(
+                    "sum(pvals[:-1]) > 1.0"
+                    if pvals.ndim == 1
+                    else "sum(pvals[...,:-1]) > 1.0"
+                )
+
+        n = _as_int64(n)
+        _check_constraint(
+            n,
+            "n",
+            _CONS_NON_NEGATIVE,
+            numpy.ndim(n) == 0,
+        )
+
+        d = pvals.shape[-1]
+        batch = numpy.broadcast_shapes(numpy.shape(n), pvals.shape[:-1])
+        size = _normalize_size(size)
+        if size is not None:
+            try:
+                compatible = numpy.broadcast_shapes(size, batch) == size
+            except ValueError:
+                compatible = False
+            if not compatible:
+                raise ValueError(
+                    f"Output size {size} is not compatible with broadcast "
+                    f"dimensions of inputs {batch}."
+                )
+            batch = size
+
+        res = dpnp.empty(
+            batch + (d,), dtype=_int64, usm_type=usm_type, sycl_queue=queue
+        )
+
+        # Draw the categories in turn, each from a binomial of the trials
+        # left with the probability of the category conditioned on not
+        # being any of the previous ones
+        host_p = on_host and pvals.ndim == 1
+        if host_p:
+            remaining = 1.0
+        else:
+            pvals = dpnp.asarray(pvals, dtype=ft, sycl_queue=queue)
+            remaining = dpnp.ones_like(pvals[..., 0])
+        dn = dpnp.asarray(n, sycl_queue=queue) if _is_array(n) else n
+        for j in range(d - 1):
+            pj = pvals[..., j]
+            if host_p:
+                prob = (
+                    min(max(pj / remaining, 0.0), 1.0) if remaining > 0 else 0
+                )
+            else:
+                prob = dpnp.where(
+                    remaining > 0, dpnp.clip(pj / remaining, 0, 1), 0
+                )
+            x = self._discrete_sample(
+                ri._binomial,
+                (),
+                batch,
+                usm_type,
+                kernel_params=(dn, prob),
+                param_types=(_int64, None),
+            )
+            res[..., j] = x
+            dn = dn - x
+            remaining = remaining - pj
+        res[..., d - 1] = dn
+        return res
+
+    def multivariate_hypergeometric(
+        self,
+        colors,
+        nsample,
+        size=None,
+        method="marginals",
+        *,
+        usm_type=None,
+    ):
+        """
+        Generate variates from a multivariate hypergeometric distribution.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.multivariate_hypergeometric`.
+
+        Limitations
+        -----------
+        `usm_type` is not in NumPy's signature. Both methods draw by the
+        marginals algorithm, launching one kernel for every color but the
+        last, so ``sum(colors)`` must be less than 1000000000 for the
+        ``"count"`` method as well.
+
+        """
+
+        self._check_queues(colors)
+        validate_usm_type(usm_type, allow_none=True)
+        if usm_type is None:
+            usm_type = _usm_type_of(colors, nsample)
+        if method not in ("count", "marginals"):
+            raise ValueError('method must be "count" or "marginals".')
+
+        try:
+            nsample = operator.index(nsample)
+        except TypeError:
+            raise ValueError("nsample must be an integer") from None
+        if nsample < 0:
+            raise ValueError("nsample must be nonnegative.")
+        if nsample > _INT64_MAX:
+            raise ValueError(f"nsample must not exceed {_INT64_MAX}")
+
+        if dpnp.is_supported_array_type(colors):
+            colors = dpnp.asnumpy(colors)
+        invalid_colors = False
+        try:
+            colors = numpy.asarray(colors)
+            if colors.ndim != 1:
+                invalid_colors = True
+            elif colors.size > 0 and not numpy.issubdtype(
+                colors.dtype, numpy.integer
+            ):
+                invalid_colors = True
+            elif numpy.any((colors < 0) | (colors > _INT64_MAX)):
+                invalid_colors = True
+        except ValueError:
+            invalid_colors = True
+        if invalid_colors:
+            raise ValueError(
+                "colors must be a one-dimensional sequence of nonnegative "
+                f"integers not exceeding {_INT64_MAX}."
+            )
+
+        colors = numpy.ascontiguousarray(colors, dtype=_int64)
+        total = sum(int(c) for c in colors)
+        if total > _INT64_MAX:
+            raise ValueError(
+                "sum(colors) must not exceed the maximum value of a 64 bit "
+                f"signed integer ({_INT64_MAX})"
+            )
+        if total >= _HYPERGEOM_MAX:
+            raise ValueError(
+                f'When method is "{method}", sum(colors) must be less than '
+                f"{_HYPERGEOM_MAX}."
+            )
+        if nsample > total:
+            raise ValueError("nsample > sum(colors)")
+
+        size = _normalize_size(size)
+        batch = () if size is None else size
+        k = colors.size
+        res = dpnp.zeros(
+            batch + (k,),
+            dtype=_int64,
+            usm_type=usm_type,
+            sycl_queue=self.sycl_queue,
+        )
+        if k == 0 or nsample == 0 or res.size == 0:
+            return res
+
+        # draw the complement when it is smaller
+        more_than_half = nsample > total // 2
+        num_to_sample = total - nsample if more_than_half else nsample
+        remaining = total
+        for j in range(k - 1):
+            remaining -= int(colors[j])
+            x = self._discrete_sample(
+                ri._hypergeometric,
+                (),
+                batch,
+                usm_type,
+                kernel_params=(int(colors[j]), remaining, num_to_sample),
+                param_types=(_int64,) * 3,
+            )
+            res[..., j] = x
+            num_to_sample = num_to_sample - x
+        res[..., k - 1] = num_to_sample
+
+        if more_than_half:
+            dpnp.subtract(
+                dpnp.asarray(
+                    colors, usm_type=usm_type, sycl_queue=res.sycl_queue
+                ),
+                res,
+                out=res,
+            )
+        return res
+
+    def multivariate_normal(
+        self,
+        mean,
+        cov,
+        size=None,
+        check_valid="warn",
+        tol=1e-8,
+        *,
+        method="svd",
+        dtype=None,
+        usm_type=None,
+    ):
+        """
+        Draw random samples from a multivariate normal distribution.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.multivariate_normal`.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature. The covariance
+        matrix is factorized on the device by :mod:`dpnp.linalg`, in double
+        precision if the device supports it. Otherwise it is factorized in
+        single precision, and `tol` is taken to be at least ``100 * eps`` of
+        :obj:`dpnp.float32`.
+
+        """
+        return self._multivariate_normal(
+            mean,
+            cov,
+            size,
+            check_valid,
+            tol,
+            method,
+            dtype,
+            usm_type,
+            stacklevel=3,
+        )
+
+    def _multivariate_normal(
+        self,
+        mean,
+        cov,
+        size,
+        check_valid,
+        tol,
+        method,
+        dtype,
+        usm_type,
+        stacklevel,
+    ):
+        if method not in {"eigh", "svd", "cholesky"}:
+            raise ValueError(
+                "method must be one of {'eigh', 'svd', 'cholesky'}"
+            )
+
+        self._check_queues(mean, cov)
+        validate_usm_type(usm_type, allow_none=True)
+        if usm_type is None:
+            usm_type = _usm_type_of(mean, cov)
+        dtype = self._float_dtype(dtype, "multivariate_normal")
+        queue = self.sycl_queue
+        mean = dpnp.asarray(mean, usm_type=usm_type, sycl_queue=queue)
+        cov = dpnp.asarray(cov, usm_type=usm_type, sycl_queue=queue)
+        if dpnp.issubdtype(mean.dtype, dpnp.complexfloating) or dpnp.issubdtype(
+            cov.dtype, dpnp.complexfloating
+        ):
+            raise TypeError("mean and cov must not be complex")
+
+        if mean.ndim != 1:
+            raise ValueError("mean must be 1 dimensional")
+        if cov.ndim != 2 or cov.shape[0] != cov.shape[1]:
+            raise ValueError("cov must be 2 dimensional and square")
+        if mean.shape[0] != cov.shape[0]:
+            raise ValueError("mean and cov must have same length")
+
+        cov = cov.astype(dpnp.default_float_type(sycl_queue=queue))
+        if cov.dtype == dpnp.float32:
+            tol = max(tol, 100 * dpnp.finfo(dpnp.float32).eps)
+        # as in NumPy, check_valid is ignored by the cholesky method
+        if method != "cholesky" and check_valid not in (
+            "warn",
+            "raise",
+            "ignore",
+        ):
+            raise ValueError(
+                "check_valid must equal 'warn', 'raise', or 'ignore'"
+            )
+
+        psd = True
+        if method == "svd":
+            u, s, vh = dpnp.linalg.svd(cov)
+            if check_valid != "ignore":
+                psd = dpnp.allclose(
+                    dpnp.dot(vh.T * s, vh), cov, rtol=tol, atol=tol
+                )
+            factor = u * dpnp.sqrt(s)
+        elif method == "eigh":
+            s, u = dpnp.linalg.eigh(cov)
+            if check_valid != "ignore":
+                psd = not dpnp.any(s < -tol)
+            factor = u * dpnp.sqrt(dpnp.abs(s))
+        else:
+            factor = dpnp.linalg.cholesky(cov)
+
+        if not psd:
+            msg = "covariance is not symmetric positive-semidefinite."
+            if check_valid == "warn":
+                warnings.warn(msg, RuntimeWarning, stacklevel=stacklevel)
+            else:
+                raise ValueError(msg)
+
+        size = _normalize_size(size)
+        shape = (() if size is None else size) + mean.shape
+        x = self._float_sample(
+            ri._normal,
+            (),
+            shape,
+            dtype,
+            usm_type,
+            "multivariate_normal",
+            kernel_params=(0.0, 1.0),
+        )
+        factor = factor.astype(dtype)
+        x = mean.astype(dtype) + x.reshape(-1, mean.shape[0]) @ factor.T
+        return x.reshape(shape)
+
+    def permutation(self, x, axis=0):
+        """
+        Randomly permute a sequence, or return a permuted range.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.permutation`.
+
+        """
+
+        if isinstance(x, (int, numpy.integer)):
+            return self._permutation_index(int(x))
+
+        self._check_queues(x)
+        arr = dpnp.asarray(x, sycl_queue=self.sycl_queue)
+        axis = normalize_axis_index(axis, arr.ndim)
+        idx = self._permutation_index(arr.shape[axis], arr.usm_type)
+        return dpnp.take(arr, idx, axis=axis)
+
+    def shuffle(self, x, axis=0):
+        """
+        Modify an array in place by shuffling its contents.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.shuffle`.
+
+        Limitations
+        -----------
+        As in CuPy, `x` must be a :class:`dpnp.ndarray`.
+
+        """
+
+        if not isinstance(x, dpnp.ndarray):
+            raise TypeError(f"x must be a dpnp.ndarray, got {type(x)}")
+        self._check_queues(x)
+        if x.ndim == 0:
+            raise TypeError("len() of unsized object")
+        axis = normalize_axis_index(axis, x.ndim)
+        idx = self._permutation_index(x.shape[axis], x.usm_type)
+        x[...] = dpnp.take(x, idx, axis=axis)
+
+    def permuted(self, x, *, axis=None, out=None):
+        """
+        Randomly permute `x` along axis `axis`.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.permuted`.
+
+        Limitations
+        -----------
+        `out` must be a :class:`dpnp.ndarray`.
+
+        """
+
+        self._check_queues(x, out)
+        x = dpnp.asarray(x, sycl_queue=self.sycl_queue)
+
+        if out is not None:
+            dpnp.check_supported_arrays_type(out)
+            if out.shape != x.shape:
+                raise ValueError("out must have the same shape as x")
+            if not dpnp.can_cast(x.dtype, out.dtype, casting="safe"):
+                raise TypeError(
+                    f"Cannot cast array data from {x.dtype} to {out.dtype} "
+                    "according to the rule 'safe'"
+                )
+
+        if axis is None:
+            if x.ndim == 0:
+                raise TypeError("len() of unsized object")
+            idx = self._permutation_index(x.size, x.usm_type)
+            res = dpnp.take(dpnp.ravel(x), idx).reshape(x.shape)
+        else:
+            axis = normalize_axis_index(axis, x.ndim)
+            keys = self._bit_generator.random_raw(x.shape, usm_type=x.usm_type)
+            idx = dpnp.argsort(keys, axis=axis)
+            res = dpnp.take_along_axis(x, idx, axis=axis)
+
+        if out is None:
+            return res
+        dpnp.get_usm_ndarray(out)[...] = dpnp.get_usm_ndarray(res)
+        return out
+
+    def choice(
+        self,
+        a,
+        size=None,
+        replace=True,
+        p=None,
+        axis=0,
+        shuffle=True,
+        *,
+        usm_type=None,
+    ):
+        """
+        Generate a random sample from a given array.
+
+        For full documentation refer to :obj:`numpy.random.Generator.choice`.
+
+        Limitations
+        -----------
+        `usm_type` is not in NumPy's signature. Without replacement, the
+        sample is always in random order, so `shuffle` has no effect, and
+        memory and time proportional to the population size are used. `p`
+        is checked only when it is on the host.
+
+        """
+
+        # pylint: disable=unused-argument
+        return self._choice(a, size, replace, p, axis, usm_type, _CHOICE_MSGS)
+
+    # pylint: disable=too-many-branches, too-many-statements
+    def _choice(self, a, size, replace, p, axis, usm_type, msgs):
+        """
+        The implementation of :meth:`choice`, raising the messages of the
+        table `msgs`, as those of NumPy's legacy ``RandomState.choice``
+        differ.
+
+        """
+
+        self._check_queues(a, p)
+        validate_usm_type(usm_type, allow_none=True)
+        if usm_type is None:
+            usm_type = _usm_type_of(a, p)
+        queue = self.sycl_queue
+        no_samples = size is not None and numpy.prod(size) == 0
+
+        a_original = a
+        a = (
+            dpnp.asarray(a)
+            if dpnp.is_supported_array_type(a)
+            else numpy.asarray(a)
+        )
+        if a.ndim == 0:
+            try:
+                pop_size = operator.index(a.item())
+            except TypeError as exc:
+                raise ValueError(
+                    msgs["a_type"].format(type(a_original))
+                ) from exc
+            if pop_size <= 0 and not no_samples:
+                raise ValueError(msgs["a_int"])
+        else:
+            if msgs["a_1d"] is not None and a.ndim != 1:
+                raise ValueError(msgs["a_1d"])
+            axis = normalize_axis_index(axis, a.ndim)
+            pop_size = a.shape[axis]
+            if pop_size == 0 and not no_samples:
+                raise ValueError(msgs["a_empty"])
+
+        p_host = p_check = None
+        if p is not None:
+            if dpnp.is_supported_array_type(p):
+                p_dev = dpnp.asarray(p)
+            else:
+                atol = numpy.sqrt(numpy.finfo(numpy.float64).eps)
+                if isinstance(p, numpy.ndarray) and numpy.issubdtype(
+                    p.dtype, numpy.floating
+                ):
+                    atol = max(atol, numpy.sqrt(numpy.finfo(p.dtype).eps))
+                p_host = numpy.asarray(p, dtype=numpy.float64)
+                p_dev = p_host
+            if p_dev.ndim != 1:
+                raise ValueError(msgs["p_1d"])
+            if p_dev.size != pop_size:
+                raise ValueError(msgs["p_size"])
+            p_check = p_host
+            if p_check is not None:
+                p_sum = float(p_check.sum())
+                if numpy.isnan(p_sum):
+                    raise ValueError(msgs["p_nan"])
+                if (p_check < 0).any():
+                    raise ValueError(msgs["p_neg"])
+                if abs(p_sum - 1.0) > atol:
+                    raise ValueError(msgs["p_sum"])
+            ft = dpnp.default_float_type(sycl_queue=queue)
+            p_dev = dpnp.asarray(
+                p_dev, dtype=ft, usm_type=usm_type, sycl_queue=queue
+            )
+
+        shape = () if size is None else _normalize_size(size)
+        n = int(numpy.prod(shape, dtype=numpy.int64))
+        if not replace:
+            if n > pop_size:
+                raise ValueError(msgs["too_large"])
+            if p_check is not None and int((p_check > 0).sum()) < n:
+                raise ValueError("Fewer non-zero entries in p than size")
+
+        if n == 0:
+            idx = dpnp.empty(
+                shape, dtype=_int64, usm_type=usm_type, sycl_queue=queue
+            )
+        elif replace:
+            if p is not None:
+                cdf = dpnp.cumsum(p_dev)
+                cdf /= cdf[-1]
+                u = self.random(shape, dtype=ft, usm_type=usm_type)
+                idx = dpnp.searchsorted(cdf, u, side="right")
+            else:
+                idx = self.integers(0, pop_size, size=shape, usm_type=usm_type)
+        elif p is not None:
+            # The Efraimidis-Spirakis keys: taking the smallest ones gives
+            # the successive weighted draws of NumPy, in the order drawn
+            keys = (
+                self.standard_exponential(pop_size, dtype=ft, usm_type=usm_type)
+                / p_dev
+            )
+            idx = dpnp.argsort(keys)[:n].reshape(shape)
+        else:
+            idx = self._permutation_index(pop_size, usm_type)[:n].reshape(shape)
+
+        if a.ndim == 0:
+            return idx
+        if not isinstance(a, dpnp.ndarray):
+            a = dpnp.asarray(a, usm_type=usm_type, sycl_queue=queue)
+        return dpnp.take(a, idx, axis=axis)
+
     def integers(
         self,
         low,
@@ -1744,6 +2419,29 @@ class Generator:
         return self._sample(
             ri._integers, (), size, dtype, usm_type, kernel_params=(low, high)
         )
+
+    def bytes(self, length):
+        """
+        Return random bytes.
+
+        For full documentation refer to :obj:`numpy.random.Generator.bytes`.
+
+        Limitations
+        -----------
+        The bytes are drawn on the device and copied to the host.
+
+        """
+
+        # as in NumPy, 32-bit values in little-endian order, as many as
+        # (length - 1) / 4 + 1 in C division, so bytes(0) draws one
+        length = operator.index(length)
+        q = length - 1
+        n_uint32 = (q // 4 if q >= 0 else -(-q // 4)) + 1
+        values = dpnp.empty(
+            n_uint32, dtype=dpnp.uint32, sycl_queue=self.sycl_queue
+        )
+        self._bit_generator._fill(ri._random_raw, (), values)
+        return dpnp.asnumpy(values).astype("<u4").tobytes()[:length]
 
 
 def default_rng(seed=None, *, device=None, sycl_queue=None):

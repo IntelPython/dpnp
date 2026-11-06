@@ -64,6 +64,8 @@ Differences from NumPy
   NumPy's rejection test rounds to accepting every sample above ``2**53``,
   which makes its tail too heavy for ``a`` close to 1.
 * ``hypergeometric`` requires ``ngood`` and ``nbad`` below ``10**9``.
+* :meth:`Generator.shuffle` only accepts a :class:`dpnp.ndarray`, as in
+  CuPy.
 * Generators and bit generators cannot be pickled or copied, and the bit
   generators have no ``advance`` or ``jumped`` method.
 
@@ -96,6 +98,19 @@ Simple random data
 
    Generator.integers
    Generator.random
+   Generator.choice
+   Generator.bytes
+
+Permutations
+^^^^^^^^^^^^
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   Generator.shuffle
+   Generator.permutation
+   Generator.permuted
 
 Distributions
 ^^^^^^^^^^^^^
@@ -107,6 +122,7 @@ Distributions
    Generator.beta
    Generator.binomial
    Generator.chisquare
+   Generator.dirichlet
    Generator.exponential
    Generator.f
    Generator.gamma
@@ -117,6 +133,9 @@ Distributions
    Generator.logistic
    Generator.lognormal
    Generator.logseries
+   Generator.multinomial
+   Generator.multivariate_hypergeometric
+   Generator.multivariate_normal
    Generator.negative_binomial
    Generator.noncentral_chisquare
    Generator.noncentral_f
