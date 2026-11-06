@@ -14,7 +14,7 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
 
     <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
-        <title>dpnp.dpnp_iface_trigonometric - Data Parallel Extension for NumPy (dpnp) 0.22.0dev0 documentation</title>
+        <title>dpnp.dpnp_iface_trigonometric - Data Parallel Extension for NumPy (dpnp) 0.22.0dev1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -172,7 +172,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.22.0dev0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.22.0dev1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.22.0dev0 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.22.0dev1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -937,6 +937,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.argsort.html">dpnp.argsort</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.sort_complex.html">dpnp.sort_complex</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.partition.html">dpnp.partition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.top_k.html">dpnp.top_k</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.argmax.html">dpnp.argmax</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.nanargmax.html">dpnp.nanargmax</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.argmin.html">dpnp.argmin</a></li>
@@ -1103,9 +1104,8 @@
 <span class="c1"># pylint: disable=no-name-in-module</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.backend.extensions.ufunc._ufunc_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ufi</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.libtensor._tensor_elementwise_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.tensor._tensor_elementwise_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.tensor._type_utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dtu</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_algo.dpnp_elementwise_common</span><span class="w"> </span><span class="kn">import</span> <span class="n">DPNPBinaryFunc</span><span class="p">,</span> <span class="n">DPNPUnaryFunc</span>
@@ -2059,8 +2059,8 @@
 
 <span class="n">deg2rad</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
     <span class="s2">"deg2rad"</span><span class="p">,</span>
-    <span class="n">ufi</span><span class="o">.</span><span class="n">_radians_result_type</span><span class="p">,</span>
-    <span class="n">ufi</span><span class="o">.</span><span class="n">_radians</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_radians_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_radians</span><span class="p">,</span>
     <span class="n">_DEG2RAD_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -2130,8 +2130,8 @@
 
 <span class="n">degrees</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
     <span class="s2">"degrees"</span><span class="p">,</span>
-    <span class="n">ufi</span><span class="o">.</span><span class="n">_degrees_result_type</span><span class="p">,</span>
-    <span class="n">ufi</span><span class="o">.</span><span class="n">_degrees</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_degrees_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_degrees</span><span class="p">,</span>
     <span class="n">_DEGREES_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -2880,8 +2880,8 @@
 
 <span class="n">logaddexp2</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
     <span class="s2">"logaddexp2"</span><span class="p">,</span>
-    <span class="n">ufi</span><span class="o">.</span><span class="n">_logaddexp2_result_type</span><span class="p">,</span>
-    <span class="n">ufi</span><span class="o">.</span><span class="n">_logaddexp2</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_logaddexp2_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_logaddexp2</span><span class="p">,</span>
     <span class="n">_LOGADDEXP2_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -3040,8 +3040,8 @@
 
 <span class="n">rad2deg</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
     <span class="s2">"rad2deg"</span><span class="p">,</span>
-    <span class="n">ufi</span><span class="o">.</span><span class="n">_degrees_result_type</span><span class="p">,</span>
-    <span class="n">ufi</span><span class="o">.</span><span class="n">_degrees</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_degrees_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_degrees</span><span class="p">,</span>
     <span class="n">_RAD2DEG_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -3112,8 +3112,8 @@
 
 <span class="n">radians</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
     <span class="s2">"radians"</span><span class="p">,</span>
-    <span class="n">ufi</span><span class="o">.</span><span class="n">_radians_result_type</span><span class="p">,</span>
-    <span class="n">ufi</span><span class="o">.</span><span class="n">_radians</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_radians_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_radians</span><span class="p">,</span>
     <span class="n">_RADIANS_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -3865,7 +3865,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=aa23f226"></script>
+</div><script src="../../_static/documentation_options.js?v=0e5b763f"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
