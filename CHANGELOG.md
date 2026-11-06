@@ -38,6 +38,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 * Removed the unused `FourZeroOffsets_Indexer`, `FixedDimStridedIndexer` and `ThreeOffsets_FixedDimStridedIndexer` from the libtensor header `utils/offset_utils.hpp` [#3131](https://github.com/IntelPython/dpnp/pull/3131)
+* Removed the legacy backend implementation of `dpnp.random`, which no longer needs `onemkl-sycl-rng` [#3163](https://github.com/IntelPython/dpnp/pull/3163)
+* Removed the unused parts of the legacy `dpnp_backend_c` library, including its empty GTest suite, the `DPNP_BACKEND_TESTS` CMake option and the NumPy fallback helper `call_origin` [#3163](https://github.com/IntelPython/dpnp/pull/3163)
 
 ### Fixed
 
