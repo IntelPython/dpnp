@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added the multivariate distributions, `permutation`, `shuffle`, `permuted`, `choice` and `bytes` to `dpnp.random.Generator` [#3160](https://github.com/IntelPython/dpnp/pull/3160)
 * Added the `dpnp.random.PCG64DXSM` bit generator, which matches `numpy.random.PCG64DXSM` for raw values, `random`, `uniform` and `bytes` [#3161](https://github.com/IntelPython/dpnp/pull/3161)
 * Added the `dpnp.random.MRG32k3a` bit generator [#3161](https://github.com/IntelPython/dpnp/pull/3161)
+* Added `dpnp.random.get_state`, `dpnp.random.set_state`, `dpnp.random.get_bit_generator` and `dpnp.random.set_bit_generator`, and support for a bit generator as the seed of `dpnp.random.RandomState` [#3162](https://github.com/IntelPython/dpnp/pull/3162)
 
 ### Changed
 
@@ -25,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Moved `blas`, `fft`, `lapack`, `sparse` and `vm` extensions into `dpnp/libtensor/extensions` [#3131](https://github.com/IntelPython/dpnp/pull/3131)
 * Moved the libtensor headers shipped with dpnp from `dpnp/tensor/libtensor/include` to `dpnp/libtensor/include`, and changed `dpnp.get_include` to return that directory [#3131](https://github.com/IntelPython/dpnp/pull/3131)
 * Improved performance of `dpnp.scipy.sparse.csr_matrix.sort_indices` by sorting once on a combined row and column key instead of in two passes [#3134](https://github.com/IntelPython/dpnp/pull/3134)
+* Reimplemented `dpnp.random.RandomState` and the `dpnp.random` functions on device kernels, drawing on the queue of the generator. `device`, `usm_type` and `sycl_queue` are now keyword-only, `randint(dtype=int)` returns `int64` and `shuffle` requires a `dpnp.ndarray` [#3162](https://github.com/IntelPython/dpnp/pull/3162)
 
 ### Deprecated
 

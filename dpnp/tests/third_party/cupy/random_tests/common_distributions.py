@@ -2,10 +2,16 @@ import functools
 import unittest
 
 import numpy
+import pytest
 
 import dpnp as cupy
+from dpnp.tests.helper import has_support_aspect64
 from dpnp.tests.third_party.cupy import testing
 from dpnp.tests.third_party.cupy.testing import _condition
+
+_requires_fp64 = pytest.mark.skipif(
+    not has_support_aspect64(), reason="fp64 is required"
+)
 
 
 def two_sample_Kolmogorov_Smirnov_test(observed1, observed2):
@@ -158,6 +164,7 @@ class Uniform:
         assert cupy.all(result >= cupy.asarray(low).min())
         assert cupy.all(result < cupy.asarray(high).max())
 
+    @_requires_fp64
     @_condition.repeat_with_success_at_least(10, 3)
     def test_uniform_ks(self):
         if isinstance(self.low, list) or isinstance(self.high, list):
@@ -187,6 +194,7 @@ class Beta:
             b = cupy.array(self.b)
         self.generate(a, b, size=(3, 5))
 
+    @_requires_fp64
     @_condition.repeat_with_success_at_least(10, 3)
     def test_beta_ks(self):
         if isinstance(self.a, list) or isinstance(self.b, list):
@@ -259,6 +267,7 @@ class Exponential:
     def test_exponential(self):
         self.generate(scale=self.scale, size=(3, 2))
 
+    @_requires_fp64
     @_condition.repeat_with_success_at_least(10, 3)
     def test_exponential_ks(self):
         self.check_ks(0.05)(self.scale, size=2000)
@@ -305,6 +314,7 @@ class Gamma:
     def test_gamma_2(self):
         self.generate(shape=self.shape, size=(3, 2))
 
+    @_requires_fp64
     @_condition.repeat_with_success_at_least(10, 3)
     def test_gamma_ks(self):
         self.check_ks(0.05)(self.shape, self.scale, size=2000)
@@ -416,6 +426,7 @@ class Power:
             a = cupy.array(self.a)
         self.generate(a=a)
 
+    @_requires_fp64
     @_condition.repeat_with_success_at_least(10, 3)
     def test_power_ks(self):
         if not isinstance(self.a, float):
@@ -466,6 +477,7 @@ class Chisquare:
             df = cupy.array(self.df)
         self.generate(df=df)
 
+    @_requires_fp64
     @_condition.repeat_with_success_at_least(10, 3)
     def test_chisquare_ks(self):
         if not isinstance(self.df, float):
@@ -493,6 +505,7 @@ class F:
             dfden = cupy.array(self.dfden)
         self.generate(dfnum, dfden)
 
+    @_requires_fp64
     @_condition.repeat_with_success_at_least(10, 3)
     def test_f_ks(self):
         if isinstance(self.dfnum, list) or isinstance(self.dfden, list):
