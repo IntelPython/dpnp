@@ -204,6 +204,7 @@ set(_reduction_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/reductions/logsumexp.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/reductions/max.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/reductions/min.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/reductions/minmax.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/reductions/prod.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/reductions/reduce_hypot.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/reductions/sum.cpp

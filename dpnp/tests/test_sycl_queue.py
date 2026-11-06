@@ -378,6 +378,7 @@ def test_1in_1out(func, data, device):
     "func, data",
     [
         pytest.param("frexp", numpy.arange(9)),
+        pytest.param("minmax", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("modf", [0, 3.5]),
     ],
 )
