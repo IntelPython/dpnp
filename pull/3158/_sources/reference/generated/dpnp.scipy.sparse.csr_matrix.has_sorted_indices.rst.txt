@@ -1,0 +1,14 @@
+
+:orphan:
+
+
+dpnp.scipy.sparse.csr\_matrix.has\_sorted\_indices
+==================================================
+
+.. currentmodule:: dpnp.scipy.sparse
+
+
+property
+
+
+.. autoproperty:: csr_matrix.has_sorted_indices

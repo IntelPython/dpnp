@@ -1,0 +1,51 @@
+﻿dpnp.random.Generator
+=====================
+
+.. currentmodule:: dpnp.random
+
+.. autoclass:: Generator
+
+   
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         Generator.beta
+         Generator.chisquare
+         Generator.exponential
+         Generator.f
+         Generator.gamma
+         Generator.gumbel
+         Generator.laplace
+         Generator.logistic
+         Generator.lognormal
+         Generator.normal
+         Generator.pareto
+         Generator.power
+         Generator.random
+         Generator.rayleigh
+         Generator.spawn
+         Generator.standard_cauchy
+         Generator.standard_exponential
+         Generator.standard_gamma
+         Generator.standard_normal
+         Generator.standard_t
+         Generator.triangular
+         Generator.uniform
+         Generator.vonmises
+         Generator.wald
+         Generator.weibull
+
+
+
+   
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         Generator.bit_generator
+         Generator.sycl_device
+         Generator.sycl_queue
+

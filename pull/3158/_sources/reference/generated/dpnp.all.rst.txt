@@ -1,0 +1,10 @@
+﻿
+
+dpnp.all
+========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: all

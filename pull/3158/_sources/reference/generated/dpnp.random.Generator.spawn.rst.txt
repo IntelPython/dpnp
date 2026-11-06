@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.random.Generator.spawn
+===========================
+
+.. currentmodule:: dpnp.random
+
+method
+
+.. automethod:: Generator.spawn

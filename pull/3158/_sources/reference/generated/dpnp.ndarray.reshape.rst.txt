@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.ndarray.reshape
+====================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: ndarray.reshape
