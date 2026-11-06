@@ -14,7 +14,7 @@
     <link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
 
     <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
-        <title>dpnp.random._bit_generator - Data Parallel Extension for NumPy (dpnp) 0.22.0dev0 documentation</title>
+        <title>dpnp.random._bit_generator - Data Parallel Extension for NumPy (dpnp) 0.22.0dev1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -172,7 +172,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.22.0dev0 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.22.0dev1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.22.0dev0 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.22.0dev1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -874,6 +874,8 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../reference/random.html">Random sampling (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a><input aria-label="Toggle navigation of Random sampling (dpnp.random)" class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.default_rng.html">dpnp.random.default_rng</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.html">dpnp.random.Generator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.bit_generator.html">dpnp.random.Generator.bit_generator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.spawn.html">dpnp.random.Generator.spawn</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.integers.html">dpnp.random.Generator.integers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.random.html">dpnp.random.Generator.random</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.beta.html">dpnp.random.Generator.beta</a></li>
@@ -909,6 +911,9 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.weibull.html">dpnp.random.Generator.weibull</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.zipf.html">dpnp.random.Generator.zipf</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.BitGenerator.html">dpnp.random.BitGenerator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.BitGenerator.random_raw.html">dpnp.random.BitGenerator.random_raw</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.BitGenerator.spawn.html">dpnp.random.BitGenerator.spawn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.BitGenerator.state.html">dpnp.random.BitGenerator.state</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Philox4x3210.html">dpnp.random.Philox4x3210</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.SeedSequence.html">dpnp.random.SeedSequence</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.rand.html">dpnp.random.rand</a></li>
@@ -1140,6 +1145,8 @@
 <span class="c1"># pylint: disable=no-name-in-module</span>
 <span class="c1"># pylint: disable=protected-access</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">operator</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpu</span>
@@ -1161,6 +1168,41 @@
 
 <span class="n">_MASK64</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">64</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
 <span class="n">_MASK128</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">128</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_size_dim</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="c1"># booleans have __index__, but NumPy does not take them as dimensions</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">bool_</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"an integer is required"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_normalize_size</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""`size` as a shape, with the checks and the messages of NumPy."""</span>
+
+    <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">size</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">bool_</span><span class="p">))</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="s2">"dtype"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="n">numpy</span><span class="o">.</span><span class="n">bool_</span>
+        <span class="p">):</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">index</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="n">index</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">"expected a sequence of integers or a single integer, "</span>
+                <span class="sa">f</span><span class="s2">"got '</span><span class="si">{</span><span class="n">size</span><span class="si">!r}</span><span class="s2">'"</span>
+            <span class="p">)</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">index</span><span class="p">,)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">_size_dim</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">size</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">s</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">shape</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"negative dimensions are not allowed"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">shape</span>
 
 
 <div class="viewcode-block" id="BitGenerator">
@@ -1186,7 +1228,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -1209,7 +1251,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_queue</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_normalized_queue_device</span><span class="p">(</span>
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+        <span class="c1"># reentrant, so that `state` can be used while holding `lock`</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">RLock</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">seed</span><span class="p">,</span> <span class="n">_ISeedSequence</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_seed_seq</span> <span class="o">=</span> <span class="n">seed</span>
@@ -1230,14 +1273,19 @@
 <span class="sd">        The lock guarding the state of the bit generator.</span>
 
 <span class="sd">        Hold it to read or set :attr:`state` consistently while other threads</span>
-<span class="sd">        use the bit generator.</span>
+<span class="sd">        use the bit generator. The lock is reentrant, so :attr:`state` can be</span>
+<span class="sd">        read and set while holding it.</span>
 
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">seed_seq</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""The seed sequence used to initialize the bit generator."""</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        The seed sequence used to initialize the bit generator, or ``None``</span>
+<span class="sd">        when the state was given directly, such as a Philox key.</span>
+
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seed_seq</span>
 
     <span class="nd">@property</span>
@@ -1309,7 +1357,7 @@
 
 <div class="viewcode-block" id="BitGenerator.random_raw">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.random.BitGenerator.random_raw.html#dpnp.random.BitGenerator.random_raw">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">random_raw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">random_raw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return raw 64-bit outputs of the bit generator.</span>
 
@@ -1325,10 +1373,10 @@
 <span class="sd">            drawn, and ``None`` is returned.</span>
 
 <span class="sd">            Default: ``True``.</span>
-<span class="sd">        usm_type : {"device", "shared", "host"}, optional</span>
+<span class="sd">        usm_type : {None, "device", "shared", "host"}, optional</span>
 <span class="sd">            The type of SYCL USM allocation for the output array.</span>
 
-<span class="sd">            Default: ``"device"``.</span>
+<span class="sd">            Default: ``None``, which means ``"device"``.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1338,20 +1386,25 @@
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
 <span class="sd">        Unlike NumPy, a zero-dimensional array is returned rather than a</span>
-<span class="sd">        Python integer when `size` is ``None``.</span>
+<span class="sd">        Python integer when `size` is ``None``. With ``output=False``, the</span>
+<span class="sd">        state advances by the number of elements of `size`, and an invalid</span>
+<span class="sd">        `size` raises as it does with ``output=True``. NumPy advances by</span>
+<span class="sd">        the sum of the dimensions of `size` instead, and ignores a negative</span>
+<span class="sd">        one.</span>
 
 <span class="sd">        """</span>
 
-        <span class="n">shape</span> <span class="o">=</span> <span class="p">()</span> <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">size</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="n">_normalize_size</span><span class="p">(</span><span class="n">size</span><span class="p">)</span> <span class="ow">or</span> <span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">output</span><span class="p">:</span>
-            <span class="n">n</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_launch</span><span class="p">(</span><span class="n">ri</span><span class="o">.</span><span class="n">_random_raw</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">uint64</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_launch</span><span class="p">(</span>
+                <span class="n">ri</span><span class="o">.</span><span class="n">_random_raw</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">uint64</span><span class="p">),</span> <span class="n">math</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+            <span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
 
         <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
             <span class="n">shape</span><span class="p">,</span>
             <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span>
-            <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+            <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span> <span class="k">if</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">usm_type</span><span class="p">,</span>
             <span class="n">sycl_queue</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sycl_queue</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fill</span><span class="p">(</span><span class="n">ri</span><span class="o">.</span><span class="n">_random_raw</span><span class="p">,</span> <span class="p">(),</span> <span class="n">result</span><span class="p">)</span></div>
@@ -1429,8 +1482,12 @@
 <span class="sd">    Every call that produces ``n`` values takes ``ceil(n / 8)`` blocks of</span>
 <span class="sd">    2**64 counter values, one for each work-item of the kernel, and every</span>
 <span class="sd">    work-item draws as many values as its rejection samplers need from its</span>
-<span class="sd">    own block. The values therefore depend only on the state and the output</span>
-<span class="sd">    size, and are the same on every device.</span>
+<span class="sd">    own block. Element ``i`` comes from the block ``i % ceil(n / 8)``, so the</span>
+<span class="sd">    values depend on the output size: a draw is not a prefix of a larger</span>
+<span class="sd">    one. For a given state, output size and data type, the raw bits and the</span>
+<span class="sd">    uniform floats are the same on every device, while the samplers built on</span>
+<span class="sd">    transcendental functions agree to a few ULP, or differ where a rejection</span>
+<span class="sd">    sampler then takes another candidate.</span>
 
 <span class="sd">    """</span>
 
@@ -1446,6 +1503,9 @@
 
         <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">key</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_seed_seq</span><span class="o">.</span><span class="n">generate_state</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uint64</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># as in NumPy, there is no seed sequence to spawn from</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_seed_seq</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_word</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">_MASK64</span><span class="p">,</span> <span class="s2">"key"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_counter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_word</span><span class="p">(</span>
             <span class="mi">0</span> <span class="k">if</span> <span class="n">counter</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">counter</span><span class="p">,</span> <span class="n">_MASK128</span><span class="p">,</span> <span class="s2">"counter"</span>
@@ -1499,9 +1559,10 @@
         <span class="c1"># every work-item takes a block of 2**64 counter values</span>
         <span class="n">n_blocks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_work_items</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_key</span>
             <span class="n">counter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_counter</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_counter</span> <span class="o">=</span> <span class="p">(</span><span class="n">counter</span> <span class="o">+</span> <span class="p">(</span><span class="n">n_blocks</span> <span class="o">&lt;&lt;</span> <span class="mi">64</span><span class="p">))</span> <span class="o">&amp;</span> <span class="n">_MASK128</span>
-        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_key</span><span class="p">],</span> <span class="n">counter</span> <span class="o">&amp;</span> <span class="n">_MASK64</span><span class="p">,</span> <span class="n">counter</span> <span class="o">&gt;&gt;</span> <span class="mi">64</span></div>
+        <span class="k">return</span> <span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">counter</span> <span class="o">&amp;</span> <span class="n">_MASK64</span><span class="p">,</span> <span class="n">counter</span> <span class="o">&gt;&gt;</span> <span class="mi">64</span></div>
 
 </pre></div>
         </article>
@@ -1535,7 +1596,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=aa23f226"></script>
+</div><script src="../../../_static/documentation_options.js?v=0e5b763f"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
