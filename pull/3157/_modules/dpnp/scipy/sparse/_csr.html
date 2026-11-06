@@ -14,7 +14,7 @@
     <link rel="index" title="Index" href="../../../../genindex.html"><link rel="search" title="Search" href="../../../../search.html">
 
     <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
-        <title>dpnp.scipy.sparse._csr - Data Parallel Extension for NumPy (dpnp) 0.22.0dev0 documentation</title>
+        <title>dpnp.scipy.sparse._csr - Data Parallel Extension for NumPy (dpnp) 0.22.0dev1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -172,7 +172,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.22.0dev0 documentation</div></a>
+      <a href="../../../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.22.0dev1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.22.0dev0 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.22.0dev1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -1459,20 +1459,25 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_has_sorted_indices</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">return</span>
 
-        <span class="n">nrows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span>
         <span class="n">row_lengths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indptr</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indptr</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">row_ids</span> <span class="o">=</span> <span class="n">_dpnp</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span>
-            <span class="n">_dpnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
-                <span class="n">nrows</span><span class="p">,</span>
-                <span class="n">dtype</span><span class="o">=</span><span class="n">indices</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
-                <span class="n">usm_type</span><span class="o">=</span><span class="n">indices</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
-                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">indices</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
-            <span class="p">),</span>
-            <span class="n">row_lengths</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="c1"># Lexsort by (row, col) via two stable passes.</span>
-        <span class="n">order</span> <span class="o">=</span> <span class="n">_dpnp</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">"stable"</span><span class="p">)</span>
-        <span class="n">order</span> <span class="o">=</span> <span class="n">order</span><span class="p">[</span><span class="n">_dpnp</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">row_ids</span><span class="p">[</span><span class="n">order</span><span class="p">],</span> <span class="n">kind</span><span class="o">=</span><span class="s2">"stable"</span><span class="p">)]</span>
+        <span class="c1"># int64 even for int32 indices, so neither branch can overflow.</span>
+        <span class="n">common</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"dtype"</span><span class="p">:</span> <span class="n">_dpnp</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span>
+            <span class="s2">"usm_type"</span><span class="p">:</span> <span class="n">indices</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+            <span class="s2">"sycl_queue"</span><span class="p">:</span> <span class="n">indices</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">nrows</span> <span class="o">*</span> <span class="n">ncols</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="o">**</span><span class="mi">63</span><span class="p">:</span>
+            <span class="c1"># One sort on row * ncols + col; check_format bounded the indices.</span>
+            <span class="n">row_keys</span> <span class="o">=</span> <span class="n">_dpnp</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span>
+                <span class="n">_dpnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">nrows</span> <span class="o">*</span> <span class="n">ncols</span><span class="p">,</span> <span class="n">ncols</span><span class="p">,</span> <span class="o">**</span><span class="n">common</span><span class="p">),</span> <span class="n">row_lengths</span>
+            <span class="p">)</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="n">_dpnp</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">row_keys</span> <span class="o">+</span> <span class="n">indices</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">"stable"</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># The key would overflow int64: lexsort in two stable passes.</span>
+            <span class="n">row_ids</span> <span class="o">=</span> <span class="n">_dpnp</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">_dpnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nrows</span><span class="p">,</span> <span class="o">**</span><span class="n">common</span><span class="p">),</span> <span class="n">row_lengths</span><span class="p">)</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="n">_dpnp</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">"stable"</span><span class="p">)</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="n">order</span><span class="p">[</span><span class="n">_dpnp</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">row_ids</span><span class="p">[</span><span class="n">order</span><span class="p">],</span> <span class="n">kind</span><span class="o">=</span><span class="s2">"stable"</span><span class="p">)]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">order</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indices</span><span class="p">[</span><span class="n">order</span><span class="p">]</span>
@@ -1968,7 +1973,7 @@
       
     </aside>
   </div>
-</div><script src="../../../../_static/documentation_options.js?v=aa23f226"></script>
+</div><script src="../../../../_static/documentation_options.js?v=0e5b763f"></script>
     <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../../_static/scripts/furo.js?v=46bd48cc"></script>
