@@ -54,6 +54,7 @@ Append to the end of the matching `### Added` / `Changed` / `Deprecated` / `Remo
 | oneMath build, open-source LLVM SYCL build | `check-onemath.yaml`, `os-llvm-sycl-build.yml` | no |
 | Sphinx docs (`make spelling`, `make html`) | `build-sphinx.yml` | no |
 | Coverage (Coveralls), zizmor | `generate_coverage.yaml`, `zizmor.yml` | no |
+| Agent guidance check, dokimi (`repo scan` report in the job summary) | `agent-guidance.yml`, manifest `.github/dokimi/repo.yaml` | no |
 
 GitHub-hosted runners have no GPU, so tests there run on a CPU device: a green run says nothing about GPUs or devices without fp64.
 
