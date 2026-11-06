@@ -12,7 +12,7 @@
         gtag('js', new Date());
         gtag('config', 'G-554F8VNE28');
     </script>
-    <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="dpnp.random.Generator.random" href="dpnp.random.Generator.random.html"><link rel="prev" title="dpnp.random.default_rng" href="dpnp.random.default_rng.html">
+    <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="dpnp.random.Generator.bit_generator" href="dpnp.random.Generator.bit_generator.html"><link rel="prev" title="dpnp.random.default_rng" href="dpnp.random.default_rng.html">
 
     <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
         <title>dpnp.random.Generator - Data Parallel Extension for NumPy (dpnp) 0.22.0dev1 documentation</title>
@@ -875,11 +875,16 @@
 <li class="toctree-l3 current has-children"><a class="reference internal" href="../random.html">Random sampling (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a><input aria-label="Toggle navigation of Random sampling (dpnp.random)" checked="" class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.default_rng.html">dpnp.random.default_rng</a></li>
 <li class="toctree-l4 current current-page"><a class="current reference internal" href="#">dpnp.random.Generator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.bit_generator.html">dpnp.random.Generator.bit_generator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.spawn.html">dpnp.random.Generator.spawn</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.random.html">dpnp.random.Generator.random</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.normal.html">dpnp.random.Generator.normal</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.standard_normal.html">dpnp.random.Generator.standard_normal</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.uniform.html">dpnp.random.Generator.uniform</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.html">dpnp.random.BitGenerator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.random_raw.html">dpnp.random.BitGenerator.random_raw</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.spawn.html">dpnp.random.BitGenerator.spawn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.state.html">dpnp.random.BitGenerator.state</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Philox4x3210.html">dpnp.random.Philox4x3210</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.SeedSequence.html">dpnp.random.SeedSequence</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.rand.html">dpnp.random.rand</a></li>
@@ -1080,7 +1085,7 @@
 <dt class="sig sig-object py" id="dpnp.random.Generator">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dpnp.random.</span></span><span class="sig-name descname"><span class="pre">Generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bit_generator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/_generator.html#Generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.random.Generator" title="Link to this definition">¶</a></dt>
 <dd><p>A container for the bit generator and the distribution samplers.</p>
-<p>The analogue of <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code></a>, drawing all samples on
+<p>The counterpart of <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code></a>, drawing all samples on
 the SYCL queue of its bit generator. Use <a class="reference internal" href="dpnp.random.default_rng.html#dpnp.random.default_rng" title="dpnp.random.default_rng"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpnp.random.default_rng()</span></code></a>
 to create one.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code></a>.</p>
@@ -1097,7 +1102,11 @@ to create one.</p>
 <cite>size</cite> is <code class="docutils literal notranslate"><span class="pre">None</span></code> and the parameters are scalars, rather than a Python
 scalar. The methods take a <cite>usm_type</cite> keyword, and the floating-point
 ones a <cite>dtype</cite> keyword, as in CuPy, whose default is the default
-floating-point type of the device.</p>
+floating-point type of the device. With <code class="docutils literal notranslate"><span class="pre">usm_type=None</span></code>, the output
+takes the USM type of the array parameters, or <code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code> when there
+are none.</p>
+<p>Pickling, copying, and the <code class="docutils literal notranslate"><span class="pre">advance</span></code> and <code class="docutils literal notranslate"><span class="pre">jumped</span></code> methods of NumPy's
+bit generators are not supported.</p>
 <p>Parameters on the host (scalars, lists and NumPy arrays) are checked as
 in NumPy. Parameters on the device are not, since that would wait for
 the device. Invalid ones give undefined values, such as NaN, but never
@@ -1111,12 +1120,12 @@ make the kernels loop without end or access memory out of bounds.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="dpnp.random.Generator.random.html">
+          <a class="next-page" href="dpnp.random.Generator.bit_generator.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">dpnp.random.Generator.random</div>
+                <div class="title">dpnp.random.Generator.bit_generator</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>

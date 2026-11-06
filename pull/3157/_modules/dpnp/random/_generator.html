@@ -874,11 +874,16 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../reference/random.html">Random sampling (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a><input aria-label="Toggle navigation of Random sampling (dpnp.random)" class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.default_rng.html">dpnp.random.default_rng</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.html">dpnp.random.Generator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.bit_generator.html">dpnp.random.Generator.bit_generator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.spawn.html">dpnp.random.Generator.spawn</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.random.html">dpnp.random.Generator.random</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.normal.html">dpnp.random.Generator.normal</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.standard_normal.html">dpnp.random.Generator.standard_normal</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.uniform.html">dpnp.random.Generator.uniform</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.BitGenerator.html">dpnp.random.BitGenerator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.BitGenerator.random_raw.html">dpnp.random.BitGenerator.random_raw</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.BitGenerator.spawn.html">dpnp.random.BitGenerator.spawn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.BitGenerator.state.html">dpnp.random.BitGenerator.state</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Philox4x3210.html">dpnp.random.Philox4x3210</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.SeedSequence.html">dpnp.random.SeedSequence</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.rand.html">dpnp.random.rand</a></li>
@@ -1097,7 +1102,7 @@
 <span class="c1"># *****************************************************************************</span>
 
 <span class="sd">"""</span>
-<span class="sd">The device random number generation API modelled on</span>
+<span class="sd">The device random number generation API modeled on</span>
 <span class="sd">:class:`numpy.random.Generator`.</span>
 
 <span class="sd">Every distribution is sampled on the device by a port of NumPy's algorithm,</span>
@@ -1108,8 +1113,6 @@
 <span class="c1"># pylint: disable=no-name-in-module</span>
 <span class="c1"># pylint: disable=protected-access</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">operator</span>
-
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
@@ -1118,7 +1121,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExecutionPlacementError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.tensor</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_usm_type</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">._bit_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">BitGenerator</span><span class="p">,</span> <span class="n">Philox4x3210</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._bit_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">BitGenerator</span><span class="p">,</span> <span class="n">Philox4x3210</span><span class="p">,</span> <span class="n">_normalize_size</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Generator"</span><span class="p">,</span> <span class="s2">"default_rng"</span><span class="p">]</span>
 
@@ -1142,41 +1145,6 @@
     <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">params</span><span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_size_dim</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
-    <span class="c1"># booleans have __index__, but NumPy does not take them as dimensions</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">bool_</span><span class="p">)):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"an integer is required"</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_normalize_size</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""`size` as a shape, with the checks and the messages of NumPy."""</span>
-
-    <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">None</span>
-    <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">size</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">bool_</span><span class="p">))</span> <span class="ow">or</span> <span class="p">(</span>
-            <span class="nb">getattr</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="s2">"dtype"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="n">numpy</span><span class="o">.</span><span class="n">bool_</span>
-        <span class="p">):</span>
-            <span class="n">index</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">index</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-                <span class="n">index</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">"expected a sequence of integers or a single integer, "</span>
-                <span class="sa">f</span><span class="s2">"got '</span><span class="si">{</span><span class="n">size</span><span class="si">!r}</span><span class="s2">'"</span>
-            <span class="p">)</span>
-        <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">index</span><span class="p">,)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">_size_dim</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">size</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">s</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">shape</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"negative dimensions are not allowed"</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">shape</span>
-
-
 <span class="k">def</span><span class="w"> </span><span class="nf">_check_real</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Raise TypeError, as NumPy does on the path of scalar parameters, unless</span>
@@ -1189,37 +1157,73 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"must be real number, not </span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_uniform_range</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">overflow_msg</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_host_cast</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Raise TypeError, as NumPy does, when the host array `value` does not</span>
+<span class="sd">    cast safely to float64, such as a complex or an object array.</span>
+
+<span class="sd">    """</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">numpy</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span>
+        <span class="n">value</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="s2">"safe"</span>
+    <span class="p">):</span>
+        <span class="n">what</span> <span class="o">=</span> <span class="s2">"scalar"</span> <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">"array data"</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Cannot cast </span><span class="si">{</span><span class="n">what</span><span class="si">}</span><span class="s2"> from </span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">dtype</span><span class="si">!r}</span><span class="s2"> to "</span>
+            <span class="s2">"dtype('float64') according to the rule 'safe'"</span>
+        <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_device_cast</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Raise TypeError unless the device array `value` casts to `dtype` by the</span>
+<span class="sd">    ``"same_kind"`` rule, which lets a float64 array feed a float32 draw.</span>
+
+<span class="sd">    """</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="s2">"same_kind"</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Cannot cast array data from </span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">dtype</span><span class="si">!r}</span><span class="s2"> to </span><span class="si">{</span><span class="n">dtype</span><span class="si">!r}</span><span class="s2"> "</span>
+            <span class="s2">"according to the rule 'same_kind'"</span>
+        <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_as_host_float</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="n">_check_host_cast</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_uniform_range</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">overflow_msg</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    ``high - low``, raising OverflowError with `overflow_msg` unless it is</span>
-<span class="sd">    finite, or ``None`` when either param is on the device.</span>
+<span class="sd">    finite in float64, as NumPy does, and in `dtype`, the sampling type.</span>
+
+<span class="sd">    Returns ``None`` when either param is on the device, after checking</span>
+<span class="sd">    that the other one is finite.</span>
 
 <span class="sd">    """</span>
 
-    <span class="n">xp</span><span class="p">,</span> <span class="p">(</span><span class="n">flow</span><span class="p">,</span> <span class="n">fhigh</span><span class="p">)</span> <span class="o">=</span> <span class="n">_check_arrays</span><span class="p">((</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">),</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">xp</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">None</span>
-    <span class="k">with</span> <span class="n">numpy</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">over</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">):</span>
-        <span class="n">rng</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">fhigh</span><span class="p">,</span> <span class="n">flow</span><span class="p">)</span>
+    <span class="n">host</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">p</span><span class="p">)]</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="n">_as_host_float</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">host</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">_is_scalar_path</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">):</span>
-        <span class="n">_check_real</span><span class="p">(</span><span class="n">low</span><span class="p">)</span>
-        <span class="n">_check_real</span><span class="p">(</span><span class="n">high</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">numpy</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">rng</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">host</span><span class="p">:</span>
+            <span class="n">_check_real</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">numpy</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">over</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">host</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="c1"># the range is unknown, but a host bound that is not finite in</span>
+            <span class="c1"># `dtype` makes it overflow</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">OverflowError</span><span class="p">(</span><span class="n">overflow_msg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">flow</span><span class="p">,</span> <span class="n">fhigh</span> <span class="o">=</span> <span class="n">values</span>
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">fhigh</span><span class="p">,</span> <span class="n">flow</span><span class="p">)</span>
+        <span class="c1"># the kernel subtracts in `dtype`</span>
+        <span class="n">rng_dtype</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">fhigh</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">),</span> <span class="n">flow</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">rng</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="ow">and</span> <span class="n">numpy</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">rng_dtype</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()):</span>
         <span class="k">raise</span> <span class="ne">OverflowError</span><span class="p">(</span><span class="n">overflow_msg</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rng</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_check_arrays</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
-<span class="sd">    `params` as arrays of `dtype` to check, with the module to check them</span>
-<span class="sd">    by, which is ``None`` when some are on the device, as the check would</span>
-<span class="sd">    wait for the device.</span>
-
-<span class="sd">    """</span>
-
-    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">params</span><span class="p">):</span>
-        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">numpy</span><span class="p">,</span> <span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">params</span><span class="p">]</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_check_constraint</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">cons</span><span class="p">,</span> <span class="n">scalar</span><span class="p">):</span>
@@ -1234,7 +1238,7 @@
 
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
         <span class="k">return</span>
-    <span class="n">val</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">val</span> <span class="o">=</span> <span class="n">_as_host_float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">scalar</span><span class="p">:</span>
         <span class="n">_check_real</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">cons</span> <span class="o">==</span> <span class="n">_CONS_NONE</span><span class="p">:</span>
@@ -1251,7 +1255,7 @@
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A container for the bit generator and the distribution samplers.</span>
 
-<span class="sd">    The analogue of :class:`numpy.random.Generator`, drawing all samples on</span>
+<span class="sd">    The counterpart of :class:`numpy.random.Generator`, drawing all samples on</span>
 <span class="sd">    the SYCL queue of its bit generator. Use :func:`dpnp.random.default_rng`</span>
 <span class="sd">    to create one.</span>
 
@@ -1268,7 +1272,12 @@
 <span class="sd">    `size` is ``None`` and the parameters are scalars, rather than a Python</span>
 <span class="sd">    scalar. The methods take a `usm_type` keyword, and the floating-point</span>
 <span class="sd">    ones a `dtype` keyword, as in CuPy, whose default is the default</span>
-<span class="sd">    floating-point type of the device.</span>
+<span class="sd">    floating-point type of the device. With ``usm_type=None``, the output</span>
+<span class="sd">    takes the USM type of the array parameters, or ``"device"`` when there</span>
+<span class="sd">    are none.</span>
+
+<span class="sd">    Pickling, copying, and the ``advance`` and ``jumped`` methods of NumPy's</span>
+<span class="sd">    bit generators are not supported.</span>
 
 <span class="sd">    Parameters on the host (scalars, lists and NumPy arrays) are checked as</span>
 <span class="sd">    in NumPy. Parameters on the device are not, since that would wait for</span>
@@ -1360,13 +1369,16 @@
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported dtype </span><span class="si">{</span><span class="n">dtype</span><span class="si">!r}</span><span class="s2"> for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">dtype</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Resolve `size` and `dtype` against a user-supplied `out`."""</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">allow_f</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Resolve `size` and `dtype` against a user-supplied `out`.</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"out must be a dpnp.ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
-            <span class="p">)</span>
+<span class="sd">        As in NumPy, `out` may be F-contiguous when `allow_f` is set, which</span>
+<span class="sd">        the methods without array parameters do.</span>
+
+<span class="sd">        """</span>
+
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
         <span class="c1"># as in NumPy, the default dtype applies even when `out` is given</span>
         <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_float_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">out</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">dtype</span><span class="p">:</span>
@@ -1374,9 +1386,19 @@
                 <span class="s2">"Supplied output array has the wrong type. "</span>
                 <span class="sa">f</span><span class="s2">"Expected </span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span> <span class="ow">and</span> <span class="n">out</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">writable</span><span class="p">):</span>
+        <span class="n">flags</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">flags</span>
+        <span class="k">if</span> <span class="n">allow_f</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
+                <span class="p">(</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span> <span class="ow">or</span> <span class="n">flags</span><span class="o">.</span><span class="n">f_contiguous</span><span class="p">)</span> <span class="ow">and</span> <span class="n">flags</span><span class="o">.</span><span class="n">writable</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">"Supplied output array must be contiguous, writable, "</span>
+                    <span class="s2">"aligned, and in machine byte-order."</span>
+                <span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="p">(</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span> <span class="ow">and</span> <span class="n">flags</span><span class="o">.</span><span class="n">writable</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">"Supplied output array is not C-contiguous or writable."</span>
+                <span class="s2">"Supplied output array must be C-contiguous, writable, "</span>
+                <span class="s2">"aligned, and in machine byte-order."</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">_normalize_size</span><span class="p">(</span><span class="n">size</span><span class="p">)</span> <span class="o">!=</span> <span class="n">out</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"size must match out.shape when used together"</span><span class="p">)</span>
@@ -1402,10 +1424,22 @@
 <span class="sd">        the kernel, `params` by default, of data type `dtype`. Every kernel</span>
 <span class="sd">        parameter that is an array is broadcast to the output shape.</span>
 
+<span class="sd">        With ``usm_type=None``, the output and the temporaries take the USM</span>
+<span class="sd">        type of the array parameters and `out`, or ``"device"``.</span>
+
 <span class="sd">        """</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_queues</span><span class="p">(</span><span class="o">*</span><span class="n">params</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="n">kernel_params</span> <span class="ow">or</span> <span class="p">()),</span> <span class="n">out</span><span class="p">)</span>
         <span class="n">queue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sycl_queue</span>
+        <span class="k">if</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">usm_types</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">x</span><span class="o">.</span><span class="n">usm_type</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">(</span><span class="o">*</span><span class="n">params</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="n">kernel_params</span> <span class="ow">or</span> <span class="p">()),</span> <span class="n">out</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="p">]</span>
+            <span class="n">usm_type</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">dpt</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">(</span><span class="n">usm_types</span><span class="p">)</span> <span class="k">if</span> <span class="n">usm_types</span> <span class="k">else</span> <span class="s2">"device"</span>
+            <span class="p">)</span>
 
         <span class="n">param_shape</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">broadcast_shapes</span><span class="p">(</span>
             <span class="o">*</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">if</span> <span class="n">_is_array</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">else</span> <span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">params</span><span class="p">)</span>
@@ -1429,13 +1463,18 @@
 
         <span class="k">def</span><span class="w"> </span><span class="nf">_to_kernel_param</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">_is_array</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+                    <span class="n">_check_device_cast</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">_check_host_cast</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
                     <span class="c1"># NumPy converts None to NaN, dpnp.asarray does not</span>
                     <span class="n">p</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
-                <span class="n">p</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">queue</span><span class="p">)</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                    <span class="n">p</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">queue</span>
+                <span class="p">)</span>
                 <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">shape</span><span class="p">))</span>
             <span class="c1"># as in NumPy, None is NaN along with array parameters</span>
-            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">_as_host_float</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
 
         <span class="n">kernel_params</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">_to_kernel_param</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">kernel_params</span><span class="p">)</span>
 
@@ -1443,7 +1482,16 @@
             <span class="n">out</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
                 <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">queue</span>
             <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bit_generator</span><span class="o">.</span><span class="n">_fill</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="n">kernel_params</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">out</span>
+        <span class="k">elif</span> <span class="n">out</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span><span class="p">:</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">out</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># an F-contiguous `out` of a method without array parameters is</span>
+            <span class="c1"># filled in memory order, through its C-contiguous transpose</span>
+            <span class="n">usm_out</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">usm_out</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">ndim</span><span class="p">))[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bit_generator</span><span class="o">.</span><span class="n">_fill</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="n">kernel_params</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_float_sample</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1457,9 +1505,11 @@
         <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">kernel_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="n">validate_usm_type</span><span class="p">(</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">validate_usm_type</span><span class="p">(</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">size</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_out</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="n">size</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_out</span><span class="p">(</span>
+                <span class="n">out</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">allow_f</span><span class="o">=</span><span class="ow">not</span> <span class="n">params</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_float_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample</span><span class="p">(</span>
@@ -1490,16 +1540,53 @@
 
 <div class="viewcode-block" id="Generator.random">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.random.Generator.random.html#dpnp.random.Generator.random">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">random</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">random</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return random floats in the half-open interval [0.0, 1.0).</span>
 
 <span class="sd">        For full documentation refer to :obj:`numpy.random.Generator.random`.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        size : {None, int, tuple of ints}, optional</span>
+<span class="sd">            Output shape. With ``None``, a zero-dimensional array is returned.</span>
+
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        dtype : {None, dtype}, optional</span>
+<span class="sd">            The data type of the output, :obj:`dpnp.float32` or</span>
+<span class="sd">            :obj:`dpnp.float64`.</span>
+
+<span class="sd">            Default: ``None``, which means the default floating-point type of</span>
+<span class="sd">            the device.</span>
+<span class="sd">        out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">            A C- or F-contiguous array to fill, of the data type `dtype` and</span>
+<span class="sd">            on the SYCL queue of the generator. If `size` is given as well,</span>
+<span class="sd">            it must be the shape of `out`.</span>
+
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        usm_type : {None, "device", "shared", "host"}, optional</span>
+<span class="sd">            The type of SYCL USM allocation for the output array. Ignored</span>
+<span class="sd">            when `out` is given.</span>
+
+<span class="sd">            Default: ``None``, which means ``"device"``.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            The samples, or `out` when it is given.</span>
+
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
-<span class="sd">        `dtype` defaults to the default floating-point type of the device.</span>
-<span class="sd">        `usm_type` sets the type of USM allocation of the output.</span>
+<span class="sd">        `dtype` defaults to the default floating-point type of the device, and</span>
+<span class="sd">        `usm_type` is not in NumPy's signature.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(42)</span>
+<span class="sd">        &gt;&gt;&gt; x = rng.random((2, 3))</span>
+<span class="sd">        &gt;&gt;&gt; x.shape, bool(((0 &lt;= x) &amp; (x &lt; 1)).all())</span>
+<span class="sd">        ((2, 3), True)</span>
 
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_float_sample</span><span class="p">(</span>
@@ -1517,24 +1604,69 @@
 <div class="viewcode-block" id="Generator.uniform">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.random.Generator.uniform.html#dpnp.random.Generator.uniform">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">uniform</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Draw samples from a uniform distribution over [low, high).</span>
 
 <span class="sd">        For full documentation refer to :obj:`numpy.random.Generator.uniform`.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        low : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \</span>
+<span class="sd">                optional</span>
+<span class="sd">            The lower bound of the output interval.</span>
+
+<span class="sd">            Default: ``0.0``.</span>
+<span class="sd">        high : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \</span>
+<span class="sd">                optional</span>
+<span class="sd">            The upper bound of the output interval.</span>
+
+<span class="sd">            Default: ``1.0``.</span>
+<span class="sd">        size : {None, int, tuple of ints}, optional</span>
+<span class="sd">            Output shape. With ``None``, the broadcast shape of `low` and `high`.</span>
+
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        dtype : {None, dtype}, optional</span>
+<span class="sd">            The data type of the output, :obj:`dpnp.float32` or</span>
+<span class="sd">            :obj:`dpnp.float64`.</span>
+
+<span class="sd">            Default: ``None``, which means the default floating-point type of</span>
+<span class="sd">            the device.</span>
+<span class="sd">        usm_type : {None, "device", "shared", "host"}, optional</span>
+<span class="sd">            The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">            Default: ``None``, which means the USM type of the array</span>
+<span class="sd">            parameters, or ``"device"`` when there are none.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            The samples.</span>
+
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
-<span class="sd">        `dtype` and `usm_type` are not in NumPy's signature.</span>
+<span class="sd">        `dtype` and `usm_type` are not in NumPy's signature. A `high - low`</span>
+<span class="sd">        range that overflows `dtype` raises :class:`OverflowError`, as it</span>
+<span class="sd">        does in float64.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(42)</span>
+<span class="sd">        &gt;&gt;&gt; x = rng.uniform(-1, 0, 1000)</span>
+<span class="sd">        &gt;&gt;&gt; bool(((-1 &lt;= x) &amp; (x &lt; 0)).all())</span>
+<span class="sd">        True</span>
 
 <span class="sd">        """</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_queues</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">)</span>
         <span class="n">scalar</span> <span class="o">=</span> <span class="n">_is_scalar_path</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">)</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_float_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="s2">"uniform"</span><span class="p">)</span>
         <span class="n">rng</span> <span class="o">=</span> <span class="n">_uniform_range</span><span class="p">(</span>
             <span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="p">,</span>
             <span class="p">(</span>
                 <span class="s2">"high - low range exceeds valid bounds"</span>
                 <span class="k">if</span> <span class="n">scalar</span>
@@ -1556,7 +1688,7 @@
 <div class="viewcode-block" id="Generator.standard_normal">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.random.Generator.standard_normal.html#dpnp.random.Generator.standard_normal">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">standard_normal</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Draw samples from a standard normal distribution.</span>
@@ -1564,9 +1696,48 @@
 <span class="sd">        For full documentation refer to</span>
 <span class="sd">        :obj:`numpy.random.Generator.standard_normal`.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        size : {None, int, tuple of ints}, optional</span>
+<span class="sd">            Output shape. With ``None``, a zero-dimensional array is returned.</span>
+
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        dtype : {None, dtype}, optional</span>
+<span class="sd">            The data type of the output, :obj:`dpnp.float32` or</span>
+<span class="sd">            :obj:`dpnp.float64`.</span>
+
+<span class="sd">            Default: ``None``, which means the default floating-point type of</span>
+<span class="sd">            the device.</span>
+<span class="sd">        out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">            A C- or F-contiguous array to fill, of the data type `dtype` and</span>
+<span class="sd">            on the SYCL queue of the generator. If `size` is given as well,</span>
+<span class="sd">            it must be the shape of `out`.</span>
+
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        usm_type : {None, "device", "shared", "host"}, optional</span>
+<span class="sd">            The type of SYCL USM allocation for the output array. Ignored</span>
+<span class="sd">            when `out` is given.</span>
+
+<span class="sd">            Default: ``None``, which means ``"device"``.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            The samples, or `out` when it is given.</span>
+
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
-<span class="sd">        The Box-Muller transform is used rather than NumPy's ziggurat.</span>
+<span class="sd">        `dtype` and `usm_type` are not in NumPy's signature. The Box-Muller</span>
+<span class="sd">        transform is used rather than NumPy's ziggurat, so the magnitude of</span>
+<span class="sd">        the samples is bounded: by about 6.8 in float32, and 8.6 in float64.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(42)</span>
+<span class="sd">        &gt;&gt;&gt; x = rng.standard_normal(10**6)</span>
+<span class="sd">        &gt;&gt;&gt; bool(abs(x.mean()) &lt; 0.01), bool(abs(x.std() - 1) &lt; 0.01)</span>
+<span class="sd">        (True, True)</span>
 
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_float_sample</span><span class="p">(</span>
@@ -1584,16 +1755,59 @@
 <div class="viewcode-block" id="Generator.normal">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.random.Generator.normal.html#dpnp.random.Generator.normal">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">normal</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Draw samples from a normal (Gaussian) distribution.</span>
 
 <span class="sd">        For full documentation refer to :obj:`numpy.random.Generator.normal`.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        loc : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \</span>
+<span class="sd">                optional</span>
+<span class="sd">            The mean of the distribution.</span>
+
+<span class="sd">            Default: ``0.0``.</span>
+<span class="sd">        scale : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \</span>
+<span class="sd">                optional</span>
+<span class="sd">            The standard deviation of the distribution, non-negative.</span>
+
+<span class="sd">            Default: ``1.0``.</span>
+<span class="sd">        size : {None, int, tuple of ints}, optional</span>
+<span class="sd">            Output shape. With ``None``, the broadcast shape of `loc` and `scale`.</span>
+
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        dtype : {None, dtype}, optional</span>
+<span class="sd">            The data type of the output, :obj:`dpnp.float32` or</span>
+<span class="sd">            :obj:`dpnp.float64`.</span>
+
+<span class="sd">            Default: ``None``, which means the default floating-point type of</span>
+<span class="sd">            the device.</span>
+<span class="sd">        usm_type : {None, "device", "shared", "host"}, optional</span>
+<span class="sd">            The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">            Default: ``None``, which means the USM type of the array</span>
+<span class="sd">            parameters, or ``"device"`` when there are none.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            The samples.</span>
+
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
-<span class="sd">        `dtype` and `usm_type` are not in NumPy's signature.</span>
+<span class="sd">        `dtype` and `usm_type` are not in NumPy's signature. The samples are</span>
+<span class="sd">        drawn as in :meth:`standard_normal`.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(42)</span>
+<span class="sd">        &gt;&gt;&gt; x = rng.normal(np.array([0.0, 10.0]), 1.0, size=(10**5, 2))</span>
+<span class="sd">        &gt;&gt;&gt; m = x.mean(axis=0)</span>
+<span class="sd">        &gt;&gt;&gt; bool(abs(m[0]) &lt; 0.05), bool(abs(m[1] - 10) &lt; 0.05)</span>
+<span class="sd">        (True, True)</span>
 
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cont</span><span class="p">(</span>
@@ -1653,7 +1867,7 @@
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; rng = np.random.default_rng(12345)</span>
 <span class="sd">    &gt;&gt;&gt; x = rng.random(3)</span>
-<span class="sd">    &gt;&gt;&gt; x.shape, x.device == rng.bit_generator.sycl_queue.sycl_device</span>
+<span class="sd">    &gt;&gt;&gt; x.shape, x.device.sycl_device == rng.sycl_device</span>
 <span class="sd">    ((3,), True)</span>
 
 <span class="sd">    """</span>
