@@ -1,0 +1,38 @@
+name: Prune docs of closed pull requests
+
+# Removes pull/<N> previews from gh-pages that the clean job of build-sphinx.yml
+# missed, e.g. because its push failed.
+
+on:
+  schedule:
+    - cron: '0 3 * * 0'
+  workflow_dispatch:
+
+permissions: read-all
+
+jobs:
+  prune:
+    name: Remove docs of closed pull requests
+
+    # disable scheduled workflow to be run in forks
+    if: github.event.repository.fork == false
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    permissions:
+      # Needed to push to the gh-pages branch
+      contents: write
+      # Needed to look up the state of pull requests
+      pull-requests: read
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Remove docs of closed pull requests
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: .github/scripts/update_gh_pages.sh prune
