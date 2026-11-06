@@ -22,22 +22,31 @@ host-side oneMKL RNG.
     rng = dpnp.random.default_rng(42, device="cpu")
 
 A generator draws all its samples on one SYCL queue, chosen with the
-``device`` or ``sycl_queue`` keyword when it is created, and the samples
-depend only on the seed, not on the device. All samples are
+``device`` or ``sycl_queue`` keyword when it is created. All samples are
 :class:`dpnp.ndarray`, zero-dimensional when ``size`` is ``None``.
 
 Differences from NumPy
 ----------------------
 
-* The same seed gives the same stream on every device.
-  The streams differ from NumPy's.
+* The streams differ from NumPy's. For a given seed, output size and data
+  type, the raw bits and the uniform floats are the same on every device,
+  while the normal samples agree to a few ULP.
+* The values depend on the output size: a draw is not a prefix of a
+  larger one, and two draws of ``n`` values differ from one draw of
+  ``2 * n``. Code splitting its draws into chunks gets other values.
 * The floating-point distributions take a ``dtype`` keyword, as in CuPy,
-  which defaults to the default floating-point type of the device. All
-  methods take a ``usm_type`` keyword.
+  which defaults to the default floating-point type of the device, so on a
+  device without double precision the same seed gives other values by
+  default.
+* All methods take a ``usm_type`` keyword. With ``usm_type=None``, the
+  default, the samples take the USM type of the array parameters, or
+  ``"device"`` when there are none.
 * Parameters on the host (Python scalars, lists and NumPy arrays) are
   checked as in NumPy. Parameters in :class:`dpnp.ndarray` are
   not, since that would wait for the device.
   Invalid ones give undefined values, such as NaN.
+* Generators and bit generators cannot be pickled or copied, and the bit
+  generators have no ``advance`` or ``jumped`` method.
 
 Random Generator
 ----------------
@@ -48,6 +57,16 @@ Random Generator
 
    default_rng
    Generator
+
+Accessing the bit generator and spawning
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   Generator.bit_generator
+   Generator.spawn
 
 Simple random data
 ^^^^^^^^^^^^^^^^^^
@@ -77,6 +96,9 @@ Bit generators
    :nosignatures:
 
    BitGenerator
+   BitGenerator.random_raw
+   BitGenerator.spawn
+   BitGenerator.state
    Philox4x3210
    SeedSequence
 

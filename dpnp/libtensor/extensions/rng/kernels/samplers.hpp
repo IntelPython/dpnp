@@ -128,6 +128,8 @@ public:
     template <typename BitGenT>
     T operator()(BitGenT &bg, const std::size_t i)
     {
+        // no fused multiply-add, to round the same on every device
+#pragma clang fp contract(off)
         return loc_[i] + scale_[i] * normal_(bg);
     }
 };

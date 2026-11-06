@@ -3,6 +3,7 @@ ary
 backend
 bandlimited
 bincount
+BitGenerator
 bitwise
 Blackman
 boolean
@@ -77,6 +78,7 @@ Nyquist
 oneAPI
 ord
 orthonormal
+Philox
 radix
 Penrose
 Polyutils
@@ -84,14 +86,17 @@ pre
 prepend
 prepended
 prepending
+reentrant
 representable
 resampling
 runtimes
 scikit
 se
+SeedSequence
 signbit
 signum
 sinc
+strided
 subarray
 subarrays
 subclasses
@@ -118,4 +123,5 @@ Vetterline
 von
 Weibull
 whitespace
+ziggurat
 Zipf

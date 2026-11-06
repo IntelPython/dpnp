@@ -46,9 +46,11 @@ namespace dpnp::kernels::rng
 // - blocked: the strided layout, with all the words of a work-item
 //   generated together, which is faster on GPUs. It needs a sampler taking
 //   a fixed number of words per element, and gives the strided values.
-// The values depend only on the engine state and the number of elements,
-// never on the device, the layout chosen for it or how the work-items are
-// scheduled.
+// The words each element draws depend only on the engine state and the
+// number of elements, never on the device, the layout chosen for it or how
+// the work-items are scheduled. Raw bits and uniform floats are therefore
+// the same on every device, while samplers using transcendental functions
+// agree only to a few ULP.
 enum class Layout
 {
     strided,

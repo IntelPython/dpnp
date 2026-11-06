@@ -41,6 +41,7 @@
 #include "common.hpp"
 
 // dpnp tensor headers
+#include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 
@@ -80,6 +81,15 @@ ParamArg to_param_arg(const std::size_t pos,
     if (!dpnp::utils::queues_are_compatible(exec_q, {arr.get_queue()})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queue.");
+    }
+
+    // a work-item reads element i of a parameter and writes element i of the
+    // result, so only an exact alias is safe
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
+    auto const &same_logical_tensors =
+        dpnp::tensor::overlap::SameLogicalTensors();
+    if (overlap(arr, result) && !same_logical_tensors(arr, result)) {
+        throw py::value_error(name + " and the result overlap in memory.");
     }
 
     auto array_types = td_ns::usm_ndarray_types();
