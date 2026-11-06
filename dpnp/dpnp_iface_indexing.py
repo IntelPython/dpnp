@@ -50,11 +50,8 @@ import numpy
 import dpnp
 
 # pylint: disable=no-name-in-module
-import dpnp.backend.extensions.indexing._indexing_impl as indexing_ext
-
-# pylint: disable=no-name-in-module
+import dpnp.libtensor._tensor_impl as ti
 import dpnp.tensor as dpt
-import dpnp.tensor._tensor_impl as ti
 
 from .dpnp_array import dpnp_array
 from .dpnp_utils import get_usm_allocations
@@ -145,7 +142,7 @@ def _choose_run(inds, chcs, q, usm_type, out=None, mode=0):
     _manager = dpu.SequentialOrderManager[q]
     dep_evs = _manager.submitted_events
 
-    h_ev, choose_ev = indexing_ext._choose(inds, chcs, out, mode, q, dep_evs)
+    h_ev, choose_ev = ti._choose(inds, chcs, out, mode, q, dep_evs)
     _manager.add_event_pair(h_ev, choose_ev)
 
     return out
@@ -1914,7 +1911,7 @@ def putmask(a, /, mask, values):
     _manager = dpu.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
 
-    h_ev, putmask_ev = indexing_ext._putmask(
+    h_ev, putmask_ev = ti._putmask(
         usm_a, usm_mask, usm_values_1d, exec_q, dep_evs
     )
     _manager.add_event_pair(h_ev, putmask_ev)

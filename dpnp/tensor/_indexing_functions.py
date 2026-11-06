@@ -30,8 +30,8 @@ import operator
 
 from dpctl.utils import SequentialOrderManager
 
+import dpnp.libtensor._tensor_impl as ti
 import dpnp.tensor as dpt
-import dpnp.tensor._tensor_impl as ti
 
 from ._copy_utils import (
     _extract_impl,
@@ -192,6 +192,7 @@ def place(arr, mask, vals):
         axis_end=mask.ndim,
         rhs=rhs,
         sycl_queue=exec_q,
+        depends=_manager.submitted_events,
     )
     _manager.add_event_pair(hev, pl_ev)
 

@@ -9,6 +9,11 @@ on:
 permissions:
   contents: read
 
+# Cancel superseded PR runs only; other runs get a unique group and always complete
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 env:
   # Pinned: Miniforge3 26.9.4-0 fails 'conda init' on Windows runners
   miniforge-version: '26.7.2-1'
@@ -26,8 +31,8 @@ env:
   rerun-tests-timeout: 45
   rerun-tensor-tests-timeout: 15
   rerun-tensor-tests-max-attempts: 3
-  # Healthy Windows tensor runs take up to ~19 min
-  rerun-tensor-tests-timeout-win: 20
+  # Per-test limit to kill a test stuck at 99%: https://github.com/IntelPython/dpctl/issues/1954
+  tensor-test-timeout: 120
 
 jobs:
   build:
@@ -60,10 +65,6 @@ jobs:
           # TODO: add free-threaded builds ('3.15.* *_cp315t') once NumPy and
           # dpctl cp315t builds are available
 
-    permissions:
-      # Needed to cancel any previous runs that are not completed for a given workflow
-      actions: write
-
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
 
@@ -76,11 +77,6 @@ jobs:
       python-conda-spec: ${{ matrix.python_spec || matrix.python }}
 
     steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@d07a454dad7609a92316b57b23c9ccfd4f59af66 # 0.13.1
-        with:
-          access_token: ${{ github.token }}
-
       - name: Checkout DPNP repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -253,14 +249,14 @@ jobs:
         id: install_dpnp
         continue-on-error: true
         run: |
-          mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist "${{ env.python-install-spec }}" ${{ env.TEST_CHANNELS }}
+          mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-timeout pytest-xdist "${{ env.python-install-spec }}" ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.channels-list }}'
 
       - name: ReInstall dpnp
         if: steps.install_dpnp.outcome == 'failure'
         run: |
-          mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist "${{ env.python-install-spec }}" ${{ env.TEST_CHANNELS }}
+          mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-timeout pytest-xdist "${{ env.python-install-spec }}" ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.channels-list }}'
 
@@ -307,7 +303,7 @@ jobs:
       - name: Run tensor tests
         if: env.rerun-tests-on-failure != 'true'
         run: |
-          python -m pytest -n auto -ra --pyargs dpnp.tests.tensor
+          python -m pytest -n auto -ra --timeout=${{ env.tensor-test-timeout }} --timeout-method=thread --pyargs dpnp.tests.tensor
 
       - name: Run tensor tests
         if: env.rerun-tests-on-failure == 'true'
@@ -322,7 +318,7 @@ jobs:
             . $CONDA/etc/profile.d/mamba.sh
             mamba activate ${{ env.test-env-name }}
 
-            python -m pytest -n auto -ra --pyargs dpnp.tests.tensor
+            python -m pytest -n auto -ra --timeout=${{ env.tensor-test-timeout }} --timeout-method=thread --pyargs dpnp.tests.tensor
 
   test_examples_linux:
     name: Test examples
@@ -553,7 +549,7 @@ jobs:
       - name: Install dpnp
         run: |
           @echo on
-          mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist "${{ env.python-install-spec }}" ${{ env.TEST_CHANNELS }}
+          mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-timeout pytest-xdist "${{ env.python-install-spec }}" ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.channels-list }}'
           MAMBA_NO_LOW_SPEED_LIMIT: 1
@@ -616,19 +612,19 @@ jobs:
         if: env.rerun-tests-on-failure != 'true'
         shell: pwsh
         run: |
-          python -m pytest -n auto -ra --pyargs dpnp.tests.tensor
+          python -m pytest -n auto -ra --timeout=${{ env.tensor-test-timeout }} --timeout-method=thread --pyargs dpnp.tests.tensor
 
       - name: Run tensor tests
         if: env.rerun-tests-on-failure == 'true'
         id: run_tests_tensor_win
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
-          timeout_minutes: ${{ env.rerun-tensor-tests-timeout-win }}
+          timeout_minutes: ${{ env.rerun-tensor-tests-timeout }}
           max_attempts: ${{ env.rerun-tensor-tests-max-attempts }}
           retry_on: any
           shell: pwsh
           command: |
-            python -m pytest -n auto -ra --pyargs dpnp.tests.tensor
+            python -m pytest -n auto -ra --timeout=${{ env.tensor-test-timeout }} --timeout-method=thread --pyargs dpnp.tests.tensor
 
   upload:
     name: Upload
@@ -667,7 +663,7 @@ jobs:
 
     defaults:
       run:
-        shell: ${{ matrix.os == 'windows-2022' && 'cmd /C CALL {0}' || 'bash -el {0}' }}
+        shell: bash -el {0}
 
     env:
       upload-conda-pkg-env: 'environments/upload_cleanup_conda_pkg.yml'
@@ -717,19 +713,18 @@ jobs:
           activate-environment: ${{ env.upload-env-name }}
 
       - name: Package version
-        shell: bash -el {0}
         run: |
           echo "PACKAGE_VERSION=$(basename ${{ env.package-name }}-*.conda | sed 's/^${{ env.package-name }}-\([^-]*\).*/\1/')" >> "$GITHUB_ENV"
 
       - name: Upload
         run: |
-          anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.package-name }}-*.conda
+          anaconda --token "${ANACONDA_TOKEN}" upload --user dppy --label dev ${{ env.package-name }}-*.conda
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
 
       - name: Upload wheels
         run: |
-          anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.package-name }}-*.whl --version ${{ env.PACKAGE_VERSION }}
+          anaconda --token "${ANACONDA_TOKEN}" upload --user dppy --label dev ${{ env.package-name }}-*.whl --version "${PACKAGE_VERSION}"
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
 
@@ -959,5 +954,7 @@ jobs:
       - name: Cleanup old packages
         run: |
           python scripts/cleanup-old-packages.py \
-          --verbose --force --token ${{ secrets.ANACONDA_TOKEN }} \
+          --verbose --force --token "${ANACONDA_TOKEN}" \
           --package dppy/${{ env.package-name }} --label dev
+        env:
+          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}

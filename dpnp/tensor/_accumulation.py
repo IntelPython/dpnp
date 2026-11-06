@@ -28,9 +28,9 @@
 
 from dpctl.utils import SequentialOrderManager
 
+import dpnp.libtensor._tensor_accumulation_impl as tai
+import dpnp.libtensor._tensor_impl as ti
 import dpnp.tensor as dpt
-import dpnp.tensor._tensor_accumulation_impl as tai
-import dpnp.tensor._tensor_impl as ti
 
 from ._numpy_helper import normalize_axis_index
 from ._type_utils import (

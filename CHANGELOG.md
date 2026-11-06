@@ -9,22 +9,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Added support for boolean input in `dpnp.positive` and the `+` operator of `dpnp.ndarray` [#3128](https://github.com/IntelPython/dpnp/pull/3128)
+* Added `dpnp.top_k` to return the `k` largest or smallest elements and their indices along an axis, with a `sorted` keyword to return them in sorted order [#3133](https://github.com/IntelPython/dpnp/pull/3133)
 
 ### Changed
 
 * Changed `dpnp.tensor.top_k` to select the `k` elements with a radix select instead of sorting every row, for all but complex data types. The order of the returned elements is now unspecified, where it was largest-first or smallest-first before [#3079](https://github.com/IntelPython/dpnp/pull/3079)
+* Moved libtensor from `dpnp/tensor/libtensor` to `dpnp/libtensor`. All pybind11 extension modules are installed into `dpnp/libtensor` (e.g. `dpnp.libtensor._tensor_impl`, `dpnp.libtensor._blas_impl`), while `dpnp/backend` now contains only the legacy `dpnp_backend_c` library [#3131](https://github.com/IntelPython/dpnp/pull/3131)
+* Merged the `ufunc` and `indexing` extensions into `dpnp.libtensor._tensor_elementwise_impl` and `dpnp.libtensor._tensor_impl`, while `statistics` and `window` extensions became part of libtensor [#3131](https://github.com/IntelPython/dpnp/pull/3131)
+* Moved `blas`, `fft`, `lapack`, `sparse` and `vm` extensions into `dpnp/libtensor/extensions` [#3131](https://github.com/IntelPython/dpnp/pull/3131)
+* Moved the libtensor headers shipped with dpnp from `dpnp/tensor/libtensor/include` to `dpnp/libtensor/include`, and changed `dpnp.get_include` to return that directory [#3131](https://github.com/IntelPython/dpnp/pull/3131)
+* Improved performance of `dpnp.scipy.sparse.csr_matrix.sort_indices` by sorting once on a combined row and column key instead of in two passes [#3134](https://github.com/IntelPython/dpnp/pull/3134)
 
 ### Deprecated
 
 * Deprecated `dpnp.dot` and `dpnp.ndarray.dot` when `a.ndim >= 2` and `b.ndim > 2`, which place the leading dimensions of `b` in the middle of the result; use `dpnp.tensordot(a, b, axes=(-1, -2))` or `dpnp.matmul` instead [#3124](https://github.com/IntelPython/dpnp/pull/3124)
 * Deprecated the upcast of `arr` by a Python numeric scalar in `dpnp.append` with `axis=None` (e.g. `int8` array and `1` giving `int64`) [#3125](https://github.com/IntelPython/dpnp/pull/3125)
 * Deprecated `dpnp.isfortran`; use `a.flags.fnc` instead [#3140](https://github.com/IntelPython/dpnp/pull/3140)
+* Deprecated omitting `axis` in `dpnp.tensor.top_k` for an input that is not 1-D, which searches the flattened array; the default will change to `axis=-1` as in the Array API standard, so pass `axis=None` to keep the current behavior [#3133](https://github.com/IntelPython/dpnp/pull/3133)
 
 ### Removed
+
+* Removed the unused `FourZeroOffsets_Indexer`, `FixedDimStridedIndexer` and `ThreeOffsets_FixedDimStridedIndexer` from the libtensor header `utils/offset_utils.hpp` [#3131](https://github.com/IntelPython/dpnp/pull/3131)
 
 ### Fixed
 
 * Fixed `flags[key]` of `dpnp.ndarray` and `dpnp.tensor.usm_ndarray` to raise `KeyError` for an unknown key [#3141](https://github.com/IntelPython/dpnp/pull/3141)
+* Released the GIL around the oneMKL VM calls in the VM extension, which deadlocked on an in-order queue of a CPU device [#3156](https://github.com/IntelPython/dpnp/pull/3156)
+* Fixed `dpnp.place` and `dpnp.tensor.place` to order the write after the cast of `vals` to the array's data type, which could put wrong values into the array on an out-of-order queue [#3164](https://github.com/IntelPython/dpnp/pull/3164)
 
 ### Security
 

@@ -7,6 +7,11 @@ on:
 
 permissions: read-all
 
+# Cancel superseded PR runs only; other runs get a unique group and always complete
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   pre-commit:
     name: Check
@@ -15,13 +20,6 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - name: Set up pip packages
-        uses: BSFishy/pip-action@8f2d471d809dc20b6ada98c91910b6ae6243f318 # v1
-        with:
-          packages: |
-            codespell
-            pylint
-
       - name: Checkout DPNP repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -33,6 +31,10 @@ jobs:
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: '3.14'
+
+      # pylint is a 'language: system' hook, so it must be on PATH
+      - name: Install pylint
+        run: pip install -r environments/pre_commit.txt
 
       - name: Run pre-commit checks
         uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1

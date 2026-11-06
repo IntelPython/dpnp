@@ -49,6 +49,14 @@ _STAGES = ("build", "dpnp-tests", "tensor-tests", "report")
 
 _DPNP_PROFRAW = "dpnp_pytest.profraw"
 _TENSOR_PROFRAW = "dpnp_tensor_pytest.profraw"
+# pybind11 modules of dpnp/libtensor holding libtensor functions only, unlike
+# _tensor_impl and _tensor_elementwise_impl which hold dpnp functions too
+_TENSOR_ONLY_OBJS = (
+    "_tensor_accumulation_impl.",
+    "_tensor_linalg_impl.",
+    "_tensor_reductions_impl.",
+    "_tensor_sorting_impl.",
+)
 
 
 def parse_args():
@@ -276,18 +284,17 @@ def export_coverage(args, setup_dir, env, bin_llvm):
         search_path = os.path.join(setup_dir, "dpnp")
         for root, _, files in os.walk(search_path):
             for file in files:
-                is_backend_obj = file.endswith("_c.so") or (
-                    root.find("extensions") != -1
+                is_impl_obj = (
+                    os.path.basename(root) == "libtensor"
                     and file.find("_impl.cpython") != -1
                 )
-                # tensor pybind11 extensions, e.g. _tensor_impl
-                is_tensor_obj = (
-                    args.tensor_cpp_coverage
-                    and os.path.basename(root) == "tensor"
-                    and file.startswith("_tensor_")
-                    and file.find("_impl.cpython") != -1
-                )
-                if is_backend_obj or is_tensor_obj:
+                # modules with libtensor functions only are instrumented with
+                # --tensor-cpp-coverage only
+                is_tensor_obj = file.startswith(_TENSOR_ONLY_OBJS)
+                if file.endswith("_c.so") or (
+                    is_impl_obj
+                    and (args.tensor_cpp_coverage or not is_tensor_obj)
+                ):
                     objects.extend(["-object", os.path.join(root, file)])
         return objects
 
@@ -315,10 +322,7 @@ def export_coverage(args, setup_dir, env, bin_llvm):
                 "export",
                 "-format=lcov",
                 "-ignore-filename-regex=/tmp/icpx*",
-                r"-ignore-filename-regex=.*/backend/kernels/elementwise_functions/.*\.hpp$",
-                r"-ignore-filename-regex=.*/backend/kernels/indexing/.*\.hpp$",
-                r"-ignore-filename-regex=.*/backend/kernels/statistics/.*\.hpp$",
-                r"-ignore-filename-regex=.*/backend/kernels/window/.*\.hpp$",
+                r"-ignore-filename-regex=.*/libtensor/include/kernels/.*\.hpp$",
                 "-instr-profile=" + instr_profile_fn,
             ]
             + objects
