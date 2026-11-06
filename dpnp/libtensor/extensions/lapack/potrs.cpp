@@ -167,14 +167,16 @@ static sycl::event potrs_impl(sycl::queue &exec_q,
         throw std::runtime_error(error_msg.str());
     }
 
-    sycl::event clean_up_event = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(potrs_event);
-        auto ctx = exec_q.get_context();
-        cgh.host_task([ctx, scratchpad]() {
-            dpnp::tensor::alloc_utils::sycl_free_noexcept(scratchpad, ctx);
+    if (scratchpad != nullptr) {
+        sycl::event clean_up_event = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(potrs_event);
+            auto ctx = exec_q.get_context();
+            cgh.host_task([ctx, scratchpad]() {
+                dpnp::tensor::alloc_utils::sycl_free_noexcept(scratchpad, ctx);
+            });
         });
-    });
-    host_task_events.push_back(clean_up_event);
+        host_task_events.push_back(clean_up_event);
+    }
     return potrs_event;
 }
 
@@ -273,6 +275,7 @@ std::pair<sycl::event, sycl::event>
         potrs_fn(exec_q, uplo_val, n, nrhs, a_array_data, lda, b_array_data,
                  ldb, host_task_events, depends);
 
+    host_task_events.push_back(potrs_ev);
     sycl::event args_ev = dpnp::utils::keep_args_alive(
         exec_q, {a_array, b_array}, host_task_events);
 
