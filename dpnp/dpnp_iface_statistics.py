@@ -1529,10 +1529,10 @@ def minmax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
         if res is not None:
             # the result is computed in the data type of `a`
             if res.dtype != a.dtype:
-                # the cast to a writable temporary would hide the flag
+                # a writable temporary would hide the flag
                 if not res.flags.writable:
                     raise ValueError("provided `out` array is read-only")
-                res = dpnp.astype(res, a.dtype, copy=False)
+                res = dpnp.empty_like(res, dtype=a.dtype)
             res = dpnp.get_usm_ndarray(res)
         usm_out.append(res)
 
