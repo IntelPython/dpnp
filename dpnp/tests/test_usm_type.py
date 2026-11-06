@@ -1858,6 +1858,19 @@ def test_generator_array_params(usm_type):
     x = dpnp.full(4, 2.0, usm_type=usm_type)
 
     assert rng.normal(x, usm_type=usm_type).usm_type == usm_type
+    assert rng.normal(x).usm_type == usm_type
+
+
+@pytest.mark.parametrize("func", ["normal", "uniform"])
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types)
+def test_generator_coerced_usm_type(func, usm_type_x, usm_type_y):
+    rng = dpnp.random.default_rng(1)
+    x = dpnp.zeros(4, usm_type=usm_type_x)
+    y = dpnp.ones(4, usm_type=usm_type_y)
+
+    res = getattr(rng, func)(x, y)
+    assert res.usm_type == dpt.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
 @pytest.mark.parametrize("bit_generator", [dpnp.random.Philox4x3210])

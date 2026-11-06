@@ -8,12 +8,15 @@ import pytest
 
 import dpnp as cupy
 from dpnp import random
+from dpnp.tests.helper import has_support_aspect64
 from dpnp.tests.third_party.cupy import testing
 from dpnp.tests.third_party.cupy.testing import _condition
 
 from . import common_distributions
 
-pytest.skip("random.Generator() is not supported yet", allow_module_level=True)
+_requires_fp64 = pytest.mark.skipif(
+    not has_support_aspect64(), reason="fp64 is required"
+)
 
 
 class GeneratorTestCase(common_distributions.BaseGeneratorTestCase):
@@ -49,12 +52,15 @@ class InvalidOutsMixin:
         with pytest.raises(ValueError):
             self.generate(size=(3, 2), out=out, **kwargs)
 
+    @_requires_fp64
     def test_invalid_dtype_out(self):
         self.invalid_dtype_out()
 
+    @_requires_fp64
     def test_invalid_contiguity(self):
         self.invalid_contiguity()
 
+    @_requires_fp64
     def test_invalid_shape(self):
         self.invalid_shape()
 
@@ -69,6 +75,7 @@ class TestUniform(common_distributions.Uniform, GeneratorTestCase):
 @testing.parameterize(*common_distributions.exponential_params)
 @testing.with_requires("numpy>=1.17.0")
 @testing.fix_random()
+@pytest.mark.skip("continuous distributions are not supported yet")
 class TestExponential(common_distributions.Exponential, GeneratorTestCase):
     pass
 
@@ -76,6 +83,7 @@ class TestExponential(common_distributions.Exponential, GeneratorTestCase):
 @testing.parameterize(*common_distributions.poisson_params)
 @testing.with_requires("numpy>=1.17.0")
 @testing.fix_random()
+@pytest.mark.skip("discrete distributions are not supported yet")
 class TestPoisson(common_distributions.Poisson, GeneratorTestCase):
     pass
 
@@ -83,6 +91,7 @@ class TestPoisson(common_distributions.Poisson, GeneratorTestCase):
 @testing.parameterize(*common_distributions.binomial_params)
 @testing.with_requires("numpy>=1.17.0")
 @testing.fix_random()
+@pytest.mark.skip("discrete distributions are not supported yet")
 class TestBinomial(common_distributions.Binomial, GeneratorTestCase):
     pass
 
@@ -90,12 +99,14 @@ class TestBinomial(common_distributions.Binomial, GeneratorTestCase):
 @testing.parameterize(*common_distributions.beta_params)
 @testing.with_requires("numpy>=1.17.0")
 @testing.fix_random()
+@pytest.mark.skip("continuous distributions are not supported yet")
 class TestBeta(common_distributions.Beta, GeneratorTestCase):
     pass
 
 
 @testing.with_requires("numpy>=1.17.0")
 @testing.fix_random()
+@pytest.mark.skip("continuous distributions are not supported yet")
 class TestStandardExponential(
     InvalidOutsMixin,
     common_distributions.StandardExponential,
@@ -106,6 +117,7 @@ class TestStandardExponential(
 
 @testing.parameterize(*common_distributions.gamma_params)
 @testing.fix_random()
+@pytest.mark.skip("continuous distributions are not supported yet")
 class TestGamma(
     common_distributions.Gamma,
     GeneratorTestCase,
@@ -115,6 +127,7 @@ class TestGamma(
 
 @testing.parameterize(*common_distributions.standard_gamma_params)
 @testing.fix_random()
+@pytest.mark.skip("continuous distributions are not supported yet")
 class TestStandardGamma(
     common_distributions.StandardGamma,
     GeneratorTestCase,
@@ -123,13 +136,16 @@ class TestStandardGamma(
 
 
 @testing.fix_random()
+@pytest.mark.skip("continuous distributions are not supported yet")
 class TestStandardGammaInvalid(InvalidOutsMixin, GeneratorTestCase):
 
     target_method = "standard_gamma"
 
+    @_requires_fp64
     def test_invalid_dtype_out(self):
         self.invalid_dtype_out(shape=1.0)
 
+    @_requires_fp64
     def test_invalid_contiguity(self):
         self.invalid_contiguity(shape=1.0)
 
@@ -137,6 +153,7 @@ class TestStandardGammaInvalid(InvalidOutsMixin, GeneratorTestCase):
         with pytest.raises(ValueError):
             self.generate(size=(4, 6), out=out, shape=1.0)
 
+    @_requires_fp64
     def test_invalid_shape(self):
         self.invalid_shape(shape=1.0)
 
@@ -147,6 +164,7 @@ class TestStandardGammaInvalid(InvalidOutsMixin, GeneratorTestCase):
 
 
 @testing.fix_random()
+@pytest.mark.skip("continuous distributions are not supported yet")
 class TestStandardGammaEmpty(GeneratorTestCase):
 
     target_method = "standard_gamma"
@@ -189,6 +207,7 @@ class TestStandardNormalInvalid(InvalidOutsMixin, GeneratorTestCase):
 
 @testing.with_requires("numpy>=1.17.0")
 @testing.fix_random()
+@pytest.mark.skip("discrete distributions are not supported yet")
 class TestIntegers(GeneratorTestCase):
     target_method = "integers"
 
@@ -243,6 +262,7 @@ class TestIntegers(GeneratorTestCase):
     ]
 )
 @testing.fix_random()
+@pytest.mark.skip("discrete distributions are not supported yet")
 class TestIntegersLargeBound(GeneratorTestCase):
     target_method = "integers"
 
@@ -269,6 +289,7 @@ class TestIntegersLargeBound(GeneratorTestCase):
 )
 @testing.with_requires("numpy>=1.17.0")
 @testing.fix_random()
+@pytest.mark.skip("discrete distributions are not supported yet")
 class TestIntegersLargeBoundKS(GeneratorTestCase):
     target_method = "integers"
 
@@ -298,6 +319,7 @@ class TestRandom(InvalidOutsMixin, GeneratorTestCase):
 @testing.parameterize(*common_distributions.geometric_params)
 @testing.with_requires("numpy>=1.17.0")
 @testing.fix_random()
+@pytest.mark.skip("discrete distributions are not supported yet")
 class TestGeometric(common_distributions.Geometric, GeneratorTestCase):
     pass
 
@@ -305,12 +327,14 @@ class TestGeometric(common_distributions.Geometric, GeneratorTestCase):
 @testing.parameterize(*common_distributions.hypergeometric_params)
 @testing.with_requires("numpy>=1.17.0")
 @testing.fix_random()
+@pytest.mark.skip("discrete distributions are not supported yet")
 class TestHypergeometric(
     common_distributions.Hypergeometric, GeneratorTestCase
 ):
     pass
 
 
+@pytest.mark.skip("discrete distributions are not supported yet")
 class TestHypergeometricValidation:
 
     @pytest.fixture(autouse=True)
@@ -338,6 +362,7 @@ class TestHypergeometricValidation:
         out = self.gen.hypergeometric(5, 10, 15, size=10)
         testing.assert_array_equal(out, cupy.full(10, 5, dtype=cupy.int64))
 
+    @pytest.mark.skip("NumPy raises ValueError for nsample > ngood + nbad")
     def test_hypergeometric_nsample_exceeds_total(self):
         # nsample > ngood + nbad would previously cause an infinite
         # loop in the HRUA kernel. The kernel now routes this through
@@ -356,21 +381,23 @@ class TestHypergeometricValidation:
 
 @testing.parameterize(*common_distributions.power_params)
 @testing.fix_random()
+@pytest.mark.skip("continuous distributions are not supported yet")
 class TestPower(common_distributions.Power, GeneratorTestCase):
     pass
 
 
 @testing.with_requires("numpy>=1.17.0")
-@pytest.mark.skipif(
-    cupy.cuda.runtime.is_hip
-    and (int(str(cupy.cuda.runtime.runtimeGetVersion())[:3]) < 403),
-    reason="HIP<4.3 not supported ",
-)
+# @pytest.mark.skipif(
+#     cupy.cuda.runtime.is_hip
+#     and (int(str(cupy.cuda.runtime.runtimeGetVersion())[:3]) < 403),
+#     reason="HIP<4.3 not supported ",
+# )
 class TestRandomStateThreadSafe(unittest.TestCase):
 
+    @pytest.mark.skip("continuous distributions are not supported yet")
     def test_default_rng_thread_safe(self):
         def _f(func, args=()):
-            cupy.cuda.Device().use()
+            # cupy.cuda.Device().use()
             func(*args)
 
         seed = 10
@@ -398,29 +425,37 @@ class TestRandomStateThreadSafe(unittest.TestCase):
 
 @testing.parameterize(*common_distributions.logseries_params)
 @testing.fix_random()
+@pytest.mark.skip("discrete distributions are not supported yet")
 class TestLogseries(common_distributions.Logseries, GeneratorTestCase):
     pass
 
 
 @testing.parameterize(*common_distributions.chisquare_params)
 @testing.fix_random()
+@pytest.mark.skip("continuous distributions are not supported yet")
 class TestChisquare(common_distributions.Chisquare, GeneratorTestCase):
     pass
 
 
 @testing.parameterize(*common_distributions.f_params)
 @testing.fix_random()
+@pytest.mark.skip("continuous distributions are not supported yet")
 class TestF(common_distributions.F, GeneratorTestCase):
     pass
 
 
 @testing.parameterize(*common_distributions.dirichlet_params)
 @testing.fix_random()
+@pytest.mark.skip(
+    "dpnp raises TypeError for a scalar alpha, as NumPy does, and two of "
+    "the alpha params are scalars"
+)
 class TestDrichlet(common_distributions.Dirichlet, GeneratorTestCase):
     pass
 
 
 @testing.slow
+@pytest.mark.skip("XORWOW is not provided")
 class TestLarge:
     # @pytest.mark.thread_unsafe(reason="allocates large memory")
     def test_large(self):

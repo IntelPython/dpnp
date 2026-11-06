@@ -44,7 +44,7 @@ void init_uniform(py::module_ m)
     def_sampler<rng_ns::RawSampler, RawTypes>(
         m, "_random_raw",
         "Fill the result with the raw 64-bit output of the engine, or with "
-        "its 32-bit halves, low half first",
+        "its 32-bit halves, high half first",
         random_raw_dispatch_table);
 }
 } // namespace dpnp::extensions::rng

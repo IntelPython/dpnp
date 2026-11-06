@@ -40,6 +40,8 @@ used from several threads, and launches never share engine output.
 # pylint: disable=no-name-in-module
 # pylint: disable=protected-access
 
+import math
+import operator
 import threading
 
 import dpctl.utils as dpu
@@ -63,6 +65,41 @@ _MASK64 = (1 << 64) - 1
 _MASK128 = (1 << 128) - 1
 
 
+def _size_dim(s):
+    # booleans have __index__, but NumPy does not take them as dimensions
+    if isinstance(s, (bool, numpy.bool_)):
+        raise TypeError("an integer is required")
+    return operator.index(s)
+
+
+def _normalize_size(size):
+    """`size` as a shape, with the checks and the messages of NumPy."""
+
+    if size is None:
+        return None
+    if numpy.ndim(size) == 0:
+        if isinstance(size, (bool, numpy.bool_)) or (
+            getattr(size, "dtype", None) == numpy.bool_
+        ):
+            index = None
+        else:
+            try:
+                index = operator.index(size)
+            except TypeError:
+                index = None
+        if index is None:
+            raise TypeError(
+                "expected a sequence of integers or a single integer, "
+                f"got '{size!r}'"
+            )
+        shape = (index,)
+    else:
+        shape = tuple(_size_dim(s) for s in size)
+    if any(s < 0 for s in shape):
+        raise ValueError("negative dimensions are not allowed")
+    return shape
+
+
 class BitGenerator:
     """
     Base class for the bit generators of :class:`dpnp.random.Generator`.
@@ -84,7 +121,7 @@ class BitGenerator:
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -107,7 +144,8 @@ class BitGenerator:
         self._sycl_queue = dpnp.get_normalized_queue_device(
             device=device, sycl_queue=sycl_queue
         )
-        self._lock = threading.Lock()
+        # reentrant, so that `state` can be used while holding `lock`
+        self._lock = threading.RLock()
 
         if isinstance(seed, _ISeedSequence):
             self._seed_seq = seed
@@ -128,14 +166,19 @@ class BitGenerator:
         The lock guarding the state of the bit generator.
 
         Hold it to read or set :attr:`state` consistently while other threads
-        use the bit generator.
+        use the bit generator. The lock is reentrant, so :attr:`state` can be
+        read and set while holding it.
 
         """
         return self._lock
 
     @property
     def seed_seq(self):
-        """The seed sequence used to initialize the bit generator."""
+        """
+        The seed sequence used to initialize the bit generator, or ``None``
+        when the state was given directly, such as a Philox key.
+
+        """
         return self._seed_seq
 
     @property
@@ -203,7 +246,7 @@ class BitGenerator:
         _manager.add_event_pair(ht_ev, ev)
         return result
 
-    def random_raw(self, size=None, output=True, *, usm_type="device"):
+    def random_raw(self, size=None, output=True, *, usm_type=None):
         """
         Return raw 64-bit outputs of the bit generator.
 
@@ -219,10 +262,10 @@ class BitGenerator:
             drawn, and ``None`` is returned.
 
             Default: ``True``.
-        usm_type : {"device", "shared", "host"}, optional
+        usm_type : {None, "device", "shared", "host"}, optional
             The type of SYCL USM allocation for the output array.
 
-            Default: ``"device"``.
+            Default: ``None``, which means ``"device"``.
 
         Returns
         -------
@@ -232,20 +275,25 @@ class BitGenerator:
         Limitations
         -----------
         Unlike NumPy, a zero-dimensional array is returned rather than a
-        Python integer when `size` is ``None``.
+        Python integer when `size` is ``None``. With ``output=False``, the
+        state advances by the number of elements of `size`, and an invalid
+        `size` raises as it does with ``output=True``. NumPy advances by
+        the sum of the dimensions of `size` instead, and ignores a negative
+        one.
 
         """
 
-        shape = () if size is None else size
+        shape = _normalize_size(size) or ()
         if not output:
-            n = numpy.prod(shape, dtype=numpy.int64)
-            self._launch(ri._random_raw, numpy.dtype(numpy.uint64), int(n))
+            self._launch(
+                ri._random_raw, numpy.dtype(numpy.uint64), math.prod(shape)
+            )
             return None
 
         result = dpnp.empty(
             shape,
             dtype=dpnp.uint64,
-            usm_type=usm_type,
+            usm_type="device" if usm_type is None else usm_type,
             sycl_queue=self._sycl_queue,
         )
         return self._fill(ri._random_raw, (), result)
@@ -316,8 +364,11 @@ class Philox4x3210(BitGenerator):
     Every call that produces ``n`` values takes ``ceil(n / 8)`` blocks of
     2**64 counter values, one for each work-item of the kernel, and every
     work-item draws as many values as its rejection samplers need from its
-    own block. The values therefore depend only on the state and the output
-    size, and are the same on every device.
+    own block. Element ``i`` comes from the block ``i % ceil(n / 8)``, so the
+    values depend on the output size: a draw is not a prefix of a larger
+    one. For a given state, output size and data type, the raw bits and the
+    uniform floats are the same on every device, while the samplers built on
+    transcendental functions, such as the normal one, agree to a few ULP.
 
     """
 
@@ -333,6 +384,9 @@ class Philox4x3210(BitGenerator):
 
         if key is None:
             key = int(self._seed_seq.generate_state(1, numpy.uint64)[0])
+        else:
+            # as in NumPy, there is no seed sequence to spawn from
+            self._seed_seq = None
         self._key = self._check_word(key, _MASK64, "key")
         self._counter = self._check_word(
             0 if counter is None else counter, _MASK128, "counter"
@@ -386,6 +440,7 @@ class Philox4x3210(BitGenerator):
         # every work-item takes a block of 2**64 counter values
         n_blocks = self._num_work_items(size)
         with self._lock:
+            key = self._key
             counter = self._counter
             self._counter = (counter + (n_blocks << 64)) & _MASK128
-        return [self._key], counter & _MASK64, counter >> 64
+        return [key], counter & _MASK64, counter >> 64
