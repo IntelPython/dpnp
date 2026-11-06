@@ -1837,7 +1837,10 @@ class TestLinAlgebra:
 @pytest.mark.parametrize(
     "func, args, kwargs",
     [
+        pytest.param("hypergeometric", [5, 7, 4], {"size": 3}),
+        pytest.param("integers", [[3, 5], [7, 9]], {}),
         pytest.param("normal", [[1.0, 2.0]], {}),
+        pytest.param("poisson", [3.0], {"size": 3}),
         pytest.param("random", [3], {}),
         pytest.param("standard_gamma", [2.0], {"size": 3}),
         pytest.param("triangular", [0.0, 1.0, 3.0], {"size": 3}),

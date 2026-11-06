@@ -29,7 +29,9 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 #include <tuple>
+#include <type_traits>
 
 #include <sycl/sycl.hpp>
 
@@ -104,6 +106,37 @@ public:
 #pragma clang fp contract(off)
         const T low = low_[i];
         return low + (high_[i] - low) * bg.template next_uniform<T>();
+    }
+};
+
+// Uniform integers on the closed interval [low, high]
+template <typename T>
+class IntegersSampler : public SamplerBase<T, T, T>
+{
+private:
+    Param<T> low_;
+    Param<T> high_;
+
+public:
+    IntegersSampler(const Param<T> &low, const Param<T> &high)
+        : low_(low), high_(high)
+    {
+    }
+
+    template <typename BitGenT>
+    T operator()(BitGenT &bg, const std::size_t i)
+    {
+        // Widen to 64 bits with the sign of T, then do the arithmetic
+        // modulo 2**64, which is exact for any low <= high.
+        using wideT = std::conditional_t<std::is_signed_v<T>, std::int64_t,
+                                         std::uint64_t>;
+
+        const std::uint64_t off =
+            static_cast<std::uint64_t>(static_cast<wideT>(low_[i]));
+        const std::uint64_t rng =
+            static_cast<std::uint64_t>(static_cast<wideT>(high_[i])) - off;
+
+        return static_cast<T>(off + bounded_uint64(bg, rng));
     }
 };
 
@@ -406,6 +439,54 @@ public:
     }
 };
 
+// Noncentral chi-square with `df` degrees of freedom and noncentrality `nonc`
+template <typename T>
+class NoncentralChisquareSampler : public SamplerBase<T, T, T>
+{
+private:
+    Param<T> df_;
+    Param<T> nonc_;
+    StandardNormal<T> normal_{};
+
+public:
+    NoncentralChisquareSampler(const Param<T> &df, const Param<T> &nonc)
+        : df_(df), nonc_(nonc)
+    {
+    }
+
+    template <typename BitGenT>
+    T operator()(BitGenT &bg, const std::size_t i)
+    {
+        return noncentral_chisquare<T>(bg, normal_, df_[i], nonc_[i]);
+    }
+};
+
+// Noncentral F with `dfnum` and `dfden` degrees of freedom and noncentrality
+// `nonc`
+template <typename T>
+class NoncentralFSampler : public SamplerBase<T, T, T, T>
+{
+private:
+    Param<T> dfnum_;
+    Param<T> dfden_;
+    Param<T> nonc_;
+    StandardNormal<T> normal_{};
+
+public:
+    NoncentralFSampler(const Param<T> &dfnum,
+                       const Param<T> &dfden,
+                       const Param<T> &nonc)
+        : dfnum_(dfnum), dfden_(dfden), nonc_(nonc)
+    {
+    }
+
+    template <typename BitGenT>
+    T operator()(BitGenT &bg, const std::size_t i)
+    {
+        return noncentral_f<T>(bg, normal_, dfnum_[i], dfden_[i], nonc_[i]);
+    }
+};
+
 // Laplace with location `loc` and scale `scale`
 template <typename T>
 class LaplaceSampler : public SamplerBase<T, T, T>
@@ -515,6 +596,145 @@ public:
     T operator()(BitGenT &bg, const std::size_t i)
     {
         return vonmises<T>(bg, normal_, mu_[i], kappa_[i]);
+    }
+};
+
+// The discrete samplers below give int64 samples, and compute in the
+// floating-point type T.
+
+// Poisson with rate `lam`
+template <typename T>
+class PoissonSampler : public SamplerBase<std::int64_t, T>
+{
+private:
+    Param<T> lam_;
+
+public:
+    explicit PoissonSampler(const Param<T> &lam) : lam_(lam) {}
+
+    template <typename BitGenT>
+    std::int64_t operator()(BitGenT &bg, const std::size_t i)
+    {
+        return poisson<T>(bg, lam_[i]);
+    }
+};
+
+// The number of failures before `n` successes of probability `p`
+template <typename T>
+class NegativeBinomialSampler : public SamplerBase<std::int64_t, T, T>
+{
+private:
+    Param<T> n_;
+    Param<T> p_;
+    StandardNormal<T> normal_{};
+
+public:
+    NegativeBinomialSampler(const Param<T> &n, const Param<T> &p) : n_(n), p_(p)
+    {
+    }
+
+    template <typename BitGenT>
+    std::int64_t operator()(BitGenT &bg, const std::size_t i)
+    {
+        return negative_binomial<T>(bg, normal_, n_[i], p_[i]);
+    }
+};
+
+// The number of successes of `n` trials of probability `p`
+template <typename T>
+class BinomialSampler : public SamplerBase<std::int64_t, std::int64_t, T>
+{
+private:
+    Param<std::int64_t> n_;
+    Param<T> p_;
+
+public:
+    BinomialSampler(const Param<std::int64_t> &n, const Param<T> &p)
+        : n_(n), p_(p)
+    {
+    }
+
+    template <typename BitGenT>
+    std::int64_t operator()(BitGenT &bg, const std::size_t i)
+    {
+        return binomial<T>(bg, n_[i], p_[i]);
+    }
+};
+
+// The number of trials of probability `p` up to the first success
+template <typename T>
+class GeometricSampler : public SamplerBase<std::int64_t, T>
+{
+private:
+    Param<T> p_;
+
+public:
+    explicit GeometricSampler(const Param<T> &p) : p_(p) {}
+
+    template <typename BitGenT>
+    std::int64_t operator()(BitGenT &bg, const std::size_t i)
+    {
+        return geometric<T>(bg, p_[i]);
+    }
+};
+
+// Logarithmic series with shape `p`
+template <typename T>
+class LogseriesSampler : public SamplerBase<std::int64_t, T>
+{
+private:
+    Param<T> p_;
+
+public:
+    explicit LogseriesSampler(const Param<T> &p) : p_(p) {}
+
+    template <typename BitGenT>
+    std::int64_t operator()(BitGenT &bg, const std::size_t i)
+    {
+        return logseries<T>(bg, p_[i]);
+    }
+};
+
+// Zipf with exponent `a`
+template <typename T>
+class ZipfSampler : public SamplerBase<std::int64_t, T>
+{
+private:
+    Param<T> a_;
+
+public:
+    explicit ZipfSampler(const Param<T> &a) : a_(a) {}
+
+    template <typename BitGenT>
+    std::int64_t operator()(BitGenT &bg, const std::size_t i)
+    {
+        return zipf<T>(bg, a_[i]);
+    }
+};
+
+// The number of good items of `sample` drawn without replacement from `good`
+// good and `bad` bad items
+template <typename T>
+class HypergeometricSampler
+    : public SamplerBase<std::int64_t, std::int64_t, std::int64_t, std::int64_t>
+{
+private:
+    Param<std::int64_t> good_;
+    Param<std::int64_t> bad_;
+    Param<std::int64_t> sample_;
+
+public:
+    HypergeometricSampler(const Param<std::int64_t> &good,
+                          const Param<std::int64_t> &bad,
+                          const Param<std::int64_t> &sample)
+        : good_(good), bad_(bad), sample_(sample)
+    {
+    }
+
+    template <typename BitGenT>
+    std::int64_t operator()(BitGenT &bg, const std::size_t i)
+    {
+        return hypergeometric<T>(bg, good_[i], bad_[i], sample_[i]);
     }
 };
 } // namespace dpnp::kernels::rng

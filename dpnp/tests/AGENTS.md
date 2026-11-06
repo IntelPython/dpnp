@@ -20,7 +20,7 @@
 - Error cases run on both libraries: parametrize over `xp` in `[dpnp, numpy]` so both must raise. Gate NumPy-version-dependent behaviour with `numpy_version()` (or `testing.with_requires` in CuPy tests).
 - Compute-follows-data error tests expect `(ValueError, ExecutionPlacementError)`: dpnp raises either, depending on the helper.
 - A new function is added to the matching parametrized lists in `test_sycl_queue.py` and `test_usm_type.py` (`test_1in_1out`, `test_2in_1out`, ...); elementwise ones also to `test_strides.py`.
-- `dpnp.random.Generator` values differ from NumPy's; test the samplers statistically, as the `test_moments` tests do. Restore any NumPy global random state a test changes, even when NumPy raises.
+- `dpnp.random.Generator` values differ from NumPy's; test the samplers statistically, as the `test_moments` tests do. Cover the fp32 path of the discrete samplers with the `discrete_precision` fixture of `test_random_generator.py`, and restore any NumPy global random state a test changes, even when NumPy raises.
 - A test that may exceed the device's maximum allocation size skips on `USMAllocationError` (from `dpnp.exceptions`), not `MemoryError`, which it does not derive from.
 - Markers are strict and only `slow` and `multi_gpu` are registered. Tests that need huge allocations are `@pytest.mark.slow`; they never run in CI by design.
 - Skip lists are for device- or backend-specific failures only; use the full parametrized node ID relative to `dpnp/` (`tests/test_x.py::TestY::test_z[param]`; `conftest.py` matches it exactly, so a `dpnp/tests/...` entry matches nothing), and update or drop the entries of a test you rename or remove.

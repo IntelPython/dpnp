@@ -81,6 +81,10 @@ typedef sycl::event (*sample_fn_ptr_t)(sycl::queue &,
 using sample_dispatch_table_t =
     sample_fn_ptr_t[rng_ns::num_engines][td_ns::num_types];
 
+// Discrete samplers, whose result is always int64, indexed by the engine and
+// by whether they compute in double (1) or in float (0)
+using discrete_dispatch_table_t = sample_fn_ptr_t[rng_ns::num_engines][2];
+
 namespace detail
 {
 template <typename T>
@@ -138,8 +142,11 @@ sycl::event submit_sample(sycl::queue &exec_q,
 } // namespace detail
 
 // Checks the parameters and the result against SamplerT, then submits the
-// kernel, unless there is nothing to sample.
-template <typename EngineTraitsT, typename SamplerT>
+// kernel, unless there is nothing to sample. ComputeT is the type the
+// sampler computes in, which the device must support.
+template <typename EngineTraitsT,
+          typename SamplerT,
+          typename ComputeT = typename SamplerT::result_type>
 sycl::event sample_impl(sycl::queue &exec_q,
                         const rng_ns::EngineState &state,
                         const std::size_t nelems,
@@ -162,6 +169,7 @@ sycl::event sample_impl(sycl::queue &exec_q,
     }
 
     detail::validate_type_for_device<T>(exec_q);
+    detail::validate_type_for_device<ComputeT>(exec_q);
     detail::validate_types_for_device<param_types>(
         exec_q, std::make_index_sequence<n_params>{});
 
@@ -192,6 +200,12 @@ sycl::event sample_impl(sycl::queue &exec_q,
 template <typename T>
 struct RealTypes
     : std::bool_constant<std::is_same_v<T, float> || std::is_same_v<T, double>>
+{
+};
+
+// Types the integer samplers support
+template <typename T>
+struct IntegerTypes : std::bool_constant<std::is_integral_v<T>>
 {
 };
 
@@ -238,10 +252,26 @@ void init_sample_dispatch_table(sample_dispatch_table_t &table)
         table[philox]);
 }
 
+template <template <typename> class SamplerT>
+void init_discrete_dispatch_table(discrete_dispatch_table_t &table)
+{
+    static_assert(rng_ns::num_engines == 1,
+                  "Every engine must have a row in the dispatch table");
+
+    using Philox = rng_ns::Philox4x32x10;
+    constexpr int philox = static_cast<int>(rng_ns::engine_id::philox4x32x10);
+    table[philox][0] = sample_impl<Philox, SamplerT<float>, float>;
+    table[philox][1] = sample_impl<Philox, SamplerT<double>, double>;
+}
+
 // Looks up the sampler of `result`'s type, and throws if there is none
 extern sample_fn_ptr_t lookup_sampler(const sample_dispatch_table_t &table,
                                       const int engine,
                                       const dpnp::tensor::usm_ndarray &result);
+
+extern sample_fn_ptr_t lookup_sampler(const discrete_dispatch_table_t &table,
+                                      const int engine,
+                                      const bool double_precision);
 
 extern std::pair<sycl::event, sycl::event>
     py_sample(sycl::queue &exec_q,
@@ -279,6 +309,36 @@ void def_sampler(py::module_ &m,
     m.def(name, sample_pyapi, doc, py::arg("sycl_queue"), py::arg("engine"),
           py::arg("seed"), py::arg("counter_lo"), py::arg("counter_hi"),
           py::arg("params"), py::arg("result"),
+          py::arg("depends") = py::list());
+}
+
+// As def_sampler, for a discrete sampler, whose Python function also takes
+// whether to compute in double precision
+template <template <typename> class SamplerT>
+void def_discrete_sampler(py::module_ &m,
+                          const char *name,
+                          const char *doc,
+                          discrete_dispatch_table_t &table)
+{
+    init_discrete_dispatch_table<SamplerT>(table);
+
+    auto sample_pyapi = [&table](sycl::queue &exec_q, const int engine,
+                                 const std::vector<std::uint64_t> &seed,
+                                 const std::uint64_t counter_lo,
+                                 const std::uint64_t counter_hi,
+                                 const py::sequence &params,
+                                 const dpnp::tensor::usm_ndarray &result,
+                                 const bool double_precision,
+                                 const std::vector<sycl::event> &depends) {
+        const sample_fn_ptr_t fn =
+            lookup_sampler(table, engine, double_precision);
+        return py_sample(exec_q, seed, counter_lo, counter_hi, params, result,
+                         depends, fn);
+    };
+
+    m.def(name, sample_pyapi, doc, py::arg("sycl_queue"), py::arg("engine"),
+          py::arg("seed"), py::arg("counter_lo"), py::arg("counter_hi"),
+          py::arg("params"), py::arg("result"), py::arg("double_precision"),
           py::arg("depends") = py::list());
 }
 } // namespace dpnp::extensions::rng
