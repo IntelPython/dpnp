@@ -128,7 +128,7 @@ sycl::event submit_sample(sycl::queue &exec_q,
                           const std::size_t nelems,
                           const std::vector<sycl::event> &depends)
 {
-    const std::size_t n_wi = rng_ns::num_work_items<EngineTraitsT>(nelems);
+    const std::size_t n_wi = rng_ns::num_work_items<EngineTraitsT>(nelems, L);
 
     return exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
@@ -182,7 +182,12 @@ sycl::event sample_impl(sycl::queue &exec_q,
 
     T *res = reinterpret_cast<T *>(result);
 
-    if constexpr (rng_ns::can_draw_blocked<EngineTraitsT, SamplerT>) {
+    if constexpr (rng_ns::can_draw_sequential<EngineTraitsT, SamplerT>) {
+        return detail::submit_sample<EngineTraitsT, SamplerT,
+                                     rng_ns::Layout::sequential>(
+            exec_q, state, sampler, res, nelems, depends);
+    }
+    else if constexpr (rng_ns::can_draw_blocked<EngineTraitsT, SamplerT>) {
         // the blocked layout gives the same values, faster on GPUs but
         // slower on CPUs
         if (exec_q.get_device().is_gpu()) {
@@ -242,7 +247,7 @@ void init_sample_dispatch_table(sample_dispatch_table_t &table)
 {
     using ext::common::init_dispatch_vector;
 
-    static_assert(rng_ns::num_engines == 1,
+    static_assert(rng_ns::num_engines == 3,
                   "Every engine must have a row in the dispatch table");
 
     constexpr int philox = static_cast<int>(rng_ns::engine_id::philox4x32x10);
@@ -250,18 +255,40 @@ void init_sample_dispatch_table(sample_dispatch_table_t &table)
                          SampleFactoryFor<rng_ns::Philox4x32x10, SamplerT,
                                           SupportedT>::template type>(
         table[philox]);
+
+    constexpr int pcg = static_cast<int>(rng_ns::engine_id::pcg64dxsm);
+    init_dispatch_vector<sample_fn_ptr_t,
+                         SampleFactoryFor<rng_ns::PCG64DXSM, SamplerT,
+                                          SupportedT>::template type>(
+        table[pcg]);
+
+    constexpr int mrg = static_cast<int>(rng_ns::engine_id::mrg32k3a);
+    init_dispatch_vector<sample_fn_ptr_t,
+                         SampleFactoryFor<rng_ns::MRG32k3a, SamplerT,
+                                          SupportedT>::template type>(
+        table[mrg]);
 }
 
 template <template <typename> class SamplerT>
 void init_discrete_dispatch_table(discrete_dispatch_table_t &table)
 {
-    static_assert(rng_ns::num_engines == 1,
+    static_assert(rng_ns::num_engines == 3,
                   "Every engine must have a row in the dispatch table");
 
     using Philox = rng_ns::Philox4x32x10;
     constexpr int philox = static_cast<int>(rng_ns::engine_id::philox4x32x10);
     table[philox][0] = sample_impl<Philox, SamplerT<float>, float>;
     table[philox][1] = sample_impl<Philox, SamplerT<double>, double>;
+
+    using PCG = rng_ns::PCG64DXSM;
+    constexpr int pcg = static_cast<int>(rng_ns::engine_id::pcg64dxsm);
+    table[pcg][0] = sample_impl<PCG, SamplerT<float>, float>;
+    table[pcg][1] = sample_impl<PCG, SamplerT<double>, double>;
+
+    using MRG = rng_ns::MRG32k3a;
+    constexpr int mrg = static_cast<int>(rng_ns::engine_id::mrg32k3a);
+    table[mrg][0] = sample_impl<MRG, SamplerT<float>, float>;
+    table[mrg][1] = sample_impl<MRG, SamplerT<double>, double>;
 }
 
 // Looks up the sampler of `result`'s type, and throws if there is none

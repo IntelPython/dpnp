@@ -1914,7 +1914,10 @@ def test_generator_permutations(usm_type):
     assert x.usm_type == usm_type
 
 
-@pytest.mark.parametrize("bit_generator", [dpnp.random.Philox4x3210])
+@pytest.mark.parametrize(
+    "bit_generator",
+    [dpnp.random.Philox4x3210, dpnp.random.PCG64DXSM, dpnp.random.MRG32k3a],
+)
 @pytest.mark.parametrize("usm_type", list_of_usm_types)
 def test_bit_generator(bit_generator, usm_type):
     res = bit_generator(1).random_raw(5, usm_type=usm_type)

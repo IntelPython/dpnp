@@ -5,8 +5,10 @@ Random sampling (:mod:`dpnp.random`)
 
 .. hint:: `NumPy API Reference: Random sampling <https://numpy.org/doc/stable/reference/random/index.html>`_
 
-DPNP draws random numbers on the SYCL device, with the counter-based
-Philox4x32x10 generator of the oneMKL device RNG API. It provides the
+DPNP draws random numbers on the SYCL device, by default with the
+counter-based Philox4x32x10 generator of the oneMKL device RNG API, or with
+NumPy's PCG64DXSM generator or the MRG32k3a generator of the oneMKL device
+RNG API. It provides the
 :class:`Generator` API of NumPy, recommended for new code. The legacy
 :class:`RandomState` API and the module-level functions still use the
 host-side oneMKL RNG.
@@ -28,7 +30,10 @@ A generator draws all its samples on one SYCL queue, chosen with the
 Differences from NumPy
 ----------------------
 
-* The streams differ from NumPy's. For a given seed, output size and data
+* The streams differ from NumPy's, except that :class:`PCG64DXSM` gives
+  NumPy's raw values, :meth:`Generator.random`, :meth:`Generator.uniform`
+  and :meth:`Generator.bytes`, and can exchange states with
+  :class:`numpy.random.PCG64DXSM`. For a given seed, output size and data
   type, the raw bits and the uniform floats are the same on every device.
   The other distributions use transcendental functions, which may round
   differently on another device: their samples agree to a few ULP, or
@@ -37,7 +42,8 @@ Differences from NumPy
   precision, as noted below.
 * The values depend on the output size: a draw is not a prefix of a
   larger one, and two draws of ``n`` values differ from one draw of
-  ``2 * n``. Code splitting its draws into chunks gets other values.
+  ``2 * n``, but for the methods :class:`PCG64DXSM` draws in the order of
+  its stream. Code splitting its draws into chunks gets other values.
 * The floating-point distributions take a ``dtype`` keyword, as in CuPy,
   which defaults to the default floating-point type of the device, so on a
   device without double precision the same seed gives other values by
@@ -66,8 +72,9 @@ Differences from NumPy
 * ``hypergeometric`` requires ``ngood`` and ``nbad`` below ``10**9``.
 * :meth:`Generator.shuffle` only accepts a :class:`dpnp.ndarray`, as in
   CuPy.
-* Generators and bit generators cannot be pickled or copied, and the bit
-  generators have no ``advance`` or ``jumped`` method.
+* Generators and bit generators cannot be pickled or copied, and
+  :class:`Philox4x3210` and :class:`MRG32k3a` have no ``advance`` or
+  ``jumped`` method.
 
 Random Generator
 ----------------
@@ -168,6 +175,8 @@ Bit generators
    BitGenerator.spawn
    BitGenerator.state
    Philox4x3210
+   PCG64DXSM
+   MRG32k3a
    SeedSequence
 
 Legacy random generation
