@@ -64,6 +64,7 @@
 #pragma once
 
 #include <cstddef>
+#include <type_traits>
 
 #include <sycl/sycl.hpp>
 
@@ -99,8 +100,17 @@ public:
             return cached_;
         }
 
-        // u1 is on (0, 1], so the logarithm is always finite
-        const T u1 = T(1) - bg.template next_uniform<T>();
+        // u1 is on (0, 1], so the logarithm is always finite. In float, it
+        // takes a whole 32-bit word, at the midpoints of 2**-32 steps, so
+        // that |z| reaches 6.76 rather than the 5.77 of 24 random bits.
+        T u1;
+        if constexpr (std::is_same_v<T, float>) {
+            const float w = static_cast<float>(bg.next_uint32());
+            u1 = (w + 0.5f) * 0x1p-32f;
+        }
+        else {
+            u1 = T(1) - bg.template next_uniform<T>();
+        }
         const T u2 = bg.template next_uniform<T>();
 
         const T r = sycl::sqrt(T(-2) * sycl::log(u1));

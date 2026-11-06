@@ -35,9 +35,11 @@ set(_module_src
     ${CMAKE_CURRENT_SOURCE_DIR}/uniform.cpp
 )
 
+# a launch takes one work-item per 8 elements, which can exceed INT_MAX
 build_dpnp_pybind11_ext(
     ${python_module_name}
     SOURCES ${_module_src}
+    LARGE_RANGES
 )
 
 # oneMKL device RNG API is header-only, so no oneMKL library is linked

@@ -27,7 +27,7 @@
 # *****************************************************************************
 
 """
-The device random number generation API modelled on
+The device random number generation API modeled on
 :class:`numpy.random.Generator`.
 
 Every distribution is sampled on the device by a port of NumPy's algorithm,
@@ -38,8 +38,6 @@ driven by a oneMKL device engine. The values differ from NumPy's.
 # pylint: disable=no-name-in-module
 # pylint: disable=protected-access
 
-import operator
-
 import numpy
 
 import dpnp
@@ -48,7 +46,7 @@ import dpnp.tensor as dpt
 from dpnp.exceptions import ExecutionPlacementError
 from dpnp.tensor import validate_usm_type
 
-from ._bit_generator import BitGenerator, Philox4x3210
+from ._bit_generator import BitGenerator, Philox4x3210, _normalize_size
 
 __all__ = ["Generator", "default_rng"]
 
@@ -72,41 +70,6 @@ def _is_scalar_path(*params):
     return all(numpy.ndim(p) == 0 for p in params)
 
 
-def _size_dim(s):
-    # booleans have __index__, but NumPy does not take them as dimensions
-    if isinstance(s, (bool, numpy.bool_)):
-        raise TypeError("an integer is required")
-    return operator.index(s)
-
-
-def _normalize_size(size):
-    """`size` as a shape, with the checks and the messages of NumPy."""
-
-    if size is None:
-        return None
-    if numpy.ndim(size) == 0:
-        if isinstance(size, (bool, numpy.bool_)) or (
-            getattr(size, "dtype", None) == numpy.bool_
-        ):
-            index = None
-        else:
-            try:
-                index = operator.index(size)
-            except TypeError:
-                index = None
-        if index is None:
-            raise TypeError(
-                "expected a sequence of integers or a single integer, "
-                f"got '{size!r}'"
-            )
-        shape = (index,)
-    else:
-        shape = tuple(_size_dim(s) for s in size)
-    if any(s < 0 for s in shape):
-        raise ValueError("negative dimensions are not allowed")
-    return shape
-
-
 def _check_real(value):
     """
     Raise TypeError, as NumPy does on the path of scalar parameters, unless
@@ -119,37 +82,73 @@ def _check_real(value):
         raise TypeError(f"must be real number, not {t.__name__}")
 
 
-def _uniform_range(low, high, overflow_msg):
+def _check_host_cast(value):
+    """
+    Raise TypeError, as NumPy does, when the host array `value` does not
+    cast safely to float64, such as a complex or an object array.
+
+    """
+
+    if isinstance(value, numpy.ndarray) and not numpy.can_cast(
+        value.dtype, numpy.float64, "safe"
+    ):
+        what = "scalar" if value.ndim == 0 else "array data"
+        raise TypeError(
+            f"Cannot cast {what} from {value.dtype!r} to "
+            "dtype('float64') according to the rule 'safe'"
+        )
+
+
+def _check_device_cast(value, dtype):
+    """
+    Raise TypeError unless the device array `value` casts to `dtype` by the
+    ``"same_kind"`` rule, which lets a float64 array feed a float32 draw.
+
+    """
+
+    if not dpnp.can_cast(value.dtype, dtype, "same_kind"):
+        raise TypeError(
+            f"Cannot cast array data from {value.dtype!r} to {dtype!r} "
+            "according to the rule 'same_kind'"
+        )
+
+
+def _as_host_float(value):
+    _check_host_cast(value)
+    return numpy.asarray(value, dtype=numpy.float64)
+
+
+def _uniform_range(low, high, dtype, overflow_msg):
     """
     ``high - low``, raising OverflowError with `overflow_msg` unless it is
-    finite, or ``None`` when either param is on the device.
+    finite in float64, as NumPy does, and in `dtype`, the sampling type.
+
+    Returns ``None`` when either param is on the device, after checking
+    that the other one is finite.
 
     """
 
-    xp, (flow, fhigh) = _check_arrays((low, high), numpy.float64)
-    if xp is None:
-        return None
-    with numpy.errstate(over="ignore", invalid="ignore"):
-        rng = numpy.subtract(fhigh, flow)
+    host = [p for p in (low, high) if not dpnp.is_supported_array_type(p)]
+    values = [_as_host_float(p) for p in host]
     if _is_scalar_path(low, high):
-        _check_real(low)
-        _check_real(high)
-    if not numpy.all(numpy.isfinite(rng)):
+        for p in host:
+            _check_real(p)
+
+    with numpy.errstate(over="ignore", invalid="ignore"):
+        if len(host) < 2:
+            # the range is unknown, but a host bound that is not finite in
+            # `dtype` makes it overflow
+            if not all(numpy.isfinite(v.astype(dtype)).all() for v in values):
+                raise OverflowError(overflow_msg)
+            return None
+
+        flow, fhigh = values
+        rng = numpy.subtract(fhigh, flow)
+        # the kernel subtracts in `dtype`
+        rng_dtype = numpy.subtract(fhigh.astype(dtype), flow.astype(dtype))
+    if not (numpy.isfinite(rng).all() and numpy.isfinite(rng_dtype).all()):
         raise OverflowError(overflow_msg)
     return rng
-
-
-def _check_arrays(params, dtype=None):
-    """
-    `params` as arrays of `dtype` to check, with the module to check them
-    by, which is ``None`` when some are on the device, as the check would
-    wait for the device.
-
-    """
-
-    if any(dpnp.is_supported_array_type(p) for p in params):
-        return None, [None] * len(params)
-    return numpy, [numpy.asarray(p, dtype) for p in params]
 
 
 def _check_constraint(value, name, cons, scalar):
@@ -164,7 +163,7 @@ def _check_constraint(value, name, cons, scalar):
 
     if dpnp.is_supported_array_type(value):
         return
-    val = numpy.asarray(value, dtype=numpy.float64)
+    val = _as_host_float(value)
     if scalar:
         _check_real(value)
     if cons == _CONS_NONE:
@@ -179,7 +178,7 @@ class Generator:
     """
     A container for the bit generator and the distribution samplers.
 
-    The analogue of :class:`numpy.random.Generator`, drawing all samples on
+    The counterpart of :class:`numpy.random.Generator`, drawing all samples on
     the SYCL queue of its bit generator. Use :func:`dpnp.random.default_rng`
     to create one.
 
@@ -196,7 +195,12 @@ class Generator:
     `size` is ``None`` and the parameters are scalars, rather than a Python
     scalar. The methods take a `usm_type` keyword, and the floating-point
     ones a `dtype` keyword, as in CuPy, whose default is the default
-    floating-point type of the device.
+    floating-point type of the device. With ``usm_type=None``, the output
+    takes the USM type of the array parameters, or ``"device"`` when there
+    are none.
+
+    Pickling, copying, and the ``advance`` and ``jumped`` methods of NumPy's
+    bit generators are not supported.
 
     Parameters on the host (scalars, lists and NumPy arrays) are checked as
     in NumPy. Parameters on the device are not, since that would wait for
@@ -285,13 +289,16 @@ class Generator:
             raise TypeError(f"Unsupported dtype {dtype!r} for {name}")
         return dtype
 
-    def _prepare_out(self, out, size, dtype, name):
-        """Resolve `size` and `dtype` against a user-supplied `out`."""
+    def _prepare_out(self, out, size, dtype, name, *, allow_f=False):
+        """
+        Resolve `size` and `dtype` against a user-supplied `out`.
 
-        if not isinstance(out, dpnp.ndarray):
-            raise TypeError(
-                f"out must be a dpnp.ndarray, got {type(out)} for {name}"
-            )
+        As in NumPy, `out` may be F-contiguous when `allow_f` is set, which
+        the methods without array parameters do.
+
+        """
+
+        dpnp.check_supported_arrays_type(out)
         # as in NumPy, the default dtype applies even when `out` is given
         dtype = self._float_dtype(dtype, name)
         if out.dtype != dtype:
@@ -299,9 +306,19 @@ class Generator:
                 "Supplied output array has the wrong type. "
                 f"Expected {dtype}, got {out.dtype}"
             )
-        if not (out.flags.c_contiguous and out.flags.writable):
+        flags = out.flags
+        if allow_f:
+            if not (
+                (flags.c_contiguous or flags.f_contiguous) and flags.writable
+            ):
+                raise ValueError(
+                    "Supplied output array must be contiguous, writable, "
+                    "aligned, and in machine byte-order."
+                )
+        elif not (flags.c_contiguous and flags.writable):
             raise ValueError(
-                "Supplied output array is not C-contiguous or writable."
+                "Supplied output array must be C-contiguous, writable, "
+                "aligned, and in machine byte-order."
             )
         if size is not None and _normalize_size(size) != out.shape:
             raise ValueError("size must match out.shape when used together")
@@ -327,10 +344,22 @@ class Generator:
         the kernel, `params` by default, of data type `dtype`. Every kernel
         parameter that is an array is broadcast to the output shape.
 
+        With ``usm_type=None``, the output and the temporaries take the USM
+        type of the array parameters and `out`, or ``"device"``.
+
         """
 
         self._check_queues(*params, *(kernel_params or ()), out)
         queue = self.sycl_queue
+        if usm_type is None:
+            usm_types = [
+                x.usm_type
+                for x in (*params, *(kernel_params or ()), out)
+                if dpnp.is_supported_array_type(x)
+            ]
+            usm_type = (
+                dpt.get_coerced_usm_type(usm_types) if usm_types else "device"
+            )
 
         param_shape = numpy.broadcast_shapes(
             *(numpy.shape(p) if _is_array(p) else () for p in params)
@@ -354,13 +383,18 @@ class Generator:
 
         def _to_kernel_param(p):
             if _is_array(p):
-                if not dpnp.is_supported_array_type(p):
+                if dpnp.is_supported_array_type(p):
+                    _check_device_cast(p, dtype)
+                else:
+                    _check_host_cast(p)
                     # NumPy converts None to NaN, dpnp.asarray does not
                     p = numpy.asarray(p, dtype=dtype)
-                p = dpnp.asarray(p, dtype=dtype, sycl_queue=queue)
+                p = dpnp.asarray(
+                    p, dtype=dtype, usm_type=usm_type, sycl_queue=queue
+                )
                 return dpnp.ascontiguousarray(dpnp.broadcast_to(p, shape))
             # as in NumPy, None is NaN along with array parameters
-            return float(numpy.asarray(p, dtype=numpy.float64))
+            return float(_as_host_float(p))
 
         kernel_params = tuple(_to_kernel_param(p) for p in kernel_params)
 
@@ -368,7 +402,16 @@ class Generator:
             out = dpnp.empty(
                 shape, dtype=dtype, usm_type=usm_type, sycl_queue=queue
             )
-        return self._bit_generator._fill(kernel, kernel_params, out)
+            target = out
+        elif out.flags.c_contiguous:
+            target = out
+        else:
+            # an F-contiguous `out` of a method without array parameters is
+            # filled in memory order, through its C-contiguous transpose
+            usm_out = dpnp.get_usm_ndarray(out)
+            target = dpt.permute_dims(usm_out, tuple(range(out.ndim))[::-1])
+        self._bit_generator._fill(kernel, kernel_params, target)
+        return out
 
     def _float_sample(
         self,
@@ -382,9 +425,11 @@ class Generator:
         out=None,
         kernel_params=None,
     ):
-        validate_usm_type(usm_type, allow_none=False)
+        validate_usm_type(usm_type, allow_none=True)
         if out is not None:
-            size, dtype = self._prepare_out(out, size, dtype, name)
+            size, dtype = self._prepare_out(
+                out, size, dtype, name, allow_f=not params
+            )
         else:
             dtype = self._float_dtype(dtype, name)
         return self._sample(
@@ -413,16 +458,53 @@ class Generator:
             kernel, values, size, dtype, usm_type, name, out=out
         )
 
-    def random(self, size=None, dtype=None, out=None, *, usm_type="device"):
+    def random(self, size=None, dtype=None, out=None, *, usm_type=None):
         """
         Return random floats in the half-open interval [0.0, 1.0).
 
         For full documentation refer to :obj:`numpy.random.Generator.random`.
 
+        Parameters
+        ----------
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, a zero-dimensional array is returned.
+
+            Default: ``None``.
+        dtype : {None, dtype}, optional
+            The data type of the output, :obj:`dpnp.float32` or
+            :obj:`dpnp.float64`.
+
+            Default: ``None``, which means the default floating-point type of
+            the device.
+        out : {None, dpnp.ndarray, usm_ndarray}, optional
+            A C- or F-contiguous array to fill, of the data type `dtype` and
+            on the SYCL queue of the generator. If `size` is given as well,
+            it must be the shape of `out`.
+
+            Default: ``None``.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array. Ignored
+            when `out` is given.
+
+            Default: ``None``, which means ``"device"``.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples, or `out` when it is given.
+
         Limitations
         -----------
-        `dtype` defaults to the default floating-point type of the device.
-        `usm_type` sets the type of USM allocation of the output.
+        `dtype` defaults to the default floating-point type of the device, and
+        `usm_type` is not in NumPy's signature.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> rng = np.random.default_rng(42)
+        >>> x = rng.random((2, 3))
+        >>> x.shape, bool(((0 <= x) & (x < 1)).all())
+        ((2, 3), True)
 
         """
         return self._float_sample(
@@ -437,24 +519,69 @@ class Generator:
         )
 
     def uniform(
-        self, low=0.0, high=1.0, size=None, dtype=None, *, usm_type="device"
+        self, low=0.0, high=1.0, size=None, dtype=None, *, usm_type=None
     ):
         """
         Draw samples from a uniform distribution over [low, high).
 
         For full documentation refer to :obj:`numpy.random.Generator.uniform`.
 
+        Parameters
+        ----------
+        low : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \
+                optional
+            The lower bound of the output interval.
+
+            Default: ``0.0``.
+        high : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \
+                optional
+            The upper bound of the output interval.
+
+            Default: ``1.0``.
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, the broadcast shape of `low` and `high`.
+
+            Default: ``None``.
+        dtype : {None, dtype}, optional
+            The data type of the output, :obj:`dpnp.float32` or
+            :obj:`dpnp.float64`.
+
+            Default: ``None``, which means the default floating-point type of
+            the device.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+            Default: ``None``, which means the USM type of the array
+            parameters, or ``"device"`` when there are none.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples.
+
         Limitations
         -----------
-        `dtype` and `usm_type` are not in NumPy's signature.
+        `dtype` and `usm_type` are not in NumPy's signature. A `high - low`
+        range that overflows `dtype` raises :class:`OverflowError`, as it
+        does in float64.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> rng = np.random.default_rng(42)
+        >>> x = rng.uniform(-1, 0, 1000)
+        >>> bool(((-1 <= x) & (x < 0)).all())
+        True
 
         """
 
         self._check_queues(low, high)
         scalar = _is_scalar_path(low, high)
+        dtype = self._float_dtype(dtype, "uniform")
         rng = _uniform_range(
             low,
             high,
+            dtype,
             (
                 "high - low range exceeds valid bounds"
                 if scalar
@@ -473,7 +600,7 @@ class Generator:
         )
 
     def standard_normal(
-        self, size=None, dtype=None, out=None, *, usm_type="device"
+        self, size=None, dtype=None, out=None, *, usm_type=None
     ):
         """
         Draw samples from a standard normal distribution.
@@ -481,9 +608,48 @@ class Generator:
         For full documentation refer to
         :obj:`numpy.random.Generator.standard_normal`.
 
+        Parameters
+        ----------
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, a zero-dimensional array is returned.
+
+            Default: ``None``.
+        dtype : {None, dtype}, optional
+            The data type of the output, :obj:`dpnp.float32` or
+            :obj:`dpnp.float64`.
+
+            Default: ``None``, which means the default floating-point type of
+            the device.
+        out : {None, dpnp.ndarray, usm_ndarray}, optional
+            A C- or F-contiguous array to fill, of the data type `dtype` and
+            on the SYCL queue of the generator. If `size` is given as well,
+            it must be the shape of `out`.
+
+            Default: ``None``.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array. Ignored
+            when `out` is given.
+
+            Default: ``None``, which means ``"device"``.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples, or `out` when it is given.
+
         Limitations
         -----------
-        The Box-Muller transform is used rather than NumPy's ziggurat.
+        `dtype` and `usm_type` are not in NumPy's signature. The Box-Muller
+        transform is used rather than NumPy's ziggurat, so the magnitude of
+        the samples is bounded: by about 6.8 in float32, and 8.6 in float64.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> rng = np.random.default_rng(42)
+        >>> x = rng.standard_normal(10**6)
+        >>> bool(abs(x.mean()) < 0.01), bool(abs(x.std() - 1) < 0.01)
+        (True, True)
 
         """
         return self._float_sample(
@@ -498,16 +664,59 @@ class Generator:
         )
 
     def normal(
-        self, loc=0.0, scale=1.0, size=None, dtype=None, *, usm_type="device"
+        self, loc=0.0, scale=1.0, size=None, dtype=None, *, usm_type=None
     ):
         """
         Draw samples from a normal (Gaussian) distribution.
 
         For full documentation refer to :obj:`numpy.random.Generator.normal`.
 
+        Parameters
+        ----------
+        loc : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \
+                optional
+            The mean of the distribution.
+
+            Default: ``0.0``.
+        scale : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \
+                optional
+            The standard deviation of the distribution, non-negative.
+
+            Default: ``1.0``.
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, the broadcast shape of `loc` and `scale`.
+
+            Default: ``None``.
+        dtype : {None, dtype}, optional
+            The data type of the output, :obj:`dpnp.float32` or
+            :obj:`dpnp.float64`.
+
+            Default: ``None``, which means the default floating-point type of
+            the device.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+            Default: ``None``, which means the USM type of the array
+            parameters, or ``"device"`` when there are none.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples.
+
         Limitations
         -----------
-        `dtype` and `usm_type` are not in NumPy's signature.
+        `dtype` and `usm_type` are not in NumPy's signature. The samples are
+        drawn as in :meth:`standard_normal`.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> rng = np.random.default_rng(42)
+        >>> x = rng.normal(np.array([0.0, 10.0]), 1.0, size=(10**5, 2))
+        >>> m = x.mean(axis=0)
+        >>> bool(abs(m[0]) < 0.05), bool(abs(m[1] - 10) < 0.05)
+        (True, True)
 
         """
         return self._cont(
@@ -563,7 +772,7 @@ def default_rng(seed=None, *, device=None, sycl_queue=None):
     >>> import dpnp as np
     >>> rng = np.random.default_rng(12345)
     >>> x = rng.random(3)
-    >>> x.shape, x.device == rng.bit_generator.sycl_queue.sycl_device
+    >>> x.shape, x.device.sycl_device == rng.sycl_device
     ((3,), True)
 
     """
