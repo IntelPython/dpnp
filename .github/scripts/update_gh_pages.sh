@@ -71,16 +71,7 @@ mode=${1:-}
 [[ -n "${mode}" ]] || usage
 shift
 
-work=$(mktemp -d)
-trap 'rm -rf "${work}"' EXIT
-export GIT_DIR="${work}/repo.git"
-export GIT_WORK_TREE="${work}/empty"
-mkdir "${GIT_WORK_TREE}"
-
-# Blobless: commits and trees are enough to build the new commit
-git clone -q --bare --filter=blob:none --depth=1 --single-branch \
-    --branch "${branch}" "${remote}" "${GIT_DIR}"
-
+# Arguments are checked before the clone
 case "${mode}" in
     publish)
         [[ $# -eq 3 ]] || usage
@@ -101,28 +92,56 @@ case "${mode}" in
         ;;
     prune)
         [[ $# -eq 0 ]] || usage
-        dirs=()
-        while IFS= read -r dir; do
-            num=${dir#pull/}
-            [[ "${num}" =~ ^[0-9]+$ ]] || continue
-            # A failed lookup keeps the preview
-            state=$(gh pr view "${num}" --repo "${GITHUB_REPOSITORY}" --json state --jq .state) || continue
-            if [[ "${state}" == "CLOSED" || "${state}" == "MERGED" ]]; then
-                dirs+=("${dir}")
-            fi
-        done < <(git ls-tree -d --name-only "${branch}:pull" | sed 's|^|pull/|')
-        if [[ ${#dirs[@]} -eq 0 ]]; then
-            echo "No docs of closed pull requests to remove"
-            exit 0
-        fi
-        printf 'Removing %s\n' "${dirs[@]}"
-        message="Removing docs for ${#dirs[@]} closed pull requests"
-        mode=remove
         ;;
     *)
         usage
         ;;
 esac
+
+work=$(mktemp -d)
+trap 'rm -rf "${work}"' EXIT
+export GIT_DIR="${work}/repo.git"
+export GIT_WORK_TREE="${work}/empty"
+mkdir "${GIT_WORK_TREE}"
+
+# Blobless: commits and trees are enough to build the new commit
+git clone -q --bare --filter=blob:none --depth=1 --single-branch \
+    --branch "${branch}" "${remote}" "${GIT_DIR}"
+
+if [[ "${mode}" == "prune" ]]; then
+    if ! git cat-file -e "refs/heads/${branch}:pull" 2>/dev/null; then
+        echo "No pull/ directory on ${branch}"
+        exit 0
+    fi
+    pulls=$(git ls-tree -d --name-only "refs/heads/${branch}:pull")
+    dirs=()
+    lookups=0
+    failed=0
+    while IFS= read -r num; do
+        [[ "${num}" =~ ^[0-9]+$ ]] || continue
+        lookups=$((lookups + 1))
+        # A failed lookup keeps the preview
+        if ! state=$(gh pr view "${num}" --repo "${GITHUB_REPOSITORY}" --json state --jq .state); then
+            echo "::warning::Failed to look up pull request ${num}, keeping pull/${num}"
+            failed=$((failed + 1))
+            continue
+        fi
+        if [[ "${state}" == "CLOSED" || "${state}" == "MERGED" ]]; then
+            dirs+=("pull/${num}")
+        fi
+    done <<< "${pulls}"
+    if [[ ${failed} -gt 0 && ${failed} -eq ${lookups} ]]; then
+        echo "::error::Failed to look up all ${lookups} pull requests"
+        exit 1
+    fi
+    if [[ ${#dirs[@]} -eq 0 ]]; then
+        echo "No docs of closed pull requests to remove"
+        exit 0
+    fi
+    printf 'Removing %s\n' "${dirs[@]}"
+    message="Removing docs for ${#dirs[@]} closed pull requests"
+    mode=remove
+fi
 
 # Pathspecs below are relative to the site root
 cd "${GIT_WORK_TREE}"
@@ -171,6 +190,12 @@ for ((attempt = 1; ; attempt++)); do
     if git push -q --no-thin origin "${commit}:refs/heads/${branch}"; then
         echo "Pushed ${commit} to ${branch} (attempt ${attempt})"
         exit 0
+    fi
+    # Only a concurrent writer moves the tip; a failed ls-remote is retried
+    tip=$(git ls-remote origin "refs/heads/${branch}" | cut -f1) || tip=""
+    if [[ "${tip}" == "${base}" ]]; then
+        echo "::error::Failed to push to ${branch}, not retrying: its tip did not move"
+        exit 1
     fi
     if [[ ${attempt} -ge ${max_attempts} ]]; then
         echo "::error::Failed to push to ${branch} after ${attempt} attempts"
