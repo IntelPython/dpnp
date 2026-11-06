@@ -1,0 +1,14 @@
+
+:orphan:
+
+
+dpnp.random.BitGenerator.sycl\_device
+=====================================
+
+.. currentmodule:: dpnp.random
+
+
+property
+
+
+.. autoproperty:: BitGenerator.sycl_device

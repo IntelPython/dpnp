@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.random.SeedSequence.state
+==============================
+
+.. currentmodule:: dpnp.random
+
+attribute
+
+.. autoattribute:: SeedSequence.state

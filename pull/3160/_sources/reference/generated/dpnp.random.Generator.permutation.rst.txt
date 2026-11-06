@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.random.Generator.permutation
+=================================
+
+.. currentmodule:: dpnp.random
+
+method
+
+.. automethod:: Generator.permutation

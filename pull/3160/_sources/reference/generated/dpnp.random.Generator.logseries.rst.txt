@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.random.Generator.logseries
+===============================
+
+.. currentmodule:: dpnp.random
+
+method
+
+.. automethod:: Generator.logseries

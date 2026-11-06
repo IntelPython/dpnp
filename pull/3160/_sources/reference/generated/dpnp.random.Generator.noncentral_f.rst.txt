@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.random.Generator.noncentral\_f
+===================================
+
+.. currentmodule:: dpnp.random
+
+method
+
+.. automethod:: Generator.noncentral_f

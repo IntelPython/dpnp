@@ -1,0 +1,10 @@
+﻿
+
+dpnp.fix
+========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: fix
