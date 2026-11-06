@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="dpnp.random.Generator.pareto" href="dpnp.random.Generator.pareto.html"><link rel="prev" title="dpnp.random.Generator.noncentral_f" href="dpnp.random.Generator.noncentral_f.html">
 
     <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
-        <title>dpnp.random.Generator.normal - Data Parallel Extension for NumPy (dpnp) 0.22.0dev0 documentation</title>
+        <title>dpnp.random.Generator.normal - Data Parallel Extension for NumPy (dpnp) 0.22.0dev1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -173,7 +173,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.22.0dev0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.22.0dev1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -194,7 +194,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.22.0dev0 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.22.0dev1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -875,6 +875,8 @@
 <li class="toctree-l3 current has-children"><a class="reference internal" href="../random.html">Random sampling (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a><input aria-label="Toggle navigation of Random sampling (dpnp.random)" checked="" class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.default_rng.html">dpnp.random.default_rng</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.html">dpnp.random.Generator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.bit_generator.html">dpnp.random.Generator.bit_generator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.spawn.html">dpnp.random.Generator.spawn</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.integers.html">dpnp.random.Generator.integers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.random.html">dpnp.random.Generator.random</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.choice.html">dpnp.random.Generator.choice</a></li>
@@ -919,6 +921,9 @@
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.weibull.html">dpnp.random.Generator.weibull</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.zipf.html">dpnp.random.Generator.zipf</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.html">dpnp.random.BitGenerator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.random_raw.html">dpnp.random.BitGenerator.random_raw</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.spawn.html">dpnp.random.BitGenerator.spawn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.state.html">dpnp.random.BitGenerator.state</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Philox4x3210.html">dpnp.random.Philox4x3210</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.PCG64DXSM.html">dpnp.random.PCG64DXSM</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.MRG32k3a.html">dpnp.random.MRG32k3a</a></li>
@@ -1124,11 +1129,51 @@
 <p>method</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dpnp.random.Generator.normal">
-<span class="sig-prename descclassname"><span class="pre">Generator.</span></span><span class="sig-name descname"><span class="pre">normal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'device'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/_generator.html#Generator.normal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.random.Generator.normal" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Generator.</span></span><span class="sig-name descname"><span class="pre">normal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/_generator.html#Generator.normal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.random.Generator.normal" title="Link to this definition">¶</a></dt>
 <dd><p>Draw samples from a normal (Gaussian) distribution.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.normal.html#numpy.random.Generator.normal" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator.normal</span></code></a>.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>loc</strong><span class="classifier">{float, array_like of floats, dpnp.ndarray, usm_ndarray}, optional</span></dt><dd><p>The mean of the distribution.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">0.0</span></code>.</p>
+</dd>
+<dt><strong>scale</strong><span class="classifier">{float, array_like of floats, dpnp.ndarray, usm_ndarray}, optional</span></dt><dd><p>The standard deviation of the distribution, non-negative.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">1.0</span></code>.</p>
+</dd>
+<dt><strong>size</strong><span class="classifier">{None, int, tuple of ints}, optional</span></dt><dd><p>Output shape. With <code class="docutils literal notranslate"><span class="pre">None</span></code>, the broadcast shape of <cite>loc</cite> and <cite>scale</cite>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt><strong>dtype</strong><span class="classifier">{None, dtype}, optional</span></dt><dd><p>The data type of the output, <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float32</span></code> or
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float64</span></code>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>, which means the default floating-point type of
+the device.</p>
+</dd>
+<dt><strong>usm_type</strong><span class="classifier">{None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span></dt><dd><p>The type of SYCL USM allocation for the output array.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>, which means the USM type of the array
+parameters, or <code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code> when there are none.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>out</strong><span class="classifier">dpnp.ndarray</span></dt><dd><p>The samples.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Limitations</p>
-<p><cite>dtype</cite> and <cite>usm_type</cite> are not in NumPy's signature.</p>
+<p><cite>dtype</cite> and <cite>usm_type</cite> are not in NumPy's signature. The samples are
+drawn as in <a class="reference internal" href="dpnp.random.standard_normal.html#dpnp.random.standard_normal" title="dpnp.random.standard_normal"><code class="xref py py-meth docutils literal notranslate"><span class="pre">standard_normal()</span></code></a>.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">]),</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">bool</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mf">0.05</span><span class="p">),</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">10</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.05</span><span class="p">)</span>
+<span class="go">(True, True)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>
@@ -1201,7 +1246,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=aa23f226"></script>
+</div><script src="../../_static/documentation_options.js?v=0e5b763f"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
