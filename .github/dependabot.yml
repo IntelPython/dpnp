@@ -13,7 +13,6 @@ updates:
       github-actions:
         patterns: ["*"]
 
-  # Note: only "==" pins are bumped; ">=" floors and dev pre-releases are not
   - package-ecosystem: "pip"
     directory: "/environments"
     schedule:
@@ -26,6 +25,9 @@ updates:
     groups:
       pip:
         patterns: ["*"]
+    ignore:
+      # Bumped by hand: the floor tracks the dpctl dev series (X.Y.0dev0)
+      - dependency-name: "dpctl"
 
   # Handles plain conda-forge "pkg=X.Y.Z" pins and pip: sections
   - package-ecosystem: "conda"
