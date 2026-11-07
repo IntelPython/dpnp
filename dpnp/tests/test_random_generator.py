@@ -453,7 +453,7 @@ class TestPCG64DXSM:
         rng, ref_rng = Generator(bg), numpy.random.Generator(ref)
         for _ in range(3):
             res = rng.random(n, dtype=dtype)
-            assert_array_equal(dpnp.asnumpy(res), ref_rng.random(n, dtype))
+            assert_array_equal(res, ref_rng.random(n, dtype))
             assert bg.state == ref.state
 
     @pytest.mark.skipif(not has_support_aspect64(), reason="fp64 required")
@@ -461,13 +461,11 @@ class TestPCG64DXSM:
         bg, ref = self._pair(4)
         rng, ref_rng = Generator(bg), numpy.random.Generator(ref)
         res = rng.uniform(-3.0, 7.5, 1001)
-        assert_array_equal(dpnp.asnumpy(res), ref_rng.uniform(-3.0, 7.5, 1001))
+        assert_array_equal(res, ref_rng.uniform(-3.0, 7.5, 1001))
 
         low = numpy.arange(10.0)
         res = rng.uniform(dpnp.asarray(low), 20.0, (3, 10))
-        assert_array_equal(
-            dpnp.asnumpy(res), ref_rng.uniform(low, 20.0, (3, 10))
-        )
+        assert_array_equal(res, ref_rng.uniform(low, 20.0, (3, 10)))
         assert bg.state == ref.state
 
     def test_bytes(self):
@@ -515,7 +513,7 @@ class TestPCG64DXSM:
             ref.state = state
             ref_rng = numpy.random.Generator(ref.jumped(w))
             exp[w::n_wi] = ref_rng.integers(0, 1000, ITEMS_PER_WORK_ITEM)
-        assert_array_equal(dpnp.asnumpy(res), exp)
+        assert_array_equal(res, exp)
 
         ref.state = state
         jumped = ref.jumped(n_wi).state
@@ -581,7 +579,7 @@ class TestMRG32k3a:
     def test_known_answer(self, n, s1, s2):
         res = self._with_state(s1, s2).random_raw(n)
         assert res.dtype == dpnp.uint64
-        assert_array_equal(dpnp.asnumpy(res), _mrg_reference_raw(s1, s2, n))
+        assert_array_equal(res, _mrg_reference_raw(s1, s2, n))
 
     def test_state_advance(self):
         bg = MRG32k3a(1234)
