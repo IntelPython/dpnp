@@ -877,14 +877,20 @@
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.html">dpnp.random.Generator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.bit_generator.html">dpnp.random.Generator.bit_generator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.spawn.html">dpnp.random.Generator.spawn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.sycl_device.html">dpnp.random.Generator.sycl_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.sycl_queue.html">dpnp.random.Generator.sycl_queue</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.random.html">dpnp.random.Generator.random</a></li>
 <li class="toctree-l4 current current-page"><a class="current reference internal" href="#">dpnp.random.Generator.normal</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.standard_normal.html">dpnp.random.Generator.standard_normal</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.uniform.html">dpnp.random.Generator.uniform</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.html">dpnp.random.BitGenerator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.lock.html">dpnp.random.BitGenerator.lock</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.random_raw.html">dpnp.random.BitGenerator.random_raw</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.seed_seq.html">dpnp.random.BitGenerator.seed_seq</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.spawn.html">dpnp.random.BitGenerator.spawn</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.state.html">dpnp.random.BitGenerator.state</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.sycl_device.html">dpnp.random.BitGenerator.sycl_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.sycl_queue.html">dpnp.random.BitGenerator.sycl_queue</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Philox4x3210.html">dpnp.random.Philox4x3210</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.SeedSequence.html">dpnp.random.SeedSequence</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.rand.html">dpnp.random.rand</a></li>
@@ -1096,7 +1102,8 @@
 <dt><strong>scale</strong><span class="classifier">{float, array_like of floats, dpnp.ndarray, usm_ndarray}, optional</span></dt><dd><p>The standard deviation of the distribution, non-negative.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">1.0</span></code>.</p>
 </dd>
-<dt><strong>size</strong><span class="classifier">{None, int, tuple of ints}, optional</span></dt><dd><p>Output shape. With <code class="docutils literal notranslate"><span class="pre">None</span></code>, the broadcast shape of <cite>loc</cite> and <cite>scale</cite>.</p>
+<dt><strong>size</strong><span class="classifier">{None, int, tuple of ints}, optional</span></dt><dd><p>Output shape. With <code class="docutils literal notranslate"><span class="pre">None</span></code>, the broadcast shape of <cite>loc</cite>
+and <cite>scale</cite>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </dd>
 <dt><strong>dtype</strong><span class="classifier">{None, dtype}, optional</span></dt><dd><p>The data type of the output, <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float32</span></code> or

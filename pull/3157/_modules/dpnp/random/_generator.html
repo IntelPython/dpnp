@@ -876,14 +876,20 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.html">dpnp.random.Generator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.bit_generator.html">dpnp.random.Generator.bit_generator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.spawn.html">dpnp.random.Generator.spawn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.sycl_device.html">dpnp.random.Generator.sycl_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.sycl_queue.html">dpnp.random.Generator.sycl_queue</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.random.html">dpnp.random.Generator.random</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.normal.html">dpnp.random.Generator.normal</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.standard_normal.html">dpnp.random.Generator.standard_normal</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.uniform.html">dpnp.random.Generator.uniform</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.BitGenerator.html">dpnp.random.BitGenerator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.BitGenerator.lock.html">dpnp.random.BitGenerator.lock</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.BitGenerator.random_raw.html">dpnp.random.BitGenerator.random_raw</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.BitGenerator.seed_seq.html">dpnp.random.BitGenerator.seed_seq</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.BitGenerator.spawn.html">dpnp.random.BitGenerator.spawn</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.BitGenerator.state.html">dpnp.random.BitGenerator.state</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.BitGenerator.sycl_device.html">dpnp.random.BitGenerator.sycl_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.BitGenerator.sycl_queue.html">dpnp.random.BitGenerator.sycl_queue</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Philox4x3210.html">dpnp.random.Philox4x3210</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.SeedSequence.html">dpnp.random.SeedSequence</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.rand.html">dpnp.random.rand</a></li>
@@ -1276,8 +1282,8 @@
 <span class="sd">    takes the USM type of the array parameters, or ``"device"`` when there</span>
 <span class="sd">    are none.</span>
 
-<span class="sd">    Pickling, copying, and the ``advance`` and ``jumped`` methods of NumPy's</span>
-<span class="sd">    bit generators are not supported.</span>
+<span class="sd">    Pickling, deep copying, and the ``advance`` and ``jumped`` methods of</span>
+<span class="sd">    NumPy's bit generators are not supported.</span>
 
 <span class="sd">    Parameters on the host (scalars, lists and NumPy arrays) are checked as</span>
 <span class="sd">    in NumPy. Parameters on the device are not, since that would wait for</span>
@@ -1353,6 +1359,16 @@
 <span class="sd">        Create new independent child generators on the same SYCL queue.</span>
 
 <span class="sd">        For full documentation refer to :obj:`numpy.random.Generator.spawn`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        n_children : int</span>
+<span class="sd">            The number of children to create.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : list of Generator</span>
+<span class="sd">            The child generators.</span>
 
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="p">[</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="n">bg</span><span class="p">)</span> <span class="k">for</span> <span class="n">bg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bit_generator</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="n">n_children</span><span class="p">)]</span></div>
@@ -1624,7 +1640,8 @@
 
 <span class="sd">            Default: ``1.0``.</span>
 <span class="sd">        size : {None, int, tuple of ints}, optional</span>
-<span class="sd">            Output shape. With ``None``, the broadcast shape of `low` and `high`.</span>
+<span class="sd">            Output shape. With ``None``, the broadcast shape of `low`</span>
+<span class="sd">            and `high`.</span>
 
 <span class="sd">            Default: ``None``.</span>
 <span class="sd">        dtype : {None, dtype}, optional</span>
@@ -1775,7 +1792,8 @@
 
 <span class="sd">            Default: ``1.0``.</span>
 <span class="sd">        size : {None, int, tuple of ints}, optional</span>
-<span class="sd">            Output shape. With ``None``, the broadcast shape of `loc` and `scale`.</span>
+<span class="sd">            Output shape. With ``None``, the broadcast shape of `loc`</span>
+<span class="sd">            and `scale`.</span>
 
 <span class="sd">            Default: ``None``.</span>
 <span class="sd">        dtype : {None, dtype}, optional</span>
@@ -1842,13 +1860,21 @@
 
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
-<span class="sd">        An array API concept of device where the samples are drawn and</span>
-<span class="sd">        allocated. Ignored when `seed` is a bit generator or a generator.</span>
+<span class="sd">        An array API concept of device where the output array is created.</span>
+<span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
+<span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
+<span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
+<span class="sd">        :attr:`dpnp.ndarray.device`. Ignored when `seed` is a bit generator</span>
+<span class="sd">        or a generator.</span>
 
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
-<span class="sd">        A SYCL queue to draw samples on. Ignored when `seed` is a bit</span>
-<span class="sd">        generator or a generator.</span>
+<span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
+<span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
+<span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
+<span class="sd">        a default queue. Ignored when `seed` is a bit generator or a</span>
+<span class="sd">        generator.</span>
 
 <span class="sd">        Default: ``None``.</span>
 
