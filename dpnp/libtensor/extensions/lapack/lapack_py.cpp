@@ -44,6 +44,7 @@
 #include "linalg_exceptions.hpp"
 #include "orgqr.hpp"
 #include "potrf.hpp"
+#include "potrs.hpp"
 #include "syevd.hpp"
 #include "syevd_batch.hpp"
 #include "ungqr.hpp"
@@ -67,6 +68,7 @@ void init_dispatch_vectors(void)
     lapack_ext::init_orgqr_dispatch_vector();
     lapack_ext::init_potrf_batch_dispatch_vector();
     lapack_ext::init_potrf_dispatch_vector();
+    lapack_ext::init_potrs_dispatch_vector();
     lapack_ext::init_ungqr_batch_dispatch_vector();
     lapack_ext::init_ungqr_dispatch_vector();
 }
@@ -213,6 +215,14 @@ PYBIND11_MODULE(_lapack_impl, m, py::mod_gil_not_used())
           py::arg("sycl_queue"), py::arg("a_array"), py::arg("upper_lower"),
           py::arg("n"), py::arg("stride_a"), py::arg("batch_size"),
           py::arg("depends") = py::list());
+
+    m.def("_potrs", &lapack_ext::potrs,
+          "Call `potrs` from OneMKL LAPACK library to return "
+          "the solutions of linear equations with a Cholesky-factored "
+          "symmetric (Hermitian) positive-definite coefficient matrix, "
+          "with multiple right-hand sides",
+          py::arg("sycl_queue"), py::arg("a_array"), py::arg("b_array"),
+          py::arg("upper_lower"), py::arg("depends") = py::list());
 
     m.def("_ungqr_batch", &lapack_ext::ungqr_batch,
           "Call `_ungqr_batch` from OneMKL LAPACK library to return "
