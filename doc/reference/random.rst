@@ -192,6 +192,8 @@ Bit generators
    Philox4x3210
    Philox4x3210.state
    PCG64DXSM
+   PCG64DXSM.advance
+   PCG64DXSM.jumped
    PCG64DXSM.state
    MRG32k3a
    MRG32k3a.state
