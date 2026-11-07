@@ -926,10 +926,30 @@ def test_random_state(func, args, kwargs, device, usm_type):
 
 
 _generator_methods = [
+    pytest.param("beta", [0.5, 2.0], {"size": (3, 4)}),
+    pytest.param("chisquare", [3.0], {"size": (3, 4)}),
+    pytest.param("exponential", [2.0], {"size": (3, 4)}),
+    pytest.param("f", [2.0, 3.0], {"size": (3, 4)}),
+    pytest.param("gamma", [2.0], {"size": (3, 4)}),
+    pytest.param("gumbel", [], {"size": (3, 4)}),
+    pytest.param("laplace", [], {"size": (3, 4)}),
+    pytest.param("logistic", [], {"size": (3, 4)}),
+    pytest.param("lognormal", [], {"size": (3, 4)}),
     pytest.param("normal", [], {"size": (3, 4)}),
+    pytest.param("pareto", [2.0], {"size": (3, 4)}),
+    pytest.param("power", [2.0], {"size": (3, 4)}),
     pytest.param("random", [], {"size": (3, 4)}),
+    pytest.param("rayleigh", [], {"size": (3, 4)}),
+    pytest.param("standard_cauchy", [], {"size": (3, 4)}),
+    pytest.param("standard_exponential", [], {"size": (3, 4)}),
+    pytest.param("standard_gamma", [2.0], {"size": (3, 4)}),
     pytest.param("standard_normal", [], {"size": (3, 4)}),
+    pytest.param("standard_t", [3.0], {"size": (3, 4)}),
+    pytest.param("triangular", [0.0, 1.0, 3.0], {"size": (3, 4)}),
     pytest.param("uniform", [], {"size": (3, 4)}),
+    pytest.param("vonmises", [0.0, 1.0], {"size": (3, 4)}),
+    pytest.param("wald", [1.0, 2.0], {"size": (3, 4)}),
+    pytest.param("weibull", [2.0], {"size": (3, 4)}),
 ]
 
 
@@ -964,6 +984,8 @@ def test_bit_generator(bit_generator, device):
 # queue than the generator's
 _diff_queue_methods = [
     pytest.param("normal", ["f"]),
+    pytest.param("standard_gamma", ["f"]),
+    pytest.param("triangular", [0.0, "f", 5.0]),
     pytest.param("uniform", ["f", 5.0]),
 ]
 

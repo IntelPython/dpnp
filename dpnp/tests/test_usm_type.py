@@ -1839,6 +1839,8 @@ class TestLinAlgebra:
     [
         pytest.param("normal", [[1.0, 2.0]], {}),
         pytest.param("random", [3], {}),
+        pytest.param("standard_gamma", [2.0], {"size": 3}),
+        pytest.param("triangular", [0.0, 1.0, 3.0], {"size": 3}),
         pytest.param("uniform", [], {"size": 3}),
     ],
 )

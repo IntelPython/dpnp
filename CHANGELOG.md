@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added support for boolean input in `dpnp.positive` and the `+` operator of `dpnp.ndarray` [#3128](https://github.com/IntelPython/dpnp/pull/3128)
 * Added `dpnp.top_k` to return the `k` largest or smallest elements and their indices along an axis, with a `sorted` keyword to return them in sorted order [#3133](https://github.com/IntelPython/dpnp/pull/3133)
 * Added the `dpnp.random.Generator` API with `default_rng`, `BitGenerator`, `SeedSequence` and the `Philox4x3210` bit generator, sampling on the device with the oneMKL device RNG API [#3157](https://github.com/IntelPython/dpnp/pull/3157)
+* Added the continuous distributions of `numpy.random.Generator`, such as `gamma`, `beta` and `vonmises`, to `dpnp.random.Generator` [#3158](https://github.com/IntelPython/dpnp/pull/3158)
 
 ### Changed
 

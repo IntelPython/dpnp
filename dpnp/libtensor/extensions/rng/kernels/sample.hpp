@@ -50,7 +50,8 @@ namespace dpnp::kernels::rng
 // number of elements, never on the device, the layout chosen for it or how
 // the work-items are scheduled. Raw bits and uniform floats are therefore
 // the same on every device, while samplers using transcendental functions
-// agree only to a few ULP.
+// agree only to a few ULP, or differ where a rejection sampler then takes
+// another candidate.
 enum class Layout
 {
     strided,
