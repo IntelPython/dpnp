@@ -1817,9 +1817,7 @@ class TestMultivariate:
     def test_dirichlet_degenerate(self, alpha):
         expected = numpy.random.default_rng(0).dirichlet(alpha)
         res = default_rng(0).dirichlet(alpha, size=3)
-        assert_allclose(
-            dpnp.asnumpy(res), numpy.tile(expected, (3, 1)), rtol=1e-15
-        )
+        assert_allclose(res, numpy.tile(expected, (3, 1)), rtol=1e-15)
 
     def test_dirichlet_shapes(self):
         rng = default_rng(0)
@@ -1869,7 +1867,7 @@ class TestMultivariate:
             assert (res[:, 2, 0] == 0).all()
 
         res = rng.multinomial(dpnp.asarray([4, 7]), [0.3, 0.7])
-        assert_array_equal(dpnp.asnumpy(res).sum(axis=-1), [4, 7])
+        assert_array_equal(res.sum(axis=-1), [4, 7])
         assert_raises(ValueError, rng.multinomial, [3, 5], [0.2, 0.8], size=3)
 
     @pytest.mark.parametrize("method", ["marginals", "count"])
@@ -1948,9 +1946,7 @@ class TestPermutations:
 
         x = dpnp.arange(12).reshape(3, 4)
         res = rng.permutation(x)
-        assert_array_equal(
-            numpy.sort(dpnp.asnumpy(res), axis=0), dpnp.asnumpy(x)
-        )
+        assert_array_equal(numpy.sort(dpnp.asnumpy(res), axis=0), x)
         # the rows are moved whole
         assert (
             dpnp.asnumpy(res)[:, 1:] - dpnp.asnumpy(res)[:, :1] == [1, 2, 3]
@@ -2005,7 +2001,7 @@ class TestPermutations:
         res = rng.permuted(x.astype(dpnp.int16), axis=0, out=out)
         assert res is out
         assert_array_equal(
-            numpy.sort(dpnp.asnumpy(out), axis=0), dpnp.asnumpy(x), strict=False
+            numpy.sort(dpnp.asnumpy(out), axis=0), x, strict=False
         )
 
         # in place
