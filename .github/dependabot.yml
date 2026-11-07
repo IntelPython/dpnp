@@ -13,6 +13,8 @@ updates:
       github-actions:
         patterns: ["*"]
 
+  # A dpctl release makes this raise the dpctl floor in dpctl_pkg.txt only: don't
+  # merge that PR, bump dpctl to the next dev series in all places by hand instead
   - package-ecosystem: "pip"
     directory: "/environments"
     schedule:
@@ -25,9 +27,6 @@ updates:
     groups:
       pip:
         patterns: ["*"]
-    ignore:
-      # Bumped by hand: the floor tracks the dpctl dev series (X.Y.0dev0)
-      - dependency-name: "dpctl"
 
   # Handles plain conda-forge "pkg=X.Y.Z" pins and pip: sections
   - package-ecosystem: "conda"
