@@ -1,0 +1,10 @@
+﻿
+
+dpnp.pow
+========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: pow

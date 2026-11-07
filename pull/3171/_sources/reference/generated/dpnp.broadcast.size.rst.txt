@@ -1,0 +1,14 @@
+
+:orphan:
+
+
+dpnp.broadcast.size
+===================
+
+.. currentmodule:: dpnp
+
+
+property
+
+
+.. autoproperty:: broadcast.size

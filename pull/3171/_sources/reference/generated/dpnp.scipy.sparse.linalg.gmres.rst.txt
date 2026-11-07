@@ -1,0 +1,10 @@
+﻿
+
+dpnp.scipy.sparse.linalg.gmres
+==============================
+
+.. currentmodule:: dpnp.scipy.sparse.linalg
+
+
+
+.. autofunction:: gmres
