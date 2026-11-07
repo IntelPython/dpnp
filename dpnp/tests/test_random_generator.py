@@ -685,7 +685,7 @@ class TestBitGeneratorState:
             with bg.lock:
                 bg.state = bg.state
 
-        t = threading.Thread(target=_use_state)
+        t = threading.Thread(target=_use_state, daemon=True)
         t.start()
         t.join(timeout=10)
         assert not t.is_alive()
