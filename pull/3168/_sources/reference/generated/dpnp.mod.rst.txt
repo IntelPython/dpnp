@@ -1,0 +1,10 @@
+﻿
+
+dpnp.mod
+========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: mod
