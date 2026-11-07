@@ -877,6 +877,8 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.Generator.html">dpnp.random.Generator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.Generator.bit_generator.html">dpnp.random.Generator.bit_generator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.Generator.spawn.html">dpnp.random.Generator.spawn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.Generator.sycl_device.html">dpnp.random.Generator.sycl_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.Generator.sycl_queue.html">dpnp.random.Generator.sycl_queue</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.Generator.integers.html">dpnp.random.Generator.integers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.Generator.random.html">dpnp.random.Generator.random</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.Generator.beta.html">dpnp.random.Generator.beta</a></li>
@@ -912,9 +914,13 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.Generator.weibull.html">dpnp.random.Generator.weibull</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.Generator.zipf.html">dpnp.random.Generator.zipf</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.BitGenerator.html">dpnp.random.BitGenerator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.BitGenerator.lock.html">dpnp.random.BitGenerator.lock</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.BitGenerator.random_raw.html">dpnp.random.BitGenerator.random_raw</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.BitGenerator.seed_seq.html">dpnp.random.BitGenerator.seed_seq</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.BitGenerator.spawn.html">dpnp.random.BitGenerator.spawn</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.BitGenerator.state.html">dpnp.random.BitGenerator.state</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.BitGenerator.sycl_device.html">dpnp.random.BitGenerator.sycl_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.BitGenerator.sycl_queue.html">dpnp.random.BitGenerator.sycl_queue</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.Philox4x3210.html">dpnp.random.Philox4x3210</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.SeedSequence.html">dpnp.random.SeedSequence</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.rand.html">dpnp.random.rand</a></li>
@@ -1171,8 +1177,8 @@ and some samples are only multiples of a power of two: the ones above
 NumPy's rejection test rounds to accepting every sample above <code class="docutils literal notranslate"><span class="pre">2**53</span></code>,
 which makes its tail too heavy for <code class="docutils literal notranslate"><span class="pre">a</span></code> close to 1.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">hypergeometric</span></code> requires <code class="docutils literal notranslate"><span class="pre">ngood</span></code> and <code class="docutils literal notranslate"><span class="pre">nbad</span></code> below <code class="docutils literal notranslate"><span class="pre">10**9</span></code>.</p></li>
-<li><p>Generators and bit generators cannot be pickled or copied, and the bit
-generators have no <code class="docutils literal notranslate"><span class="pre">advance</span></code> or <code class="docutils literal notranslate"><span class="pre">jumped</span></code> method.</p></li>
+<li><p>Generators and bit generators cannot be pickled or deep-copied, and the
+bit generators have no <code class="docutils literal notranslate"><span class="pre">advance</span></code> or <code class="docutils literal notranslate"><span class="pre">jumped</span></code> method.</p></li>
 </ul>
 </section>
 <section id="random-generator">
@@ -1199,6 +1205,12 @@ generators have no <code class="docutils literal notranslate"><span class="pre">
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.Generator.spawn.html#dpnp.random.Generator.spawn" title="dpnp.random.Generator.spawn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Generator.spawn</span></code></a></p></td>
 <td><p>Create new independent child generators on the same SYCL queue.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.Generator.sycl_device.html#dpnp.random.Generator.sycl_device" title="dpnp.random.Generator.sycl_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Generator.sycl_device</span></code></a></p></td>
+<td><p>The SYCL device samples are drawn on.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.Generator.sycl_queue.html#dpnp.random.Generator.sycl_queue" title="dpnp.random.Generator.sycl_queue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Generator.sycl_queue</span></code></a></p></td>
+<td><p>The SYCL queue samples are drawn on.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1333,14 +1345,26 @@ generators have no <code class="docutils literal notranslate"><span class="pre">
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.BitGenerator.html#dpnp.random.BitGenerator" title="dpnp.random.BitGenerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BitGenerator</span></code></a></p></td>
 <td><p>Base class for the bit generators of <a class="reference internal" href="generated/dpnp.random.Generator.html#dpnp.random.Generator" title="dpnp.random.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.random.Generator</span></code></a>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.BitGenerator.random_raw.html#dpnp.random.BitGenerator.random_raw" title="dpnp.random.BitGenerator.random_raw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BitGenerator.random_raw</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.BitGenerator.lock.html#dpnp.random.BitGenerator.lock" title="dpnp.random.BitGenerator.lock"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BitGenerator.lock</span></code></a></p></td>
+<td><p>The lock guarding the state of the bit generator.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.BitGenerator.random_raw.html#dpnp.random.BitGenerator.random_raw" title="dpnp.random.BitGenerator.random_raw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BitGenerator.random_raw</span></code></a></p></td>
 <td><p>Return raw 64-bit outputs of the bit generator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.BitGenerator.seed_seq.html#dpnp.random.BitGenerator.seed_seq" title="dpnp.random.BitGenerator.seed_seq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BitGenerator.seed_seq</span></code></a></p></td>
+<td><p>The seed sequence used to initialize the bit generator, or <code class="docutils literal notranslate"><span class="pre">None</span></code> when the state was given directly, such as a Philox key.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.BitGenerator.spawn.html#dpnp.random.BitGenerator.spawn" title="dpnp.random.BitGenerator.spawn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BitGenerator.spawn</span></code></a></p></td>
 <td><p>Create new independent child bit generators on the same SYCL queue.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.BitGenerator.state.html#dpnp.random.BitGenerator.state" title="dpnp.random.BitGenerator.state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BitGenerator.state</span></code></a></p></td>
 <td><p>The state of the bit generator, as a dictionary.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.BitGenerator.sycl_device.html#dpnp.random.BitGenerator.sycl_device" title="dpnp.random.BitGenerator.sycl_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BitGenerator.sycl_device</span></code></a></p></td>
+<td><p>The SYCL device arrays are created on.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.BitGenerator.sycl_queue.html#dpnp.random.BitGenerator.sycl_queue" title="dpnp.random.BitGenerator.sycl_queue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BitGenerator.sycl_queue</span></code></a></p></td>
+<td><p>The SYCL queue arrays are created on.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.Philox4x3210.html#dpnp.random.Philox4x3210" title="dpnp.random.Philox4x3210"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Philox4x3210</span></code></a></p></td>
 <td><p>A Philox4x32-10 counter-based bit generator on the device.</p></td>
@@ -1526,8 +1550,8 @@ generators have no <code class="docutils literal notranslate"><span class="pre">
 </table>
 </div>
 </section>
-<section id="id3">
-<h3>Random generator<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
+<section id="randomstate">
+<h3>RandomState<a class="headerlink" href="#randomstate" title="Link to this heading">¶</a></h3>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -1612,7 +1636,7 @@ generators have no <code class="docutils literal notranslate"><span class="pre">
 <li><a class="reference internal" href="#id1">Simple random data</a></li>
 <li><a class="reference internal" href="#permutations">Permutations</a></li>
 <li><a class="reference internal" href="#id2">Distributions</a></li>
-<li><a class="reference internal" href="#id3">Random generator</a></li>
+<li><a class="reference internal" href="#randomstate">RandomState</a></li>
 </ul>
 </li>
 </ul>
