@@ -44,9 +44,25 @@ build_dpnp_pybind11_ext(
     LARGE_RANGES
 )
 
-# oneMKL device RNG API is header-only, so no oneMKL library is linked
-target_include_directories(
-    ${python_module_name}
-    SYSTEM
-    PRIVATE $<TARGET_PROPERTY:MKL::MKL_SYCL,INTERFACE_INCLUDE_DIRECTORIES>
-)
+# the samplers rely on IEEE rounding, which reassociation would change
+if(WIN32)
+    target_compile_options(${python_module_name} PRIVATE /clang:-fno-fast-math)
+else()
+    target_compile_options(${python_module_name} PRIVATE -fno-fast-math)
+endif()
+
+# the device RNG API is header-only, so no oneMKL or oneMath library is linked
+if(_use_onemath)
+    target_compile_options(${python_module_name} PRIVATE -DUSE_ONEMATH)
+    target_include_directories(
+        ${python_module_name}
+        SYSTEM
+        PRIVATE $<TARGET_PROPERTY:${ONEMATH_LIB},INTERFACE_INCLUDE_DIRECTORIES>
+    )
+else()
+    target_include_directories(
+        ${python_module_name}
+        SYSTEM
+        PRIVATE $<TARGET_PROPERTY:MKL::MKL_SYCL,INTERFACE_INCLUDE_DIRECTORIES>
+    )
+endif()

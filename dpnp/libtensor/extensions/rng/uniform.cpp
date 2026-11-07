@@ -49,7 +49,7 @@ void init_uniform(py::module_ m)
     def_sampler<rng_ns::RawSampler, RawTypes>(
         m, "_random_raw",
         "Fill the result with the raw 64-bit output of the engine, or with "
-        "its 32-bit halves, high half first",
+        "one 32-bit word per element",
         random_raw_dispatch_table);
 
     def_sampler<rng_ns::LaplaceSampler, RealTypes>(

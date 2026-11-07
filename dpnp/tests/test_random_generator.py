@@ -80,7 +80,7 @@ class TestPhilox4x3210:
         bg = Philox4x3210(key=key, counter=counter)
         res = bg.random_raw(n)
         assert res.dtype == dpnp.uint64
-        assert_array_equal(dpnp.asnumpy(res), _reference_raw(key, counter, n))
+        assert_array_equal(res, _reference_raw(key, counter, n))
 
     def test_state_advance(self):
         bg = Philox4x3210(1234)
@@ -148,6 +148,31 @@ class TestPhilox4x3210:
     def test_base_class(self):
         assert_raises(TypeError, dpnp.random.BitGenerator)
 
+        class _Bare(dpnp.random.BitGenerator):
+            pass
+
+        bg = _Bare(0)
+        with pytest.raises(NotImplementedError):
+            _ = bg.state
+        assert_raises(
+            NotImplementedError,
+            bg._launch,
+            ri._random_raw,
+            numpy.dtype(numpy.uint64),
+            8,
+        )
+
+    def test_seed_dpnp_array(self):
+        seed = [1, 2, 3]
+        bg = Philox4x3210(dpnp.array(seed))
+        assert bg.state == Philox4x3210(seed).state
+
+    def test_repr_and_device(self):
+        bg = Philox4x3210(0)
+        assert str(bg) == "Philox4x3210"
+        assert repr(bg) == f"Philox4x3210 at 0x{id(bg):X}"
+        assert bg.sycl_device == bg.sycl_queue.sycl_device
+
     def test_lock_is_reentrant(self):
         bg = Philox4x3210(1)
 
@@ -155,7 +180,7 @@ class TestPhilox4x3210:
             with bg.lock:
                 bg.state = bg.state
 
-        t = threading.Thread(target=_use_state)
+        t = threading.Thread(target=_use_state, daemon=True)
         t.start()
         t.join(timeout=10)
         assert not t.is_alive()
@@ -215,10 +240,11 @@ class TestPhilox4x3210:
         assert_raises(TypeError, default_rng(bg).spawn, 1)
 
     def test_float32_normal_reference(self):
-        # float32 normals take u1 from a whole 32-bit word
-        key, counter, n = 0x0123456789ABCDEF, 3, 32
+        # float32 normals take u1 from a whole 32-bit word; at this counter
+        # elements 8 and 12 come from the word 6, deep in the tail
+        key, counter, n = 0x0123456789ABCDEF, 14589945, 32
         res = Generator(Philox4x3210(key=key, counter=counter))
-        res = dpnp.asnumpy(res.standard_normal(n, dtype=dpnp.float32))
+        res = res.standard_normal(n, dtype=dpnp.float32)
 
         n_wi = n // ITEMS_PER_WORK_ITEM
         expected = numpy.empty(n)
@@ -297,6 +323,26 @@ class TestDefaultRng:
 
     def test_bad_bit_generator(self):
         assert_raises(TypeError, Generator, numpy.random.PCG64(0))
+
+        rng = default_rng(0)
+        assert_raises_regex(
+            TypeError,
+            "must be an instance of dpnp.random.BitGenerator",
+            setattr,
+            rng,
+            "bit_generator",
+            5,
+        )
+        bg = Philox4x3210(1)
+        rng.bit_generator = bg
+        assert rng.bit_generator is bg
+
+    def test_repr_and_device(self):
+        rng = default_rng(0)
+        assert str(rng) == "Generator(Philox4x3210)"
+        assert repr(rng) == f"Generator(Philox4x3210) at 0x{id(rng):X}"
+        assert rng.sycl_device == rng.bit_generator.sycl_device
+        assert rng.sycl_queue == rng.bit_generator.sycl_queue
 
 
 class TestFloatMethods:
@@ -515,9 +561,7 @@ class TestFloatMethods:
         loc = dpnp.arange(4.0)[:, None] * 10
         res = rng.normal(loc, 1.0, size=(4, 10000))
         assert res.shape == (4, 10000)
-        assert_allclose(
-            dpnp.asnumpy(res.mean(axis=1)), [0.0, 10.0, 20.0, 30.0], atol=0.1
-        )
+        assert_allclose(res.mean(axis=1), [0.0, 10.0, 20.0, 30.0], atol=0.1)
 
         # the output shape is the broadcast shape of the parameters
         res = rng.gamma(dpnp.ones(3), numpy.ones((2, 1)))
@@ -605,6 +649,18 @@ class TestFloatMethods:
         if has_support_aspect64():
             res = rng.uniform(*args, size=100, dtype=dpnp.float64)
             assert dpnp.isfinite(res).all()
+
+    @pytest.mark.parametrize("dtype", float_dtypes)
+    def test_uniform_tiny_range(self, dtype):
+        # the product with the range must not be reassociated, or it rounds
+        # through a denormal and goes above `high`
+        high = 1.5 * numpy.finfo(dtype).tiny
+        n = 4099
+        u = dpnp.asnumpy(default_rng(7).random(n, dtype=dtype))
+        res = dpnp.asnumpy(default_rng(7).uniform(0, high, n, dtype=dtype))
+        expected = dtype(0) + (dtype(high) - dtype(0)) * u
+        assert_array_equal(res, expected)
+        assert res.max() < high
 
     @pytest.mark.parametrize("bad", [numpy.inf, -numpy.inf, numpy.nan])
     def test_uniform_device_and_host_bounds(self, bad):
@@ -735,7 +791,7 @@ class TestFloatMethods:
         res = getattr(default_rng(5), name)(dtype=dpnp.float32, out=out)
         assert res is out
         expected = getattr(default_rng(5), name)(6, dtype=dpnp.float32)
-        assert_array_equal(dpnp.asnumpy(out), expected)
+        assert_array_equal(out, expected)
 
     @pytest.mark.parametrize("name", ["random", "standard_normal"])
     def test_out_f_contiguous(self, name):
@@ -749,7 +805,7 @@ class TestFloatMethods:
         usm_out = dpnp.get_usm_ndarray(dpnp.empty_like(out, order="F"))
         res = getattr(default_rng(5), name)(dtype=dpnp.float32, out=usm_out)
         assert res is usm_out
-        assert_array_equal(dpnp.asnumpy(usm_out), expected.T)
+        assert_array_equal(usm_out, expected.T)
 
     def test_out_read_only(self):
         out = dpnp.empty(3, dtype=dpnp.float32)
@@ -896,9 +952,9 @@ class TestDeviceIndependence:
     @pytest.mark.parametrize("bitgen", [Philox4x3210])
     def test_same_values(self, bitgen):
         devices = _all_devices()
-        ref = [dpnp.asnumpy(x) for x in self._draw(devices[0], bitgen)]
+        ref = self._draw(devices[0], bitgen)
         for dev in devices[1:]:
-            res = [dpnp.asnumpy(x) for x in self._draw(dev, bitgen)]
+            res = self._draw(dev, bitgen)
             # uniform bits are exact
             for a, b in zip(ref[:2], res[:2]):
                 assert_array_equal(a, b)

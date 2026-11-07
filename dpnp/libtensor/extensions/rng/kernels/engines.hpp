@@ -34,11 +34,19 @@
 
 #include <sycl/sycl.hpp>
 
+#if defined(USE_ONEMATH)
+#include <oneapi/math/rng/device.hpp>
+#else
 #include <oneapi/mkl/rng/device.hpp>
+#endif
 
 namespace dpnp::kernels::rng
 {
+#if defined(USE_ONEMATH)
+namespace mkl_rng_dev = oneapi::math::rng::device;
+#else
 namespace mkl_rng_dev = oneapi::mkl::rng::device;
+#endif
 
 // The maximum number of 64-bit seed words any supported engine takes.
 inline constexpr std::size_t max_seed_words = 1;
