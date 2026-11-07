@@ -79,8 +79,8 @@ Differences from NumPy
   :class:`RandomState`.
 * :meth:`Generator.shuffle` and :func:`shuffle` only accept a
   :class:`dpnp.ndarray`, as in CuPy.
-* Generators and bit generators cannot be pickled or copied, and
-  :class:`Philox4x3210` and :class:`MRG32k3a` have no ``advance`` or
+* Generators and bit generators cannot be pickled or deep-copied,
+  and :class:`Philox4x3210` and :class:`MRG32k3a` have no ``advance`` or
   ``jumped`` method.
 
 Random Generator
@@ -102,6 +102,8 @@ Accessing the bit generator and spawning
 
    Generator.bit_generator
    Generator.spawn
+   Generator.sycl_device
+   Generator.sycl_queue
 
 Simple random data
 ^^^^^^^^^^^^^^^^^^
@@ -178,11 +180,17 @@ Bit generators
    :nosignatures:
 
    BitGenerator
+   BitGenerator.lock
    BitGenerator.random_raw
+   BitGenerator.seed_seq
    BitGenerator.spawn
    BitGenerator.state
+   BitGenerator.sycl_device
+   BitGenerator.sycl_queue
    Philox4x3210
    PCG64DXSM
+   PCG64DXSM.advance
+   PCG64DXSM.jumped
    MRG32k3a
    SeedSequence
 
