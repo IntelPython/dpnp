@@ -12,7 +12,7 @@
         gtag('js', new Date());
         gtag('config', 'G-554F8VNE28');
     </script>
-    <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="dpnp.random.Generator.random" href="dpnp.random.Generator.random.html"><link rel="prev" title="dpnp.random.Generator.bit_generator" href="dpnp.random.Generator.bit_generator.html">
+    <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="dpnp.random.Generator.sycl_device" href="dpnp.random.Generator.sycl_device.html"><link rel="prev" title="dpnp.random.Generator.bit_generator" href="dpnp.random.Generator.bit_generator.html">
 
     <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
         <title>dpnp.random.Generator.spawn - Data Parallel Extension for NumPy (dpnp) 0.22.0dev1 documentation</title>
@@ -877,6 +877,8 @@
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.html">dpnp.random.Generator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.bit_generator.html">dpnp.random.Generator.bit_generator</a></li>
 <li class="toctree-l4 current current-page"><a class="current reference internal" href="#">dpnp.random.Generator.spawn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.sycl_device.html">dpnp.random.Generator.sycl_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.sycl_queue.html">dpnp.random.Generator.sycl_queue</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.random.html">dpnp.random.Generator.random</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.beta.html">dpnp.random.Generator.beta</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.chisquare.html">dpnp.random.Generator.chisquare</a></li>
@@ -902,9 +904,13 @@
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.wald.html">dpnp.random.Generator.wald</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.weibull.html">dpnp.random.Generator.weibull</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.html">dpnp.random.BitGenerator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.lock.html">dpnp.random.BitGenerator.lock</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.random_raw.html">dpnp.random.BitGenerator.random_raw</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.seed_seq.html">dpnp.random.BitGenerator.seed_seq</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.spawn.html">dpnp.random.BitGenerator.spawn</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.state.html">dpnp.random.BitGenerator.state</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.sycl_device.html">dpnp.random.BitGenerator.sycl_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.sycl_queue.html">dpnp.random.BitGenerator.sycl_queue</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Philox4x3210.html">dpnp.random.Philox4x3210</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.SeedSequence.html">dpnp.random.SeedSequence</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.rand.html">dpnp.random.rand</a></li>
@@ -1107,6 +1113,20 @@
 <span class="sig-prename descclassname"><span class="pre">Generator.</span></span><span class="sig-name descname"><span class="pre">spawn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_children</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/_generator.html#Generator.spawn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.random.Generator.spawn" title="Link to this definition">¶</a></dt>
 <dd><p>Create new independent child generators on the same SYCL queue.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.spawn.html#numpy.random.Generator.spawn" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator.spawn</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>n_children</strong><span class="classifier">int</span></dt><dd><p>The number of children to create.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>out</strong><span class="classifier">list of Generator</span></dt><dd><p>The child generators.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -1116,12 +1136,12 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="dpnp.random.Generator.random.html">
+          <a class="next-page" href="dpnp.random.Generator.sycl_device.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">dpnp.random.Generator.random</div>
+                <div class="title">dpnp.random.Generator.sycl_device</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>

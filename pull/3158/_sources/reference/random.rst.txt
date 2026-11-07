@@ -49,8 +49,8 @@ Differences from NumPy
   Invalid ones give undefined values, such as NaN or the smallest ``int64``,
   but the kernels handle them safely: they never loop without end or access
   memory out of bounds.
-* Generators and bit generators cannot be pickled or copied, and the bit
-  generators have no ``advance`` or ``jumped`` method.
+* Generators and bit generators cannot be pickled or deep-copied, and the
+  bit generators have no ``advance`` or ``jumped`` method.
 
 Random Generator
 ----------------
@@ -71,6 +71,8 @@ Accessing the bit generator and spawning
 
    Generator.bit_generator
    Generator.spawn
+   Generator.sycl_device
+   Generator.sycl_queue
 
 Simple random data
 ^^^^^^^^^^^^^^^^^^
@@ -120,9 +122,13 @@ Bit generators
    :nosignatures:
 
    BitGenerator
+   BitGenerator.lock
    BitGenerator.random_raw
+   BitGenerator.seed_seq
    BitGenerator.spawn
    BitGenerator.state
+   BitGenerator.sycl_device
+   BitGenerator.sycl_queue
    Philox4x3210
    SeedSequence
 
@@ -202,8 +208,8 @@ Distributions
    weibull
    zipf
 
-Random generator
-^^^^^^^^^^^^^^^^
+RandomState
+^^^^^^^^^^^
 
 .. autosummary::
    :toctree: generated/
