@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.scipy.sparse.linalg.LinearOperator.\_\_call\_\_
+====================================================
+
+.. currentmodule:: dpnp.scipy.sparse.linalg
+
+method
+
+.. automethod:: LinearOperator.__call__

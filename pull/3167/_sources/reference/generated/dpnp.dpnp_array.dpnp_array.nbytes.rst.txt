@@ -1,0 +1,14 @@
+
+:orphan:
+
+
+dpnp.dpnp\_array.dpnp\_array.nbytes
+===================================
+
+.. currentmodule:: dpnp.dpnp_array
+
+
+property
+
+
+.. autoproperty:: dpnp_array.nbytes

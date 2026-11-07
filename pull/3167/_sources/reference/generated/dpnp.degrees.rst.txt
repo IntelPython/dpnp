@@ -1,0 +1,10 @@
+﻿
+
+dpnp.degrees
+============
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: degrees

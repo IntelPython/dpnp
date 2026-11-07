@@ -1,0 +1,10 @@
+﻿
+
+dpnp.random.randn
+=================
+
+.. currentmodule:: dpnp.random
+
+
+
+.. autofunction:: randn
