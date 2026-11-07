@@ -38,6 +38,7 @@ from numpy.testing import assert_raises_regex
 
 import dpnp.tensor as dpt
 from dpnp.tensor import Device
+from dpnp.tensor._flags import Flags
 
 from .elementwise.utils import _all_dtypes, _integral_dtypes, _real_fp_dtypes
 from .helper import (
@@ -1989,6 +1990,16 @@ def test_flags():
     for key in ["WRITEABLE", "OWNDATA", "c", "unknown key"]:
         with pytest.raises(KeyError, match="Unknown flag"):
             f[key]
+
+
+def test_flags_without_array():
+    with pytest.raises(TypeError):
+        Flags(None, 0)
+
+    f = Flags.__new__(Flags)
+    assert f.flags == 0
+    with pytest.raises(TypeError, match="not initialized"):
+        f.writable = True
 
 
 def test_asarray_uint64():
