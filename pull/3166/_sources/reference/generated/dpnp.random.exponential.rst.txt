@@ -1,0 +1,10 @@
+﻿
+
+dpnp.random.exponential
+=======================
+
+.. currentmodule:: dpnp.random
+
+
+
+.. autofunction:: exponential

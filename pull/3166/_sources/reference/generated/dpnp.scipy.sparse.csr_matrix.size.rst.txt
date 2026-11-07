@@ -1,0 +1,14 @@
+
+:orphan:
+
+
+dpnp.scipy.sparse.csr\_matrix.size
+==================================
+
+.. currentmodule:: dpnp.scipy.sparse
+
+
+property
+
+
+.. autoproperty:: csr_matrix.size
