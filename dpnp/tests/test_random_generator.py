@@ -628,7 +628,7 @@ class TestFloatMethods:
     def test_array_params_chisquare(self):
         df = dpnp.asarray([1.0, 10.0])
         res = default_rng(4).chisquare(df, size=(10**5, 2))
-        assert_allclose(dpnp.asnumpy(res.mean(axis=0)), [1.0, 10.0], rtol=0.05)
+        assert_allclose(res.mean(axis=0), [1.0, 10.0], rtol=0.05)
 
     @pytest.mark.parametrize(
         "param_shape, expected",
@@ -895,6 +895,23 @@ class TestFloatMethods:
         res = getattr(default_rng(5), name)(dtype=dpnp.float32, out=usm_out)
         assert res is usm_out
         assert_array_equal(usm_out, expected.T)
+
+    def test_out_c_contiguous(self):
+        # with array parameters, out must be C-contiguous, as in NumPy
+        np_rng = numpy.random.default_rng(0)
+        rng = default_rng(0)
+        dt = dpnp.default_float_type(sycl_queue=rng.sycl_queue)
+        for np_out, out in [
+            (
+                numpy.empty((3, 4), order="F"),
+                dpnp.empty((3, 4), dtype=dt, order="F"),
+            ),
+            (numpy.empty((3, 8))[:, ::2], dpnp.empty((3, 8), dtype=dt)[:, ::2]),
+        ]:
+            _assert_same_error(
+                lambda: np_rng.standard_gamma(2.0, out=np_out),
+                lambda: rng.standard_gamma(2.0, out=out),
+            )
 
     def test_out_read_only(self):
         out = dpnp.empty(3, dtype=dpnp.float32)
