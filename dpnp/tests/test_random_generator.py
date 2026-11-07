@@ -1370,9 +1370,7 @@ class TestDiscreteMethods:
         rng = default_rng(6)
         lam = dpnp.asarray([1.0, 100.0, 1e6])
         res = rng.poisson(lam, size=(10**5, 3))
-        assert_allclose(
-            dpnp.asnumpy(res.mean(axis=0)), [1.0, 100.0, 1e6], rtol=0.02
-        )
+        assert_allclose(res.mean(axis=0), [1.0, 100.0, 1e6], rtol=0.02)
 
         res = rng.binomial([10, 1000], dpnp.asarray([[0.5], [0.1]]))
         assert res.shape == (2, 2)
