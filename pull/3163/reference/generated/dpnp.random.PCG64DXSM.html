@@ -12,7 +12,7 @@
         gtag('js', new Date());
         gtag('config', 'G-554F8VNE28');
     </script>
-    <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="dpnp.random.MRG32k3a" href="dpnp.random.MRG32k3a.html"><link rel="prev" title="dpnp.random.Philox4x3210" href="dpnp.random.Philox4x3210.html">
+    <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="dpnp.random.PCG64DXSM.advance" href="dpnp.random.PCG64DXSM.advance.html"><link rel="prev" title="dpnp.random.Philox4x3210" href="dpnp.random.Philox4x3210.html">
 
     <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
         <title>dpnp.random.PCG64DXSM - Data Parallel Extension for NumPy (dpnp) 0.22.0dev1 documentation</title>
@@ -877,6 +877,8 @@
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.html">dpnp.random.Generator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.bit_generator.html">dpnp.random.Generator.bit_generator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.spawn.html">dpnp.random.Generator.spawn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.sycl_device.html">dpnp.random.Generator.sycl_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.sycl_queue.html">dpnp.random.Generator.sycl_queue</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.integers.html">dpnp.random.Generator.integers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.random.html">dpnp.random.Generator.random</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.choice.html">dpnp.random.Generator.choice</a></li>
@@ -921,11 +923,17 @@
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.weibull.html">dpnp.random.Generator.weibull</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Generator.zipf.html">dpnp.random.Generator.zipf</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.html">dpnp.random.BitGenerator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.lock.html">dpnp.random.BitGenerator.lock</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.random_raw.html">dpnp.random.BitGenerator.random_raw</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.seed_seq.html">dpnp.random.BitGenerator.seed_seq</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.spawn.html">dpnp.random.BitGenerator.spawn</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.state.html">dpnp.random.BitGenerator.state</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.sycl_device.html">dpnp.random.BitGenerator.sycl_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.sycl_queue.html">dpnp.random.BitGenerator.sycl_queue</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Philox4x3210.html">dpnp.random.Philox4x3210</a></li>
 <li class="toctree-l4 current current-page"><a class="current reference internal" href="#">dpnp.random.PCG64DXSM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.PCG64DXSM.advance.html">dpnp.random.PCG64DXSM.advance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.PCG64DXSM.jumped.html">dpnp.random.PCG64DXSM.jumped</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.MRG32k3a.html">dpnp.random.MRG32k3a</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.SeedSequence.html">dpnp.random.SeedSequence</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.RandomState.html">dpnp.random.RandomState</a></li>
@@ -1130,6 +1138,7 @@
 <dt class="sig sig-object py" id="dpnp.random.PCG64DXSM">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dpnp.random.</span></span><span class="sig-name descname"><span class="pre">PCG64DXSM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/_bit_generator.html#PCG64DXSM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.random.PCG64DXSM" title="Link to this definition">¶</a></dt>
 <dd><p>NumPy's PCG64DXSM bit generator on the device.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/bit_generators/pcg64dxsm.html#numpy.random.PCG64DXSM" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.PCG64DXSM</span></code></a>.</p>
 <p>The permuted congruential generator of <a class="reference external" href="https://numpy.org/doc/stable/reference/random/bit_generators/pcg64dxsm.html#numpy.random.PCG64DXSM" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.random.PCG64DXSM</span></code></a>,
 a 128-bit LCG with the DXSM output function. It is seeded and has its
 state as NumPy's, so the two can exchange states.</p>
@@ -1141,10 +1150,18 @@ state as NumPy's, so the two can exchange states.</p>
 <a class="reference internal" href="dpnp.random.BitGenerator.html#dpnp.random.BitGenerator" title="dpnp.random.BitGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.random.BitGenerator</span></code></a>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </dd>
-<dt><strong>device</strong><span class="classifier">{None, string, SyclDevice, SyclQueue, Device}, optional</span></dt><dd><p>See <a class="reference internal" href="dpnp.random.BitGenerator.html#dpnp.random.BitGenerator" title="dpnp.random.BitGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.random.BitGenerator</span></code></a>.</p>
+<dt><strong>device</strong><span class="classifier">{None, string, SyclDevice, SyclQueue, Device}, optional</span></dt><dd><p>An array API concept of device where the output array is created.
+<cite>device</cite> can be <code class="docutils literal notranslate"><span class="pre">None</span></code>, a oneAPI filter selector string, an instance
+of <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="(in Data Parallel Control (dpctl) v0.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to a non-partitioned SYCL
+device, an instance of <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="(in Data Parallel Control (dpctl) v0.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a
+<a class="reference external" href="https://intelpython.github.io/dpctl/0.21.1/api_reference/dpctl/tensor.utility_functions.html#dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.tensor.Device</span></code></a> object returned by
+<a class="reference internal" href="dpnp.ndarray.device.html#dpnp.ndarray.device" title="dpnp.ndarray.device"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpnp.ndarray.device</span></code></a>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </dd>
-<dt><strong>sycl_queue</strong><span class="classifier">{None, SyclQueue}, optional</span></dt><dd><p>See <a class="reference internal" href="dpnp.random.BitGenerator.html#dpnp.random.BitGenerator" title="dpnp.random.BitGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.random.BitGenerator</span></code></a>.</p>
+<dt><strong>sycl_queue</strong><span class="classifier">{None, SyclQueue}, optional</span></dt><dd><p>A SYCL queue to use for output array allocation and copying. The
+<cite>sycl_queue</cite> can be passed as <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default), which means
+to get the SYCL queue from <cite>device</cite> keyword if present or to use
+a default queue.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </dd>
 </dl>
@@ -1176,12 +1193,12 @@ rejection sampler then takes another candidate.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="dpnp.random.MRG32k3a.html">
+          <a class="next-page" href="dpnp.random.PCG64DXSM.advance.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">dpnp.random.MRG32k3a</div>
+                <div class="title">dpnp.random.PCG64DXSM.advance</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
