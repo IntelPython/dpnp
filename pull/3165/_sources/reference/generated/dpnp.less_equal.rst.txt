@@ -1,0 +1,10 @@
+﻿
+
+dpnp.less\_equal
+================
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: less_equal

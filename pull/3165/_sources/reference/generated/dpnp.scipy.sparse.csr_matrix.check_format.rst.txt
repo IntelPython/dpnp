@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.scipy.sparse.csr\_matrix.check\_format
+===========================================
+
+.. currentmodule:: dpnp.scipy.sparse
+
+method
+
+.. automethod:: csr_matrix.check_format
