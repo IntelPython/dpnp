@@ -104,6 +104,8 @@ class BitGenerator:
     """
     Base class for the bit generators of :class:`dpnp.random.Generator`.
 
+    For full documentation refer to :obj:`numpy.random.BitGenerator`.
+
     A bit generator is bound to one SYCL queue, and every array it produces
     is allocated on that queue.
 
@@ -117,7 +119,7 @@ class BitGenerator:
 
         Default: ``None``.
     device : {None, string, SyclDevice, SyclQueue, Device}, optional
-        An array API concept of device where arrays are created.
+        An array API concept of device where the output array is created.
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
@@ -126,7 +128,10 @@ class BitGenerator:
 
         Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for arrays created by the bit generator.
+        A SYCL queue to use for output array allocation and copying. The
+        `sycl_queue` can be passed as ``None`` (the default), which means
+        to get the SYCL queue from `device` keyword if present or to use
+        a default queue.
 
         Default: ``None``.
 
@@ -278,8 +283,8 @@ class BitGenerator:
         Python integer when `size` is ``None``. With ``output=False``, the
         state advances by the number of elements of `size`, and an invalid
         `size` raises as it does with ``output=True``. NumPy advances by
-        the sum of the dimensions of `size` instead, and ignores a negative
-        one.
+        the sum of the dimensions of `size` instead, and not at all when
+        that sum is negative.
 
         """
 
@@ -351,11 +356,19 @@ class Philox4x3210(BitGenerator):
 
         Default: ``None``, which derives the key from `seed`.
     device : {None, string, SyclDevice, SyclQueue, Device}, optional
-        See :class:`dpnp.random.BitGenerator`.
+        An array API concept of device where the output array is created.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpnp.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
-        See :class:`dpnp.random.BitGenerator`.
+        A SYCL queue to use for output array allocation and copying. The
+        `sycl_queue` can be passed as ``None`` (the default), which means
+        to get the SYCL queue from `device` keyword if present or to use
+        a default queue.
 
         Default: ``None``.
 
