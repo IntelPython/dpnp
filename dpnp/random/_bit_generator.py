@@ -521,6 +521,8 @@ class PCG64DXSM(BitGenerator):
     """
     NumPy's PCG64DXSM bit generator on the device.
 
+    For full documentation refer to :obj:`numpy.random.PCG64DXSM`.
+
     The permuted congruential generator of :class:`numpy.random.PCG64DXSM`,
     a 128-bit LCG with the DXSM output function. It is seeded and has its
     state as NumPy's, so the two can exchange states.
@@ -534,11 +536,19 @@ class PCG64DXSM(BitGenerator):
 
         Default: ``None``.
     device : {None, string, SyclDevice, SyclQueue, Device}, optional
-        See :class:`dpnp.random.BitGenerator`.
+        An array API concept of device where the output array is created.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpnp.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
-        See :class:`dpnp.random.BitGenerator`.
+        A SYCL queue to use for output array allocation and copying. The
+        `sycl_queue` can be passed as ``None`` (the default), which means
+        to get the SYCL queue from `device` keyword if present or to use
+        a default queue.
 
         Default: ``None``.
 
@@ -764,11 +774,19 @@ class MRG32k3a(BitGenerator):
 
         Default: ``None``.
     device : {None, string, SyclDevice, SyclQueue, Device}, optional
-        See :class:`dpnp.random.BitGenerator`.
+        An array API concept of device where the output array is created.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpnp.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
-        See :class:`dpnp.random.BitGenerator`.
+        A SYCL queue to use for output array allocation and copying. The
+        `sycl_queue` can be passed as ``None`` (the default), which means
+        to get the SYCL queue from `device` keyword if present or to use
+        a default queue.
 
         Default: ``None``.
 

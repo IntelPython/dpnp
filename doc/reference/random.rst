@@ -191,6 +191,8 @@ Bit generators
    BitGenerator.sycl_queue
    Philox4x3210
    PCG64DXSM
+   PCG64DXSM.advance
+   PCG64DXSM.jumped
    MRG32k3a
    SeedSequence
 
