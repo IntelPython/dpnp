@@ -199,8 +199,8 @@ class Generator:
     takes the USM type of the array parameters, or ``"device"`` when there
     are none.
 
-    Pickling, deep copying, and the ``advance`` and ``jumped`` methods of NumPy's
-    bit generators are not supported.
+    Pickling, deep copying, and the ``advance`` and ``jumped`` methods of
+    NumPy's bit generators are not supported.
 
     Parameters on the host (scalars, lists and NumPy arrays) are checked as
     in NumPy. Parameters on the device are not, since that would wait for
@@ -549,7 +549,8 @@ class Generator:
 
             Default: ``1.0``.
         size : {None, int, tuple of ints}, optional
-            Output shape. With ``None``, the broadcast shape of `low` and `high`.
+            Output shape. With ``None``, the broadcast shape of `low`
+            and `high`.
 
             Default: ``None``.
         dtype : {None, dtype}, optional
@@ -694,7 +695,8 @@ class Generator:
 
             Default: ``1.0``.
         size : {None, int, tuple of ints}, optional
-            Output shape. With ``None``, the broadcast shape of `loc` and `scale`.
+            Output shape. With ``None``, the broadcast shape of `loc`
+            and `scale`.
 
             Default: ``None``.
         dtype : {None, dtype}, optional
