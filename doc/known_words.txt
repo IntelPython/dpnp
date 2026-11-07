@@ -78,9 +78,9 @@ Nyquist
 oneAPI
 ord
 orthonormal
-Philox
 radix
 Penrose
+Philox
 Polyutils
 pre
 prepend
@@ -89,6 +89,7 @@ prepending
 reentrant
 representable
 resampling
+rng
 runtimes
 scikit
 se

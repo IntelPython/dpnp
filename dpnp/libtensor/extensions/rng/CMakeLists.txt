@@ -42,6 +42,13 @@ build_dpnp_pybind11_ext(
     LARGE_RANGES
 )
 
+# the samplers rely on IEEE rounding, which reassociation would change
+if(WIN32)
+    target_compile_options(${python_module_name} PRIVATE /clang:-fno-fast-math)
+else()
+    target_compile_options(${python_module_name} PRIVATE -fno-fast-math)
+endif()
+
 # oneMKL device RNG API is header-only, so no oneMKL library is linked
 target_include_directories(
     ${python_module_name}

@@ -199,7 +199,7 @@ class Generator:
     takes the USM type of the array parameters, or ``"device"`` when there
     are none.
 
-    Pickling, copying, and the ``advance`` and ``jumped`` methods of NumPy's
+    Pickling, deep copying, and the ``advance`` and ``jumped`` methods of NumPy's
     bit generators are not supported.
 
     Parameters on the host (scalars, lists and NumPy arrays) are checked as
@@ -274,6 +274,16 @@ class Generator:
         Create new independent child generators on the same SYCL queue.
 
         For full documentation refer to :obj:`numpy.random.Generator.spawn`.
+
+        Parameters
+        ----------
+        n_children : int
+            The number of children to create.
+
+        Returns
+        -------
+        out : list of Generator
+            The child generators.
 
         """
         return [type(self)(bg) for bg in self._bit_generator.spawn(n_children)]
@@ -747,13 +757,21 @@ def default_rng(seed=None, *, device=None, sycl_queue=None):
 
         Default: ``None``.
     device : {None, string, SyclDevice, SyclQueue, Device}, optional
-        An array API concept of device where the samples are drawn and
-        allocated. Ignored when `seed` is a bit generator or a generator.
+        An array API concept of device where the output array is created.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpnp.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`. Ignored when `seed` is a bit generator
+        or a generator.
 
         Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to draw samples on. Ignored when `seed` is a bit
-        generator or a generator.
+        A SYCL queue to use for output array allocation and copying. The
+        `sycl_queue` can be passed as ``None`` (the default), which means
+        to get the SYCL queue from `device` keyword if present or to use
+        a default queue. Ignored when `seed` is a bit generator or a
+        generator.
 
         Default: ``None``.
 
