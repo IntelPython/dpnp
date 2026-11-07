@@ -1993,7 +1993,7 @@ class TestPermutations:
         assert_array_equal(numpy.sort(res, axis=None), numpy.arange(24))
 
         res = dpnp.asnumpy(rng.permuted(x, axis=1))
-        assert_array_equal(numpy.sort(res, axis=1), dpnp.asnumpy(x))
+        assert_array_equal(numpy.sort(res, axis=1), x)
         # the rows are shuffled independently
         assert len({tuple(r - r.min()) for r in res}) > 1
 
