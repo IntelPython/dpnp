@@ -49,9 +49,18 @@ else()
     target_compile_options(${python_module_name} PRIVATE -fno-fast-math)
 endif()
 
-# oneMKL device RNG API is header-only, so no oneMKL library is linked
-target_include_directories(
-    ${python_module_name}
-    SYSTEM
-    PRIVATE $<TARGET_PROPERTY:MKL::MKL_SYCL,INTERFACE_INCLUDE_DIRECTORIES>
-)
+# the device RNG API is header-only, so no oneMKL or oneMath library is linked
+if(_use_onemath)
+    target_compile_options(${python_module_name} PRIVATE -DUSE_ONEMATH)
+    target_include_directories(
+        ${python_module_name}
+        SYSTEM
+        PRIVATE $<TARGET_PROPERTY:${ONEMATH_LIB},INTERFACE_INCLUDE_DIRECTORIES>
+    )
+else()
+    target_include_directories(
+        ${python_module_name}
+        SYSTEM
+        PRIVATE $<TARGET_PROPERTY:MKL::MKL_SYCL,INTERFACE_INCLUDE_DIRECTORIES>
+    )
+endif()
