@@ -60,13 +60,15 @@ namespace td_ns = dpnp::tensor::type_dispatch;
 namespace rng_ns = dpnp::kernels::rng;
 
 // A distribution parameter as passed from Python: either a C-contiguous
-// usm_ndarray with the size of the result, whose data pointer is `data` and
-// whose type lookup id is `type_id`, or a Python scalar.
+// usm_ndarray of `size` elements, a divisor of the size of the result,
+// whose data pointer is `data` and whose type lookup id is `type_id`, or a
+// Python scalar.
 struct ParamArg
 {
     const char *data = nullptr;
     int type_id = -1;
     py::object scalar;
+    std::size_t size = 0;
 };
 
 typedef sycl::event (*sample_fn_ptr_t)(sycl::queue &,
@@ -91,9 +93,9 @@ rng_ns::Param<T> to_param(const ParamArg &arg, const std::size_t pos)
             throw py::value_error("Parameter array " + std::to_string(pos) +
                                   " has an unexpected data type.");
         }
-        return {reinterpret_cast<const T *>(arg.data), T{}};
+        return {reinterpret_cast<const T *>(arg.data), T{}, arg.size};
     }
-    return {nullptr, py::cast<T>(arg.scalar)};
+    return {nullptr, py::cast<T>(arg.scalar), 0};
 }
 
 template <typename SamplerT, std::size_t... Is>

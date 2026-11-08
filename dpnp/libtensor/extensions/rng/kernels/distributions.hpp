@@ -36,14 +36,19 @@
 namespace dpnp::kernels::rng
 {
 // A distribution parameter: either one value for every sample, or a
-// C-contiguous array holding one value per sample.
+// C-contiguous array of `size` values, repeating along the samples, as a
+// parameter broadcast along the leading dimensions of the result does.
 template <typename T>
 struct Param
 {
     const T *ptr = nullptr;
     T value{};
+    std::size_t size = 0;
 
-    T operator[](std::size_t i) const { return ptr ? ptr[i] : value; }
+    T operator[](std::size_t i) const
+    {
+        return ptr ? ptr[i < size ? i : i % size] : value;
+    }
 };
 
 // Standard normal variates by the Box-Muller transform. The second value

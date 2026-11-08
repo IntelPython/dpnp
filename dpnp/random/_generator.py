@@ -38,6 +38,8 @@ driven by a oneMKL or oneMath device engine. The values differ from NumPy's.
 # pylint: disable=no-name-in-module
 # pylint: disable=protected-access
 
+import itertools
+
 import numpy
 
 import dpnp
@@ -59,6 +61,18 @@ _CONS_NON_NEGATIVE = 1
 
 def _is_array(x):
     return dpnp.is_supported_array_type(x) or numpy.ndim(x) > 0
+
+
+def _repeats_along_samples(param_shape, shape):
+    """
+    Whether a parameter of `param_shape` broadcasts to `shape` along the
+    leading dimensions only, so that the kernel can read its values
+    cyclically instead of from a copy of the size of the result.
+
+    """
+
+    trailing = tuple(itertools.dropwhile(lambda d: d == 1, param_shape))
+    return not trailing or tuple(shape[-len(trailing) :]) == trailing
 
 
 def _is_scalar_path(*params):
@@ -406,6 +420,8 @@ class Generator:
                 p = dpnp.asarray(
                     p, dtype=dtype, usm_type=usm_type, sycl_queue=queue
                 )
+                if _repeats_along_samples(p.shape, shape):
+                    return dpnp.ascontiguousarray(p)
                 return dpnp.ascontiguousarray(dpnp.broadcast_to(p, shape))
             # as in NumPy, None is NaN along with array parameters
             return float(_as_host_float(p))
