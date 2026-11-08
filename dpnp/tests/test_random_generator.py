@@ -15,6 +15,7 @@ from numpy.testing import (
 import dpnp
 import dpnp.libtensor._rng_impl as ri
 from dpnp.random import Generator, Philox4x3210, default_rng
+from dpnp.random._generator import _repeats_along_samples
 
 from .helper import get_float_dtypes, has_support_aspect64
 
@@ -303,6 +304,20 @@ class TestPhilox4x3210:
             x[1:],
             depends=_manager.submitted_events,
         )
+        # a smaller parameter is read by many work-items
+        assert_raises_regex(
+            ValueError,
+            "overlap",
+            ri._normal,
+            q,
+            engine,
+            [1],
+            0,
+            0,
+            [x[:3], 1.0],
+            x,
+            depends=_manager.submitted_events,
+        )
 
         # an exact alias is safe, as every element is read before written
         ht_ev, ev = ri._normal(
@@ -310,6 +325,25 @@ class TestPhilox4x3210:
         )
         _manager.add_event_pair(ht_ev, ev)
         assert dpnp.isfinite(dpnp.asarray(x)).all()
+
+    @pytest.mark.parametrize("param_size", [0, 2, 4])
+    def test_param_size_not_dividing_result(self, param_size):
+        p = dpnp.get_usm_ndarray(dpnp.zeros(param_size, dtype=dpnp.float32))
+        res = dpnp.get_usm_ndarray(dpnp.empty(9, dtype=dpnp.float32))
+        q = res.sycl_queue
+        assert_raises_regex(
+            ValueError,
+            "size dividing",
+            ri._normal,
+            q,
+            int(ri.engine_id.philox4x32x10),
+            [1],
+            0,
+            0,
+            [p, 1.0],
+            res,
+            depends=dpu.SequentialOrderManager[q].submitted_events,
+        )
 
 
 class TestDefaultRng:
@@ -445,6 +479,31 @@ class TestFloatMethods:
         res = rng.uniform([0.0, 10.0], [1.0, 11.0], size=(1000, 2))
         res = dpnp.asnumpy(res)
         assert (res[:, 0] < 1).all() and (res[:, 1] >= 10).all()
+
+    @pytest.mark.parametrize(
+        "param_shape, expected",
+        [
+            ((), True),
+            ((1, 1), True),
+            ((2,), True),
+            ((1, 3, 2), True),
+            ((5, 3, 2), True),
+            ((3, 1), False),
+            ((5, 1, 2), False),
+        ],
+    )
+    def test_repeats_along_samples(self, param_shape, expected):
+        assert _repeats_along_samples(param_shape, (5, 3, 2)) is expected
+
+    @pytest.mark.parametrize("param_shape", [(2,), (1, 1), (3, 2), (3, 1)])
+    def test_broadcast_params(self, param_shape):
+        # a parameter read cyclically gives the values of its full copy
+        shape = (5, 3, 2)
+        loc = dpnp.arange(math.prod(param_shape) * 1.0).reshape(param_shape)
+        scale = loc + 1
+        res = default_rng(7).normal(loc, scale, size=shape)
+        full = [dpnp.broadcast_to(p, shape).copy() for p in (loc, scale)]
+        assert_array_equal(res, default_rng(7).normal(*full, size=shape))
 
     def test_array_scale(self):
         scale = dpnp.asarray([1.0, 10.0])

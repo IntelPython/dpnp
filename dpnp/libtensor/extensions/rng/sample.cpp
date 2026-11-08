@@ -65,15 +65,17 @@ ParamArg to_param_arg(const std::size_t pos,
                       const dpnp::tensor::usm_ndarray &result)
 {
     if (!py::isinstance<dpnp::tensor::usm_ndarray>(param)) {
-        return {nullptr, -1, py::reinterpret_borrow<py::object>(param)};
+        return {nullptr, -1, py::reinterpret_borrow<py::object>(param), 0};
     }
 
     auto arr = py::reinterpret_borrow<dpnp::tensor::usm_ndarray>(param);
     const std::string name = "Parameter array " + std::to_string(pos);
 
-    if (arr.get_size() != result.get_size()) {
-        throw py::value_error(name +
-                              " and the result must have the same size.");
+    const std::size_t size = arr.get_size();
+    const std::size_t result_size = result.get_size();
+    if (size == 0 ? result_size != 0 : result_size % size != 0) {
+        throw py::value_error(
+            name + " must have a size dividing the size of the result.");
     }
     if (!arr.is_c_contiguous()) {
         throw py::value_error(name + " is not c-contiguous.");
@@ -83,8 +85,8 @@ ParamArg to_param_arg(const std::size_t pos,
             "Execution queue is not compatible with allocation queue.");
     }
 
-    // a work-item reads element i of a parameter and writes element i of the
-    // result, so only an exact alias is safe
+    // a work-item reads element i % size of a parameter and writes element i
+    // of the result, so only an exact alias is safe
     auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     auto const &same_logical_tensors =
         dpnp::tensor::overlap::SameLogicalTensors();
@@ -94,7 +96,7 @@ ParamArg to_param_arg(const std::size_t pos,
 
     auto array_types = td_ns::usm_ndarray_types();
     const int type_id = array_types.typenum_to_lookup_id(arr.get_typenum());
-    return {arr.get_data(), type_id, py::none()};
+    return {arr.get_data(), type_id, py::none(), size};
 }
 } // namespace
 
