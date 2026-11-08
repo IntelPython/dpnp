@@ -37,12 +37,7 @@ cdef extern from "numpy/npy_no_deprecated_api.h":
 cimport cpython
 cimport dpctl as c_dpctl
 cimport dpctl.memory as c_dpmem
-from dpctl._backend cimport (
-    DPCTLDevice_Delete,
-    DPCTLDevice_GetParentDevice,
-    DPCTLSyclDeviceRef,
-    DPCTLSyclUSMRef,
-)
+from dpctl._backend cimport DPCTLSyclUSMRef
 from dpctl._sycl_queue_manager cimport get_device_cached_queue
 from libc cimport stdlib
 from libc.stdint cimport int64_t, uint8_t, uint16_t, uint32_t, uint64_t
@@ -200,15 +195,6 @@ cdef void _managed_tensor_versioned_deleter(
         stdlib.free(dlmv_tensor)
 
 
-cdef object _get_default_context(c_dpctl.SyclDevice dev):
-    try:
-        default_context = dev.sycl_platform.default_context
-    except RuntimeError:
-        # RT does not support default_context
-        default_context = None
-
-    return default_context
-
 cdef int get_array_dlpack_device_id(
     usm_ndarray usm_ary
 ) except -1:
@@ -217,29 +203,17 @@ cdef int get_array_dlpack_device_id(
     """
     cdef c_dpctl.SyclQueue ary_sycl_queue
     cdef c_dpctl.SyclDevice ary_sycl_device
-    cdef DPCTLSyclDeviceRef pDRef = NULL
     cdef int device_id = -1
 
     ary_sycl_queue = usm_ary.get_sycl_queue()
     ary_sycl_device = ary_sycl_queue.get_sycl_device()
 
-    default_context = _get_default_context(ary_sycl_device)
-    if default_context is None:
-        # check that ary_sycl_device is a non-partitioned device
-        pDRef = DPCTLDevice_GetParentDevice(ary_sycl_device.get_device_ref())
-        if pDRef is not NULL:
-            DPCTLDevice_Delete(pDRef)
-            raise DLPackCreationError(
-                "to_dlpack_capsule: DLPack can only export arrays allocated "
-                "on non-partitioned SYCL devices on platforms where "
-                "default_context oneAPI extension is not supported."
-            )
-    else:
-        if not usm_ary.sycl_context == default_context:
-            raise DLPackCreationError(
-                "to_dlpack_capsule: DLPack can only export arrays based on USM "
-                "allocations bound to a default platform SYCL context"
-            )
+    default_context = ary_sycl_device.sycl_platform.default_context
+    if not usm_ary.sycl_context == default_context:
+        raise DLPackCreationError(
+            "to_dlpack_capsule: DLPack can only export arrays based on USM "
+            "allocations bound to a default platform SYCL context"
+        )
     device_id = ary_sycl_device.get_device_id()
 
     if device_id < 0:
@@ -825,10 +799,7 @@ cpdef object from_dlpack_capsule(object py_caps):
     if dl_tensor.device.device_type == kDLOneAPI:
         device_id = dl_tensor.device.device_id
         root_device = dpctl.SyclDevice(str(<int>device_id))
-        try:
-            default_context = root_device.sycl_platform.default_context
-        except RuntimeError:
-            default_context = get_device_cached_queue(root_device).sycl_context
+        default_context = root_device.sycl_platform.default_context
         if dl_tensor.data is NULL:
             usm_type = b"device"
             q = get_device_cached_queue((default_context, root_device,))
