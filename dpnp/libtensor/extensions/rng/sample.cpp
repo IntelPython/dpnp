@@ -85,8 +85,8 @@ ParamArg to_param_arg(const std::size_t pos,
             "Execution queue is not compatible with allocation queue.");
     }
 
-    // a work-item reads element i % size of a parameter and writes element i
-    // of the result, so only an exact alias is safe
+    // a work-item reads element i % period of a parameter and writes element
+    // i of the result, so only an exact alias is safe
     auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     auto const &same_logical_tensors =
         dpnp::tensor::overlap::SameLogicalTensors();
@@ -96,7 +96,8 @@ ParamArg to_param_arg(const std::size_t pos,
 
     auto array_types = td_ns::usm_ndarray_types();
     const int type_id = array_types.typenum_to_lookup_id(arr.get_typenum());
-    return {arr.get_data(), type_id, py::none(), size};
+    const std::size_t period = (size == result_size) ? 0 : size;
+    return {arr.get_data(), type_id, py::none(), period};
 }
 } // namespace
 
