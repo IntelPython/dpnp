@@ -1139,8 +1139,8 @@
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dpnp.random.</span></span><span class="sig-name descname"><span class="pre">MRG32k3a</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/_bit_generator.html#MRG32k3a"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.random.MRG32k3a" title="Link to this definition">¶</a></dt>
 <dd><p>An MRG32k3a combined multiple recursive bit generator on the device.</p>
 <p>The generator of L'Ecuyer (1999), with a period of about 2**191, as
-implemented by the oneMKL device RNG API. Its state is two components
-of three 32-bit words each.</p>
+implemented by the oneMKL device RNG API (oneMath's in a oneMath build).
+Its state is two components of three 32-bit words each.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>

@@ -1171,6 +1171,9 @@ access memory out of bounds.</p>
 double precision on devices supporting it, and in single precision
 otherwise. On the latter, the samples for very large parameters, such
 as a Poisson <cite>lam</cite> beyond about <code class="docutils literal notranslate"><span class="pre">1e7</span></code>, are less accurate than NumPy's.</p>
+<p>Parameters given as lists or NumPy arrays are copied to the device
+first, which waits for the work already submitted to the queue.
+Scalars and parameters on the device don't wait.</p>
 </dd></dl>
 
 </section>
