@@ -1414,16 +1414,22 @@ class TestMedianSelect:
 
         expected = numpy.median(a, axis=-1)
         result = dpnp.median(ia, axis=-1)
-        assert_dtype_allclose(result, expected)
+        if dpnp.issubdtype(dtype, dpnp.inexact):
+            # a tolerance would hide a neighbouring rank in float16
+            assert_array_equal(result, expected, strict=True)
+        else:
+            assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize("n", [5, 64, 1000, 2**16 + 1])
+    @pytest.mark.parametrize("n", [5, 64, 1000, 2**16 + 1, 2**17])
     @pytest.mark.parametrize("dtype", get_float_dtypes(no_float16=False))
     def test_special_values(self, n, dtype):
-        a = numpy.zeros((4, n), dtype=dtype)
+        a = numpy.zeros((5, n), dtype=dtype)
         a[:, ::3] = -0.0
         a[1, ::5] = numpy.inf
         a[2, ::4] = -numpy.inf
         a[3, : n // 2] = numpy.finfo(dtype).max
+        # both middle values of an even row are max, so their mean overflows
+        a[4, : n // 2 + 1] = numpy.finfo(dtype).max
         # a single NaN makes the median NaN
         a[0, n // 3] = numpy.nan
         ia = dpnp.array(a)

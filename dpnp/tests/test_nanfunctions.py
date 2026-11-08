@@ -579,7 +579,28 @@ class TestNanMedianSelect:
 
         expected = numpy.nanmedian(a, axis=-1)
         result = dpnp.nanmedian(ia, axis=-1)
-        assert_dtype_allclose(result, expected)
+        # a tolerance would hide a neighbouring rank in float16
+        assert_array_equal(result, expected, strict=True)
+
+    @pytest.mark.parametrize("n", [5, 64, 1000, 2**16 + 1, 2**17])
+    @pytest.mark.parametrize("dtype", get_float_dtypes(no_float16=False))
+    def test_special_values(self, n, dtype):
+        a = numpy.zeros((3, n), dtype=dtype)
+        a[0, ::5] = numpy.inf
+        a[0, ::7] = numpy.nan
+        # both middle values of an even number of non-NaNs are max, so their
+        # mean overflows; one row has an odd number of them, the other even
+        for i, n_nan in [(1, n // 4), (2, n // 4 + 1)]:
+            a[i, n - n_nan :] = numpy.nan
+            a[i, : (n - n_nan) // 2 + 1] = numpy.finfo(dtype).max
+        ia = dpnp.array(a)
+
+        # along an axis shorter than 600, numpy.nanmedian also averages the
+        # single median of an odd count with itself, unlike numpy.median and
+        # its own 1-D path
+        expected = numpy.array([numpy.nanmedian(row) for row in a])
+        result = dpnp.nanmedian(ia, axis=-1)
+        assert_array_equal(result, expected, strict=True)
 
     # NumPy's mean gives +0.0 for zeros of either sign
     @pytest.mark.parametrize("n", [2, 3, 64, 1000, 2**16 + 1])
