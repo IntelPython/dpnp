@@ -27,6 +27,7 @@ env:
   test-pkg-env: 'environments/test.yml'
   test-env-name: 'test_onemath'
   rerun-tests-on-failure: 'true'
+  # A retry reruns only the failed tests (--lf), or all of them after a timeout kill
   rerun-tests-max-attempts: 2
   rerun-tests-timeout: 30
   rerun-tensor-tests-timeout: 10
@@ -188,7 +189,7 @@ jobs:
             . $CONDA/etc/profile.d/mamba.sh
             mamba activate ${{ env.test-env-name }}
 
-            python -m pytest -ra --pyargs dpnp.tests
+            python -m pytest -ra --lf --pyargs dpnp.tests
         env:
           SKIP_TENSOR_TESTS: 1
           SYCL_CACHE_PERSISTENT: 1
@@ -206,7 +207,7 @@ jobs:
             . $CONDA/etc/profile.d/mamba.sh
             mamba activate ${{ env.test-env-name }}
 
-            python -m pytest -ra --pyargs dpnp.tests.tensor
+            python -m pytest -ra --lf --pyargs dpnp.tests.tensor
         env:
           SYCL_CACHE_PERSISTENT: 1
 
@@ -324,7 +325,7 @@ jobs:
             . $CONDA/etc/profile.d/mamba.sh
             mamba activate ${{ env.test-env-name }}
 
-            python -m pytest -ra --pyargs dpnp.tests
+            python -m pytest -ra --lf --pyargs dpnp.tests
         env:
           SKIP_TENSOR_TESTS: 1
           SYCL_CACHE_PERSISTENT: 1
@@ -342,6 +343,6 @@ jobs:
             . $CONDA/etc/profile.d/mamba.sh
             mamba activate ${{ env.test-env-name }}
 
-            python -m pytest -ra --pyargs dpnp.tests.tensor
+            python -m pytest -ra --lf --pyargs dpnp.tests.tensor
         env:
           SYCL_CACHE_PERSISTENT: 1

@@ -16,6 +16,7 @@ env:
   channels-list: '-c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels'
   test-env-name: test
   test-packages: 'pytest scipy'
+  # A retry reruns only the failed tests (--lf), or all of them after a timeout kill
   rerun-tests-max-attempts: 2
   rerun-tests-timeout: 20
 
@@ -155,7 +156,7 @@ jobs:
             . $CONDA/etc/profile.d/mamba.sh
             mamba activate ${{ env.test-env-name }}
 
-            python -m pytest -ra --pyargs ${{ env.package-name }}.tests
+            python -m pytest -ra --lf --pyargs ${{ env.package-name }}.tests
         env:
           SYCL_CACHE_PERSISTENT: 1
 
@@ -168,6 +169,6 @@ jobs:
           max_attempts: ${{ env.rerun-tests-max-attempts }}
           retry_on: any
           command: |
-            python -m pytest -ra --pyargs ${{ env.package-name }}.tests
+            python -m pytest -ra --lf --pyargs ${{ env.package-name }}.tests
         env:
           SYCL_CACHE_PERSISTENT: 1
