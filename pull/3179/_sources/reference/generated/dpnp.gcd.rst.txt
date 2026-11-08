@@ -1,0 +1,10 @@
+﻿
+
+dpnp.gcd
+========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: gcd

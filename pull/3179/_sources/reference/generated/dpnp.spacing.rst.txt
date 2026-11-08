@@ -1,0 +1,10 @@
+﻿
+
+dpnp.spacing
+============
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: spacing
