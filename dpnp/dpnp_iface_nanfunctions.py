@@ -668,10 +668,10 @@ def nanmedian(a, axis=None, out=None, overwrite_input=False, keepdims=False):
         Default: ``None``.
     overwrite_input : bool, optional
        If ``True``, then allow use of memory of input array `a` for
-       calculations. The input array will be modified by the call to
+       calculations. The input array may be modified by the call to
        :obj:`dpnp.nanmedian`. This will save memory when you do not need to
        preserve the contents of the input array. Treat the input as undefined,
-       but it will probably be fully or partially sorted.
+       but it may be fully or partially sorted.
 
        Default: ``False``.
     keepdims : {None, bool}, optional
@@ -727,11 +727,9 @@ def nanmedian(a, axis=None, out=None, overwrite_input=False, keepdims=False):
     >>> b = a.copy()
     >>> np.nanmedian(b, axis=1, overwrite_input=True)
     array([7., 2.])
-    >>> assert not np.all(a==b)
     >>> b = a.copy()
     >>> np.nanmedian(b, axis=None, overwrite_input=True)
     array(3.)
-    >>> assert not np.all(a==b)
 
     """
 
