@@ -1,0 +1,10 @@
+﻿
+
+dpnp.arctan2
+============
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: arctan2
