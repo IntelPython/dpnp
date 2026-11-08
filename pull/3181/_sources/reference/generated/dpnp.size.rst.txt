@@ -1,0 +1,10 @@
+﻿
+
+dpnp.size
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: size
