@@ -650,7 +650,7 @@ def top_k(a, k, /, *, axis=-1, mode="largest", sorted=True):
     --------
     :obj:`dpnp.tensor.top_k` : Array API version; returns the elements in an
         unspecified order.
-    :obj:`dpnp.partition` : Partial sort.
+    :obj:`dpnp.argpartition` : Indirect partition.
     :obj:`dpnp.sort` : Full sorting.
 
     Notes
