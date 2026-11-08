@@ -22,6 +22,7 @@ from .helper import (
     get_complex_dtypes,
     get_float_complex_dtypes,
     get_float_dtypes,
+    has_support_aspect16,
     has_support_aspect64,
     numpy_version,
 )
@@ -539,6 +540,29 @@ class TestNanMedian:
         expected = numpy.nanmedian(a, axis=axis, keepdims=True, out=out_np)
         result = dpnp.nanmedian(ia, axis=axis, keepdims=True, out=out_dp)
         assert result.get_array() is out_dp
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "dtype, out_dtype", [("f8", "f4"), ("f4", "f2"), ("c16", "c8")]
+    )
+    @pytest.mark.parametrize("keepdims", [False, True])
+    def test_out_lower_dtype(self, dtype, out_dtype, keepdims):
+        if not has_support_aspect64() and dtype in ("f8", "c16"):
+            pytest.skip("requires fp64 support")
+        if not has_support_aspect16() and out_dtype == "f2":
+            pytest.skip("requires fp16 support")
+
+        a = numpy.array([[1, numpy.nan, 2.5], [3, 1, 2]], dtype=dtype)
+        if dpnp.issubdtype(dtype, dpnp.complexfloating):
+            a += 1j
+        ia = dpnp.array(a)
+        out_shape = (2, 1) if keepdims else (2,)
+
+        out_np = numpy.empty(out_shape, dtype=out_dtype)
+        out_dp = dpnp.empty(out_shape, dtype=out_dtype)
+        expected = numpy.nanmedian(a, axis=1, keepdims=keepdims, out=out_np)
+        result = dpnp.nanmedian(ia, axis=1, keepdims=keepdims, out=out_dp)
+        assert result is out_dp
         assert_dtype_allclose(result, expected)
 
     def test_error(self):
