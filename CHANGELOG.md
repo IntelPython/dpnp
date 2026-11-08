@@ -30,7 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 * Removed the unused `FourZeroOffsets_Indexer`, `FixedDimStridedIndexer` and `ThreeOffsets_FixedDimStridedIndexer` from the libtensor header `utils/offset_utils.hpp` [#3131](https://github.com/IntelPython/dpnp/pull/3131)
-* Removed the `USE_GROUP_LOAD_STORE` macro from the libtensor header `utils/sycl_utils.hpp`, so `sub_group_load` and `sub_group_store` always use the `sycl_ext_oneapi_group_load_store` extension; the `sycl::sub_group` member load/store fallback it selected does not compile with DPC++ 2026.2 [#3174](https://github.com/IntelPython/dpnp/pull/3174)
+* Removed the `USE_GROUP_LOAD_STORE` macro from the libtensor header `utils/sycl_utils.hpp`, so `sub_group_load` and `sub_group_store` always use the `sycl_ext_oneapi_group_load_store` extension; the `sycl::sub_group` member load/store fallback it selected does not compile with DPC++ 2026.0, the minimum supported compiler [#3174](https://github.com/IntelPython/dpnp/pull/3174)
 
 ### Fixed
 
