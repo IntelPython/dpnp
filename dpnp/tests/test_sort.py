@@ -430,6 +430,17 @@ class TestPartitionSelect:
         with pytest.raises(ValueError, match="out of bounds"):
             getattr(sorting_ext, fn)(src, 5, dst, sycl_queue=src.sycl_queue)
 
+    # the radix select gathers from src while writing dst
+    @pytest.mark.parametrize("fn", ["_partition", "_argpartition"])
+    @pytest.mark.parametrize("same", [True, False])
+    def test_ext_overlap_error(self, fn, same):
+        dt = "i4" if fn == "_partition" else "i8"
+        x = dpt.arange(2 * 2**14, dtype=dt)
+        src = dpt.reshape(x[: 2**14], (1, -1))
+        dst = src if same else dpt.reshape(x[1 : 2**14 + 1], (1, -1))
+        with pytest.raises(ValueError, match="overlapping"):
+            getattr(sorting_ext, fn)(src, 100, dst, sycl_queue=src.sycl_queue)
+
     @pytest.mark.parametrize("fn", ["_partition", "_argpartition"])
     def test_ext_empty_dtype_error(self, fn):
         src = dpt.empty((0, 5), dtype="c8")
