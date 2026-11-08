@@ -412,6 +412,8 @@ cpdef to_dlpack_versioned_capsule(usm_ndarray usm_ary, bint copied):
     cdef Py_ssize_t si = 1
 
     ary_base = usm_ary.get_base()
+    # read for 0-d arrays too, they are exported read-only otherwise
+    flags = usm_ary.flags_
 
     # Find ordinal number of the parent device
     device_id = get_array_dlpack_device_id(usm_ary)
@@ -436,7 +438,6 @@ cpdef to_dlpack_versioned_capsule(usm_ndarray usm_ary, bint copied):
         for i in range(nd):
             shape_strides_ptr[i] = shape_ptr[i]
         strides_ptr = usm_ary.get_strides()
-        flags = usm_ary.flags_
         if strides_ptr:
             for i in range(nd):
                 shape_strides_ptr[nd + i] = strides_ptr[i]
@@ -636,7 +637,8 @@ cdef class _DLManagedTensorOwner:
         self.dlm_tensor = NULL
 
     def __dealloc__(self):
-        if self.dlm_tensor:
+        # the deleter may be NULL if the tensor needs no cleanup
+        if self.dlm_tensor and self.dlm_tensor.deleter is not NULL:
             self.dlm_tensor.deleter(self.dlm_tensor)
             self.dlm_tensor = NULL
 
@@ -659,7 +661,8 @@ cdef class _DLManagedTensorVersionedOwner:
         self.dlmv_tensor = NULL
 
     def __dealloc__(self):
-        if self.dlmv_tensor:
+        # the deleter may be NULL if the tensor needs no cleanup
+        if self.dlmv_tensor and self.dlmv_tensor.deleter is not NULL:
             self.dlmv_tensor.deleter(self.dlmv_tensor)
             self.dlmv_tensor = NULL
 
