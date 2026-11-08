@@ -1423,8 +1423,12 @@ sycl::event
     for (std::uint32_t pass = 0; pass < n_passes; ++pass) {
         const std::uint32_t shift = key_bits - (pass + 1) * radix_bits;
         const bool last_pass = (pass + 1 == n_passes);
-        // the last pass leaves nothing to filter for
-        const bool filter_after = filter && !last_pass;
+        // the last pass leaves nothing to filter for; top_k selects at an end
+        // of the row, where the first pass' bucket is already small, so it
+        // filters only after that pass
+        const bool filter_after =
+            filter && !last_pass &&
+            (pass == 0 || OpT::output != select_output::selected);
 
         last_ev = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(last_ev);
