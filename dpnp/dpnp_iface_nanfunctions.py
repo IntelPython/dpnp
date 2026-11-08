@@ -648,6 +648,11 @@ def nanmedian(a, axis=None, out=None, overwrite_input=False, keepdims=False):
 
     For full documentation refer to :obj:`numpy.nanmedian`.
 
+    Warnings
+    --------
+    This function synchronizes in order to test for all-NaN slices in the array.
+    This may harm performance in some applications.
+
     Parameters
     ----------
     a : {dpnp.ndarray, usm_ndarray}
