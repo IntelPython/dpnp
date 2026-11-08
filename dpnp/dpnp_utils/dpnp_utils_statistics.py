@@ -307,6 +307,27 @@ def _calc_median_by_sort(a, axis, out, overwrite_input, ignore_nan):
     return _calc_median(a_sorted, axis=axis, out=out)
 
 
+def _calc_median_of_empty(a, shape):
+    """Return the medians of empty array `a`, all NaN, in `shape`."""
+
+    if dpnp.issubdtype(a.dtype, dpnp.inexact):
+        res_dt = a.dtype
+    else:
+        res_dt = dpnp.default_float_type(sycl_queue=a.sycl_queue)
+    # numpy's mean of an empty complex slice is NaN in both parts
+    if dpnp.issubdtype(res_dt, dpnp.complexfloating):
+        fill_value = complex(dpnp.nan, dpnp.nan)
+    else:
+        fill_value = dpnp.nan
+    return dpnp.full(
+        shape,
+        fill_value,
+        dtype=res_dt,
+        usm_type=a.usm_type,
+        sycl_queue=a.sycl_queue,
+    )
+
+
 def dpnp_median(
     a,
     axis=None,
@@ -323,10 +344,8 @@ def dpnp_median(
     _axis = normalize_axis_tuple(_axis, a_ndim)
 
     # the medians of real data types are selected rather than sorted
-    use_select = a.size > 0 and not dpnp.issubdtype(
-        a.dtype, dpnp.complexfloating
-    )
-    if a.size == 0 or not dpnp.issubdtype(a.dtype, dpnp.inexact):
+    use_select = not dpnp.issubdtype(a.dtype, dpnp.complexfloating)
+    if not dpnp.issubdtype(a.dtype, dpnp.inexact):
         # there are no NaNs to ignore
         ignore_nan = False
 
@@ -366,7 +385,11 @@ def dpnp_median(
                 tuple(0 if i in _axis else slice(None) for i in range(a_ndim))
             ]
 
-    if use_select:
+    if a.size == 0:
+        res = _calc_median_of_empty(
+            a, tuple(n for i, n in enumerate(a_shape) if i not in _axis)
+        )
+    elif use_select:
         assert axis == -1
         res = _calc_median_by_select(a, ignore_nan, out=res_out)
     else:

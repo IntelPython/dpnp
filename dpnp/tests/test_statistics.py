@@ -1302,6 +1302,42 @@ class TestMedian:
         expected = numpy.median(a, axis=(1, 2), keepdims=keepdims)
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.usefixtures(
+        "suppress_invalid_numpy_warnings",
+        "suppress_mean_empty_slice_numpy_warnings",
+    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("keepdims", [False, True])
+    def test_empty_dtype(self, dtype, keepdims):
+        a = numpy.empty((3, 0), dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = dpnp.median(ia, axis=1, keepdims=keepdims)
+        expected = numpy.median(a, axis=1, keepdims=keepdims)
+        assert_dtype_allclose(result, expected)
+        # the median of an empty complex slice is NaN in both parts
+        assert_array_equal(dpnp.isnan(result.imag), numpy.isnan(expected.imag))
+
+    @pytest.mark.usefixtures(
+        "suppress_invalid_numpy_warnings",
+        "suppress_mean_empty_slice_numpy_warnings",
+    )
+    @pytest.mark.parametrize("keepdims", [False, True])
+    def test_empty_out(self, keepdims):
+        a = numpy.empty((3, 0), dtype="i4")
+        ia = dpnp.array(a)
+        out_shape = (3, 1) if keepdims else (3,)
+
+        out_np = numpy.zeros(out_shape, dtype="f4")
+        out_dp = dpnp.zeros(out_shape, dtype="f4")
+        expected = numpy.median(a, axis=1, keepdims=keepdims, out=out_np)
+        result = dpnp.median(ia, axis=1, keepdims=keepdims, out=out_dp)
+        assert result is out_dp
+        assert_dtype_allclose(result, expected)
+
+        with pytest.raises(ValueError, match="Output array of shape"):
+            dpnp.median(ia, axis=1, out=dpnp.empty(4, dtype="f4"))
+
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize(
         "axis, out_shape", [(0, (3,)), (1, (2,)), ((0, 1), ())]
