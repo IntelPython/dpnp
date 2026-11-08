@@ -1992,6 +1992,17 @@ def test_flags():
             f[key]
 
 
+def test_flags_ctor():
+    try:
+        x = dpt.empty(3, dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    f = Flags(x, x.flags.flags)
+    assert f.flags == x.flags.flags
+    f.writable = False
+    assert not x.flags.writable
+
+
 def test_flags_without_array():
     with pytest.raises(TypeError):
         Flags(None, 0)
