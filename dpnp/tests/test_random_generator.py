@@ -446,6 +446,11 @@ class TestFloatMethods:
         res = dpnp.asnumpy(res)
         assert (res[:, 0] < 1).all() and (res[:, 1] >= 10).all()
 
+    def test_array_scale(self):
+        scale = dpnp.asarray([1.0, 10.0])
+        res = default_rng(4).normal(0.0, scale, size=(10000, 2))
+        assert_allclose(res.std(axis=0), [1.0, 10.0], rtol=0.05)
+
     @pytest.mark.parametrize(
         "size",
         [
