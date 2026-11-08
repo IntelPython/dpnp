@@ -1080,20 +1080,27 @@ element are located to the left of this element and all equal or
 greater are located to its right. The ordering of the elements in the
 two partitions on the either side of the k-th element in the output
 array is undefined.</p>
-<p>Refer to <cite>dpnp.partition</cite> for full documentation.</p>
-<dl>
-<dt>kth<span class="classifier">{int, sequence of ints}</span></dt><dd><p>Element index to partition by. The kth element value will be in its
+<p>Refer to <a class="reference internal" href="dpnp.partition.html#dpnp.partition" title="dpnp.partition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.partition</span></code></a> for full documentation.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>kth</strong><span class="classifier">{int, sequence of ints}</span></dt><dd><p>Element index to partition by. The kth element value will be in its
 final sorted position and all smaller elements will be moved before
 it and all equal or greater elements behind it.
 The order of all elements in the partitions is undefined. If
 provided with a sequence of kth it will partition all elements
 indexed by kth of them into their sorted position at once.</p>
 </dd>
-<dt>axis<span class="classifier">int, optional</span></dt><dd><p>Axis along which to sort. The default is <code class="docutils literal notranslate"><span class="pre">-1</span></code>, which means sort
-along the the last axis.</p>
+<dt><strong>axis</strong><span class="classifier">int, optional</span></dt><dd><p>Axis along which to sort. The default is <code class="docutils literal notranslate"><span class="pre">-1</span></code>, which means sort
+along the last axis.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">-1</span></code>.</p>
 </dd>
 </dl>
+</dd>
+</dl>
+<p class="rubric">Limitations</p>
+<p>Parameters <cite>kind</cite> and <cite>order</cite> are only supported with its default
+value. Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> exception will be raised.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">

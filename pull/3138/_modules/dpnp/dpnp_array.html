@@ -2031,7 +2031,7 @@
 <span class="sd">        :obj:`dpnp.argsort` : Return the indices that would sort an array.</span>
 <span class="sd">        :obj:`dpnp.lexsort` : Indirect stable sort on multiple keys.</span>
 <span class="sd">        :obj:`dpnp.searchsorted` : Find elements in a sorted array.</span>
-<span class="sd">        :obj:`dpnp.partition` : Partial sort.</span>
+<span class="sd">        :obj:`dpnp.argpartition` : Indirect partial sort.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -2863,8 +2863,10 @@
 <span class="sd">        two partitions on the either side of the k-th element in the output</span>
 <span class="sd">        array is undefined.</span>
 
-<span class="sd">        Refer to `dpnp.partition` for full documentation.</span>
+<span class="sd">        Refer to :obj:`dpnp.partition` for full documentation.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
 <span class="sd">        kth : {int, sequence of ints}</span>
 <span class="sd">            Element index to partition by. The kth element value will be in its</span>
 <span class="sd">            final sorted position and all smaller elements will be moved before</span>
@@ -2874,9 +2876,14 @@
 <span class="sd">            indexed by kth of them into their sorted position at once.</span>
 <span class="sd">        axis : int, optional</span>
 <span class="sd">            Axis along which to sort. The default is ``-1``, which means sort</span>
-<span class="sd">            along the the last axis.</span>
+<span class="sd">            along the last axis.</span>
 
 <span class="sd">            Default: ``-1``.</span>
+
+<span class="sd">        Limitations</span>
+<span class="sd">        -----------</span>
+<span class="sd">        Parameters `kind` and `order` are only supported with its default</span>
+<span class="sd">        value. Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>

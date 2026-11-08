@@ -1731,6 +1731,11 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.nanmedian`.</span>
 
+<span class="sd">    Warnings</span>
+<span class="sd">    --------</span>
+<span class="sd">    This function synchronizes in order to test for all-NaN slices in the array.</span>
+<span class="sd">    This may harm performance in some applications.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
