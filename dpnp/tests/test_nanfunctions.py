@@ -468,15 +468,16 @@ class TestNanMedian:
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.filterwarnings("ignore:All-NaN slice:RuntimeWarning")
-    def test_all_nan(self):
-        a = numpy.array(numpy.nan)
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_all_nan(self, dtype):
+        a = numpy.array(numpy.nan, dtype=dtype)
         ia = dpnp.array(a)
 
         result = dpnp.nanmedian(ia)
         expected = numpy.nanmedian(a)
         assert_dtype_allclose(result, expected)
 
-        a = generate_random_numpy_array((2, 3, 4))
+        a = generate_random_numpy_array((2, 3, 4), dtype=dtype)
         a[:, :, 2] = numpy.nan
         ia = dpnp.array(a)
 
@@ -499,10 +500,11 @@ class TestNanMedian:
 
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     @pytest.mark.parametrize("axis", [None, 0, (-1,), [0, 1]])
     @pytest.mark.parametrize("overwrite_input", [True, False])
-    def test_usm_ndarray(self, axis, overwrite_input):
-        a = generate_random_numpy_array((2, 3, 4))
+    def test_usm_ndarray(self, dtype, axis, overwrite_input):
+        a = generate_random_numpy_array((2, 3, 4), dtype=dtype)
         a[0, 0, 0] = a[-2, -2, -2] = numpy.nan
         ia = dpt.asarray(a)
 
@@ -565,8 +567,9 @@ class TestNanMedian:
         assert result is out_dp
         assert_dtype_allclose(result, expected)
 
-    def test_error(self):
-        a = dpnp.arange(6.0).reshape(2, 3)
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_error(self, dtype):
+        a = dpnp.arange(6.0).reshape(2, 3).astype(dtype)
         a[0, 0] = a[-1, -1] = numpy.nan
 
         # out shape is incorrect
