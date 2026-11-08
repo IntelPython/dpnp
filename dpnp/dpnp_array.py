@@ -949,7 +949,7 @@ class dpnp_array:
         :obj:`dpnp.argsort` : Return the indices that would sort an array.
         :obj:`dpnp.lexsort` : Indirect stable sort on multiple keys.
         :obj:`dpnp.searchsorted` : Find elements in a sorted array.
-        :obj:`dpnp.partition` : Partial sort.
+        :obj:`dpnp.argpartition` : Indirect partial sort.
 
         Examples
         --------
