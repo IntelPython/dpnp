@@ -1,0 +1,46 @@
+﻿dpnp.scipy.sparse.csr\_matrix
+=============================
+
+.. currentmodule:: dpnp.scipy.sparse
+
+.. autoclass:: csr_matrix
+
+   
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         csr_matrix.check_format
+         csr_matrix.conj
+         csr_matrix.conjugate
+         csr_matrix.copy
+         csr_matrix.dot
+         csr_matrix.sort_indices
+         csr_matrix.sum
+         csr_matrix.toarray
+         csr_matrix.tocoo
+         csr_matrix.tocsc
+         csr_matrix.todok
+         csr_matrix.transpose
+
+
+
+   
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         csr_matrix.T
+         csr_matrix.data
+         csr_matrix.dtype
+         csr_matrix.format
+         csr_matrix.has_sorted_indices
+         csr_matrix.indices
+         csr_matrix.indptr
+         csr_matrix.ndim
+         csr_matrix.nnz
+         csr_matrix.shape
+         csr_matrix.size
+
