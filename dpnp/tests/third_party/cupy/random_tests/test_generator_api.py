@@ -69,7 +69,10 @@ class InvalidOutsMixin:
 @testing.with_requires("numpy>=1.17.0")
 @testing.fix_random()
 class TestUniform(common_distributions.Uniform, GeneratorTestCase):
-    pass
+    # without a dtype, the NumPy reference stays float64
+    @_requires_fp64
+    def test_uniform_ks(self):
+        super().test_uniform_ks()
 
 
 @testing.parameterize(*common_distributions.exponential_params)
