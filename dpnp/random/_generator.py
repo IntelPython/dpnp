@@ -31,7 +31,7 @@ The device random number generation API modeled on
 :class:`numpy.random.Generator`.
 
 Every distribution is sampled on the device by a port of NumPy's algorithm,
-driven by a oneMKL device engine. The values differ from NumPy's.
+driven by a oneMKL or oneMath device engine. The values differ from NumPy's.
 
 """
 
