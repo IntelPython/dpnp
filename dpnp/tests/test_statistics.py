@@ -1513,6 +1513,20 @@ class TestMedianSelect:
         ev.wait()
         assert dpt.asnumpy(all_nan)[0] == 0
 
+    # the flag is zeroed before the kernel reads `src`
+    @pytest.mark.parametrize("shared", ["src", "dst"])
+    def test_ext_all_nan_overlap_error(self, shared):
+        src = dpt.full((1, 1), 5, dtype="u4")
+        dst = dpt.empty((1,), dtype="f4")
+        if shared == "src":
+            all_nan = src
+        else:
+            all_nan = dpt.usm_ndarray((1,), dtype="u4", buffer=dst)
+        with pytest.raises(ValueError, match="`all_nan` has overlapping"):
+            statistics_ext._median(
+                src, True, dst, sycl_queue=src.sycl_queue, all_nan=all_nan
+            )
+
     def test_ext_empty_batch_dtype_error(self):
         src = dpt.empty((0, 5), dtype="c8")
         dst = dpt.empty((0,), dtype="c8")
