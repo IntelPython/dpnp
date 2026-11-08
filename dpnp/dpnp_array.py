@@ -1718,8 +1718,10 @@ class dpnp_array:
         two partitions on the either side of the k-th element in the output
         array is undefined.
 
-        Refer to `dpnp.partition` for full documentation.
+        Refer to :obj:`dpnp.partition` for full documentation.
 
+        Parameters
+        ----------
         kth : {int, sequence of ints}
             Element index to partition by. The kth element value will be in its
             final sorted position and all smaller elements will be moved before
@@ -1729,9 +1731,14 @@ class dpnp_array:
             indexed by kth of them into their sorted position at once.
         axis : int, optional
             Axis along which to sort. The default is ``-1``, which means sort
-            along the the last axis.
+            along the last axis.
 
             Default: ``-1``.
+
+        Limitations
+        -----------
+        Parameters `kind` and `order` are only supported with its default
+        value. Otherwise ``NotImplementedError`` exception will be raised.
 
         See Also
         --------
