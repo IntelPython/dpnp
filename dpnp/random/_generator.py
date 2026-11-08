@@ -59,7 +59,13 @@ _CONS_NONE = 0
 _CONS_NON_NEGATIVE = 1
 
 
+# Python scalars, the most common parameters, skip the NumPy checks
+_PY_SCALARS = (float, int, bool)
+
+
 def _is_array(x):
+    if type(x) in _PY_SCALARS:
+        return False
     return dpnp.is_supported_array_type(x) or numpy.ndim(x) > 0
 
 
@@ -81,7 +87,7 @@ def _is_scalar_path(*params):
     differ slightly from the ones of array parameters.
 
     """
-    return all(numpy.ndim(p) == 0 for p in params)
+    return all(type(p) in _PY_SCALARS or numpy.ndim(p) == 0 for p in params)
 
 
 def _check_real(value):
@@ -128,6 +134,8 @@ def _check_device_cast(value, dtype):
 
 
 def _as_host_float(value):
+    if type(value) in _PY_SCALARS:
+        return numpy.float64(value)
     _check_host_cast(value)
     return numpy.asarray(value, dtype=numpy.float64)
 
@@ -389,13 +397,16 @@ class Generator:
                 dpt.get_coerced_usm_type(usm_types) if usm_types else "device"
             )
 
-        param_shape = numpy.broadcast_shapes(
-            *(numpy.shape(p) if _is_array(p) else () for p in params)
+        array_params = [p for p in params if _is_array(p)]
+        param_shape = (
+            numpy.broadcast_shapes(*(numpy.shape(p) for p in array_params))
+            if array_params
+            else ()
         )
         shape = _normalize_size(size)
         if shape is None:
             shape = param_shape
-        else:
+        elif array_params:
             try:
                 compatible = numpy.broadcast_shapes(shape, param_shape) == shape
             except ValueError:
