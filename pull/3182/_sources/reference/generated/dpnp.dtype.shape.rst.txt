@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.dtype.shape
+================
+
+.. currentmodule:: dpnp
+
+attribute
+
+.. autoattribute:: dtype.shape
