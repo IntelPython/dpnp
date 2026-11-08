@@ -30,6 +30,7 @@ import math
 import warnings
 
 import dpctl.utils as dpu
+import numpy
 
 import dpnp
 
@@ -112,11 +113,12 @@ def _calc_median_by_select(a, ignore_nan, out=None):
         order="C",
         sycl_queue=exec_q,
     )
-    # set to whether a row has NaNs only, the one case warned about
+    # set to whether a row has NaNs only, the one case warned about; in host
+    # USM it is read in place, without a copy
     usm_all_nan = None
     if ignore_nan:
         usm_all_nan = dpt.empty(
-            1, dtype=dpt.uint32, usm_type=usm_a.usm_type, sycl_queue=exec_q
+            1, dtype=dpt.uint32, usm_type="host", sycl_queue=exec_q
         )
 
     ht_ev, median_ev = statistics_ext._median(
@@ -129,9 +131,12 @@ def _calc_median_by_select(a, ignore_nan, out=None):
     )
     _manager.add_event_pair(ht_ev, median_ev)
 
-    # reading a scalar through asnumpy is several times cheaper than int()
-    if ignore_nan and dpt.asnumpy(usm_all_nan)[0]:
-        warnings.warn("All-NaN slice encountered", RuntimeWarning, stacklevel=4)
+    if ignore_nan:
+        median_ev.wait()
+        if numpy.frombuffer(usm_all_nan.usm_data, dtype=numpy.uint32)[0]:
+            warnings.warn(
+                "All-NaN slice encountered", RuntimeWarning, stacklevel=4
+            )
 
     res = dpnp_array._create_from_usm_ndarray(usm_res)
     if out is None:
