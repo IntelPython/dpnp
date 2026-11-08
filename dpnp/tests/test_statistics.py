@@ -1377,10 +1377,11 @@ class TestMedian:
 
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     @pytest.mark.parametrize("axis", [None, 0, (-1,), [0, 1]])
     @pytest.mark.parametrize("overwrite_input", [True, False])
-    def test_usm_ndarray(self, axis, overwrite_input):
-        a = generate_random_numpy_array((2, 3, 4))
+    def test_usm_ndarray(self, dtype, axis, overwrite_input):
+        a = generate_random_numpy_array((2, 3, 4), dtype=dtype)
         ia = dpt.asarray(a)
 
         expected = numpy.median(a, axis=axis, overwrite_input=overwrite_input)
