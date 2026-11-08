@@ -493,12 +493,31 @@ class TestArgpartition:
         expected = numpy.argpartition(a, 0, axis=axis)
         assert_equal(result, expected)
 
-    def test_empty_kth(self):
-        a = numpy.array([6, 0, 4, 2])
+    @pytest.mark.parametrize("axis", [0, 1, None])
+    def test_empty_kth(self, axis):
+        a = numpy.array([[6, 0, 4, 2], [1, 7, 3, 5]])
         ia = dpnp.array(a)
 
-        result = dpnp.argpartition(ia, [])
-        assert_array_equal(ia[result], dpnp.sort(ia))
+        kth = numpy.array([], dtype=numpy.intp)
+        result = dpnp.argpartition(ia, kth, axis=axis)
+        expected = numpy.argpartition(a, kth, axis=axis)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize(
+        "kth",
+        [numpy.int64(2), numpy.uint8(2), numpy.array(2), numpy.array([1, 3])],
+        ids=["int64", "uint8", "0d", "1d"],
+    )
+    def test_numpy_int_kth(self, kth):
+        a = numpy.array([6, 0, 4, 2, 9, 1])
+        ia = dpnp.array(a)
+
+        p = dpnp.partition(ia, kth)
+        idx = dpnp.argpartition(ia, kth)
+        expected = numpy.partition(a, kth)
+        for k in numpy.atleast_1d(kth):
+            assert_array_equal(p[k], expected[k])
+            assert_array_equal(ia[idx][k], expected[k])
 
     @pytest.mark.parametrize("xp", [dpnp, numpy])
     def test_kth_errors(self, xp):
@@ -507,7 +526,26 @@ class TestArgpartition:
         assert_raises(ValueError, a.argpartition, -11)
         assert_raises(TypeError, a.argpartition, 9.0)
         assert_raises(TypeError, a.argpartition, [1, 7.0])
+        assert_raises(TypeError, a.argpartition, [])
+        assert_raises(ValueError, a.argpartition, True)
+        assert_raises(ValueError, a.argpartition, [False])
+        assert_raises(ValueError, a.argpartition, numpy.array([[1]]))
         assert_raises(AxisError, xp.argpartition, a, 2, axis=1)
+
+    @pytest.mark.parametrize(
+        "kth, err, msg",
+        [
+            (-11, ValueError, r"kth\(=-1\) out of bounds \(10\)"),
+            (True, ValueError, "Booleans unacceptable as partition index"),
+            ([], TypeError, "Partition index must be integer"),
+            (numpy.array([[1]]), ValueError, "object too deep"),
+        ],
+    )
+    @pytest.mark.parametrize("fn", ["partition", "argpartition"])
+    def test_kth_error_messages(self, fn, kth, err, msg):
+        for xp in [numpy, dpnp]:
+            with pytest.raises(err, match=msg):
+                getattr(xp, fn)(xp.arange(10), kth)
 
     def test_not_implemented_kwargs(self):
         a = dpnp.arange(10)
@@ -697,7 +735,7 @@ class TestPartition:
         a = numpy.array([0, 2, 4, 6, 8, 10])
         ia = dpnp.array(a)
 
-        ia.partition([])
+        ia.partition(numpy.array([], dtype=numpy.intp))
         assert_array_equal(ia, a)
 
     @pytest.mark.parametrize("xp", [dpnp, numpy])
@@ -707,6 +745,8 @@ class TestPartition:
         assert_raises(ValueError, a.partition, -11)
         assert_raises(TypeError, a.partition, 9.0)
         assert_raises(TypeError, a.partition, [1, 7.0])
+        assert_raises(TypeError, a.partition, [])
+        assert_raises(ValueError, a.partition, True)
 
     @pytest.mark.parametrize("xp", [dpnp, numpy])
     def test_kth_axis_errors(self, xp):
