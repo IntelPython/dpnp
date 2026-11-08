@@ -35,19 +35,25 @@
 
 namespace dpnp::kernels::rng
 {
-// A distribution parameter: either one value for every sample, or a
-// C-contiguous array of `size` values, repeating along the samples, as a
+// A distribution parameter: one value for every sample, a C-contiguous
+// array holding one value per sample, or, with a nonzero `period`, a
+// C-contiguous array of `period` values repeating along the samples, as a
 // parameter broadcast along the leading dimensions of the result does.
 template <typename T>
 struct Param
 {
     const T *ptr = nullptr;
     T value{};
-    std::size_t size = 0;
+    std::size_t period = 0;
 
+    // the branches are the same for every work-item, so a vectorizing
+    // compiler takes the modulo only for a repeating array
     T operator[](std::size_t i) const
     {
-        return ptr ? ptr[i < size ? i : i % size] : value;
+        if (!ptr) {
+            return value;
+        }
+        return period ? ptr[i % period] : ptr[i];
     }
 };
 
