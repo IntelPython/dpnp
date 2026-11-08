@@ -40,6 +40,8 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Released the GIL around the oneMKL VM calls in the VM extension, which deadlocked on an in-order queue of a CPU device [#3156](https://github.com/IntelPython/dpnp/pull/3156)
 * Fixed `dpnp.place` and `dpnp.tensor.place` to order the write after the cast of `vals` to the array's data type, which could put wrong values into the array on an out-of-order queue [#3164](https://github.com/IntelPython/dpnp/pull/3164)
 * Fixed the example of handling duplicate indices in the `dpnp.tensor.put` docstring, which imported `dpctl.tensor`, did not parse and lost writes when `x` is longer than `indices` [#3165](https://github.com/IntelPython/dpnp/pull/3165)
+* Fixed `__dlpack__` of `dpnp.ndarray` and `dpnp.tensor.usm_ndarray` to export a writable 0-d array as writable when `max_version` is given, which made `dpnp.from_dlpack` and `dpnp.tensor.from_dlpack` return a read-only view of it [#3181](https://github.com/IntelPython/dpnp/pull/3181)
+* Fixed a segfault when freeing an array that `dpnp.from_dlpack` or `dpnp.tensor.from_dlpack` imported from a DLPack tensor without a deleter [#3181](https://github.com/IntelPython/dpnp/pull/3181)
 
 ### Security
 
