@@ -187,9 +187,18 @@ std::pair<sycl::event, sycl::event>
         return std::make_pair(ht_ev, fill_ev);
     }
 
-    sycl::event comp_ev =
-        fn(exec_q, n_iters, n_values, ignore_nan, src.get_data(),
-           dst.get_data(), all_nan_p, median_deps);
+    sycl::event comp_ev;
+    try {
+        comp_ev = fn(exec_q, n_iters, n_values, ignore_nan, src.get_data(),
+                     dst.get_data(), all_nan_p, median_deps);
+    } catch (...) {
+        // the fill must not outlive the flag Python frees on the exception
+        if (all_nan_p != nullptr) {
+            py::gil_scoped_release release;
+            median_deps.back().wait();
+        }
+        throw;
+    }
     sycl::event ht_ev =
         (all_nan.has_value())
             ? dpnp::utils::keep_args_alive(exec_q, {src, dst, all_nan.value()},
