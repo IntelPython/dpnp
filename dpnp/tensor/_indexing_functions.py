@@ -237,11 +237,11 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
 
             .. code-block:: python
 
-                from dpctl import tensor as dpt
+                import dpnp.tensor as dpt
 
                 def put_vec_duplicates(vec, ind, vals):
                     "Put values into vec, handling possible duplicates in ind"
-                    assert vec.ndim, ind.ndim, vals.ndim == 1, 1, 1
+                    assert vec.ndim == ind.ndim == vals.ndim == 1
 
                     # find positions of last occurrences of each
                     # unique index
@@ -250,7 +250,7 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
                     has_dups = len(ind) != len(ind_uniq)
 
                     if has_dups:
-                        ind_uniq = dpt.subtract(vec.size - 1, ind_uniq)
+                        ind_uniq = dpt.subtract(ind.size - 1, ind_uniq)
                         ind = dpt.take(ind, ind_uniq)
                         vals = dpt.take(vals, ind_uniq)
 
