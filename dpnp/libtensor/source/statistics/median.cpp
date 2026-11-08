@@ -44,6 +44,7 @@
 
 // dpnp tensor headers
 #include "kernels/sorting/radix_select.hpp"
+#include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -144,7 +145,12 @@ std::pair<sycl::event, sycl::event>
                 static_cast<int>(td_ns::typenum_t::UINT32)) {
             throw py::value_error("`all_nan` must be a single uint32 element");
         }
-        check_no_overlap({&src, &dst}, {&flag}, names);
+        // the flag is zeroed before the kernel reads `src`
+        auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
+        if (overlap(src, flag) || overlap(dst, flag)) {
+            throw py::value_error("`all_nan` has overlapping memory segments "
+                                  "with `src` or `dst`");
+        }
         all_nan_p = reinterpret_cast<std::uint32_t *>(flag.get_data());
     }
     else {
