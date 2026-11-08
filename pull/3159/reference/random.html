@@ -1122,10 +1122,10 @@
 <p><a class="reference external" href="https://numpy.org/doc/stable/reference/random/index.html">NumPy API Reference: Random sampling</a></p>
 </div>
 <p>DPNP draws random numbers on the SYCL device, with the counter-based
-Philox4x32x10 generator of the oneMKL device RNG API. It provides the
-<a class="reference internal" href="generated/dpnp.random.Generator.html#dpnp.random.Generator" title="dpnp.random.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></a> API of NumPy, recommended for new code. The legacy
-<a class="reference internal" href="generated/dpnp.random.RandomState.html#dpnp.random.RandomState" title="dpnp.random.RandomState"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomState</span></code></a> API and the module-level functions still use the
-host-side oneMKL RNG.</p>
+Philox4x32x10 generator of the oneMKL device RNG API (oneMath's in a
+oneMath build). It provides the <a class="reference internal" href="generated/dpnp.random.Generator.html#dpnp.random.Generator" title="dpnp.random.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></a> API of NumPy,
+recommended for new code. The legacy <a class="reference internal" href="generated/dpnp.random.RandomState.html#dpnp.random.RandomState" title="dpnp.random.RandomState"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomState</span></code></a> API and the
+module-level functions still use the host-side oneMKL RNG.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 
 <span class="n">rng</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
@@ -1166,6 +1166,9 @@ but the kernels handle them safely: they never loop without end or access
 memory out of bounds. Floating-point arrays given for integer parameters
 are converted as by <a class="reference internal" href="generated/dpnp.ndarray.astype.html#dpnp.ndarray.astype" title="dpnp.ndarray.astype"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.astype()</span></code></a>, whose result for NaN and
 out-of-range values is undefined.</p></li>
+<li><p>Parameters given as lists or NumPy arrays are copied to the device first,
+which waits for the work already submitted to the queue. Scalars and
+<a class="reference internal" href="generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> parameters don't wait.</p></li>
 <li><p>The discrete distributions return <code class="docutils literal notranslate"><span class="pre">int64</span></code> values. They compute in double
 precision on devices supporting it, and in single precision otherwise.
 There, the streams differ from the ones of devices with double precision,
