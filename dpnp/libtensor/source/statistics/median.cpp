@@ -218,28 +218,20 @@ std::pair<sycl::event, sycl::event>
  * keep their type, the others are averaged in double or, on devices without
  * it, in single precision */
 template <typename T, typename ResT>
-constexpr bool is_median_type_pair()
-{
-    using dpnp::tensor::type_utils::is_complex_v;
+inline constexpr bool is_median_type_pair_v =
     // complex types have no order-preserving radix key
-    if constexpr (is_complex_v<T> || is_complex_v<ResT>) {
-        return false;
-    }
-    else if constexpr (std::is_floating_point_v<T> ||
-                       std::is_same_v<T, sycl::half>) {
-        return std::is_same_v<T, ResT>;
-    }
-    else {
-        return std::is_same_v<ResT, double> || std::is_same_v<ResT, float>;
-    }
-}
+    !dpnp::tensor::type_utils::is_complex_v<T> &&
+    !dpnp::tensor::type_utils::is_complex_v<ResT> &&
+    ((std::is_floating_point_v<T> || std::is_same_v<T, sycl::half>)
+         ? std::is_same_v<T, ResT>
+         : (std::is_same_v<ResT, double> || std::is_same_v<ResT, float>));
 
 template <typename fnT, typename T, typename ResT>
 struct MedianFactory
 {
     fnT get()
     {
-        if constexpr (is_median_type_pair<T, ResT>()) {
+        if constexpr (is_median_type_pair_v<T, ResT>) {
             return median_call<T, ResT>;
         }
         else {
