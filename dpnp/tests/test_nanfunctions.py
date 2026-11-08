@@ -598,7 +598,8 @@ class TestNanMedianSelect:
         # along an axis shorter than 600, numpy.nanmedian also averages the
         # single median of an odd count with itself, unlike numpy.median and
         # its own 1-D path
-        expected = numpy.array([numpy.nanmedian(row) for row in a])
+        with numpy.errstate(over="ignore"):
+            expected = numpy.array([numpy.nanmedian(row) for row in a])
         result = dpnp.nanmedian(ia, axis=-1)
         assert_array_equal(result, expected, strict=True)
 

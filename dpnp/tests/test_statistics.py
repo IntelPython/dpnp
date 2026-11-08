@@ -1434,7 +1434,8 @@ class TestMedianSelect:
         a[0, n // 3] = numpy.nan
         ia = dpnp.array(a)
 
-        expected = numpy.median(a, axis=-1)
+        with numpy.errstate(over="ignore"):
+            expected = numpy.median(a, axis=-1)
         result = dpnp.median(ia, axis=-1)
         assert_dtype_allclose(result, expected)
 
