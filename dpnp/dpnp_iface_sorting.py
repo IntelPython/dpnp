@@ -43,10 +43,10 @@ it contains:
 # pylint: disable=no-name-in-module
 
 import operator
-from collections.abc import Sequence
 from typing import NamedTuple
 
 import dpctl.utils as dpu
+import numpy
 
 import dpnp
 import dpnp.libtensor._tensor_impl as ti
@@ -61,25 +61,28 @@ from .tensor._numpy_helper import normalize_axis_index
 
 
 def _normalize_kth(kth, length, check_bounds=True):
-    """Validate `kth` and return it as a list of non-negative integers."""
+    """
+    Validate `kth` as NumPy does and return it as a list of non-negative
+    integers.
 
-    if isinstance(kth, int):
-        kth = (kth,)
-    elif not isinstance(kth, Sequence):
-        raise TypeError(
-            f"kth must be int or sequence of ints, but got {type(kth)}"
-        )
-    elif not all(isinstance(k, int) for k in kth):
-        raise TypeError("kth is a sequence, but not all elements are integers")
+    """
 
-    kth = list(kth)
+    kth = numpy.asarray(kth)
+    if kth.ndim > 1:
+        raise ValueError("object too deep for desired array")
+    if kth.dtype == numpy.bool_:
+        raise ValueError("Booleans unacceptable as partition index")
+    if not numpy.issubdtype(kth.dtype, numpy.integer):
+        raise TypeError("Partition index must be integer")
+
+    kth = [int(k) for k in kth.ravel()]
     if not check_bounds:
         return kth
     for i, k in enumerate(kth):
         if k < 0:
             k += length
         if not 0 <= k < length:
-            raise ValueError(f"kth(={kth[i]}) out of bounds {length}")
+            raise ValueError(f"kth(={k}) out of bounds ({length})")
         kth[i] = k
     return kth
 
@@ -111,9 +114,19 @@ def _wrap_partition_argpartition(a, kth, axis, kind, order, return_indices):
     # an empty array is partitioned whatever kth is
     kth = _normalize_kth(kth, a.shape[axis], check_bounds=a.size > 0)
 
-    if len(kth) == 0 and not return_indices:
+    if len(kth) == 0:
         # nothing is to be put in its sorted position
-        return dpnp.copy(a)
+        if not return_indices:
+            return dpnp.copy(a)
+        idx_shape = [1] * nd
+        idx_shape[axis] = a.shape[axis]
+        idx = dpnp.arange(
+            a.shape[axis],
+            dtype=dpnp.int64,
+            usm_type=a.usm_type,
+            sycl_queue=a.sycl_queue,
+        ).reshape(idx_shape)
+        return dpnp.broadcast_to(idx, a.shape).copy()
     if (
         a.size == 0
         or len(kth) != 1
