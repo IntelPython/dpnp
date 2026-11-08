@@ -1,0 +1,51 @@
+name: Set up Miniconda
+description: Install Miniforge and create the conda environment, retrying once on failure
+
+inputs:
+  miniforge-version:
+    description: Miniforge version to install
+    required: true
+  activate-environment:
+    description: Name of the conda environment to create and activate
+    required: true
+  environment-file:
+    description: Environment file to create the environment from
+    required: false
+    default: ''
+  python-version:
+    description: Python version to install into the environment
+    required: false
+    default: ''
+  channels:
+    description: Comma-separated list of conda channels
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    # A transient network or solver error fails the first attempt now and then
+    - name: Setup miniconda
+      id: setup_miniconda
+      continue-on-error: true
+      uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
+      with:
+        miniforge-version: ${{ inputs.miniforge-version }}
+        use-mamba: 'true'
+        conda-remove-defaults: 'true'
+        environment-file: ${{ inputs.environment-file }}
+        python-version: ${{ inputs.python-version }}
+        channels: ${{ inputs.channels }}
+        activate-environment: ${{ inputs.activate-environment }}
+
+    - name: ReSetup miniconda
+      if: steps.setup_miniconda.outcome == 'failure'
+      uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
+      with:
+        miniforge-version: ${{ inputs.miniforge-version }}
+        use-mamba: 'true'
+        conda-remove-defaults: 'true'
+        environment-file: ${{ inputs.environment-file }}
+        python-version: ${{ inputs.python-version }}
+        channels: ${{ inputs.channels }}
+        activate-environment: ${{ inputs.activate-environment }}

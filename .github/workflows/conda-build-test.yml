@@ -79,23 +79,9 @@ jobs:
           filter: blob:none
 
       - name: Setup miniconda
-        id: setup_miniconda
-        continue-on-error: true
-        uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
+        uses: ./.github/actions/setup-miniconda
         with:
           miniforge-version: ${{ env.miniforge-version }}
-          use-mamba: 'true'
-          conda-remove-defaults: 'true'
-          environment-file: ${{ env.build-conda-pkg-env }}
-          activate-environment: ${{ env.build-env-name }}
-
-      - name: ReSetup miniconda
-        if: steps.setup_miniconda.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
-        with:
-          miniforge-version: ${{ env.miniforge-version }}
-          use-mamba: 'true'
-          conda-remove-defaults: 'true'
           environment-file: ${{ env.build-conda-pkg-env }}
           activate-environment: ${{ env.build-env-name }}
 
@@ -191,23 +177,9 @@ jobs:
           path: ${{ env.pkg-path-in-channel }}
 
       - name: Setup miniconda
-        id: setup_miniconda
-        continue-on-error: true
-        uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
+        uses: ./source/.github/actions/setup-miniconda
         with:
           miniforge-version: ${{ env.miniforge-version }}
-          use-mamba: 'true'
-          conda-remove-defaults: 'true'
-          environment-file: ${{ env.create-conda-channel-env }}
-          activate-environment: ${{ env.test-env-name }}
-
-      - name: ReSetup miniconda
-        if: steps.setup_miniconda.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
-        with:
-          miniforge-version: ${{ env.miniforge-version }}
-          use-mamba: 'true'
-          conda-remove-defaults: 'true'
           environment-file: ${{ env.create-conda-channel-env }}
           activate-environment: ${{ env.test-env-name }}
 

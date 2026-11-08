@@ -208,23 +208,9 @@ jobs:
           path: ${{ env.pkg-path-in-channel }}
 
       - name: Setup miniconda
-        id: setup_miniconda
-        continue-on-error: true
-        uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
+        uses: ./source/.github/actions/setup-miniconda
         with:
           miniforge-version: ${{ env.miniforge-version }}
-          use-mamba: 'true'
-          conda-remove-defaults: 'true'
-          environment-file: ${{ env.create-conda-channel-env }}
-          activate-environment: ${{ env.test-env-name }}
-
-      - name: ReSetup miniconda
-        if: steps.setup_miniconda.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
-        with:
-          miniforge-version: ${{ env.miniforge-version }}
-          use-mamba: 'true'
-          conda-remove-defaults: 'true'
           environment-file: ${{ env.create-conda-channel-env }}
           activate-environment: ${{ env.test-env-name }}
 
@@ -363,23 +349,9 @@ jobs:
           path: ${{ env.pkg-path-in-channel }}
 
       - name: Setup miniconda
-        id: setup_miniconda
-        continue-on-error: true
-        uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
+        uses: ./source/.github/actions/setup-miniconda
         with:
           miniforge-version: ${{ env.miniforge-version }}
-          use-mamba: 'true'
-          conda-remove-defaults: 'true'
-          environment-file: ${{ env.examples-conda-pkg-env }}
-          activate-environment: ${{ env.examples-env-name }}
-
-      - name: ReSetup miniconda
-        if: steps.setup_miniconda.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
-        with:
-          miniforge-version: ${{ env.miniforge-version }}
-          use-mamba: 'true'
-          conda-remove-defaults: 'true'
           environment-file: ${{ env.examples-conda-pkg-env }}
           activate-environment: ${{ env.examples-env-name }}
 
@@ -497,23 +469,9 @@ jobs:
           (echo FULL_PACKAGE_PATH=%FULL_PACKAGE_PATH%) >> %GITHUB_ENV%
 
       - name: Setup miniconda
-        id: setup_miniconda
-        continue-on-error: true
-        uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
+        uses: ./source/.github/actions/setup-miniconda
         with:
           miniforge-version: ${{ env.miniforge-version }}
-          use-mamba: 'true'
-          conda-remove-defaults: 'true'
-          environment-file: ${{ env.create-conda-channel-env }}
-          activate-environment: ${{ env.test-env-name }}
-
-      - name: ReSetup miniconda
-        if: steps.setup_miniconda.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
-        with:
-          miniforge-version: ${{ env.miniforge-version }}
-          use-mamba: 'true'
-          conda-remove-defaults: 'true'
           environment-file: ${{ env.create-conda-channel-env }}
           activate-environment: ${{ env.test-env-name }}
 
@@ -692,23 +650,9 @@ jobs:
           name: ${{ env.package-name }} ${{ runner.os }} Wheels Python ${{ env.python-label }}
 
       - name: Setup miniconda
-        id: setup_miniconda
-        continue-on-error: true
-        uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
+        uses: ./.github/actions/setup-miniconda
         with:
           miniforge-version: ${{ env.miniforge-version }}
-          use-mamba: 'true'
-          conda-remove-defaults: 'true'
-          environment-file: ${{ env.upload-conda-pkg-env }}
-          activate-environment: ${{ env.upload-env-name }}
-
-      - name: ReSetup miniconda
-        if: steps.setup_miniconda.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
-        with:
-          miniforge-version: ${{ env.miniforge-version }}
-          use-mamba: 'true'
-          conda-remove-defaults: 'true'
           environment-file: ${{ env.upload-conda-pkg-env }}
           activate-environment: ${{ env.upload-env-name }}
 
@@ -773,23 +717,9 @@ jobs:
           path: ${{ env.pkg-path-in-channel }}
 
       - name: Setup miniconda
-        id: setup_miniconda
-        continue-on-error: true
-        uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
+        uses: ./source/.github/actions/setup-miniconda
         with:
           miniforge-version: ${{ env.miniforge-version }}
-          use-mamba: 'true'
-          conda-remove-defaults: 'true'
-          environment-file: ${{ env.create-conda-channel-env }}
-          activate-environment: ${{ env.conda-env-name }}
-
-      - name: ReSetup miniconda
-        if: steps.setup_miniconda.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
-        with:
-          miniforge-version: ${{ env.miniforge-version }}
-          use-mamba: 'true'
-          conda-remove-defaults: 'true'
           environment-file: ${{ env.create-conda-channel-env }}
           activate-environment: ${{ env.conda-env-name }}
 
@@ -924,34 +854,23 @@ jobs:
           fetch-depth: ${{ env.fetch-depth }}
 
       - name: Setup miniconda
-        id: setup_miniconda
-        continue-on-error: true
-        uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
+        uses: ./.github/actions/setup-miniconda
         with:
           miniforge-version: ${{ env.miniforge-version }}
-          use-mamba: 'true'
-          conda-remove-defaults: 'true'
           environment-file: ${{ env.cleanup-conda-pkg-env }}
           activate-environment: ${{ env.cleanup-env-name }}
 
-      - name: ReSetup miniconda
-        if: steps.setup_miniconda.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
-        with:
-          miniforge-version: ${{ env.miniforge-version }}
-          use-mamba: 'true'
-          conda-remove-defaults: 'true'
-          environment-file: ${{ env.cleanup-conda-pkg-env }}
-          activate-environment: ${{ env.cleanup-env-name }}
-
+      # A subdirectory keeps the setup-miniconda action in place for its post step
       - name: Checkout repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           repository: IntelPython/devops-tools
           fetch-depth: ${{ env.fetch-depth }}
+          path: devops-tools
 
       - name: Cleanup old packages
+        working-directory: devops-tools
         run: |
           python scripts/cleanup-old-packages.py \
           --verbose --force --token "${ANACONDA_TOKEN}" \

@@ -75,27 +75,19 @@ jobs:
         run: |
           echo "Latest tag is ${{ steps.find_latest_tag.outputs.tag }}"
 
-      - name: Setup miniconda
-        id: setup_miniconda
-        continue-on-error: true
-        uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
+      # Only for the local setup-miniconda action; the tests run from the installed package
+      - name: Checkout DPNP repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          miniforge-version: ${{ env.miniforge-version }}
-          use-mamba: 'true'
-          channels: conda-forge
-          conda-remove-defaults: 'true'
-          python-version: ${{ matrix.python }}
-          activate-environment: ${{ env.test-env-name }}
+          persist-credentials: false
+          sparse-checkout: .github/actions
 
-      - name: ReSetup miniconda
-        if: steps.setup_miniconda.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
+      - name: Setup miniconda
+        uses: ./.github/actions/setup-miniconda
         with:
           miniforge-version: ${{ env.miniforge-version }}
-          use-mamba: 'true'
-          channels: conda-forge
-          conda-remove-defaults: 'true'
           python-version: ${{ matrix.python }}
+          channels: conda-forge
           activate-environment: ${{ env.test-env-name }}
 
       - name: Install OCL CPU RT from Intel channel
