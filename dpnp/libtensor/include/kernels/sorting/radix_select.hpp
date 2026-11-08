@@ -1934,7 +1934,8 @@ sycl::event radix_select_impl(sycl::queue &exec_q,
  * `(n_iters, n_values)` array rearranged so that its element at `kth` is the
  * one a sort would put there, preceded by those ordering before it and
  * followed by the others; each of these three groups keeps the order of the
- * row, NaNs order last, and -0.0 and +0.0 compare equal */
+ * row, except in rows short enough for a sub-group, which come out sorted;
+ * NaNs order last, and -0.0 and +0.0 compare equal */
 template <typename ValueT>
 sycl::event radix_partition_impl(sycl::queue &exec_q,
                                  std::size_t n_iters,
