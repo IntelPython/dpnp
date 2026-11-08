@@ -374,7 +374,8 @@ def dpnp_median(
             res = res.reshape(res_shape)
         return dpnp.get_result_array(res)
 
-    dpnp.get_result_array(res, res_out)
+    # the medians are cast to `out` as with numpy
+    dpnp.get_result_array(res, res_out, casting="unsafe")
     return dpnp.get_result_array(out)
 
 
