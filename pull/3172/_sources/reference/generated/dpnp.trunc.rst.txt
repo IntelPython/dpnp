@@ -1,0 +1,10 @@
+﻿
+
+dpnp.trunc
+==========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: trunc
