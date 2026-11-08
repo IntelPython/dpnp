@@ -337,8 +337,9 @@ class Philox4x3210(BitGenerator):
     A Philox4x32-10 counter-based bit generator on the device.
 
     The generator of Salmon et al. (2011), with a 64-bit key and a 128-bit
-    counter, as implemented by the oneMKL device RNG API. It is not the same
-    as :class:`numpy.random.Philox`, which is Philox4x64-10.
+    counter, as implemented by the oneMKL device RNG API (oneMath's in a
+    oneMath build). It is not the same as :class:`numpy.random.Philox`,
+    which is Philox4x64-10.
 
     Parameters
     ----------
