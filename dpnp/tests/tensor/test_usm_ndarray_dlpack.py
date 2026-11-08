@@ -41,6 +41,12 @@ from .helper import (
     get_queue_or_skip,
     skip_if_dtype_not_supported,
 )
+from .helper._dlpack_ctypes import (
+    kDLInt,
+    make_dl_tensor,
+    make_dlpack_capsule,
+    make_managed_tensor,
+)
 
 device_CPU = dpt_arr.DLDeviceType.kDLCPU
 device_oneAPI = dpt_arr.DLDeviceType.kDLOneAPI
@@ -351,6 +357,59 @@ def test_versioned_dlpack_capsule():
     y = _dlp.from_dlpack_capsule(cap)
     assert x._pointer != y._pointer
     assert not y.flags.writable
+
+
+@pytest.mark.parametrize("copy", [False, True])
+def test_versioned_dlpack_capsule_0d(copy):
+    q = get_queue_or_skip()
+    x = dpt.asarray(5, dtype="i4", sycl_queue=q)
+    max_supported_ver = _dlp.get_build_dlpack_version()
+
+    cap = x.__dlpack__(max_version=max_supported_ver, copy=copy)
+    y = _dlp.from_dlpack_capsule(cap)
+    assert y.flags.writable
+
+    x.flags["W"] = False
+    cap = x.__dlpack__(max_version=max_supported_ver, copy=copy)
+    y = _dlp.from_dlpack_capsule(cap)
+    assert not y.flags.writable
+
+
+def test_from_dlpack_0d_view_is_writable():
+    q = get_queue_or_skip()
+    x = dpt.asarray(5, dtype="i4", sycl_queue=q)
+
+    y = dpt.from_dlpack(x)
+    y[...] = 7
+    assert int(x) == 7
+
+
+@pytest.mark.parametrize(
+    "versioned", [True, False], ids=["versioned", "legacy"]
+)
+@pytest.mark.parametrize(
+    "on_device", [True, False], ids=["kDLOneAPI", "kDLCPU"]
+)
+def test_from_dlpack_capsule_null_deleter(versioned, on_device):
+    if on_device:
+        q = get_queue_or_skip()
+        x = dpt.arange(4, dtype="i4", sycl_queue=q)
+        data, device = x._pointer, x.__dlpack_device__()
+    else:
+        x = np.arange(4, dtype="i4")
+        data, device = x.ctypes.data, (device_CPU, 0)
+    # the deleter can be NULL when the producer has nothing to free
+    mt = make_managed_tensor(
+        make_dl_tensor((4,), (kDLInt, 32, 1), device, data=data, strides=(1,)),
+        versioned=versioned,
+    )
+    caps = make_dlpack_capsule(mt)
+
+    y = _dlp.from_dlpack_capsule(caps)
+    y_host = dpt.asnumpy(y) if on_device else y
+    assert np.array_equal(y_host, np.arange(4, dtype="i4"))
+    # freeing the import calls the deleter, which must be skipped
+    del y, y_host, caps
 
 
 def test_from_dlpack_kwargs():
