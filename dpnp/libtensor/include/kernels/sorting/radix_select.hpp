@@ -324,11 +324,15 @@ struct MedianOp
 
     NoOut row_out(std::size_t, const ValueT *) const { return {}; }
 
-    void write(std::size_t iter_id, ValueT lo, ValueT hi) const
+    void write(std::size_t iter_id,
+               ValueT lo,
+               ValueT hi,
+               std::uint64_t n_nan) const
     {
-        // a single median is written as is, its mean with itself could
-        // overflow
-        if (lo == hi) {
+        // an odd row has a single median, written as is since its mean with
+        // itself could overflow, while an even row averages its two medians
+        // even if equal, as numpy does
+        if (n_valid(n_nan) % 2 == 1) {
             out[iter_id] = static_cast<ResT>(hi);
         }
         else if constexpr (std::is_same_v<ResT, sycl::half>) {
@@ -357,16 +361,18 @@ struct MedianOp
     }
 
     /*! @brief Writes the median of a row given the keys of its lower and
-     * upper medians */
+     * upper medians and its number of NaNs */
     template <typename WideKeyT>
     void write_median_keys(std::size_t iter_id,
                            WideKeyT lo_key,
-                           WideKeyT hi_key) const
+                           WideKeyT hi_key,
+                           std::uint64_t n_nan) const
     {
         using KeyT = radix_utils::radix_key_t<ValueT>;
         write(iter_id,
               radix_utils::ordered_radix_value<true, ValueT>(KeyT(lo_key)),
-              radix_utils::ordered_radix_value<true, ValueT>(KeyT(hi_key)));
+              radix_utils::ordered_radix_value<true, ValueT>(KeyT(hi_key)),
+              n_nan);
     }
 
     /*! @brief Writes the median of a row given the largest keys of its
@@ -379,8 +385,9 @@ struct MedianOp
                     WideKeyT less_max,
                     WideKeyT eq_max) const
     {
-        write_median_keys(
-            iter_id, (lo_before(k, n_less, n_nan)) ? less_max : eq_max, eq_max);
+        write_median_keys(iter_id,
+                          (lo_before(k, n_less, n_nan)) ? less_max : eq_max,
+                          eq_max, n_nan);
     }
 };
 
@@ -1015,7 +1022,7 @@ void select_sub_group_row_from_memory(const sycl::sub_group &sg,
         lo_key = sycl::reduce_over_group(sg, lo_key, sycl::maximum<WideKeyT>());
         hi_key = sycl::reduce_over_group(sg, hi_key, sycl::maximum<WideKeyT>());
         if (lane_id == 0) {
-            op.write_median_keys(iter_id, lo_key, hi_key);
+            op.write_median_keys(iter_id, lo_key, hi_key, n_nan);
         }
     }
     else {
@@ -1174,7 +1181,7 @@ sycl::event
                     hi_key = sycl::reduce_over_group(sg, hi_key,
                                                      sycl::maximum<WideKeyT>());
                     if (lane_id == 0) {
-                        op.write_median_keys(iter_id, lo_key, hi_key);
+                        op.write_median_keys(iter_id, lo_key, hi_key, n_nan);
                     }
                 }
                 else {
