@@ -442,6 +442,22 @@ class TestNanMedian:
         expected = numpy.nanmedian(a, axis=(1, 2), keepdims=keepdims)
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.usefixtures(
+        "suppress_invalid_numpy_warnings",
+        "suppress_mean_empty_slice_numpy_warnings",
+    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("keepdims", [False, True])
+    def test_empty_dtype(self, dtype, keepdims):
+        a = numpy.empty((3, 0), dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = dpnp.nanmedian(ia, axis=1, keepdims=keepdims)
+        expected = numpy.nanmedian(a, axis=1, keepdims=keepdims)
+        assert_dtype_allclose(result, expected)
+        # the median of an empty complex slice is NaN in both parts
+        assert_array_equal(dpnp.isnan(result.imag), numpy.isnan(expected.imag))
+
     @pytest.mark.usefixtures("suppress_mean_empty_slice_numpy_warnings")
     @pytest.mark.parametrize(
         "shape, axis", [((1, 5), 1), ((3, 1, 4), 2), ((2, 1, 5), (0, 2))]
