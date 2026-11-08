@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.ndarray.choose
+===================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: ndarray.choose

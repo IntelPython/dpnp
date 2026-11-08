@@ -1,0 +1,10 @@
+﻿
+
+dpnp.unwrap
+===========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: unwrap
