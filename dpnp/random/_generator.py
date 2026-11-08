@@ -207,6 +207,10 @@ class Generator:
     the device. Invalid ones give undefined values, such as NaN, but never
     make the kernels loop without end or access memory out of bounds.
 
+    Parameters given as lists or NumPy arrays are copied to the device
+    first, which waits for the work already submitted to the queue.
+    Scalars and parameters on the device don't wait.
+
     """
 
     def __init__(self, bit_generator):

@@ -45,6 +45,9 @@ Differences from NumPy
   checked as in NumPy. Parameters in :class:`dpnp.ndarray` are
   not, since that would wait for the device.
   Invalid ones give undefined values, such as NaN.
+* Parameters given as lists or NumPy arrays are copied to the device first,
+  which waits for the work already submitted to the queue. Scalars and
+  :class:`dpnp.ndarray` parameters don't wait.
 * Generators and bit generators cannot be pickled or deep-copied, and the
   bit generators have no ``advance`` or ``jumped`` method.
 
