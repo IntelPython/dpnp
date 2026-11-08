@@ -876,6 +876,8 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.html">dpnp.random.Generator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.bit_generator.html">dpnp.random.Generator.bit_generator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.spawn.html">dpnp.random.Generator.spawn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.sycl_device.html">dpnp.random.Generator.sycl_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.sycl_queue.html">dpnp.random.Generator.sycl_queue</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.integers.html">dpnp.random.Generator.integers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.random.html">dpnp.random.Generator.random</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.choice.html">dpnp.random.Generator.choice</a></li>
@@ -920,9 +922,13 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.weibull.html">dpnp.random.Generator.weibull</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Generator.zipf.html">dpnp.random.Generator.zipf</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.BitGenerator.html">dpnp.random.BitGenerator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.BitGenerator.lock.html">dpnp.random.BitGenerator.lock</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.BitGenerator.random_raw.html">dpnp.random.BitGenerator.random_raw</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.BitGenerator.seed_seq.html">dpnp.random.BitGenerator.seed_seq</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.BitGenerator.spawn.html">dpnp.random.BitGenerator.spawn</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.BitGenerator.state.html">dpnp.random.BitGenerator.state</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.BitGenerator.sycl_device.html">dpnp.random.BitGenerator.sycl_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.BitGenerator.sycl_queue.html">dpnp.random.BitGenerator.sycl_queue</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Philox4x3210.html">dpnp.random.Philox4x3210</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.SeedSequence.html">dpnp.random.SeedSequence</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.rand.html">dpnp.random.rand</a></li>
@@ -1145,7 +1151,7 @@
 <span class="sd">:class:`numpy.random.Generator`.</span>
 
 <span class="sd">Every distribution is sampled on the device by a port of NumPy's algorithm,</span>
-<span class="sd">driven by a oneMKL device engine. The values differ from NumPy's.</span>
+<span class="sd">driven by a oneMKL or oneMath device engine. The values differ from NumPy's.</span>
 
 <span class="sd">"""</span>
 
@@ -1153,6 +1159,7 @@
 <span class="c1"># pylint: disable=protected-access</span>
 <span class="c1"># pylint: disable=too-many-lines</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">operator</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
@@ -1232,6 +1239,18 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_is_array</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">or</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_repeats_along_samples</span><span class="p">(</span><span class="n">param_shape</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Whether a parameter of `param_shape` broadcasts to `shape` along the</span>
+<span class="sd">    leading dimensions only, so that the kernel can read its values</span>
+<span class="sd">    cyclically instead of from a copy of the size of the result.</span>
+
+<span class="sd">    """</span>
+
+    <span class="n">trailing</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">dropwhile</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="n">param_shape</span><span class="p">))</span>
+    <span class="k">return</span> <span class="ow">not</span> <span class="n">trailing</span> <span class="ow">or</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">trailing</span><span class="p">)</span> <span class="p">:])</span> <span class="o">==</span> <span class="n">trailing</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_is_scalar_path</span><span class="p">(</span><span class="o">*</span><span class="n">params</span><span class="p">):</span>
@@ -1460,8 +1479,8 @@
 <span class="sd">    takes the USM type of the array parameters, or ``"device"`` when there</span>
 <span class="sd">    are none.</span>
 
-<span class="sd">    Pickling, copying, and the ``advance`` and ``jumped`` methods of NumPy's</span>
-<span class="sd">    bit generators are not supported.</span>
+<span class="sd">    Pickling, deep copying, and the ``advance`` and ``jumped`` methods of</span>
+<span class="sd">    NumPy's bit generators are not supported.</span>
 
 <span class="sd">    Parameters on the host (scalars, lists and NumPy arrays) are checked as</span>
 <span class="sd">    in NumPy. Parameters on the device are not, since that would wait for</span>
@@ -1473,6 +1492,10 @@
 <span class="sd">    double precision on devices supporting it, and in single precision</span>
 <span class="sd">    otherwise. On the latter, the samples for very large parameters, such</span>
 <span class="sd">    as a Poisson `lam` beyond about ``1e7``, are less accurate than NumPy's.</span>
+
+<span class="sd">    Parameters given as lists or NumPy arrays are copied to the device</span>
+<span class="sd">    first, which waits for the work already submitted to the queue.</span>
+<span class="sd">    Scalars and parameters on the device don't wait.</span>
 
 <span class="sd">    """</span>
 
@@ -1543,6 +1566,16 @@
 <span class="sd">        Create new independent child generators on the same SYCL queue.</span>
 
 <span class="sd">        For full documentation refer to :obj:`numpy.random.Generator.spawn`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        n_children : int</span>
+<span class="sd">            The number of children to create.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : list of Generator</span>
+<span class="sd">            The child generators.</span>
 
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="p">[</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="n">bg</span><span class="p">)</span> <span class="k">for</span> <span class="n">bg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bit_generator</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="n">n_children</span><span class="p">)]</span></div>
@@ -1667,11 +1700,15 @@
                 <span class="n">p</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
                     <span class="n">p</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">queue</span>
                 <span class="p">)</span>
-                <span class="n">p</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">shape</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">_repeats_along_samples</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
+                    <span class="n">p</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">p</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">shape</span><span class="p">))</span>
                 <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">usm_p</span><span class="p">,</span> <span class="n">usm_out</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">,</span> <span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">out</span><span class="p">))</span>
-                    <span class="c1"># the kernel reads element i of `p` before writing</span>
-                    <span class="c1"># element i of `out`, so only an exact alias is safe</span>
+                    <span class="c1"># the kernel reads element i % p.size of `p` before</span>
+                    <span class="c1"># writing element i of `out`, so only an exact alias is</span>
+                    <span class="c1"># safe</span>
                     <span class="k">if</span> <span class="n">ti</span><span class="o">.</span><span class="n">_array_overlap</span><span class="p">(</span>
                         <span class="n">usm_p</span><span class="p">,</span> <span class="n">usm_out</span>
                     <span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ti</span><span class="o">.</span><span class="n">_same_logical_tensors</span><span class="p">(</span><span class="n">usm_p</span><span class="p">,</span> <span class="n">usm_out</span><span class="p">):</span>
@@ -1888,7 +1925,8 @@
 
 <span class="sd">            Default: ``1.0``.</span>
 <span class="sd">        size : {None, int, tuple of ints}, optional</span>
-<span class="sd">            Output shape. With ``None``, the broadcast shape of `low` and `high`.</span>
+<span class="sd">            Output shape. With ``None``, the broadcast shape of `low`</span>
+<span class="sd">            and `high`.</span>
 
 <span class="sd">            Default: ``None``.</span>
 <span class="sd">        dtype : {None, dtype}, optional</span>
@@ -2039,7 +2077,8 @@
 
 <span class="sd">            Default: ``1.0``.</span>
 <span class="sd">        size : {None, int, tuple of ints}, optional</span>
-<span class="sd">            Output shape. With ``None``, the broadcast shape of `loc` and `scale`.</span>
+<span class="sd">            Output shape. With ``None``, the broadcast shape of `loc`</span>
+<span class="sd">            and `scale`.</span>
 
 <span class="sd">            Default: ``None``.</span>
 <span class="sd">        dtype : {None, dtype}, optional</span>
@@ -3712,13 +3751,21 @@
 
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
-<span class="sd">        An array API concept of device where the samples are drawn and</span>
-<span class="sd">        allocated. Ignored when `seed` is a bit generator or a generator.</span>
+<span class="sd">        An array API concept of device where the output array is created.</span>
+<span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
+<span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
+<span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
+<span class="sd">        :attr:`dpnp.ndarray.device`. Ignored when `seed` is a bit generator</span>
+<span class="sd">        or a generator.</span>
 
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
-<span class="sd">        A SYCL queue to draw samples on. Ignored when `seed` is a bit</span>
-<span class="sd">        generator or a generator.</span>
+<span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
+<span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
+<span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
+<span class="sd">        a default queue. Ignored when `seed` is a bit generator or a</span>
+<span class="sd">        generator.</span>
 
 <span class="sd">        Default: ``None``.</span>
 

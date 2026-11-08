@@ -6,10 +6,10 @@ Random sampling (:mod:`dpnp.random`)
 .. hint:: `NumPy API Reference: Random sampling <https://numpy.org/doc/stable/reference/random/index.html>`_
 
 DPNP draws random numbers on the SYCL device, with the counter-based
-Philox4x32x10 generator of the oneMKL device RNG API. It provides the
-:class:`Generator` API of NumPy, recommended for new code. The legacy
-:class:`RandomState` API and the module-level functions still use the
-host-side oneMKL RNG.
+Philox4x32x10 generator of the oneMKL device RNG API (oneMath's in a
+oneMath build). It provides the :class:`Generator` API of NumPy,
+recommended for new code. The legacy :class:`RandomState` API and the
+module-level functions still use the host-side oneMKL RNG.
 
 .. code-block:: python
 
@@ -53,6 +53,9 @@ Differences from NumPy
   memory out of bounds. Floating-point arrays given for integer parameters
   are converted as by :meth:`dpnp.ndarray.astype`, whose result for NaN and
   out-of-range values is undefined.
+* Parameters given as lists or NumPy arrays are copied to the device first,
+  which waits for the work already submitted to the queue. Scalars and
+  :class:`dpnp.ndarray` parameters don't wait.
 * The discrete distributions return ``int64`` values. They compute in double
   precision on devices supporting it, and in single precision otherwise.
   There, the streams differ from the ones of devices with double precision,
@@ -66,8 +69,8 @@ Differences from NumPy
 * ``hypergeometric`` requires ``ngood`` and ``nbad`` below ``10**9``.
 * :meth:`Generator.shuffle` only accepts a :class:`dpnp.ndarray`, as in
   CuPy.
-* Generators and bit generators cannot be pickled or copied, and the bit
-  generators have no ``advance`` or ``jumped`` method.
+* Generators and bit generators cannot be pickled or deep-copied, and the
+  bit generators have no ``advance`` or ``jumped`` method.
 
 Random Generator
 ----------------
@@ -88,6 +91,8 @@ Accessing the bit generator and spawning
 
    Generator.bit_generator
    Generator.spawn
+   Generator.sycl_device
+   Generator.sycl_queue
 
 Simple random data
 ^^^^^^^^^^^^^^^^^^
@@ -164,9 +169,13 @@ Bit generators
    :nosignatures:
 
    BitGenerator
+   BitGenerator.lock
    BitGenerator.random_raw
+   BitGenerator.seed_seq
    BitGenerator.spawn
    BitGenerator.state
+   BitGenerator.sycl_device
+   BitGenerator.sycl_queue
    Philox4x3210
    SeedSequence
 
@@ -246,8 +255,8 @@ Distributions
    weibull
    zipf
 
-Random generator
-^^^^^^^^^^^^^^^^
+RandomState
+^^^^^^^^^^^
 
 .. autosummary::
    :toctree: generated/
