@@ -265,6 +265,25 @@ class TestPhilox4x3210:
         expected = expected.astype(numpy.float32)
         assert_allclose(res, expected, rtol=1e-5, atol=1e-6)
 
+    @pytest.mark.skipif(not has_support_aspect64(), reason="fp64 is required")
+    def test_float64_reference(self):
+        # as in NumPy, a double takes the high 53 bits of a 64-bit value
+        key, counter, n = 0x0123456789ABCDEF, 14589945, 32
+        u = (_reference_raw(key, counter, n) >> 11) * 2.0**-53
+        rng = Generator(Philox4x3210(key=key, counter=counter))
+        assert_array_equal(rng.random(n, dtype=dpnp.float64), u)
+
+        # work-item w draws its pairs (u1, u2) from its values w + j * n_wi
+        n_wi = n // ITEMS_PER_WORK_ITEM
+        u = u.reshape(ITEMS_PER_WORK_ITEM, n_wi)
+        r = numpy.sqrt(-2 * numpy.log(1 - u[0::2]))
+        expected = numpy.empty_like(u)
+        expected[0::2] = r * numpy.sin(2 * numpy.pi * u[1::2])
+        expected[1::2] = r * numpy.cos(2 * numpy.pi * u[1::2])
+        rng = Generator(Philox4x3210(key=key, counter=counter))
+        res = rng.standard_normal(n, dtype=dpnp.float64)
+        assert_allclose(res, expected.ravel(), rtol=1e-12, atol=1e-13)
+
     def test_param_overlaps_result(self):
         x = dpnp.get_usm_ndarray(dpnp.zeros(9, dtype=dpnp.float32))
         q = x.sycl_queue
