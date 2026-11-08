@@ -2,8 +2,7 @@ var NAVTREEINDEX0 =
 {
 "annotated.html":[1,0],
 "class_d_p_n_p_c__ptr__adapter.html":[0,3,0],
-"classbackend__sycl.html":[1,0,1],
-"classdpnp__less__comp.html":[1,0,2],
+"classbackend__sycl.html":[1,0,0],
 "classes.html":[1,1],
 "dir_68267d1309a1af8e8297ef4c3efbcdba.html":[2,0,1],
 "dir_d44c64559bbebec7f509842c48db8b23.html":[2,0,0],
@@ -170,11 +169,9 @@ var NAVTREEINDEX0 =
 "struct_d_p_n_p_func_data.html#a59c07232bc3830e89d5abe5447a24816":[0,1,0,2],
 "struct_d_p_n_p_func_data.html#aa88f90ce507ebffe7462bba4d2df6c76":[0,1,0,1],
 "struct_d_p_n_p_func_data.html#af40fd22f5954384788121f817fb02f0d":[0,1,0,0],
-"structare__same.html":[1,0,0],
-"structengine__struct.html":[1,0,5],
-"structis__any.html":[1,0,6],
-"structmcg59__struct.html":[1,0,7],
-"structmt19937__struct.html":[1,0,8],
+"structengine__struct.html":[1,0,3],
+"structmcg59__struct.html":[1,0,4],
+"structmt19937__struct.html":[1,0,5],
 "topics.html":[0],
 "verbose_8hpp_source.html":[2,0,1,6]
 };
