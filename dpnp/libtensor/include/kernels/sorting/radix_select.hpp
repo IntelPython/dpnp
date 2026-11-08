@@ -1371,10 +1371,12 @@ sycl::event
 
     // per work-group counts of less and tie elements, and their exclusive
     // scans over the work-groups of a row, followed by the per work-group
-    // counts of NaNs if they are counted, and the bitwise or and and of the
-    // keys having the prefix if equal keys stop the selection
+    // counts of NaNs if they are counted, the bitwise or and and of the
+    // keys having the prefix if equal keys stop the selection, and, for the
+    // median, the largest keys of the elements ordering before the upper
+    // median and of those equal to it
     static constexpr std::size_t n_counts =
-        4 + (count_nan ? 1 : 0) + (stop_on_equal ? 2 : 0);
+        4 + (count_nan ? 1 : 0) + (stop_on_equal ? 2 : 0) + (is_median ? 2 : 0);
     auto counts_owner =
         dpnp::tensor::alloc_utils::smart_malloc_device<std::uint64_t>(
             n_counts * n_all_segments, exec_q);
@@ -1384,23 +1386,18 @@ sycl::event
     std::uint64_t *tie_offset_ptr = tie_count_ptr + n_all_segments;
     std::uint64_t *nan_count_ptr = tie_offset_ptr + n_all_segments;
     std::uint64_t *key_or_ptr =
-        (stop_on_equal) ? nan_count_ptr + (count_nan ? n_all_segments : 0)
-                        : nullptr;
+        nan_count_ptr + ((count_nan) ? n_all_segments : 0);
     std::uint64_t *key_and_ptr =
-        (stop_on_equal) ? key_or_ptr + n_all_segments : nullptr;
+        key_or_ptr + ((stop_on_equal) ? n_all_segments : 0);
+    // a pair of keys per work-group
+    std::uint64_t *partial_ptr =
+        key_and_ptr + ((stop_on_equal) ? n_all_segments : 0);
 
     // candidates of each row, in index order
     auto cand_owner =
         dpnp::tensor::alloc_utils::smart_malloc_device<std::uint32_t>(
             (filter) ? n_iters * cand_cap : 1, exec_q);
     std::uint32_t *cand_ptr = cand_owner.get();
-
-    // the largest keys of the elements ordering before the upper median and
-    // of those equal to it, for each work-group
-    auto partial_owner =
-        dpnp::tensor::alloc_utils::smart_malloc_device<WideKeyT>(
-            (is_median) ? 2 * n_all_segments : 1, exec_q);
-    WideKeyT *partial_ptr = partial_owner.get();
 
     // the last kernel submitted, each one depends on the one before; if a
     // submission throws, it is waited for before the temporaries are freed
@@ -1743,16 +1740,17 @@ sycl::event
                         return;
                     }
 
-                    const WideKeyT *row_partial =
+                    const std::uint64_t *row_partial =
                         partial_ptr + 2 * iter_id * n_segments;
-                    WideKeyT less_max = 0;
-                    WideKeyT eq_max = 0;
+                    std::uint64_t less_max = 0;
+                    std::uint64_t eq_max = 0;
                     for (std::size_t j = 0; j < n_segments; ++j) {
                         less_max = std::max(less_max, row_partial[2 * j]);
                         eq_max = std::max(eq_max, row_partial[2 * j + 1]);
                     }
                     op.write_keys(iter_id, state.k, state.k - state.k_rem,
-                                  state.n_nan, less_max, eq_max);
+                                  state.n_nan, static_cast<WideKeyT>(less_max),
+                                  static_cast<WideKeyT>(eq_max));
                 });
         });
     }
@@ -1812,8 +1810,7 @@ sycl::event
     }
 
     return dpnp::tensor::alloc_utils::async_smart_free(
-        exec_q, {last_ev}, state_owner, hist_owner, counts_owner, cand_owner,
-        partial_owner);
+        exec_q, {last_ev}, state_owner, hist_owner, counts_owner, cand_owner);
 }
 
 //-----------------------------------------------------------------------
