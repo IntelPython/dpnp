@@ -8,10 +8,10 @@ Random sampling (:mod:`dpnp.random`)
 DPNP draws random numbers on the SYCL device, by default with the
 counter-based Philox4x32x10 generator of the oneMKL device RNG API, or with
 NumPy's PCG64DXSM generator or the MRG32k3a generator of the oneMKL device
-RNG API. A oneMath build takes them from oneMath's device RNG API instead.
-It provides the :class:`Generator` API of NumPy, recommended for new code.
-The legacy :class:`RandomState` API and the module-level functions still
-use the host-side oneMKL RNG.
+RNG API. A oneMath build takes Philox4x32x10 and MRG32k3a from oneMath's
+device RNG API instead. It provides the :class:`Generator` API of NumPy,
+recommended for new code. The legacy :class:`RandomState` API and the
+module-level functions still use the host-side oneMKL RNG.
 
 .. code-block:: python
 

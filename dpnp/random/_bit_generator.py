@@ -763,8 +763,8 @@ class MRG32k3a(BitGenerator):
     An MRG32k3a combined multiple recursive bit generator on the device.
 
     The generator of L'Ecuyer (1999), with a period of about 2**191, as
-    implemented by the oneMKL device RNG API. Its state is two components
-    of three 32-bit words each.
+    implemented by the oneMKL device RNG API (oneMath's in a oneMath build).
+    Its state is two components of three 32-bit words each.
 
     Parameters
     ----------
