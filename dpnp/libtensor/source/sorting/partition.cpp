@@ -42,6 +42,7 @@
 
 // dpnp tensor headers
 #include "kernels/sorting/radix_select.hpp"
+#include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -58,7 +59,6 @@ using dpnp::tensor::usm_ndarray;
 using ext::validation::array_names;
 using ext::validation::check_c_contig;
 using ext::validation::check_has_dtype;
-using ext::validation::check_no_overlap;
 using ext::validation::check_num_dims;
 using ext::validation::check_queue;
 using ext::validation::check_same_dtype;
@@ -156,7 +156,12 @@ std::pair<sycl::event, sycl::event>
     }
 
     check_c_contig({&src, &dst}, names);
-    check_no_overlap(&src, &dst, names);
+    // the gather reads `src` while `dst` is written, so not even the same
+    // array may be passed as both
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
+    if (overlap(src, dst)) {
+        throw py::value_error("Arrays index overlapping segments of memory");
+    }
     dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(
         dst, n_iters * n_values);
 
