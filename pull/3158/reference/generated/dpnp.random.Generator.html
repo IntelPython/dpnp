@@ -1137,6 +1137,9 @@ NumPy's bit generators are not supported.</p>
 in NumPy. Parameters on the device are not, since that would wait for
 the device. Invalid ones give undefined values, such as NaN, but never
 make the kernels loop without end or access memory out of bounds.</p>
+<p>Parameters given as lists or NumPy arrays are copied to the device
+first, which waits for the work already submitted to the queue.
+Scalars and parameters on the device don't wait.</p>
 </dd></dl>
 
 </section>

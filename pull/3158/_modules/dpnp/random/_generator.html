@@ -1132,13 +1132,15 @@
 <span class="sd">:class:`numpy.random.Generator`.</span>
 
 <span class="sd">Every distribution is sampled on the device by a port of NumPy's algorithm,</span>
-<span class="sd">driven by a oneMKL device engine. The values differ from NumPy's.</span>
+<span class="sd">driven by a oneMKL or oneMath device engine. The values differ from NumPy's.</span>
 
 <span class="sd">"""</span>
 
 <span class="c1"># pylint: disable=no-name-in-module</span>
 <span class="c1"># pylint: disable=protected-access</span>
 <span class="c1"># pylint: disable=too-many-lines</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
 
@@ -1163,6 +1165,18 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_is_array</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">or</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_repeats_along_samples</span><span class="p">(</span><span class="n">param_shape</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Whether a parameter of `param_shape` broadcasts to `shape` along the</span>
+<span class="sd">    leading dimensions only, so that the kernel can read its values</span>
+<span class="sd">    cyclically instead of from a copy of the size of the result.</span>
+
+<span class="sd">    """</span>
+
+    <span class="n">trailing</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">dropwhile</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="n">param_shape</span><span class="p">))</span>
+    <span class="k">return</span> <span class="ow">not</span> <span class="n">trailing</span> <span class="ow">or</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">trailing</span><span class="p">)</span> <span class="p">:])</span> <span class="o">==</span> <span class="n">trailing</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_is_scalar_path</span><span class="p">(</span><span class="o">*</span><span class="n">params</span><span class="p">):</span>
@@ -1331,6 +1345,10 @@
 <span class="sd">    in NumPy. Parameters on the device are not, since that would wait for</span>
 <span class="sd">    the device. Invalid ones give undefined values, such as NaN, but never</span>
 <span class="sd">    make the kernels loop without end or access memory out of bounds.</span>
+
+<span class="sd">    Parameters given as lists or NumPy arrays are copied to the device</span>
+<span class="sd">    first, which waits for the work already submitted to the queue.</span>
+<span class="sd">    Scalars and parameters on the device don't wait.</span>
 
 <span class="sd">    """</span>
 
@@ -1530,11 +1548,15 @@
                 <span class="n">p</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
                     <span class="n">p</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">queue</span>
                 <span class="p">)</span>
-                <span class="n">p</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">shape</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">_repeats_along_samples</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
+                    <span class="n">p</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">p</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">shape</span><span class="p">))</span>
                 <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">usm_p</span><span class="p">,</span> <span class="n">usm_out</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">,</span> <span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">out</span><span class="p">))</span>
-                    <span class="c1"># the kernel reads element i of `p` before writing</span>
-                    <span class="c1"># element i of `out`, so only an exact alias is safe</span>
+                    <span class="c1"># the kernel reads element i % p.size of `p` before</span>
+                    <span class="c1"># writing element i of `out`, so only an exact alias is</span>
+                    <span class="c1"># safe</span>
                     <span class="k">if</span> <span class="n">ti</span><span class="o">.</span><span class="n">_array_overlap</span><span class="p">(</span>
                         <span class="n">usm_p</span><span class="p">,</span> <span class="n">usm_out</span>
                     <span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ti</span><span class="o">.</span><span class="n">_same_logical_tensors</span><span class="p">(</span><span class="n">usm_p</span><span class="p">,</span> <span class="n">usm_out</span><span class="p">):</span>

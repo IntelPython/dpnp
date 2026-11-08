@@ -1112,10 +1112,10 @@
 <p><a class="reference external" href="https://numpy.org/doc/stable/reference/random/index.html">NumPy API Reference: Random sampling</a></p>
 </div>
 <p>DPNP draws random numbers on the SYCL device, with the counter-based
-Philox4x32x10 generator of the oneMKL device RNG API. It provides the
-<a class="reference internal" href="generated/dpnp.random.Generator.html#dpnp.random.Generator" title="dpnp.random.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></a> API of NumPy, recommended for new code. The legacy
-<a class="reference internal" href="generated/dpnp.random.RandomState.html#dpnp.random.RandomState" title="dpnp.random.RandomState"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomState</span></code></a> API and the module-level functions still use the
-host-side oneMKL RNG.</p>
+Philox4x32x10 generator of the oneMKL device RNG API (oneMath's in a
+oneMath build). It provides the <a class="reference internal" href="generated/dpnp.random.Generator.html#dpnp.random.Generator" title="dpnp.random.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></a> API of NumPy,
+recommended for new code. The legacy <a class="reference internal" href="generated/dpnp.random.RandomState.html#dpnp.random.RandomState" title="dpnp.random.RandomState"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomState</span></code></a> API and the
+module-level functions still use the host-side oneMKL RNG.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 
 <span class="n">rng</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
@@ -1152,6 +1152,9 @@ not, since that would wait for the device.
 Invalid ones give undefined values, such as NaN or the smallest <code class="docutils literal notranslate"><span class="pre">int64</span></code>,
 but the kernels handle them safely: they never loop without end or access
 memory out of bounds.</p></li>
+<li><p>Parameters given as lists or NumPy arrays are copied to the device first,
+which waits for the work already submitted to the queue. Scalars and
+<a class="reference internal" href="generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> parameters don't wait.</p></li>
 <li><p>Generators and bit generators cannot be pickled or deep-copied, and the
 bit generators have no <code class="docutils literal notranslate"><span class="pre">advance</span></code> or <code class="docutils literal notranslate"><span class="pre">jumped</span></code> method.</p></li>
 </ul>
