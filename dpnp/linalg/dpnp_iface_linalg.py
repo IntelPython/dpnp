@@ -79,7 +79,8 @@ Generic Python-exception-derived object raised by LinAlg functions.
 
 For full documentation refer to :obj:`numpy.linalg.LinAlgError`.
 
-General purpose exception class, derived from Python's ``ValueError`` class,
+General purpose exception class, derived from
+:obj:`numpy.linalg.LinAlgError` (and so from Python's ``ValueError`` class),
 programmatically raised in LinAlg functions when a Linear Algebra-related
 condition would prevent further correct execution of the function.
 
