@@ -21,6 +21,7 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Moved `blas`, `fft`, `lapack`, `sparse` and `vm` extensions into `dpnp/libtensor/extensions` [#3131](https://github.com/IntelPython/dpnp/pull/3131)
 * Moved the libtensor headers shipped with dpnp from `dpnp/tensor/libtensor/include` to `dpnp/libtensor/include`, and changed `dpnp.get_include` to return that directory [#3131](https://github.com/IntelPython/dpnp/pull/3131)
 * Improved performance of `dpnp.scipy.sparse.csr_matrix.sort_indices` by sorting once on a combined row and column key instead of in two passes [#3134](https://github.com/IntelPython/dpnp/pull/3134)
+* Changed `dpnp.linalg.LinAlgError` to derive from `numpy.linalg.LinAlgError`, so `except numpy.linalg.LinAlgError` also catches errors raised by dpnp linear algebra functions [#3184](https://github.com/IntelPython/dpnp/pull/3184)
 
 ### Deprecated
 
