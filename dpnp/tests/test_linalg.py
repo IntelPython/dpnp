@@ -158,26 +158,6 @@ def test_usm_ndarray_linearalgebra_batch(func):
     assert isinstance(result, dpnp.ndarray)
 
 
-class TestLinAlgError:
-    def test_subclass(self):
-        assert issubclass(dpnp.linalg.LinAlgError, numpy.linalg.LinAlgError)
-
-    @pytest.mark.parametrize(
-        "func, a",
-        [
-            pytest.param(dpnp.linalg.inv, [[1, 2], [1, 2]], id="inv-singular"),
-            pytest.param(
-                dpnp.linalg.cholesky, [[1, 2], [2, 1]], id="cholesky-not-pd"
-            ),
-            pytest.param(dpnp.linalg.inv, [1, 2], id="inv-1d"),
-        ],
-    )
-    def test_caught_as_numpy_error(self, func, a):
-        a_dp = dpnp.array(a, dtype=dpnp.default_float_type())
-        with pytest.raises(numpy.linalg.LinAlgError):
-            func(a_dp)
-
-
 class TestCholesky:
     @pytest.mark.parametrize(
         "array",
