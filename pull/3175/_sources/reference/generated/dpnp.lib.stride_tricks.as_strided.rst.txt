@@ -1,0 +1,10 @@
+
+
+dpnp.lib.stride\_tricks.as\_strided
+===================================
+
+.. currentmodule:: dpnp.lib.stride_tricks
+
+
+
+.. autofunction:: as_strided
