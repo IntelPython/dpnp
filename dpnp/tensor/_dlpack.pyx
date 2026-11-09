@@ -203,7 +203,6 @@ cdef int get_array_dlpack_device_id(
     """
     cdef c_dpctl.SyclQueue ary_sycl_queue
     cdef c_dpctl.SyclDevice ary_sycl_device
-    cdef int device_id = -1
 
     ary_sycl_queue = usm_ary.get_sycl_queue()
     ary_sycl_device = ary_sycl_queue.get_sycl_device()
@@ -214,14 +213,7 @@ cdef int get_array_dlpack_device_id(
             "to_dlpack_capsule: DLPack can only export arrays based on USM "
             "allocations bound to a default platform SYCL context"
         )
-    device_id = ary_sycl_device.get_device_id()
-
-    if device_id < 0:
-        raise DLPackCreationError(
-            "get_array_dlpack_device_id: failed to determine device_id"
-        )
-
-    return device_id
+    return ary_sycl_device.get_device_id()
 
 
 cpdef to_dlpack_capsule(usm_ndarray usm_ary):
