@@ -1,0 +1,10 @@
+﻿
+
+dpnp.compress
+=============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: compress

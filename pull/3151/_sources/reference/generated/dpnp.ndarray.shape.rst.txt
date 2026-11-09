@@ -1,0 +1,14 @@
+
+:orphan:
+
+
+dpnp.ndarray.shape
+==================
+
+.. currentmodule:: dpnp
+
+
+property
+
+
+.. autoproperty:: ndarray.shape
