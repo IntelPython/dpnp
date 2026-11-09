@@ -34,6 +34,7 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 
 * Removed the unused `FourZeroOffsets_Indexer`, `FixedDimStridedIndexer` and `ThreeOffsets_FixedDimStridedIndexer` from the libtensor header `utils/offset_utils.hpp` [#3131](https://github.com/IntelPython/dpnp/pull/3131)
 * Dropped support for Python 3.10 [#3173](https://github.com/IntelPython/dpnp/pull/3173)
+* Removed the `USE_GROUP_LOAD_STORE` macro from the libtensor header `utils/sycl_utils.hpp`, so `sub_group_load` and `sub_group_store` always use the `sycl_ext_oneapi_group_load_store` extension; the `sycl::sub_group` member load/store fallback it selected does not compile with DPC++ 2026.0, the minimum supported compiler [#3174](https://github.com/IntelPython/dpnp/pull/3174)
 
 ### Fixed
 
