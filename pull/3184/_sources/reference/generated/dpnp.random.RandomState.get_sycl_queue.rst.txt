@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.random.RandomState.get\_sycl\_queue
+========================================
+
+.. currentmodule:: dpnp.random
+
+method
+
+.. automethod:: RandomState.get_sycl_queue
