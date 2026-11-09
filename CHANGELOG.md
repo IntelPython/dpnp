@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Moved `blas`, `fft`, `lapack`, `sparse` and `vm` extensions into `dpnp/libtensor/extensions` [#3131](https://github.com/IntelPython/dpnp/pull/3131)
 * Moved the libtensor headers shipped with dpnp from `dpnp/tensor/libtensor/include` to `dpnp/libtensor/include`, and changed `dpnp.get_include` to return that directory [#3131](https://github.com/IntelPython/dpnp/pull/3131)
 * Improved performance of `dpnp.scipy.sparse.csr_matrix.sort_indices` by sorting once on a combined row and column key instead of in two passes [#3134](https://github.com/IntelPython/dpnp/pull/3134)
+* Reduced the overhead of `dpnp.ndarray.flags` and `dpnp.tensor.usm_ndarray.flags` [#3168](https://github.com/IntelPython/dpnp/pull/3168)
 
 ### Deprecated
 
@@ -37,7 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Released the GIL around the oneMKL VM calls in the VM extension, which deadlocked on an in-order queue of a CPU device [#3156](https://github.com/IntelPython/dpnp/pull/3156)
 * Fixed `dpnp.place` and `dpnp.tensor.place` to order the write after the cast of `vals` to the array's data type, which could put wrong values into the array on an out-of-order queue [#3164](https://github.com/IntelPython/dpnp/pull/3164)
 * Fixed the example of handling duplicate indices in the `dpnp.tensor.put` docstring, which imported `dpctl.tensor`, did not parse and lost writes when `x` is longer than `indices` [#3165](https://github.com/IntelPython/dpnp/pull/3165)
-* Reduced the overhead of `dpnp.ndarray.flags` and `dpnp.tensor.usm_ndarray.flags`, and fixed a segfault when setting `writable` on a `Flags` object created without an array [#3168](https://github.com/IntelPython/dpnp/pull/3168)
+* Fixed a segfault when setting `writable` on a `Flags` object created without an array [#3168](https://github.com/IntelPython/dpnp/pull/3168)
 
 ### Security
 

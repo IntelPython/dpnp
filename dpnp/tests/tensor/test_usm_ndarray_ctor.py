@@ -1993,10 +1993,8 @@ def test_flags():
 
 
 def test_flags_ctor():
-    try:
-        x = dpt.empty(3, dtype="i4")
-    except dpctl.SyclDeviceCreationError:
-        pytest.skip("No SYCL devices available")
+    q = get_queue_or_skip()
+    x = dpt.empty(3, dtype="i4", sycl_queue=q)
     f = Flags(x, x.flags.flags)
     assert f.flags == x.flags.flags
     f.writable = False
