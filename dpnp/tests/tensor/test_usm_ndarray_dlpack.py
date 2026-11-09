@@ -412,6 +412,32 @@ def test_from_dlpack_capsule_null_deleter(versioned, on_device):
     del y, y_host, caps
 
 
+@pytest.mark.parametrize(
+    "versioned", [True, False], ids=["versioned", "legacy"]
+)
+@pytest.mark.parametrize("shape", [(5,), (2, 3), (1, 4), (2, 0, 3)])
+def test_from_dlpack_capsule_null_strides(versioned, shape):
+    q = get_queue_or_skip()
+    x_np = np.arange(np.prod(shape), dtype="i4").reshape(shape)
+    x = dpt.asarray(x_np, sycl_queue=q)
+    # the raw capsule carries no event to order the copy before the import
+    q.wait()
+    # NULL strides mean C-contiguous before DLPack 1.2
+    mt = make_managed_tensor(
+        make_dl_tensor(
+            shape, (kDLInt, 32, 1), x.__dlpack_device__(), data=x._pointer
+        ),
+        versioned=versioned,
+        version=(1, 1),
+    )
+    caps = make_dlpack_capsule(mt)
+
+    y = _dlp.from_dlpack_capsule(caps)
+    assert y.shape == shape
+    assert y.flags.c_contiguous
+    assert np.array_equal(dpt.asnumpy(y), x_np)
+
+
 def test_from_dlpack_kwargs():
     try:
         x = dpt.arange(100, dtype="i4")

@@ -33,6 +33,7 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 
 * Removed the unused `FourZeroOffsets_Indexer`, `FixedDimStridedIndexer` and `ThreeOffsets_FixedDimStridedIndexer` from the libtensor header `utils/offset_utils.hpp` [#3131](https://github.com/IntelPython/dpnp/pull/3131)
 * Dropped support for Python 3.10 [#3173](https://github.com/IntelPython/dpnp/pull/3173)
+* Removed the `USE_GROUP_LOAD_STORE` macro from the libtensor header `utils/sycl_utils.hpp`, so `sub_group_load` and `sub_group_store` always use the `sycl_ext_oneapi_group_load_store` extension; the `sycl::sub_group` member load/store fallback it selected does not compile with DPC++ 2026.0, the minimum supported compiler [#3174](https://github.com/IntelPython/dpnp/pull/3174)
 
 ### Fixed
 
@@ -42,6 +43,7 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Fixed the example of handling duplicate indices in the `dpnp.tensor.put` docstring, which imported `dpctl.tensor`, did not parse and lost writes when `x` is longer than `indices` [#3165](https://github.com/IntelPython/dpnp/pull/3165)
 * Fixed `__dlpack__` of `dpnp.ndarray` and `dpnp.tensor.usm_ndarray` to export a writable 0-d array as writable when `max_version` is given, which made `dpnp.from_dlpack` and `dpnp.tensor.from_dlpack` return a read-only view of it [#3181](https://github.com/IntelPython/dpnp/pull/3181)
 * Fixed a segfault when freeing an array that `dpnp.from_dlpack` or `dpnp.tensor.from_dlpack` imported from a DLPack tensor without a deleter [#3181](https://github.com/IntelPython/dpnp/pull/3181)
+* Fixed a segfault in `dpnp.from_dlpack` and `dpnp.tensor.from_dlpack` when importing a DLPack tensor on a oneAPI device with NULL strides, which DLPack before 1.2 allows for a C-contiguous tensor [#3183](https://github.com/IntelPython/dpnp/pull/3183)
 
 ### Security
 
