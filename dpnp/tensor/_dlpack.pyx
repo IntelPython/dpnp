@@ -796,6 +796,7 @@ cpdef object from_dlpack_capsule(object py_caps):
     cdef Py_ssize_t element_offset = 0
     cdef int64_t stride_i = -1
     cdef int64_t shape_i = -1
+    cdef int64_t c_stride = 1
 
     if cpython.PyCapsule_IsValid(py_caps, "dltensor"):
         dlm_tensor = <DLManagedTensor*>cpython.PyCapsule_GetPointer(
@@ -862,9 +863,14 @@ cpdef object from_dlpack_capsule(object py_caps):
         if dl_tensor.ndim > 0:
             offset_min = 0
             offset_max = 0
-            for i in range(dl_tensor.ndim):
-                stride_i = dl_tensor.strides[i]
+            for i in range(dl_tensor.ndim - 1, -1, -1):
                 shape_i = dl_tensor.shape[i]
+                # NULL strides mean C-contiguous before DLPack 1.2
+                if dl_tensor.strides is NULL:
+                    stride_i = c_stride
+                    c_stride *= shape_i
+                else:
+                    stride_i = dl_tensor.strides[i]
                 if shape_i > 1:
                     shape_i -= 1
                     if stride_i > 0:
