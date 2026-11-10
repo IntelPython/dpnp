@@ -325,6 +325,8 @@ list(
     ${_sorting_sources}
     ${_linalg_sources}
     ${_accumulator_sources}
+    # shares the radix select instantiations with topk.cpp in its module
+    ${_dpnp_sorting_sources}
 )
 # elementwise_functions_type_utils.cpp is in both the elementwise and linalg lists
 list(REMOVE_DUPLICATES _no_fast_math_sources)
