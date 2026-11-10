@@ -158,14 +158,14 @@ std::pair<sycl::event, sycl::event>
                         sycl::queue &exec_q,
                         const std::vector<sycl::event> &depends)
 {
-    int src_nd = src.get_ndim();
+    const int src_nd = src.get_ndim();
     int iteration_nd = src_nd - trailing_dims_to_reduce;
     if (trailing_dims_to_reduce <= 0 || iteration_nd < 0) {
         throw py::value_error("Trailing_dim_to_reduce must be positive, but no "
                               "greater than rank of the array being reduced");
     }
 
-    int dst_nd = dst_min.get_ndim();
+    const int dst_nd = dst_min.get_ndim();
     if (dst_nd != iteration_nd || dst_max.get_ndim() != iteration_nd) {
         throw py::value_error("Destination array rank does not match input "
                               "array rank and number of reduced dimensions");
@@ -195,11 +195,7 @@ std::pair<sycl::event, sycl::event>
     dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst_min);
     dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst_max);
 
-    std::size_t dst_nelems = dst_min.get_size();
-
-    if (dst_nelems == 0) {
-        return std::make_pair(sycl::event(), sycl::event());
-    }
+    const std::size_t dst_nelems = dst_min.get_size();
 
     std::size_t reduction_nelems(1);
     for (int i = dst_nd; i < src_nd; ++i) {
@@ -223,26 +219,30 @@ std::pair<sycl::event, sycl::event>
     dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(dst_max,
                                                               dst_nelems);
 
-    int src_typenum = src.get_typenum();
+    const int src_typenum = src.get_typenum();
     if (src_typenum != dst_min.get_typenum() ||
         src_typenum != dst_max.get_typenum()) {
         throw py::value_error("Destination arrays must have the same data "
                               "type as the input array");
     }
 
+    if (dst_nelems == 0) {
+        return std::make_pair(sycl::event(), sycl::event());
+    }
+
     const auto &array_types = td_ns::usm_ndarray_types();
-    int src_typeid = array_types.typenum_to_lookup_id(src_typenum);
+    const int src_typeid = array_types.typenum_to_lookup_id(src_typenum);
 
     using impl::minmax_over_axis0_contig_temps_dispatch_vector;
     using impl::minmax_over_axis1_contig_temps_dispatch_vector;
     using impl::minmax_over_axis_strided_temps_dispatch_vector;
 
     // handle special case when both reduction and iteration are 1D contiguous
-    bool is_src_c_contig = src.is_c_contiguous();
-    bool is_src_f_contig = src.is_f_contiguous();
-    bool is_dst_c_contig =
+    const bool is_src_c_contig = src.is_c_contiguous();
+    const bool is_src_f_contig = src.is_f_contiguous();
+    const bool is_dst_c_contig =
         dst_min.is_c_contiguous() && dst_max.is_c_contiguous();
-    bool is_dst_f_contig =
+    const bool is_dst_f_contig =
         dst_min.is_f_contiguous() && dst_max.is_f_contiguous();
 
     static constexpr py::ssize_t zero_offset = 0;

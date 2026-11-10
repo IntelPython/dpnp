@@ -39,7 +39,6 @@ it contains:
 
 """
 
-# pylint: disable=protected-access
 # pylint: disable=no-name-in-module
 
 import math
@@ -59,9 +58,12 @@ from .dpnp_utils.dpnp_utils_common import (
     to_supported_dtypes,
 )
 from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
-from .dpnp_utils.dpnp_utils_statistics import dpnp_cov, dpnp_median
+from .dpnp_utils.dpnp_utils_statistics import (
+    dpnp_cov,
+    dpnp_median,
+    dpnp_minmax,
+)
 from .tensor._numpy_helper import normalize_axis_index
-from .tensor._reduction import _minmax as dpt_minmax
 
 
 def _count_reduce_items(arr, axis, where=True):
@@ -136,6 +138,7 @@ def _divide_by_scalar(a, v):
     _manager = dpu.SequentialOrderManager[queue]
     dep_evs = _manager.submitted_events
 
+    # pylint: disable=protected-access
     ht_ev, div_ev = ti._divide_by_scalar(
         src=usm_a, scalar=v, dst=usm_a, sycl_queue=queue, depends=dep_evs
     )
@@ -1519,6 +1522,7 @@ def minmax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     out_arrays = [res for res in out if res is not None]
     dpnp.check_supported_arrays_type(*out_arrays)
+    # pylint: disable=protected-access
     if len(out_arrays) == 2 and dti._array_overlap(
         *map(dpnp.get_usm_ndarray, out_arrays)
     ):
@@ -1536,7 +1540,7 @@ def minmax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
             res = dpnp.get_usm_ndarray(res)
         usm_out.append(res)
 
-    usm_res = dpt_minmax(
+    usm_res = dpnp_minmax(
         usm_a, axis=axis, keepdims=keepdims, out=tuple(usm_out)
     )
     return tuple(

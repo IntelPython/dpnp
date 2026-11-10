@@ -72,6 +72,7 @@ set(_dpnp_indexing_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/choose.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/putmask.cpp
 )
+set(_dpnp_reduction_sources ${CMAKE_CURRENT_SOURCE_DIR}/reductions/minmax.cpp)
 set(_statistics_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/statistics/bincount.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/statistics/histogram.cpp
@@ -88,6 +89,7 @@ set(_window_impl_sources
 set(_dpnp_sources
     ${_dpnp_elementwise_sources}
     ${_dpnp_indexing_sources}
+    ${_dpnp_reduction_sources}
     ${_statistics_impl_sources}
     ${_window_impl_sources}
 )
@@ -204,7 +206,6 @@ set(_reduction_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/reductions/logsumexp.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/reductions/max.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/reductions/min.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/reductions/minmax.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/reductions/prod.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/reductions/reduce_hypot.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/reductions/sum.cpp
@@ -232,6 +233,7 @@ set(_tensor_elementwise_impl_sources
     ${_elementwise_sources}
 )
 set(_tensor_reductions_impl_sources
+    ${_dpnp_reduction_sources}
     ${CMAKE_CURRENT_SOURCE_DIR}/tensor_reductions.cpp
     ${_reduction_sources}
 )
@@ -315,6 +317,7 @@ list(
     APPEND _no_fast_math_sources
     ${_elementwise_sources}
     ${_reduction_sources}
+    ${_dpnp_reduction_sources}
     ${_sorting_sources}
     ${_linalg_sources}
     ${_accumulator_sources}

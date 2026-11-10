@@ -10,7 +10,7 @@ from numpy.testing import (
 
 import dpnp
 import dpnp.tensor as dpt
-from dpnp.exceptions import ExecutionPlacementError
+from dpnp.exceptions import ExecutionPlacementError, USMAllocationError
 
 from .helper import (
     assert_dtype_allclose,
@@ -900,6 +900,32 @@ class TestMinMax:
         assert_dtype_allclose(result[0], numpy.min(a, axis=axis))
         assert_dtype_allclose(result[1], numpy.max(a, axis=axis))
 
+    # more than 64 * work-group size * max work-group size elements per
+    # reduction to run the passes over partial results there, with a reducer
+    # of each kind and NaN propagation
+    @pytest.mark.parametrize("nan", [False, True])
+    @pytest.mark.parametrize("dtype", [dpnp.int8, dpnp.float32, dpnp.complex64])
+    def test_large_multipass(self, dtype, nan):
+        if nan and dpnp.issubdtype(dtype, dpnp.integer):
+            pytest.skip("no NaN in integer dtypes")
+
+        n = 34_000_000
+        try:
+            ia = dpnp.zeros(n, dtype=dtype)
+        except USMAllocationError:
+            pytest.skip("not enough device memory")
+
+        ia[123] = -100
+        ia[-5] = 100
+        if nan:
+            ia[n // 2] = dpnp.nan
+
+        result = dpnp.minmax(ia)
+        if nan:
+            assert dpnp.isnan(result[0]) and dpnp.isnan(result[1])
+        else:
+            assert result[0] == -100 and result[1] == 100
+
     @pytest.mark.parametrize("order", ["C", "F"])
     @pytest.mark.parametrize("axis", [None, 0, 1, 2, (0, 2), (1, 2)])
     def test_layout(self, order, axis):
@@ -1129,7 +1155,7 @@ class TestMinMax:
 
         # out entry is allocated on another queue
         out_q = dpnp.empty_like(out, sycl_queue=dpctl.SyclQueue())
-        with pytest.raises((ValueError, ExecutionPlacementError)):
+        with pytest.raises(ExecutionPlacementError):
             dpnp.minmax(ia, axis=0, out=(out_q, None))
 
         # out entries overlap
