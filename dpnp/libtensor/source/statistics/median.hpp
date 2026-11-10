@@ -25,6 +25,13 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
+//
+//===----------------------------------------------------------------------===//
+///
+/// \file
+/// This file defines functions of dpnp.libtensor._statistics_impl
+/// extension.
+//===----------------------------------------------------------------------===//
 
 #pragma once
 

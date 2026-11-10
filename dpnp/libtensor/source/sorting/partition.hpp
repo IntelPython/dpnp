@@ -26,9 +26,12 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 //
-// This file defines functions of dpnp.libtensor._tensor_sorting_impl extension
-//
-//*****************************************************************************
+//===----------------------------------------------------------------------===//
+///
+/// \file
+/// This file defines functions of dpnp.libtensor._tensor_sorting_impl
+/// extension.
+//===----------------------------------------------------------------------===//
 
 #pragma once
 
