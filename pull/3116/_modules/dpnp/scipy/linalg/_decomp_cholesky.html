@@ -1112,10 +1112,11 @@
 <span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_lower_to_bool</span><span class="p">(</span><span class="n">lower</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_lower_to_bool</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">empty_ok</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Convert `lower` to bool, also accepting an array or a sequence of equal</span>
-<span class="sd">    values.</span>
+<span class="sd">    values. An empty `lower` is accepted only if `empty_ok` is ``True``</span>
+<span class="sd">    (a zero-size batch of factors).</span>
 
 <span class="sd">    """</span>
 
@@ -1126,7 +1127,9 @@
         <span class="n">lower</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">lower</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">lower</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">lower</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">empty_ok</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"`lower` must not be empty."</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">lower</span> <span class="o">==</span> <span class="n">lower</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"All values of `lower` must be equal."</span><span class="p">)</span>
         <span class="n">lower</span> <span class="o">=</span> <span class="n">lower</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -1151,9 +1154,10 @@
 <span class="sd">    ----------</span>
 <span class="sd">    a : (..., M, M) {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Matrix to be decomposed.</span>
-<span class="sd">    lower : bool, optional</span>
+<span class="sd">    lower : {bool, array_like of bool}, optional</span>
 <span class="sd">        Whether to compute the upper or lower triangular Cholesky</span>
-<span class="sd">        factorization.</span>
+<span class="sd">        factorization. An array or a sequence is accepted if all its values</span>
+<span class="sd">        are equal.</span>
 
 <span class="sd">        Default: ``False``.</span>
 <span class="sd">    overwrite_a : bool, optional</span>
@@ -1183,8 +1187,9 @@
 <span class="sd">    dpnp.linalg.LinAlgError</span>
 <span class="sd">        If the decomposition fails.</span>
 <span class="sd">    ValueError</span>
-<span class="sd">        If `a` is not square, or if ``check_finite=True`` and `a` contains</span>
-<span class="sd">        infinities or NaNs.</span>
+<span class="sd">        If `a` is not square, if `lower` is empty or its values are not all</span>
+<span class="sd">        equal, or if ``check_finite=True`` and `a` contains infinities or</span>
+<span class="sd">        NaNs.</span>
 
 <span class="sd">    Warnings</span>
 <span class="sd">    --------</span>
@@ -1284,8 +1289,9 @@
 <span class="sd">    ------</span>
 <span class="sd">    ValueError</span>
 <span class="sd">        If `c` is not square, if the shapes of `c` and `b` are incompatible,</span>
-<span class="sd">        if the values of `lower` are not all equal, or if</span>
-<span class="sd">        ``check_finite=True`` and `c` or `b` contains infinities or NaNs.</span>
+<span class="sd">        if `lower` is empty for a non-empty batch of factors or its values</span>
+<span class="sd">        are not all equal, or if ``check_finite=True`` and `c` or `b` contains</span>
+<span class="sd">        infinities or NaNs.</span>
 
 <span class="sd">    Warnings</span>
 <span class="sd">    --------</span>
@@ -1322,7 +1328,7 @@
 
     <span class="k">return</span> <span class="n">dpnp_cho_solve</span><span class="p">(</span>
         <span class="n">c</span><span class="p">,</span>
-        <span class="n">_lower_to_bool</span><span class="p">(</span><span class="n">lower</span><span class="p">),</span>
+        <span class="n">_lower_to_bool</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">empty_ok</span><span class="o">=</span><span class="mi">0</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]),</span>
         <span class="n">b</span><span class="p">,</span>
         <span class="n">overwrite_b</span><span class="o">=</span><span class="n">overwrite_b</span><span class="p">,</span>
         <span class="n">check_finite</span><span class="o">=</span><span class="n">check_finite</span><span class="p">,</span>

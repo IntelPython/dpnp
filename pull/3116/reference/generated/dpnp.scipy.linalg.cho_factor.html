@@ -1084,8 +1084,9 @@ The return value can be directly used as the first parameter to
 <dd class="field-odd"><dl>
 <dt><strong>a</strong><span class="classifier">(..., M, M) {dpnp.ndarray, usm_ndarray}</span></dt><dd><p>Matrix to be decomposed.</p>
 </dd>
-<dt><strong>lower</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to compute the upper or lower triangular Cholesky
-factorization.</p>
+<dt><strong>lower</strong><span class="classifier">{bool, array_like of bool}, optional</span></dt><dd><p>Whether to compute the upper or lower triangular Cholesky
+factorization. An array or a sequence is accepted if all its values
+are equal.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 </dd>
 <dt><strong>overwrite_a</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to overwrite data in <cite>a</cite> (may improve performance).</p>
@@ -1114,8 +1115,9 @@ a Python bool is returned.</p>
 <dd class="field-odd"><dl class="simple">
 <dt>dpnp.linalg.LinAlgError</dt><dd><p>If the decomposition fails.</p>
 </dd>
-<dt>ValueError</dt><dd><p>If <cite>a</cite> is not square, or if <code class="docutils literal notranslate"><span class="pre">check_finite=True</span></code> and <cite>a</cite> contains
-infinities or NaNs.</p>
+<dt>ValueError</dt><dd><p>If <cite>a</cite> is not square, if <cite>lower</cite> is empty or its values are not all
+equal, or if <code class="docutils literal notranslate"><span class="pre">check_finite=True</span></code> and <cite>a</cite> contains infinities or
+NaNs.</p>
 </dd>
 </dl>
 </dd>
