@@ -33,6 +33,8 @@ env:
   fetch-depth: 1
   python-ver-test-all-dtypes: '3.14'
   test-env-name: 'test'
+  # A retry reruns only the failed tests (--lf), or all of them after a timeout kill
+  # Serial runs also need --continue-on-collection-errors, or a collection error skips all other tests
   rerun-tests-max-attempts: 2
   rerun-tests-timeout: 45
   rerun-tensor-tests-timeout: 15
@@ -282,9 +284,9 @@ jobs:
 
             if [[ "${{ env.python-label }}" == "${{ env.python-ver-test-all-dtypes }}" ]]; then
               export DPNP_TEST_ALL_INT_TYPES=1
-              python -m pytest -ra --pyargs ${{ env.module-name }}.tests
+              python -m pytest -ra --lf --continue-on-collection-errors --pyargs ${{ env.module-name }}.tests
             else
-              python -m pytest -n auto -ra --pyargs ${{ env.module-name }}.tests
+              python -m pytest -n auto -ra --lf --pyargs ${{ env.module-name }}.tests
             fi
 
       - name: Run tensor tests
@@ -300,4 +302,4 @@ jobs:
             . "$CONDA_UNIX/etc/profile.d/conda.sh"
             conda activate ${{ env.test-env-name }}
 
-            python -m pytest -n auto -ra --timeout=${{ env.tensor-test-timeout }} --timeout-method=thread --pyargs dpnp.tests.tensor
+            python -m pytest -n auto -ra --lf --timeout=${{ env.tensor-test-timeout }} --timeout-method=thread --pyargs dpnp.tests.tensor
