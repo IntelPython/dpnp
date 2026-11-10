@@ -66,6 +66,19 @@ def _calc_median(a, axis, out=None):
     return res
 
 
+def _all_nan_usm_type(sycl_device):
+    """
+    USM type of the all-NaN flag of `_calc_median_by_select`, which the
+    kernel sets with an atomic store.
+
+    """
+
+    # GPU Max faults on an atomic store to host USM
+    if sycl_device.has_aspect_usm_atomic_host_allocations:
+        return "host"
+    return "device"
+
+
 def _calc_median_by_select(a, ignore_nan, out=None):
     """
     Compute the median of an array along its last axis by radix select,
@@ -113,12 +126,14 @@ def _calc_median_by_select(a, ignore_nan, out=None):
         order="C",
         sycl_queue=exec_q,
     )
-    # set to whether a row has NaNs only, the one case warned about; in host
-    # USM it is read in place, without a copy
+    # set to whether a row has NaNs only, the one case warned about
     usm_all_nan = None
     if ignore_nan:
         usm_all_nan = dpt.empty(
-            1, dtype=dpt.uint32, usm_type="host", sycl_queue=exec_q
+            1,
+            dtype=dpt.uint32,
+            usm_type=_all_nan_usm_type(exec_q.sycl_device),
+            sycl_queue=exec_q,
         )
 
     ht_ev, median_ev = statistics_ext._median(
@@ -132,8 +147,13 @@ def _calc_median_by_select(a, ignore_nan, out=None):
     _manager.add_event_pair(ht_ev, median_ev)
 
     if ignore_nan:
-        median_ev.wait()
-        if numpy.frombuffer(usm_all_nan.usm_data, dtype=numpy.uint32)[0]:
+        if usm_all_nan.usm_type == "host":
+            # read in place, without the queue wait and copy of asnumpy
+            median_ev.wait()
+            all_nan = numpy.frombuffer(usm_all_nan.usm_data, dtype=numpy.uint32)
+        else:
+            all_nan = dpt.asnumpy(usm_all_nan)
+        if all_nan[0]:
             warnings.warn(
                 "All-NaN slice encountered", RuntimeWarning, stacklevel=4
             )
