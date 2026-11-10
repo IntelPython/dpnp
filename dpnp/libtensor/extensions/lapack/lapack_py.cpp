@@ -89,10 +89,12 @@ PYBIND11_MODULE(_lapack_impl, m, py::mod_gil_not_used())
         .value("C", oneapi::mkl::transpose::C)
         .export_values(); // Optional, allows access like `Transpose.N`
 
-    // Register a LinAlgError exception with local scope, meaning this is a
-    // module-private exception (only used in that module)
+    // Register a module-local LinAlgError deriving from numpy's, so that
+    // `except numpy.linalg.LinAlgError` also catches it
+    const py::object np_linalg_error =
+        py::module_::import("numpy.linalg").attr("LinAlgError");
     py::register_local_exception<lapack_ext::LinAlgError>(m, "LinAlgError",
-                                                          PyExc_ValueError);
+                                                          np_linalg_error);
 
     init_dispatch_vectors();
     init_dispatch_tables();
