@@ -567,22 +567,7 @@ struct Identity<Op, T, std::enable_if_t<UseBuiltInIdentity<Op, T>::value>>
 
 // Sub-group load/store
 
-#ifndef USE_GROUP_LOAD_STORE
-#if defined(SYCL_EXT_ONEAPI_GROUP_LOAD_STORE) &&                               \
-    SYCL_EXT_ONEAPI_GROUP_LOAD_STORE
-#define USE_GROUP_LOAD_STORE 1
-#else
-#if defined(__LIBSYCL_MAJOR_VERSION) && (__LIBSYCL_MAJOR_VERSION >= 8u)
-#define USE_GROUP_LOAD_STORE 1
-#else
-#define USE_GROUP_LOAD_STORE 0
-#endif
-#endif
-#endif
-
-#if (USE_GROUP_LOAD_STORE)
 namespace ls_ns = sycl::ext::oneapi::experimental;
-#endif
 
 template <std::uint8_t vec_sz,
           sycl::access::address_space Space,
@@ -591,16 +576,12 @@ template <std::uint8_t vec_sz,
 auto sub_group_load(const sycl::sub_group &sg,
                     sycl::multi_ptr<ElementType, Space, DecorateAddress> m_ptr)
 {
-#if (USE_GROUP_LOAD_STORE)
     using ValueT = typename std::remove_cv_t<ElementType>;
     sycl::vec<ValueT, vec_sz> x{};
     static constexpr auto striped =
         ls_ns::properties{ls_ns::data_placement_striped};
     ls_ns::group_load(sg, m_ptr, x, striped);
     return x;
-#else
-    return sg.load<vec_sz>(m_ptr);
-#endif
 }
 
 template <sycl::access::address_space Space,
@@ -609,16 +590,12 @@ template <sycl::access::address_space Space,
 auto sub_group_load(const sycl::sub_group &sg,
                     sycl::multi_ptr<ElementType, Space, DecorateAddress> m_ptr)
 {
-#if (USE_GROUP_LOAD_STORE)
     using ValueT = typename std::remove_cv_t<ElementType>;
     ValueT x{};
     static constexpr auto striped =
         ls_ns::properties{ls_ns::data_placement_striped};
     ls_ns::group_load(sg, m_ptr, x, striped);
     return x;
-#else
-    return sg.load(m_ptr);
-#endif
 }
 
 template <std::uint8_t vec_sz,
@@ -633,16 +610,10 @@ std::enable_if_t<
                     const sycl::vec<VecT, vec_sz> &val,
                     sycl::multi_ptr<ElementType, Space, DecorateAddress> m_ptr)
 {
-#if (USE_GROUP_LOAD_STORE)
     static_assert(std::is_same_v<VecT, ElementType>);
     static constexpr auto striped =
         ls_ns::properties{ls_ns::data_placement_striped};
     ls_ns::group_store(sg, val, m_ptr, striped);
-    return;
-#else
-    sg.store<vec_sz>(m_ptr, val);
-    return;
-#endif
 }
 
 template <sycl::access::address_space Space,
@@ -656,14 +627,8 @@ std::enable_if_t<
                     const VecT &val,
                     sycl::multi_ptr<ElementType, Space, DecorateAddress> m_ptr)
 {
-#if (USE_GROUP_LOAD_STORE)
     static constexpr auto striped =
         ls_ns::properties{ls_ns::data_placement_striped};
     ls_ns::group_store(sg, val, m_ptr, striped);
-    return;
-#else
-    sg.store(m_ptr, val);
-    return;
-#endif
 }
 } // namespace dpnp::tensor::sycl_utils

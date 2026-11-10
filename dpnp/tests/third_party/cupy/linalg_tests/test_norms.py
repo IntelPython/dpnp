@@ -145,28 +145,28 @@ class TestDet(unittest.TestCase):
     def test_det_different_last_two_dims(self, dtype):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((2, 3, 2), xp, dtype)
-            with pytest.raises(xp.linalg.LinAlgError):
+            with pytest.raises(numpy.linalg.LinAlgError):
                 xp.linalg.det(a)
 
     @testing.for_float_dtypes(no_float16=True)
     def test_det_different_last_two_dims_empty_batch(self, dtype):
         for xp in (numpy, cupy):
             a = xp.empty((0, 3, 2), dtype=dtype)
-            with pytest.raises(xp.linalg.LinAlgError):
+            with pytest.raises(numpy.linalg.LinAlgError):
                 xp.linalg.det(a)
 
     @testing.for_float_dtypes(no_float16=True)
     def test_det_one_dim(self, dtype):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((2,), xp, dtype)
-            with pytest.raises(xp.linalg.LinAlgError):
+            with pytest.raises(numpy.linalg.LinAlgError):
                 xp.linalg.det(a)
 
     @testing.for_float_dtypes(no_float16=True)
     def test_det_zero_dim(self, dtype):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((), xp, dtype)
-            with pytest.raises(xp.linalg.LinAlgError):
+            with pytest.raises(numpy.linalg.LinAlgError):
                 xp.linalg.det(a)
 
     @testing.for_float_dtypes(no_float16=True)
@@ -221,7 +221,7 @@ class TestSlogdet(unittest.TestCase):
     def test_slogdet_one_dim(self, dtype):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((2,), xp, dtype)
-            with pytest.raises(xp.linalg.LinAlgError):
+            with pytest.raises(numpy.linalg.LinAlgError):
                 xp.linalg.slogdet(a)
 
 
@@ -310,7 +310,7 @@ class TestCond(unittest.TestCase):
         for xp in (numpy, cupy):
             A = xp.empty((0, 0), dtype=dtype)
             with pytest.raises(
-                xp.linalg.LinAlgError,
+                numpy.linalg.LinAlgError,
                 match="cond is not defined on empty arrays",
             ):
                 xp.linalg.cond(A, self.ord)
