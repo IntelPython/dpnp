@@ -12,6 +12,7 @@ from numpy.testing import (
 
 import dpnp
 import dpnp.tensor as dpt
+from dpnp.dpnp_utils import dpnp_utils_statistics
 from dpnp.exceptions import ExecutionPlacementError
 
 from .helper import (
@@ -662,7 +663,15 @@ class TestNanMedianSelect:
         assert_array_equal(dpnp.signbit(result), numpy.signbit(expected))
 
     @pytest.mark.parametrize("n", [3, 1000, 2**16 + 1])
-    def test_all_nan_rows(self, n):
+    @pytest.mark.parametrize("flag_usm_type", [None, "device"])
+    def test_all_nan_rows(self, monkeypatch, n, flag_usm_type):
+        # the flag is in device USM where the device lacks host USM atomics
+        if flag_usm_type is not None:
+            monkeypatch.setattr(
+                dpnp_utils_statistics,
+                "_all_nan_usm_type",
+                lambda _: flag_usm_type,
+            )
         a = generate_random_numpy_array((3, n), dtype="f4")
         a[1] = numpy.nan
         ia = dpnp.array(a)
