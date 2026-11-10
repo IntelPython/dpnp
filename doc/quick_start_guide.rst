@@ -74,7 +74,7 @@ And to build dpnp package from the sources:
 
 .. code-block:: bash
 
-    conda-build conda-recipe -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels
+    conda-build conda-recipe -c conda-forge --override-channels --python "3.14.* *_cp314"
 
 Finally, to install the result package:
 
