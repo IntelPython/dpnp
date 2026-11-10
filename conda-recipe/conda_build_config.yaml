@@ -1,11 +1,19 @@
+# Python versions for ci/matrix.py, one per line, without selectors
+python:
+    - "3.11"
+    - "3.12"
+    - "3.13"
+    - "3.14.* *_cp314"
+    - "3.14.* *_cp314t"
+    - "3.15.* *_cp315"
 numpy:
-    - '1.26'
+    - '2'
 c_compiler:                   # [linux]
     - gcc                     # [linux]
 cxx_compiler:                 # [linux]
     - gxx                     # [linux]
 cxx_compiler_version:         # [linux]
-    - '14'                    # [linux]
+    - '15'                    # [linux]
 c_stdlib:                     # [linux]
     - sysroot                 # [linux]
 c_stdlib_version:             # [linux]
