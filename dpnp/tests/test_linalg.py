@@ -337,6 +337,29 @@ class TestChoFactor:
             lower=lower,
         )
 
+    @pytest.mark.parametrize("low", [numpy.array([True, False]), [True, False]])
+    def test_lower_array_errors(self, low):
+        # SciPy >= 1.18 accepts unequal values, dpnp does not
+        a_dp = dpnp.stack([dpnp.eye(2), 2 * dpnp.eye(2)])
+        assert_raises_regex(
+            ValueError,
+            "must be equal",
+            dpnp.scipy.linalg.cho_factor,
+            a_dp,
+            lower=low,
+        )
+
+    @pytest.mark.parametrize("low", [[], numpy.array([])])
+    def test_lower_empty(self, low):
+        # SciPy raises for an empty `lower`
+        assert_raises_regex(
+            ValueError,
+            "must not be empty",
+            dpnp.scipy.linalg.cho_factor,
+            dpnp.eye(2),
+            lower=low,
+        )
+
     def test_errors(self):
         a_dp = dpnp.ones((2, 3))
         assert_raises_regex(
@@ -616,6 +639,36 @@ class TestChoSolve:
             (c, low),
             dpnp.ones(1),
         )
+
+    @pytest.mark.parametrize("low", [[], numpy.array([])])
+    def test_lower_empty(self, low):
+        # SciPy raises for an empty `lower` and a non-empty batch of factors
+        c, _ = dpnp.scipy.linalg.cho_factor(4 * dpnp.ones((2, 1, 1)))
+        assert_raises_regex(
+            ValueError,
+            "must not be empty",
+            dpnp.scipy.linalg.cho_solve,
+            (c, low),
+            dpnp.ones(1),
+        )
+
+    def test_overwrite_b_overlaps_factor(self):
+        # SciPy overwrites `c` here, dpnp solves in a copy
+        a_np = _make_hpd_np((3, 3), dpnp.default_float_type())
+        c, low = dpnp.scipy.linalg.cho_factor(dpnp.array(a_np))
+        c = dpnp.array(c, order="F")
+        c_np = dpnp.asnumpy(c).copy()
+
+        x = dpnp.scipy.linalg.cho_solve((c, low), c, overwrite_b=True)
+        assert x is not c
+        assert_array_equal(dpnp.asnumpy(c), c_np)
+        assert_dtype_allclose(x, numpy.linalg.solve(a_np, c_np))
+
+        # partially overlapping view of the factor
+        cv = c[:, :2]
+        x = dpnp.scipy.linalg.cho_solve((c, low), cv, overwrite_b=True)
+        assert_array_equal(dpnp.asnumpy(c), c_np)
+        assert_dtype_allclose(x, numpy.linalg.solve(a_np, c_np[:, :2]))
 
     def test_lower_array_empty(self):
         # SciPy >= 1.18 tiles `lower` to a zero-size batch shape too

@@ -221,6 +221,11 @@ std::pair<sycl::event, sycl::event>
     const std::int64_t n = b_shape[1];
     const std::int64_t batch_size = b_shape[2];
 
+    // nothing to solve, oneMKL does not need to be called
+    if (m == 0 || n == 0 || batch_size == 0) {
+        return std::make_pair(sycl::event(), sycl::event());
+    }
+
     const std::int64_t lda = std::max<std::int64_t>(1, m);
     const std::int64_t ldb = std::max<std::int64_t>(1, m);
     // stride 0 reuses the shared matrix A for each batch element

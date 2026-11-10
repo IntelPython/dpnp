@@ -49,10 +49,11 @@ from ._utils import (
 )
 
 
-def _lower_to_bool(lower):
+def _lower_to_bool(lower, empty_ok=False):
     """
     Convert `lower` to bool, also accepting an array or a sequence of equal
-    values.
+    values. An empty `lower` is accepted only if `empty_ok` is ``True``
+    (a zero-size batch of factors).
 
     """
 
@@ -63,7 +64,9 @@ def _lower_to_bool(lower):
         lower = numpy.asarray(lower)
     if isinstance(lower, numpy.ndarray) and lower.size != 1:
         if lower.size == 0:
-            return False
+            if empty_ok:
+                return False
+            raise ValueError("`lower` must not be empty.")
         if not (lower == lower.flat[0]).all():
             raise ValueError("All values of `lower` must be equal.")
         lower = lower.flat[0]
@@ -86,9 +89,10 @@ def cho_factor(a, lower=False, overwrite_a=False, check_finite=True):
     ----------
     a : (..., M, M) {dpnp.ndarray, usm_ndarray}
         Matrix to be decomposed.
-    lower : bool, optional
+    lower : {bool, array_like of bool}, optional
         Whether to compute the upper or lower triangular Cholesky
-        factorization.
+        factorization. An array or a sequence is accepted if all its values
+        are equal.
 
         Default: ``False``.
     overwrite_a : bool, optional
@@ -118,8 +122,9 @@ def cho_factor(a, lower=False, overwrite_a=False, check_finite=True):
     dpnp.linalg.LinAlgError
         If the decomposition fails.
     ValueError
-        If `a` is not square, or if ``check_finite=True`` and `a` contains
-        infinities or NaNs.
+        If `a` is not square, if `lower` is empty or its values are not all
+        equal, or if ``check_finite=True`` and `a` contains infinities or
+        NaNs.
 
     Warnings
     --------
@@ -216,8 +221,9 @@ def cho_solve(c_and_lower, b, overwrite_b=False, check_finite=True):
     ------
     ValueError
         If `c` is not square, if the shapes of `c` and `b` are incompatible,
-        if the values of `lower` are not all equal, or if
-        ``check_finite=True`` and `c` or `b` contains infinities or NaNs.
+        if `lower` is empty for a non-empty batch of factors or its values
+        are not all equal, or if ``check_finite=True`` and `c` or `b` contains
+        infinities or NaNs.
 
     Warnings
     --------
@@ -254,7 +260,7 @@ def cho_solve(c_and_lower, b, overwrite_b=False, check_finite=True):
 
     return dpnp_cho_solve(
         c,
-        _lower_to_bool(lower),
+        _lower_to_bool(lower, empty_ok=0 in c.shape[:-2]),
         b,
         overwrite_b=overwrite_b,
         check_finite=check_finite,

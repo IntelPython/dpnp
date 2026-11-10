@@ -755,11 +755,13 @@ def dpnp_cho_solve(c, lower, b, overwrite_b=False, check_finite=True):
     # - dtype mismatch,
     # - not F-contiguous,
     # - not writeable,
-    # - USM type differs from the result one
+    # - USM type differs from the result one,
+    # - b overlaps the factor (e.g. `cho_solve((c, lower), c)`)
     if (
         not overwrite_b
         or b.usm_type != res_usm_type
         or _is_copy_required(b, res_type)
+        or ti._array_overlap(dpnp.get_usm_ndarray(c_f), dpnp.get_usm_ndarray(b))
     ):
         b_h = dpnp.empty_like(
             b, order="F", dtype=res_type, usm_type=res_usm_type
