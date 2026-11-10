@@ -1120,7 +1120,7 @@ conda<span class="w"> </span>activate<span class="w"> </span>build-env
 </pre></div>
 </div>
 <p>And to build dpnp package from the sources:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda-build<span class="w"> </span>conda-recipe<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>--override-channels
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda-build<span class="w"> </span>conda-recipe<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>--override-channels<span class="w"> </span>--python<span class="w"> </span><span class="s2">"3.14.* *_cp314"</span>
 </pre></div>
 </div>
 <p>Finally, to install the result package:</p>
