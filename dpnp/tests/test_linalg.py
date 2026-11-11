@@ -360,6 +360,30 @@ class TestChoFactor:
             lower=low,
         )
 
+    @pytest.mark.parametrize(
+        "low",
+        [
+            "False",
+            b"False",
+            ["False"],
+            "",
+            [""],
+            None,
+            1j,
+            numpy.array([1j]),
+            dpnp.array([1j]),
+        ],
+    )
+    def test_lower_invalid_type(self, low):
+        # SciPy raises for a string; None and complex are not bool either
+        assert_raises_regex(
+            ValueError,
+            "must be a bool",
+            dpnp.scipy.linalg.cho_factor,
+            dpnp.eye(2),
+            lower=low,
+        )
+
     def test_errors(self):
         a_dp = dpnp.ones((2, 3))
         assert_raises_regex(
@@ -652,6 +676,31 @@ class TestChoSolve:
             dpnp.ones(1),
         )
 
+    @pytest.mark.parametrize(
+        "low",
+        [
+            "False",
+            b"False",
+            ["False"],
+            "",
+            [""],
+            None,
+            1j,
+            numpy.array([1j]),
+            dpnp.array([1j]),
+        ],
+    )
+    def test_lower_invalid_type(self, low):
+        # SciPy raises for a string; None and complex are not bool either
+        c, _ = dpnp.scipy.linalg.cho_factor(4 * dpnp.eye(2))
+        assert_raises_regex(
+            ValueError,
+            "must be a bool",
+            dpnp.scipy.linalg.cho_solve,
+            (c, low),
+            dpnp.ones(2),
+        )
+
     def test_overwrite_b_overlaps_factor(self):
         # SciPy overwrites `c` here, dpnp solves in a copy
         a_np = _make_hpd_np((3, 3), dpnp.default_float_type())
@@ -669,6 +718,24 @@ class TestChoSolve:
         x = dpnp.scipy.linalg.cho_solve((c, low), cv, overwrite_b=True)
         assert_array_equal(dpnp.asnumpy(c), c_np)
         assert_dtype_allclose(x, numpy.linalg.solve(a_np, c_np[:, :2]))
+
+    def test_overwrite_b_overlaps_strided_factor(self):
+        # a strided factor is copied before the solve: the overlap check
+        # must use the original `c`
+        base = dpnp.asarray(
+            [[2.0, 0.0], [5.0, 7.0], [1.0, 2.0], [6.0, 8.0]], order="F"
+        )
+        c = base[::2, :]
+        b = base[:2, 0]  # overlaps c[0, 0]
+        c_np = dpnp.asnumpy(c).copy()
+        b_np = dpnp.asnumpy(b).copy()
+
+        x = dpnp.scipy.linalg.cho_solve((c, False), b, overwrite_b=True)
+        assert x is not b
+        assert_array_equal(dpnp.asnumpy(c), c_np)
+        u_np = numpy.triu(c_np)
+        a_np = u_np.T @ u_np
+        assert_allclose(x, numpy.linalg.solve(a_np, b_np), rtol=1e-5)
 
     def test_lower_array_empty(self):
         # SciPy >= 1.18 tiles `lower` to a zero-size batch shape too

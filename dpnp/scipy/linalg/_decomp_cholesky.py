@@ -39,8 +39,6 @@ It contains:
 
 """
 
-import numpy
-
 import dpnp
 
 from ._utils import (
@@ -57,12 +55,11 @@ def _lower_to_bool(lower, empty_ok=False):
 
     """
 
-    if dpnp.is_supported_array_type(lower):
-        lower = dpnp.asnumpy(lower)
-    elif isinstance(lower, (list, tuple)):
-        # bool() of a non-empty sequence is always True
-        lower = numpy.asarray(lower)
-    if isinstance(lower, numpy.ndarray) and lower.size != 1:
+    lower = dpnp.asnumpy(lower)
+    if lower.dtype.kind not in "biuf":
+        raise ValueError("`lower` must be a bool or an array of bool.")
+
+    if lower.size != 1:
         if lower.size == 0:
             if empty_ok:
                 return False
@@ -122,9 +119,9 @@ def cho_factor(a, lower=False, overwrite_a=False, check_finite=True):
     dpnp.linalg.LinAlgError
         If the decomposition fails.
     ValueError
-        If `a` is not square, if `lower` is empty or its values are not all
-        equal, or if ``check_finite=True`` and `a` contains infinities or
-        NaNs.
+        If `a` is not square, if `lower` is empty, not bool or its values are
+        not all equal, or if ``check_finite=True`` and `a` contains infinities
+        or NaNs.
 
     Warnings
     --------
@@ -221,9 +218,9 @@ def cho_solve(c_and_lower, b, overwrite_b=False, check_finite=True):
     ------
     ValueError
         If `c` is not square, if the shapes of `c` and `b` are incompatible,
-        if `lower` is empty for a non-empty batch of factors or its values
-        are not all equal, or if ``check_finite=True`` and `c` or `b` contains
-        infinities or NaNs.
+        if `lower` is empty for a non-empty batch of factors, not bool or its
+        values are not all equal, or if ``check_finite=True`` and `c` or `b`
+        contains infinities or NaNs.
 
     Warnings
     --------
