@@ -280,7 +280,7 @@ class TestFft:
         a = xp.ones((4, 3))
         if xp == dpnp:
             # dpnp and stock NumPy raise TypeError
-            # Intel NumPy raises SystemError for Python 3.10 and 3.11
+            # Intel NumPy raises SystemError for Python 3.11
             assert_raises(TypeError, xp.fft.fft, a, n=5.0)
 
         # Invalid number of FFT point for incorrect n value
