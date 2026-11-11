@@ -37,8 +37,7 @@ else:
 def _format_exception(exc):
     if exc is None:
         return None
-    # TODO(kataoka): Use traceback.format_exception(exc) in Python 3.10
-    return "".join(traceback.TracebackException.from_exception(exc).format())
+    return "".join(traceback.format_exception(exc))
 
 
 def _call_func(impl, args, kw):
