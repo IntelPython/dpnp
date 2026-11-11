@@ -5,9 +5,18 @@ on:
     branches:
       - master
   pull_request:
+  # Nightly run of the oneMath develop branch job: its failures are upstream's, not a PR's
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
 
 permissions:
   contents: read
+
+# Cancel superseded PR runs only; other runs get a unique group and always complete
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   # Pinned: Miniforge3 26.9.4-0 fails 'conda init' on Windows runners
@@ -31,10 +40,6 @@ jobs:
   build_env_file:
     name: Build conda env file
 
-    permissions:
-      # Needed to cancel any previous runs that are not completed for a given workflow
-      actions: write
-
     strategy:
       fail-fast: false
       matrix:
@@ -49,11 +54,6 @@ jobs:
       python-install-spec: "python ${{ matrix.python_spec || format('{0}.*', matrix.python) }}"
 
     steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@d07a454dad7609a92316b57b23c9ccfd4f59af66 # 0.13.1
-        with:
-          access_token: ${{ github.token }}
-
       - name: Checkout DPNP repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -96,6 +96,8 @@ jobs:
     name: Run tests with OneMath tag
 
     needs: build_env_file
+
+    if: github.event_name != 'schedule'
 
     strategy:
       fail-fast: false
@@ -219,6 +221,8 @@ jobs:
 
     needs: build_env_file
 
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+
     strategy:
       fail-fast: false
       matrix:
@@ -234,7 +238,7 @@ jobs:
         shell: ${{ matrix.os == 'windows-2022' && 'cmd /C CALL {0}' || 'bash -el {0}' }}
 
     env:
-      onemkl-source-dir: '${{ github.workspace }}/onemkl/'
+      onemath-source-dir: '${{ github.workspace }}/onemath/'
       python-label: ${{ endsWith(matrix.python_spec, 't') && format('{0}t', matrix.python) || matrix.python }}
 
     steps:
@@ -252,18 +256,18 @@ jobs:
           name: ${{ env.environment-file-name }}-${{ env.python-label }}
           path: ${{ env.environment-file-loc }}
 
-      - name: Checkout oneMKL repo
+      - name: Checkout oneMath repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-          repository: 'oneapi-src/oneMKL'
+          repository: 'uxlfoundation/oneMath'
           ref: 'develop'
-          path: ${{ env.onemkl-source-dir }}
+          path: ${{ env.onemath-source-dir }}
           fetch-depth: 0
 
-      - name: oneMKL ls info
+      - name: oneMath ls info
         run: |
-          ls -la ${{ env.onemkl-source-dir }}
+          ls -la ${{ env.onemath-source-dir }}
 
       - name: Setup miniconda
         id: setup_miniconda
@@ -293,7 +297,7 @@ jobs:
 
       - name: Build and install DPNP package
         run: |
-          python scripts/build_locally.py --onemath --onemath-dir=${{ env.onemkl-source-dir }} --verbose
+          python scripts/build_locally.py --onemath --onemath-dir=${{ env.onemath-source-dir }} --verbose
 
       - name: Smoke test
         run: |

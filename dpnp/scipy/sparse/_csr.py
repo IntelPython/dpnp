@@ -385,20 +385,25 @@ class csr_matrix(SparseABC):  # pylint: disable=too-many-public-methods
             self._has_sorted_indices = True
             return
 
-        nrows = self._shape[0]
+        nrows, ncols = self._shape
         row_lengths = self._indptr[1:] - self._indptr[:-1]
-        row_ids = _dpnp.repeat(
-            _dpnp.arange(
-                nrows,
-                dtype=indices.dtype,
-                usm_type=indices.usm_type,
-                sycl_queue=indices.sycl_queue,
-            ),
-            row_lengths,
-        )
-        # Lexsort by (row, col) via two stable passes.
-        order = _dpnp.argsort(indices, kind="stable")
-        order = order[_dpnp.argsort(row_ids[order], kind="stable")]
+        # int64 even for int32 indices, so neither branch can overflow.
+        common = {
+            "dtype": _dpnp.int64,
+            "usm_type": indices.usm_type,
+            "sycl_queue": indices.sycl_queue,
+        }
+        if nrows * ncols < 2**63:
+            # One sort on row * ncols + col; check_format bounded the indices.
+            row_keys = _dpnp.repeat(
+                _dpnp.arange(0, nrows * ncols, ncols, **common), row_lengths
+            )
+            order = _dpnp.argsort(row_keys + indices, kind="stable")
+        else:
+            # The key would overflow int64: lexsort in two stable passes.
+            row_ids = _dpnp.repeat(_dpnp.arange(nrows, **common), row_lengths)
+            order = _dpnp.argsort(indices, kind="stable")
+            order = order[_dpnp.argsort(row_ids[order], kind="stable")]
 
         self._data = self._data[order]
         self._indices = self._indices[order]

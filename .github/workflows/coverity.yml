@@ -8,10 +8,6 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: coverity-${{ github.ref }}
-  cancel-in-progress: true
-
 env:
   COVERITY_PROJECT: IntelPython/dpnp
   ONEAPI_ROOT: /opt/intel/oneapi

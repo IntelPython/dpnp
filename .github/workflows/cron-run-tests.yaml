@@ -33,10 +33,6 @@ jobs:
       run:
         shell: ${{ matrix.runner == 'windows-2022' && 'cmd /C CALL {0}' || 'bash -el {0}' }}
 
-    permissions:
-      # Needed to cancel any previous runs that are not completed for a given workflow
-      actions: write
-
     strategy:
       fail-fast: false
       matrix:
@@ -68,11 +64,6 @@ jobs:
       python-install-spec: "python ${{ matrix.python_spec || format('{0}.*', matrix.python) }}"
 
     steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@d07a454dad7609a92316b57b23c9ccfd4f59af66 # 0.13.1
-        with:
-          access_token: ${{ github.token }}
-
       - name: Find the latest tag
         id: find_latest_tag
         uses: oprypin/find-latest-tag@6957ac556fa6d349727ecabfcaaf9f8e5ee37124 # v1.1.3
