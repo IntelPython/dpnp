@@ -176,7 +176,7 @@ class TestAliases(unittest.TestCase):
         # "exceptions.RankWarning",
         # "exceptions.TooHardError",
         # "exceptions.VisibleDeprecationWarning",
-        # "linalg.LinAlgError",
+        "linalg.LinAlgError",
     ],
 )
 def test_error_classes(name):

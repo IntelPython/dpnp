@@ -40,8 +40,6 @@ requirements:
     - cython >=3.1.0
     - numpy >=1.26.0
     - versioneer ==0.29
-    # versioneer dependency
-    - tomli                   # [py<311]
     - dpctl >={{ required_dpctl_version }}
     - mkl-devel-dpcpp >={{ required_compiler_and_mkl_version }}
     - onedpl-devel

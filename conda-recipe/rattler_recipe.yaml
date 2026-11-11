@@ -48,9 +48,6 @@ requirements:
     - setuptools>=79.0.1
     - wheel>=0.45.1
     - versioneer ==0.29
-    # versioneer dependency
-    - if: match(python, "<3.11")
-      then: tomli
     # Do not use pyproject.toml for setting dependencies on OneAPI packages
     - mkl-devel-dpcpp >=${{ required_mkl_version }},<${{ max_compiler_and_mkl_version }}
     - onedpl-devel

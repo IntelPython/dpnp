@@ -48,8 +48,6 @@ requirements:
       - {{ dep|replace('_','-') }}
       {% endif %}
       {% endfor %}
-      # versioneer dependency
-      - tomli # [py<311]
       # Do not use pyproject.toml for setting dependencies on OneAPI packages
       - mkl-devel-dpcpp >={{ required_mkl_version }},<{{ max_compiler_and_mkl_version }}
       - onedpl-devel

@@ -56,9 +56,9 @@ from enum import IntEnum
 
 from dpnp.libtensor._tensor_impl import default_device_fp_type
 
-from . import _flags
 from ._dlpack import get_build_dlpack_version
 
+from ._flags cimport Flags
 from ._slicing cimport _is_buffer
 
 from ._slicing import _basic_slice_meta
@@ -862,7 +862,7 @@ cdef class usm_ndarray:
         """
         Returns :class:`dpnp.tensor._flags.Flags` object.
         """
-        return _flags.Flags(self, self.flags_)
+        return Flags._create(self, self.flags_)
 
     cdef _set_writable_flag(self, int flag):
         cdef int mask = (USM_ARRAY_WRITABLE if flag else 0)
