@@ -1,0 +1,10 @@
+﻿
+
+dpnp.scipy.linalg.cho\_solve
+============================
+
+.. currentmodule:: dpnp.scipy.linalg
+
+
+
+.. autofunction:: cho_solve
