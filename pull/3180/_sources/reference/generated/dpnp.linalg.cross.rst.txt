@@ -1,0 +1,10 @@
+﻿
+
+dpnp.linalg.cross
+=================
+
+.. currentmodule:: dpnp.linalg
+
+
+
+.. autofunction:: cross

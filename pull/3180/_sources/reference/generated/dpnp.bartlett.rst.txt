@@ -1,0 +1,10 @@
+﻿
+
+dpnp.bartlett
+=============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: bartlett
