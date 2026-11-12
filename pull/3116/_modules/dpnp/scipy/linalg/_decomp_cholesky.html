@@ -849,6 +849,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../reference/generated/dpnp.amin.html">dpnp.amin</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../reference/generated/dpnp.fmin.html">dpnp.fmin</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../reference/generated/dpnp.nanmin.html">dpnp.nanmin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../reference/generated/dpnp.minmax.html">dpnp.minmax</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../reference/generated/dpnp.convolve.html">dpnp.convolve</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../reference/generated/dpnp.clip.html">dpnp.clip</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../reference/generated/dpnp.sqrt.html">dpnp.sqrt</a></li>
@@ -1102,8 +1103,6 @@
 
 <span class="sd">"""</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
-
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">._utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -1120,12 +1119,11 @@
 
 <span class="sd">    """</span>
 
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">lower</span><span class="p">):</span>
-        <span class="n">lower</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">lower</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
-        <span class="c1"># bool() of a non-empty sequence is always True</span>
-        <span class="n">lower</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">lower</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">lower</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="n">lower</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">lower</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">lower</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">"biuf"</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"`lower` must be a bool or an array of bool."</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">lower</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">lower</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">empty_ok</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">False</span>
@@ -1187,9 +1185,9 @@
 <span class="sd">    dpnp.linalg.LinAlgError</span>
 <span class="sd">        If the decomposition fails.</span>
 <span class="sd">    ValueError</span>
-<span class="sd">        If `a` is not square, if `lower` is empty or its values are not all</span>
-<span class="sd">        equal, or if ``check_finite=True`` and `a` contains infinities or</span>
-<span class="sd">        NaNs.</span>
+<span class="sd">        If `a` is not square, if `lower` is empty, not bool or its values are</span>
+<span class="sd">        not all equal, or if ``check_finite=True`` and `a` contains infinities</span>
+<span class="sd">        or NaNs.</span>
 
 <span class="sd">    Warnings</span>
 <span class="sd">    --------</span>
@@ -1289,9 +1287,9 @@
 <span class="sd">    ------</span>
 <span class="sd">    ValueError</span>
 <span class="sd">        If `c` is not square, if the shapes of `c` and `b` are incompatible,</span>
-<span class="sd">        if `lower` is empty for a non-empty batch of factors or its values</span>
-<span class="sd">        are not all equal, or if ``check_finite=True`` and `c` or `b` contains</span>
-<span class="sd">        infinities or NaNs.</span>
+<span class="sd">        if `lower` is empty for a non-empty batch of factors, not bool or its</span>
+<span class="sd">        values are not all equal, or if ``check_finite=True`` and `c` or `b`</span>
+<span class="sd">        contains infinities or NaNs.</span>
 
 <span class="sd">    Warnings</span>
 <span class="sd">    --------</span>

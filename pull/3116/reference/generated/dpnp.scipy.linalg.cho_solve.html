@@ -850,6 +850,7 @@
 <li class="toctree-l4"><a class="reference internal" href="dpnp.amin.html">dpnp.amin</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.fmin.html">dpnp.fmin</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.nanmin.html">dpnp.nanmin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.minmax.html">dpnp.minmax</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.convolve.html">dpnp.convolve</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.clip.html">dpnp.clip</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.sqrt.html">dpnp.sqrt</a></li>
@@ -1103,9 +1104,9 @@ Disabling may give a performance gain, but may result in problems
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt>ValueError</dt><dd><p>If <cite>c</cite> is not square, if the shapes of <cite>c</cite> and <cite>b</cite> are incompatible,
-if <cite>lower</cite> is empty for a non-empty batch of factors or its values
-are not all equal, or if <code class="docutils literal notranslate"><span class="pre">check_finite=True</span></code> and <cite>c</cite> or <cite>b</cite> contains
-infinities or NaNs.</p>
+if <cite>lower</cite> is empty for a non-empty batch of factors, not bool or its
+values are not all equal, or if <code class="docutils literal notranslate"><span class="pre">check_finite=True</span></code> and <cite>c</cite> or <cite>b</cite>
+contains infinities or NaNs.</p>
 </dd>
 </dl>
 </dd>
