@@ -13,6 +13,7 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Added support for boolean input in `dpnp.positive` and the `+` operator of `dpnp.ndarray` [#3128](https://github.com/IntelPython/dpnp/pull/3128)
 * Added `dpnp.top_k` to return the `k` largest or smallest elements and their indices along an axis, with a `sorted` keyword to return them in sorted order [#3133](https://github.com/IntelPython/dpnp/pull/3133)
 * Added implementation of `dpnp.minmax`, computing the minimum and the maximum of an array in a single pass by a new fused reduction kernel [#3135](https://github.com/IntelPython/dpnp/pull/3135)
+* Added implementation of `dpnp.scipy.linalg.cho_factor` and `dpnp.scipy.linalg.cho_solve` (SciPy-compatible) [#3116](https://github.com/IntelPython/dpnp/pull/3116)
 
 ### Changed
 
