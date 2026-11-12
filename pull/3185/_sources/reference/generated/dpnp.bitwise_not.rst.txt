@@ -1,0 +1,10 @@
+﻿
+
+dpnp.bitwise\_not
+=================
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: bitwise_not

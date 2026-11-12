@@ -1,0 +1,10 @@
+﻿
+
+dpnp.multiply
+=============
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: multiply

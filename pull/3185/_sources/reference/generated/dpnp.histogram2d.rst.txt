@@ -1,0 +1,10 @@
+﻿
+
+dpnp.histogram2d
+================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: histogram2d
