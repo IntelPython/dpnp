@@ -2,8 +2,7 @@ name: Run tests suite
 on:
   # To be able to be triggered manually
   workflow_dispatch:
-  # To guarantee Maintained check is occasionally updated. See
-  # https://github.com/ossf/scorecard/blob/main/docs/checks.md#maintained
+  # Nightly test of the dpnp package of the latest tag
   schedule:
     - cron: '28 2 * * *'
 
