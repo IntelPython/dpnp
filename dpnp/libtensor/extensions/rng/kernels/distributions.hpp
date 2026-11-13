@@ -342,19 +342,30 @@ T vonmises(BitGenT &bg, StandardNormal<T> &normal, const T mu, const T kappa)
         return pi * (T(2) * bg.template next_uniform<T>() - T(1));
     }
 
-    T s;
+    // s and s - 1, which for large kappa is close to 0: W is then close to
+    // 1, so 1 - W, s - W and the angle are computed without cancellation
+    T s, sm1;
     if (kappa < T(1e-5)) {
         // as in NumPy, whose form of rho is zero in double precision until
         // 1.4e-8
         s = T(1) / kappa + kappa;
+        sm1 = s - T(1);
     }
     else if (kappa <= T(1e6)) {
         // rho = (r - sqrt(2 r)) / (2 kappa), without the cancellation which
         // makes it zero in single precision for kappa below about 4e-4,
         // where every draw would be rejected
-        const T r = T(1) + sycl::sqrt(T(1) + T(4) * kappa * kappa);
-        const T rho = T(2) * kappa / (r + sycl::sqrt(T(2) * r));
+        const T q = sycl::sqrt(T(1) + T(4) * kappa * kappa);
+        const T r = T(1) + q;
+        const T sqrt_2r = sycl::sqrt(T(2) * r);
+        const T rho = T(2) * kappa / (r + sqrt_2r);
+        // 1 - rho, with 2 kappa - q = -1 / (2 kappa + q) for large kappa
+        const T one_m_rho =
+            (rho < T(0.5))
+                ? T(1) - rho
+                : (sqrt_2r - T(1) - T(1) / (T(2) * kappa + q)) / (T(2) * kappa);
         s = (T(1) + rho * rho) / (T(2) * rho);
+        sm1 = one_m_rho * one_m_rho / (T(2) * rho);
     }
     else {
         // a wrapped normal approximates the distribution for large kappa
@@ -368,12 +379,17 @@ T vonmises(BitGenT &bg, StandardNormal<T> &normal, const T mu, const T kappa)
         return result;
     }
 
-    T W;
+    // W = (1 + s Z) / (s + Z) for Z = cos(pi U), through 1 - W =
+    // (s - 1)(1 - Z) / (s + Z) and s - W = (s - 1)(s + 1) / (s + Z), with
+    // 1 - Z = 2 sin(pi U / 2)**2 and s + Z = s - 1 + 2 cos(pi U / 2)**2
+    T one_m_W;
     for (;;) {
         const T U = bg.template next_uniform<T>();
-        const T Z = sycl::cospi(U);
-        W = (T(1) + s * Z) / (s + Z);
-        const T Y = kappa * (s - W);
+        const T sin_half = sycl::sinpi(U / T(2));
+        const T cos_half = sycl::cospi(U / T(2));
+        const T s_p_Z = sm1 + T(2) * cos_half * cos_half;
+        one_m_W = sm1 * T(2) * sin_half * sin_half / s_p_Z;
+        const T Y = kappa * sm1 * (s + T(1)) / s_p_Z;
         const T V = bg.template next_uniform<T>();
         // V == 0 is fine: Y >= 0 always accepts and Y < 0 always rejects
         if ((Y * (T(2) - Y) - V >= T(0)) ||
@@ -382,12 +398,18 @@ T vonmises(BitGenT &bg, StandardNormal<T> &normal, const T mu, const T kappa)
         }
     }
 
+    // acos(W) = 2 asin(sqrt((1 - W) / 2)), accurate for W close to 1
     const T U = bg.template next_uniform<T>();
-    T result = sycl::acos(W);
+    T result = T(2) * sycl::asin(sycl::sqrt(sycl::fmin(one_m_W / T(2), T(1))));
     if (U < T(0.5)) {
         result = -result;
     }
     result += mu;
+    // adding pi to wrap would round the angle to a multiple of ulp(pi),
+    // which in float takes small angles to 0
+    if (sycl::fabs(result) <= pi) {
+        return result;
+    }
 
     const bool neg = (result < T(0));
     T mod = sycl::fabs(result);
