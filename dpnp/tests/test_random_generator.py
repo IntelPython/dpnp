@@ -2056,6 +2056,41 @@ class TestChoice:
             freq = numpy.bincount(res, minlength=4) / n
             assert (abs(freq - p) <= 5 * numpy.sqrt(p * (1 - p) / n)).all()
 
+    def test_small_sample_without_replacement(self, monkeypatch):
+        # a few values of a large population are drawn without permuting it
+        def _permuted(*args, **kwargs):
+            raise AssertionError("the population was permuted")
+
+        monkeypatch.setattr(Generator, "_permutation_index", _permuted)
+        rng = default_rng(19)
+        res = dpnp.asnumpy(rng.choice(10**9, 10, replace=False))
+        assert numpy.unique(res).size == 10
+        assert ((res >= 0) & (res < 10**9)).all()
+
+        # and every value is as likely
+        pop, n, calls = 10**4, 25, 400
+        draws = [
+            dpnp.asnumpy(rng.choice(pop, n, replace=False))
+            for _ in range(calls)
+        ]
+        assert all(numpy.unique(d).size == n for d in draws)
+        counts = numpy.bincount(numpy.concatenate(draws) // 1000, minlength=10)
+        expected = n * calls / 10
+        assert (abs(counts - expected) <= 5 * numpy.sqrt(expected * 0.9)).all()
+
+    def test_small_sample_repeating_draws(self, monkeypatch):
+        # draws that keep repeating fall back to a permutation
+        rng = default_rng(20)
+        monkeypatch.setattr(
+            Generator,
+            "integers",
+            lambda self, low, high, size, usm_type: dpnp.zeros(
+                size, dtype=dpnp.int64
+            ),
+        )
+        res = dpnp.asnumpy(rng.choice(10**4, 10, replace=False))
+        assert numpy.unique(res).size == 10
+
     def test_weighted_without_replacement(self):
         n = 20000
         p = numpy.array([0.1, 0.0, 0.3, 0.6])

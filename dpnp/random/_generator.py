@@ -99,6 +99,9 @@ _F32_LT_1 = (None, numpy.nextafter(numpy.float32(1), numpy.float32(0)))
 _F32_LT_2_63 = (None, numpy.nextafter(numpy.float32(2**63), numpy.float32(0)))
 
 # the messages of Generator.choice
+# The draws of a small sample without replacement before it permutes
+_CHOICE_DRAWS = 8
+
 _CHOICE_MSGS = {
     "a_type": "a must be a sequence or an integer, not {}",
     "a_int": "a must be a positive integer unless no samples are taken",
@@ -2487,8 +2490,9 @@ class Generator:
         -----------
         `usm_type` is not in NumPy's signature. Without replacement, the
         sample is always in random order, so `shuffle` has no effect, and
-        memory and time proportional to the population size are used. `p`
-        is checked only when it is on the host.
+        memory and time proportional to the population size are used, unless
+        `p` is ``None`` and ``16 * size**2`` is at most the population size.
+        `p` is checked only when it is on the host.
 
         """
 
@@ -2593,7 +2597,20 @@ class Generator:
             )
             idx = dpnp.argsort(keys)[:n].reshape(shape)
         else:
-            idx = self._permutation_index(pop_size, usm_type)[:n].reshape(shape)
+            idx = None
+            if 16 * n * n <= pop_size:
+                # A small sample of a large population: independent draws
+                # repeat with probability below 1/32, so draw until they
+                # don't, which gives every ordered sample the same chance,
+                # rather than permute the whole population
+                for _ in range(_CHOICE_DRAWS):
+                    draw = self.integers(0, pop_size, size=n, usm_type=usm_type)
+                    if dpnp.unique(draw).size == n:
+                        idx = draw.reshape(shape)
+                        break
+            if idx is None:
+                idx = self._permutation_index(pop_size, usm_type)[:n]
+                idx = idx.reshape(shape)
 
         if a.ndim == 0:
             return idx
