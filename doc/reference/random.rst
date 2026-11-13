@@ -67,8 +67,8 @@ Differences from NumPy
   NumPy's rejection test rounds to accepting every sample above ``2**53``,
   which makes its tail too heavy for ``a`` close to 1.
 * ``hypergeometric`` requires ``ngood`` and ``nbad`` below ``10**9``.
-* :meth:`Generator.shuffle` only accepts a :class:`dpnp.ndarray`, as in
-  CuPy.
+* :meth:`Generator.shuffle` only accepts an array on the device, a
+  :class:`dpnp.ndarray` or :class:`dpnp.tensor.usm_ndarray`, as in CuPy.
 * Generators and bit generators cannot be pickled or deep-copied, and the
   bit generators have no ``advance`` or ``jumped`` method.
 
