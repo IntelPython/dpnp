@@ -55,6 +55,7 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Fixed `dpnp.place` and `dpnp.tensor.place` to order the write after the cast of `vals` to the array's data type, which could put wrong values into the array on an out-of-order queue [#3164](https://github.com/IntelPython/dpnp/pull/3164)
 * Fixed the example of handling duplicate indices in the `dpnp.tensor.put` docstring, which imported `dpctl.tensor`, did not parse and lost writes when `x` is longer than `indices` [#3165](https://github.com/IntelPython/dpnp/pull/3165)
 * Fixed a segfault when setting `writable` on a `Flags` object created without an array [#3168](https://github.com/IntelPython/dpnp/pull/3168)
+* Fixed `geometric`, `pareto` and `laplace` of `dpnp.random` and `dpnp.random.RandomState` to give NumPy's distributions: `geometric` counted the failures instead of the trials, `pareto` drew from the Pareto I distribution instead of the Lomax one, and `laplace` with `scale=0` returned 0 instead of `loc` [#3162](https://github.com/IntelPython/dpnp/pull/3162)
 
 ### Security
 
