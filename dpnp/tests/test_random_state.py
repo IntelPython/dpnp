@@ -712,6 +712,17 @@ class TestLegacy:
             lambda: getattr(RandomState(0), name)(*args),
         )
 
+    def test_unconstrained_device_param(self, monkeypatch):
+        # loc has no constraint, so it is not converted for a check
+        import dpnp.random._generator as gen
+
+        def _converted(value):
+            raise AssertionError("loc was converted")
+
+        monkeypatch.setattr(gen, "_on_device", _converted)
+        res = RandomState(0).normal(dpnp.arange(4), 1.0)
+        assert res.shape == (4,)
+
     @pytest.mark.parametrize("name", ["exponential", "pareto", "poisson"])
     def test_complex_device_param(self, name):
         x = numpy.array([1 + 1j], dtype=numpy.complex64)
