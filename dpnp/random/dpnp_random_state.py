@@ -676,9 +676,14 @@ class RandomState:
         """
         self._generator._check_queues(n, pvals)
         t = type(n)
-        if _is_array(n) or not (
-            hasattr(t, "__int__") or hasattr(t, "__index__")
-        ):
+        if isinstance(n, numpy.ndarray) or dpnp.is_supported_array_type(n):
+            # as NumPy, which takes int(n) of a 0-d array
+            if n.ndim > 0:
+                raise TypeError(
+                    "only 0-dimensional arrays can be converted to Python "
+                    "scalars"
+                )
+        elif not (hasattr(t, "__int__") or hasattr(t, "__index__")):
             raise TypeError("an integer is required")
         n = int(n)
         if not dpnp.is_supported_array_type(pvals):
@@ -691,6 +696,8 @@ class RandomState:
                 "setting an array element with a sequence. The requested "
                 "array would exceed the maximum number of dimension of 1."
             )
+        if n < 0:
+            raise ValueError("n < 0")
         if len(pvals) == 0:
             size = _normalize_size(size)
             shape = (() if size is None else size) + (0,)

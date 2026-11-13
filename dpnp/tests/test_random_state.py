@@ -660,6 +660,10 @@ class TestLegacy:
             ("dirichlet", ([-1.0, 1.0],)),
             ("dirichlet", ([0.0, 1.0],)),
             ("multinomial", ([5], [0.5, 0.5])),
+            ("multinomial", (numpy.array([5]), [0.5, 0.5])),
+            # n is checked before an empty pvals returns
+            ("multinomial", (-1, [])),
+            ("multinomial", (numpy.array(-1), [])),
             ("multinomial", (5, 0.5)),
             ("multinomial", (5, [[0.5, 0.5]])),
             ("multinomial", (5, [0.7, 0.7, 0.1])),
@@ -701,6 +705,12 @@ class TestLegacy:
             lambda: getattr(numpy.random.RandomState(0), name)(*args),
             lambda: getattr(RandomState(0), name)(*args),
         )
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_multinomial_0d_n(self, xp):
+        # as NumPy, a 0-d array is an integer n
+        res = RandomState(0).multinomial(xp.asarray(5), [0.5, 0.5])
+        assert int(res.sum()) == 5
 
     @pytest.mark.parametrize(
         "name, args",
