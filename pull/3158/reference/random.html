@@ -1152,9 +1152,8 @@ default, the samples take the USM type of the array parameters, or
 <li><p>Parameters on the host (Python scalars, lists and NumPy arrays) are
 checked as in NumPy. Parameters in <a class="reference internal" href="generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> are
 not, since that would wait for the device.
-Invalid ones give undefined values, such as NaN or the smallest <code class="docutils literal notranslate"><span class="pre">int64</span></code>,
-but the kernels handle them safely: they never loop without end or access
-memory out of bounds.</p></li>
+Invalid ones give undefined values, such as NaN, but the kernels handle
+them safely: they never loop without end or access memory out of bounds.</p></li>
 <li><p>Parameters given as lists or NumPy arrays are copied to the device first,
 which waits for the work already submitted to the queue. Scalars and
 <a class="reference internal" href="generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> parameters don't wait.</p></li>
