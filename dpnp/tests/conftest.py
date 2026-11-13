@@ -192,13 +192,6 @@ def pytest_runtest_teardown(item, nextitem):
 
 
 @pytest.fixture
-def allow_fall_back_on_numpy(monkeypatch):
-    monkeypatch.setattr(
-        dpnp.config, "__DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__", 0
-    )
-
-
-@pytest.fixture
 def suppress_complex_warning():
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", ComplexWarning)
