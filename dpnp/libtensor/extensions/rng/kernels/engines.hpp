@@ -417,7 +417,9 @@ struct MRG32k3a
     // engine to the substream of a work-item takes a 3x3 matrix product
     // modulo each of m1 and m2 per base-8 digit of the work-item's index,
     // which 8 elements per work-item made 2x (GPU) to 10x (CPU) slower than
-    // Philox. 128 is on par with Philox on both.
+    // Philox. 128 is on par with Philox on both for large draws, but runs
+    // few work-items for a mid-size draw of a rejection sampler, which can
+    // then be several times slower than with Philox.
     static constexpr std::size_t items_per_work_item = 128;
 
     // No make_block: the engine computes its values one after another
