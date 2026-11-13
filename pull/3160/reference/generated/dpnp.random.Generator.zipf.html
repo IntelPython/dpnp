@@ -1135,6 +1135,27 @@
 <span class="sig-prename descclassname"><span class="pre">Generator.</span></span><span class="sig-name descname"><span class="pre">zipf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/_generator.html#Generator.zipf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.random.Generator.zipf" title="Link to this definition">¶</a></dt>
 <dd><p>Draw samples from a Zipf distribution.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.zipf.html#numpy.random.Generator.zipf" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator.zipf</span></code></a>.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>a</strong><span class="classifier">{float, array_like of floats, dpnp.ndarray, usm_ndarray}</span></dt><dd><p>The distribution parameter, greater than 1.</p>
+</dd>
+<dt><strong>size</strong><span class="classifier">{None, int, tuple of ints}, optional</span></dt><dd><p>Output shape. With <code class="docutils literal notranslate"><span class="pre">None</span></code>, the broadcast shape of <cite>a</cite>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt><strong>usm_type</strong><span class="classifier">{None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span></dt><dd><p>The type of SYCL USM allocation for the output array.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>, which means the USM type of the array
+parameters, or <code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code> when there are none.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>out</strong><span class="classifier">dpnp.ndarray</span></dt><dd><p>The samples, of data type <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.int64</span></code>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Limitations</p>
 <p><cite>usm_type</cite> is not in NumPy's signature. The samples follow the Zipf
 distribution truncated to the largest <code class="docutils literal notranslate"><span class="pre">int64</span></code>, while NumPy's
