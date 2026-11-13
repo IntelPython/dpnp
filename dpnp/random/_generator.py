@@ -1992,7 +1992,11 @@ class Generator:
         size = _normalize_size(size)
         shape = (() if size is None else size) + (k,)
 
-        if k == 0 or not alpha.max() < 0.1:
+        # NumPy's threshold for the gamma variates to underflow is too low
+        # in single precision, where alpha of 0.1 to 0.2 still gives rows
+        # of 0 / 0
+        small = 0.1 if dtype == numpy.float64 else 1.0
+        if k == 0 or not alpha.max() < small:
             # normalize gamma variates, NaN in alpha giving NaN
             res = self._float_sample(
                 ri._gamma,

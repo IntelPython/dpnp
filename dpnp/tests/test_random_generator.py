@@ -1792,7 +1792,16 @@ class TestChecks:
 class TestMultivariate:
     @pytest.mark.parametrize("dtype", float_dtypes)
     @pytest.mark.parametrize(
-        "alpha", [[0.5, 1.0, 2.0], [0.01, 0.05, 0.02], [3.0], [0.0, 1.0, 0.5]]
+        "alpha",
+        [
+            [0.5, 1.0, 2.0],
+            [0.01, 0.05, 0.02],
+            [3.0],
+            [0.0, 1.0, 0.5],
+            # gamma variates that underflow in single precision
+            [0.1, 0.0],
+            [0.2, 0.15],
+        ],
     )
     def test_dirichlet(self, alpha, dtype):
         n = 10**5
