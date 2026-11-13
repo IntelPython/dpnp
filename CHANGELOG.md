@@ -65,6 +65,7 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Fixed `dpnp.median` and `dpnp.nanmedian` raising `ValueError` for an `out` array of the result shape with `keepdims=True` [#3138](https://github.com/IntelPython/dpnp/pull/3138)
 * Fixed `dpnp.partition` to accept NumPy integers and integer arrays as `kth`, and to raise as NumPy does for a boolean or an empty `kth` [#3138](https://github.com/IntelPython/dpnp/pull/3138)
 * Fixed `dpnp.nanmedian` raising `TypeError` for an `out` array of a lower precision data type instead of casting to it as `dpnp.median` does [#3138](https://github.com/IntelPython/dpnp/pull/3138)
+* Fixed `geometric`, `pareto` and `laplace` of `dpnp.random` and `dpnp.random.RandomState` to give NumPy's distributions: `geometric` counted the failures instead of the trials, `pareto` drew from the Pareto I distribution instead of the Lomax one, and `laplace` with `scale=0` returned 0 instead of `loc` [#3162](https://github.com/IntelPython/dpnp/pull/3162)
 
 ### Security
 
