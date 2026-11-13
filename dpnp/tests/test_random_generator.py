@@ -622,6 +622,25 @@ class TestFloatMethods:
         res = dpnp.asnumpy(default_rng(1).beta(a, b, size=10**5, dtype=dtype))
         assert ((res >= 0) & (res <= 1)).all()
 
+    @pytest.mark.parametrize(
+        "a, b, mean",
+        [
+            (1e-30, 1e-30, 0.5),
+            (1e-30, 3e-30, 0.25),
+            # below the normal range of float32, so raised to its smallest
+            (1e-40, 1e-40, 0.5),
+            (1e-50, 1e-50, 0.5),
+            (1e-50, 0.5, 0.0),
+        ],
+    )
+    def test_beta_tiny_float32(self, a, b, mean):
+        # in single precision the shortcut for tiny a and b never ran, and
+        # the logarithms that ran instead gave NaN
+        res = default_rng(0).beta(a, b, size=10**5, dtype=dpnp.float32)
+        res = dpnp.asnumpy(res).astype(numpy.float64)
+        assert not numpy.isnan(res).any()
+        assert abs(res.mean() - mean) < 0.01
+
     def test_array_params(self):
         rng = default_rng(3)
         loc = dpnp.arange(4.0)[:, None] * 10
