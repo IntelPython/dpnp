@@ -2415,12 +2415,12 @@ class Generator:
 
         Limitations
         -----------
-        As in CuPy, `x` must be a :class:`dpnp.ndarray`.
+        As in CuPy, `x` must be an array on the device, a
+        :class:`dpnp.ndarray` or :class:`dpnp.tensor.usm_ndarray`.
 
         """
 
-        if not isinstance(x, dpnp.ndarray):
-            raise TypeError(f"x must be a dpnp.ndarray, got {type(x)}")
+        dpnp.check_supported_arrays_type(x)
         self._check_queues(x)
         if x.ndim == 0:
             raise TypeError("len() of unsized object")

@@ -16,6 +16,7 @@ from numpy.testing import (
 
 import dpnp
 import dpnp.libtensor._rng_impl as ri
+import dpnp.tensor as dpt
 from dpnp.random import Generator, Philox4x3210, default_rng
 from dpnp.random._generator import _repeats_along_samples
 
@@ -1994,6 +1995,10 @@ class TestPermutations:
         rng.shuffle(x, axis=1)
         res = dpnp.asnumpy(x)
         assert (res[1:] - res[:1] == [[4], [8]]).all()
+
+        x = dpt.arange(20)
+        assert rng.shuffle(x) is None
+        assert_array_equal(numpy.sort(dpt.asnumpy(x)), numpy.arange(20))
 
     def test_permuted(self):
         rng = default_rng(15)
