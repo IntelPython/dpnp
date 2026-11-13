@@ -105,23 +105,9 @@ jobs:
           cat ${{ env.environment-file }}
 
       - name: Setup miniconda
-        id: setup_miniconda
-        continue-on-error: true
-        uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
+        uses: ./.github/actions/setup-miniconda
         with:
           miniforge-version: ${{ env.MINIFORGE_VERSION }}
-          use-mamba: 'true'
-          conda-remove-defaults: 'true'
-          environment-file: ${{ env.environment-file }}
-          activate-environment: 'docs'
-
-      - name: ReSetup miniconda
-        if: steps.setup_miniconda.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
-        with:
-          miniforge-version: ${{ env.MINIFORGE_VERSION }}
-          use-mamba: 'true'
-          conda-remove-defaults: 'true'
           environment-file: ${{ env.environment-file }}
           activate-environment: 'docs'
 
