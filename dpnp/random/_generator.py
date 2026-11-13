@@ -332,7 +332,7 @@ def _as_int64(x):
 
     if dpnp.is_supported_array_type(x):
         _check_device_cast(x, _int64)
-        return dpnp.asarray(x).astype(_int64)
+        return dpnp.asarray(x).astype(_int64, copy=False)
     if isinstance(x, numpy.ndarray):
         if not numpy.can_cast(x.dtype, _int64, "safe"):
             what = "scalar" if x.ndim == 0 else "array data"
@@ -1836,7 +1836,7 @@ class Generator:
             def _to_bound(x, shift):
                 if dpnp.is_supported_array_type(x):
                     x = dpnp.asarray(x, dtype=wide, sycl_queue=queue)
-                    return (x - shift if shift else x).astype(dtype)
+                    return (x - shift if shift else x).astype(dtype, copy=False)
                 if not _is_array(x):
                     return int(x) - shift
                 # exact integers, truncated as in NumPy, since max + 1 fits
