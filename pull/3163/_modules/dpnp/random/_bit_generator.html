@@ -1615,15 +1615,17 @@
 <span class="n">_PCG_MULT</span> <span class="o">=</span> <span class="mh">0xDA942042E4DD58B5</span>
 <span class="n">_PCG_JUMP</span> <span class="o">=</span> <span class="mh">0x9E3779B97F4A7C15F39CC0605CEDC835</span>
 
+<span class="c1"># The distance between the streams of the work-items of a sampler whose</span>
+<span class="c1"># draws vary. The streams of jumped(k) lie between them, as _PCG_JUMP * k</span>
+<span class="c1"># modulo 2**64 stays away from 0: a work-item reaches one only after 2**49</span>
+<span class="c1"># draws for k below 20000, and after 2**40 for k below 2**20.</span>
+<span class="n">_PCG_STRIDE</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">64</span>
+
 <span class="c1"># The kernels that take a fixed number of 32-bit halves of raw outputs for</span>
 <span class="c1"># every value of a data type, and so draw the stream of PCG64DXSM in order,</span>
-<span class="c1"># as NumPy does. It must match halves_per_item of the samplers.</span>
+<span class="c1"># as NumPy does, by the data types they do it for</span>
 <span class="n">_PCG_SEQUENTIAL</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="n">ri</span><span class="o">.</span><span class="n">_random_raw</span><span class="p">:</span> <span class="p">{</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">uint64</span><span class="p">):</span> <span class="mi">2</span><span class="p">,</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">uint32</span><span class="p">):</span> <span class="mi">1</span><span class="p">,</span>
-    <span class="p">},</span>
-    <span class="n">ri</span><span class="o">.</span><span class="n">_uniform</span><span class="p">:</span> <span class="p">{</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">):</span> <span class="mi">2</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="p">):</span> <span class="mi">1</span><span class="p">},</span>
+    <span class="nb">getattr</span><span class="p">(</span><span class="n">ri</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span> <span class="n">halves</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">halves</span> <span class="ow">in</span> <span class="n">ri</span><span class="o">.</span><span class="n">halves_per_item</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
 <span class="p">}</span>
 
 
@@ -1640,6 +1642,21 @@
         <span class="n">mult</span> <span class="o">=</span> <span class="p">(</span><span class="n">mult</span> <span class="o">*</span> <span class="n">mult</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">_MASK128</span>
         <span class="n">k</span> <span class="o">&gt;&gt;=</span> <span class="mi">1</span>
     <span class="k">return</span> <span class="n">acc_mult</span><span class="p">,</span> <span class="n">acc_inc</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_affine_power</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""The affine map `m` = (mult, add) modulo 2**128, applied `k` times."""</span>
+
+    <span class="n">acc_mult</span><span class="p">,</span> <span class="n">acc_add</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="n">mult</span><span class="p">,</span> <span class="n">add</span> <span class="o">=</span> <span class="n">m</span>
+    <span class="k">while</span> <span class="n">k</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">acc_mult</span> <span class="o">=</span> <span class="p">(</span><span class="n">acc_mult</span> <span class="o">*</span> <span class="n">mult</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">_MASK128</span>
+            <span class="n">acc_add</span> <span class="o">=</span> <span class="p">(</span><span class="n">acc_add</span> <span class="o">*</span> <span class="n">mult</span> <span class="o">+</span> <span class="n">add</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">_MASK128</span>
+        <span class="n">add</span> <span class="o">=</span> <span class="p">((</span><span class="n">mult</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">add</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">_MASK128</span>
+        <span class="n">mult</span> <span class="o">=</span> <span class="p">(</span><span class="n">mult</span> <span class="o">*</span> <span class="n">mult</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">_MASK128</span>
+        <span class="n">k</span> <span class="o">&gt;&gt;=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">acc_mult</span><span class="p">,</span> <span class="n">acc_add</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_pcg_advance</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">inc</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
@@ -1701,16 +1718,18 @@
 <span class="sd">    -----</span>
 <span class="sd">    The raw outputs of :meth:`random_raw`, the floating-point values of</span>
 <span class="sd">    :meth:`dpnp.random.Generator.random` and</span>
-<span class="sd">    :meth:`dpnp.random.Generator.uniform`, and :meth:`dpnp.random.Generator.</span>
-<span class="sd">    bytes` take a fixed number of engine outputs for every value. They are</span>
-<span class="sd">    drawn in the order of the stream, and are the same as NumPy's for the</span>
-<span class="sd">    same state, where NumPy draws them with the same algorithm.</span>
+<span class="sd">    :meth:`dpnp.random.Generator.uniform`, and</span>
+<span class="sd">    :meth:`dpnp.random.Generator.bytes` take a fixed number of engine</span>
+<span class="sd">    outputs for every value. They are drawn in the order of the stream, and</span>
+<span class="sd">    are the same as NumPy's for the same state, where NumPy draws them with</span>
+<span class="sd">    the same algorithm.</span>
 
-<span class="sd">    Every other method is sampled as by :meth:`jumped`: each work-item of a</span>
-<span class="sd">    call producing ``n`` values draws as many values as its rejection</span>
-<span class="sd">    samplers need from its own stream, the ``w``-th of which is that of</span>
-<span class="sd">    ``jumped(w)``, and the call advances the state as ``jumped(ceil(n /</span>
-<span class="sd">    8))``, but keeps the 32-bit half NumPy buffers. The values therefore</span>
+<span class="sd">    Every other method draws from a stream per work-item: each work-item of</span>
+<span class="sd">    a call producing ``n`` values draws as many values as its rejection</span>
+<span class="sd">    samplers need from its own stream, the ``w``-th of which starts</span>
+<span class="sd">    ``w * 2**64`` steps ahead, and the call advances the state by</span>
+<span class="sd">    ``ceil(n / 8) * 2**64`` steps, but keeps the 32-bit half NumPy buffers.</span>
+<span class="sd">    The streams of :meth:`jumped` do not reach these. The values therefore</span>
 <span class="sd">    depend on the output size, and are not the same as NumPy's. For a given</span>
 <span class="sd">    state, output size and data type, the raw bits and the uniform floats</span>
 <span class="sd">    are the same on every device, while the samplers built on</span>
@@ -1729,14 +1748,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_inc</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s2">"state"</span><span class="p">][</span><span class="s2">"inc"</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_has_uint32</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_uinteger</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_jump</span> <span class="o">=</span> <span class="n">_pcg_power</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inc</span><span class="p">,</span> <span class="n">_PCG_JUMP</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stride</span> <span class="o">=</span> <span class="n">_pcg_power</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inc</span><span class="p">,</span> <span class="n">_PCG_STRIDE</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_set_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">inc</span><span class="p">,</span> <span class="n">has_uint32</span><span class="p">,</span> <span class="n">uinteger</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">=</span> <span class="n">state</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_inc</span> <span class="o">=</span> <span class="n">inc</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_has_uint32</span> <span class="o">=</span> <span class="n">has_uint32</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_uinteger</span> <span class="o">=</span> <span class="n">uinteger</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_jump</span> <span class="o">=</span> <span class="n">_pcg_power</span><span class="p">(</span><span class="n">inc</span><span class="p">,</span> <span class="n">_PCG_JUMP</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stride</span> <span class="o">=</span> <span class="n">_pcg_power</span><span class="p">(</span><span class="n">inc</span><span class="p">,</span> <span class="n">_PCG_STRIDE</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1770,8 +1789,13 @@
 
         <span class="n">state</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s2">"state"</span><span class="p">][</span><span class="s2">"state"</span><span class="p">])</span> <span class="o">&amp;</span> <span class="n">_MASK128</span>
         <span class="n">inc</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s2">"state"</span><span class="p">][</span><span class="s2">"inc"</span><span class="p">])</span> <span class="o">&amp;</span> <span class="n">_MASK128</span>
-        <span class="n">has_uint32</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s2">"has_uint32"</span><span class="p">])</span>
-        <span class="n">uinteger</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s2">"uinteger"</span><span class="p">])</span> <span class="o">&amp;</span> <span class="mh">0xFFFFFFFF</span>
+        <span class="c1"># NumPy takes any has_uint32 and tests it against 0</span>
+        <span class="n">has_uint32</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s2">"has_uint32"</span><span class="p">])</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">uinteger</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s2">"uinteger"</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">uinteger</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">OverflowError</span><span class="p">(</span><span class="s2">"can't convert negative value to uint32_t"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">uinteger</span> <span class="o">&gt;</span> <span class="mh">0xFFFFFFFF</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">OverflowError</span><span class="p">(</span><span class="s2">"value too large to convert to uint32_t"</span><span class="p">)</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_set_state</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">inc</span><span class="p">,</span> <span class="n">has_uint32</span><span class="p">,</span> <span class="n">uinteger</span><span class="p">)</span>
 
@@ -1819,10 +1843,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">&gt;&gt;</span> <span class="mi">64</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_inc</span> <span class="o">&amp;</span> <span class="n">_MASK64</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_inc</span> <span class="o">&gt;&gt;</span> <span class="mi">64</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_jump</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">_MASK64</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_jump</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">64</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_jump</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">_MASK64</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_jump</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">64</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_stride</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">_MASK64</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_stride</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">64</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_stride</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">_MASK64</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_stride</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">64</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_has_uint32</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_uinteger</span><span class="p">,</span>
         <span class="p">]</span>
@@ -1847,9 +1871,11 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_has_uint32</span> <span class="o">=</span> <span class="n">size</span> <span class="o">%</span> <span class="mi">2</span>
                     <span class="n">state</span> <span class="o">=</span> <span class="n">_pcg_advance</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">inc</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># work-item w draws from the stream jumped w times</span>
-                <span class="n">n_wi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_work_items</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
-                <span class="n">state</span> <span class="o">=</span> <span class="n">_pcg_advance</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">inc</span><span class="p">,</span> <span class="n">_PCG_JUMP</span> <span class="o">*</span> <span class="n">n_wi</span><span class="p">)</span>
+                <span class="c1"># work-item w draws from the stream advanced w * 2**64 steps</span>
+                <span class="n">mult</span><span class="p">,</span> <span class="n">add</span> <span class="o">=</span> <span class="n">_affine_power</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_stride</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_work_items</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">state</span> <span class="o">=</span> <span class="p">(</span><span class="n">mult</span> <span class="o">*</span> <span class="n">state</span> <span class="o">+</span> <span class="n">add</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">_MASK128</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">=</span> <span class="n">state</span>
         <span class="k">return</span> <span class="n">words</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span></div>
 

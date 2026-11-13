@@ -1153,6 +1153,18 @@
 <p>A bit generator set by <a class="reference internal" href="dpnp.random.set_bit_generator.html#dpnp.random.set_bit_generator" title="dpnp.random.set_bit_generator"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpnp.random.set_bit_generator()</span></code></a> other than
 <a class="reference internal" href="dpnp.random.Philox4x3210.html#dpnp.random.Philox4x3210" title="dpnp.random.Philox4x3210"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.random.Philox4x3210</span></code></a> is reseeded in place with the state a
 new one of its type would have for <cite>seed</cite>, as in NumPy.</p>
+<p>The states made later for other queues are seeded from <cite>seed</cite> too, in
+the order they are made, so that seeded code draws the same values on
+every run.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">bool</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">==</span> <span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
+<span class="go">True</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>

@@ -80,9 +80,15 @@ Differences from NumPy
   reach the largest ``int64``. NumPy returns a C ``long`` instead, which is
   ``int32`` on Windows.
 * ``hypergeometric`` requires ``ngood`` and ``nbad`` below ``10**9``, also in
-  :class:`RandomState`.
-* :meth:`Generator.shuffle` and :func:`shuffle` only accept a
-  :class:`dpnp.ndarray`, as in CuPy.
+  :class:`RandomState`, and ``multivariate_hypergeometric`` requires
+  ``sum(colors)`` below ``10**9`` for the ``"count"`` method too.
+* ``choice`` always returns a sample without replacement in random order,
+  so its ``shuffle`` parameter has no effect.
+* ``p`` of ``choice`` and ``pvals`` of ``multinomial`` are only checked when
+  they are on the host, as the other parameters are.
+* :meth:`Generator.shuffle` and :func:`shuffle` only accept an array on the
+  device, a :class:`dpnp.ndarray` or :class:`dpnp.tensor.usm_ndarray`, as in
+  CuPy.
 * Generators and bit generators cannot be pickled or deep-copied,
   and :class:`Philox4x3210` and :class:`MRG32k3a` have no ``advance`` or
   ``jumped`` method.
