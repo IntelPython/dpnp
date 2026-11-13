@@ -1941,6 +1941,19 @@ def test_generator_array_params(usm_type):
     assert rng.multinomial(5, p).usm_type == usm_type
 
 
+@pytest.mark.parametrize("usm_type", list_of_usm_types)
+def test_random_state_usm_type_follows_params(usm_type):
+    x = dpnp.zeros(4, usm_type=usm_type)
+    rs = dpnp.random.RandomState(0)
+    assert rs.normal(x).usm_type == usm_type
+    assert dpnp.random.normal(x).usm_type == usm_type
+    empty = dpnp.zeros(0, usm_type=usm_type)
+    assert rs.multinomial(5, empty).usm_type == usm_type
+    # without array parameters the output is on the device
+    assert rs.rand(3).usm_type == "device"
+    assert dpnp.random.rand(3).usm_type == "device"
+
+
 @pytest.mark.parametrize("usm_type_a", list_of_usm_types)
 @pytest.mark.parametrize("usm_type", list_of_usm_types)
 def test_generator_choice_usm_type(usm_type_a, usm_type):

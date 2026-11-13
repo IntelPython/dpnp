@@ -33,7 +33,7 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Reduced the overhead of `dpnp.ndarray.flags` and `dpnp.tensor.usm_ndarray.flags` [#3168](https://github.com/IntelPython/dpnp/pull/3168)
 * Changed `dpnp.linalg.LinAlgError` to derive from `numpy.linalg.LinAlgError`, so `except numpy.linalg.LinAlgError` also catches errors raised by dpnp linear algebra functions [#3184](https://github.com/IntelPython/dpnp/pull/3184)
 * Bumped the minimum required `dpctl` version to `0.24.0` [#3169](https://github.com/IntelPython/dpnp/pull/3169)
-* Reimplemented `dpnp.random.RandomState` and the `dpnp.random` functions on device kernels, drawing on the queue of the generator. `device`, `usm_type` and `sycl_queue` are now keyword-only, `randint(dtype=int)` returns `int64` and `shuffle` requires a `dpnp.ndarray` or `usm_ndarray` [#3162](https://github.com/IntelPython/dpnp/pull/3162)
+* Reimplemented `dpnp.random.RandomState` and the `dpnp.random` functions on device kernels, drawing on the queue of the generator. `device`, `usm_type` and `sycl_queue` are now keyword-only, `usm_type` defaults to the USM type of the array parameters, `randint(dtype=int)` returns `int64` and `shuffle` requires a `dpnp.ndarray` or `usm_ndarray` [#3162](https://github.com/IntelPython/dpnp/pull/3162)
 
 ### Deprecated
 
