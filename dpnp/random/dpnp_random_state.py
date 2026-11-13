@@ -933,6 +933,8 @@ class RandomState:
         :obj:`numpy.random.RandomState.uniform`.
 
         """
+        # before the range check, which waits for the queue of the bounds
+        self._generator._check_queues(low, high)
         dtype = self._generator._float_dtype(dtype, "uniform")
         _uniform_range(
             low, high, dtype, "Range exceeds valid bounds", device=True
