@@ -644,8 +644,13 @@ class PCG64DXSM(BitGenerator):
 
         state = int(value["state"]["state"]) & _MASK128
         inc = int(value["state"]["inc"]) & _MASK128
-        has_uint32 = int(value["has_uint32"])
-        uinteger = int(value["uinteger"]) & 0xFFFFFFFF
+        # NumPy takes any has_uint32 and tests it against 0
+        has_uint32 = int(int(value["has_uint32"]) != 0)
+        uinteger = int(value["uinteger"])
+        if uinteger < 0:
+            raise OverflowError("can't convert negative value to uint32_t")
+        if uinteger > 0xFFFFFFFF:
+            raise OverflowError("value too large to convert to uint32_t")
         with self._lock:
             self._set_state(state, inc, has_uint32, uinteger)
 

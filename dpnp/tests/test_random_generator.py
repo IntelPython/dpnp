@@ -571,6 +571,26 @@ class TestPCG64DXSM:
             ValueError, setattr, bg, "state", {"bit_generator": "PCG64"}
         )
 
+        ref = numpy.random.PCG64DXSM(42)
+        for uinteger in [-1, 2**32]:
+            state = dict(ref.state, uinteger=uinteger)
+            _assert_same_error(
+                lambda: setattr(ref, "state", state),
+                lambda: setattr(bg, "state", state),
+            )
+
+    def test_state_has_uint32(self):
+        # NumPy takes any nonzero has_uint32 as true
+        ref = numpy.random.PCG64DXSM(43)
+        state = dict(ref.state, has_uint32=-1, uinteger=12345)
+        ref.state = state
+        bg = PCG64DXSM()
+        bg.state = state
+        assert bg.state["has_uint32"] == 1
+        res = Generator(bg).random(3, dtype=dpnp.float32)
+        exp = numpy.random.Generator(ref).random(3, dtype=numpy.float32)
+        assert_array_equal(res, exp)
+
     def test_spawn(self):
         children = PCG64DXSM(5).spawn(2)
         ref = numpy.random.PCG64DXSM(5).spawn(2)
