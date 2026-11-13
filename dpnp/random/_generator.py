@@ -2056,7 +2056,8 @@ class Generator:
         Limitations
         -----------
         `usm_type` is not in NumPy's signature. One binomial kernel is
-        launched for every category but the last.
+        launched for every category but the last. `pvals` is checked only
+        when it is on the host.
 
         """
 
