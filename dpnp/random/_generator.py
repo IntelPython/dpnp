@@ -342,7 +342,8 @@ def _check_constraint(value, name, cons, scalar, device=False):
     """
 
     if dpnp.is_supported_array_type(value):
-        if not device:
+        # a device parameter without a constraint needs no conversion
+        if not device or cons == _CONS_NONE:
             return
         xp = dpnp
         val = _on_device(value)
