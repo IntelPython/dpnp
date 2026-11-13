@@ -1119,6 +1119,31 @@ class TestIntegers:
         rng = default_rng(0)
         assert_raises(TypeError, rng.integers, 0, 5, dtype=numpy.float32)
 
+    @pytest.mark.parametrize(
+        "low, high, size, kwargs",
+        [
+            (5, 5, 0, {}),
+            (5, 5, (2, 0), {}),
+            (6, 5, 0, {"endpoint": True}),
+            (0, 300, 0, {"dtype": numpy.uint8}),
+            ([5], [5], (0, 1), {}),
+            ([1, 2, 3], 5, (0, 2), {}),
+            ([], [], None, {}),
+        ],
+    )
+    def test_empty_size(self, low, high, size, kwargs):
+        # as in NumPy, an empty draw checks neither bound
+        expected = numpy.random.default_rng(0).integers(
+            low, high, size=size, **kwargs
+        )
+        res = default_rng(0).integers(low, high, size=size, **kwargs)
+        assert res.shape == expected.shape
+        assert res.dtype == expected.dtype
+
+        low, high = dpnp.asarray(low), dpnp.asarray(high)
+        res = default_rng(0).integers(low, high, size=size, **kwargs)
+        assert res.shape == expected.shape
+
     @pytest.mark.parametrize("usm_type", ["shared", "host"])
     def test_usm_type_follows_bounds(self, usm_type):
         # host bounds become temporaries of the device bound's USM type

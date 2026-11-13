@@ -40,6 +40,7 @@ driven by a oneMKL or oneMath device engine. The values differ from NumPy's.
 # pylint: disable=too-many-lines
 
 import itertools
+import math
 
 import numpy
 
@@ -1763,6 +1764,24 @@ class Generator:
         dtype = numpy.dtype(dtype)
         if dtype not in _integer_types:
             raise TypeError(f"Unsupported dtype {dtype!r} for {name}")
+
+        # as NumPy, an empty draw checks neither bound
+        shape = _normalize_size(size)
+        if shape is None:
+            try:
+                shape = numpy.broadcast_shapes(
+                    numpy.shape(low), numpy.shape(high)
+                )
+            except ValueError:
+                # left for the shape checks of the draw
+                shape = None
+        if shape is not None and math.prod(shape) == 0:
+            return dpnp.empty(
+                shape,
+                dtype=dtype,
+                usm_type=usm_type,
+                sycl_queue=self.sycl_queue,
+            )
 
         # The bounds are passed to the kernel as a closed interval
         if dtype == numpy.bool_:
