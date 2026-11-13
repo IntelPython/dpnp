@@ -74,10 +74,11 @@ _QUEUE_PARAMS = """\
         Default: ``None``."""
 
 _USM_PARAM = """\
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
 
-        Default: ``"device"``."""
+        Default: ``None``, which means the USM type of the array parameters,
+        or ``"device"`` when there are none."""
 
 _DTYPE_PARAM = """\
     dtype : {None, float32, float64}, optional
@@ -272,7 +273,7 @@ def beta(
     dtype=None,
     *,
     device=None,
-    usm_type="device",
+    usm_type=None,
     sycl_queue=None,
 ):
     """
@@ -296,9 +297,7 @@ def beta(
 
 
 @_params_doc
-def binomial(
-    n, p, size=None, *, device=None, usm_type="device", sycl_queue=None
-):
+def binomial(n, p, size=None, *, device=None, usm_type=None, sycl_queue=None):
     """
     Draw samples from a binomial distribution.
 
@@ -340,7 +339,7 @@ def chisquare(
     dtype=None,
     *,
     device=None,
-    usm_type="device",
+    usm_type=None,
     sycl_queue=None,
 ):
     """
@@ -371,7 +370,7 @@ def choice(
     p=None,
     *,
     device=None,
-    usm_type="device",
+    usm_type=None,
     sycl_queue=None,
 ):
     """
@@ -400,7 +399,7 @@ def dirichlet(
     dtype=None,
     *,
     device=None,
-    usm_type="device",
+    usm_type=None,
     sycl_queue=None,
 ):
     """
@@ -430,7 +429,7 @@ def exponential(
     dtype=None,
     *,
     device=None,
-    usm_type="device",
+    usm_type=None,
     sycl_queue=None,
 ):
     """
@@ -461,7 +460,7 @@ def f(
     dtype=None,
     *,
     device=None,
-    usm_type="device",
+    usm_type=None,
     sycl_queue=None,
 ):
     """
@@ -492,7 +491,7 @@ def gamma(
     dtype=None,
     *,
     device=None,
-    usm_type="device",
+    usm_type=None,
     sycl_queue=None,
 ):
     """
@@ -516,7 +515,7 @@ def gamma(
 
 
 @_params_doc
-def geometric(p, size=None, *, device=None, usm_type="device", sycl_queue=None):
+def geometric(p, size=None, *, device=None, usm_type=None, sycl_queue=None):
     """
     Draw samples from the geometric distribution.
 
@@ -544,7 +543,7 @@ def gumbel(
     dtype=None,
     *,
     device=None,
-    usm_type="device",
+    usm_type=None,
     sycl_queue=None,
 ):
     """
@@ -575,7 +574,7 @@ def hypergeometric(
     size=None,
     *,
     device=None,
-    usm_type="device",
+    usm_type=None,
     sycl_queue=None,
 ):
     """
@@ -605,7 +604,7 @@ def laplace(
     dtype=None,
     *,
     device=None,
-    usm_type="device",
+    usm_type=None,
     sycl_queue=None,
 ):
     """
@@ -636,7 +635,7 @@ def logistic(
     dtype=None,
     *,
     device=None,
-    usm_type="device",
+    usm_type=None,
     sycl_queue=None,
 ):
     """
@@ -667,7 +666,7 @@ def lognormal(
     dtype=None,
     *,
     device=None,
-    usm_type="device",
+    usm_type=None,
     sycl_queue=None,
 ):
     """
@@ -691,7 +690,7 @@ def lognormal(
 
 
 @_params_doc
-def logseries(p, size=None, *, device=None, usm_type="device", sycl_queue=None):
+def logseries(p, size=None, *, device=None, usm_type=None, sycl_queue=None):
     """
     Draw samples from a logarithmic series distribution.
 
@@ -713,7 +712,7 @@ def logseries(p, size=None, *, device=None, usm_type="device", sycl_queue=None):
 
 @_params_doc
 def multinomial(
-    n, pvals, size=None, *, device=None, usm_type="device", sycl_queue=None
+    n, pvals, size=None, *, device=None, usm_type=None, sycl_queue=None
 ):
     """
     Draw samples from a multinomial distribution.
@@ -744,7 +743,7 @@ def multivariate_normal(
     *,
     dtype=None,
     device=None,
-    usm_type="device",
+    usm_type=None,
     sycl_queue=None,
 ):
     """
@@ -772,7 +771,7 @@ def multivariate_normal(
 
 @_params_doc
 def negative_binomial(
-    n, p, size=None, *, device=None, usm_type="device", sycl_queue=None
+    n, p, size=None, *, device=None, usm_type=None, sycl_queue=None
 ):
     """
     Draw samples from a negative binomial distribution.
@@ -801,7 +800,7 @@ def noncentral_chisquare(
     dtype=None,
     *,
     device=None,
-    usm_type="device",
+    usm_type=None,
     sycl_queue=None,
 ):
     """
@@ -833,7 +832,7 @@ def noncentral_f(
     dtype=None,
     *,
     device=None,
-    usm_type="device",
+    usm_type=None,
     sycl_queue=None,
 ):
     """
@@ -864,7 +863,7 @@ def normal(
     dtype=None,
     *,
     device=None,
-    usm_type="device",
+    usm_type=None,
     sycl_queue=None,
 ):
     """
@@ -889,7 +888,7 @@ def normal(
 
 @_params_doc
 def pareto(
-    a, size=None, dtype=None, *, device=None, usm_type="device", sycl_queue=None
+    a, size=None, dtype=None, *, device=None, usm_type=None, sycl_queue=None
 ):
     """
     Draw samples from a Pareto II or Lomax distribution with specified
@@ -932,9 +931,7 @@ def permutation(x, *, device=None, sycl_queue=None):
 
 
 @_params_doc
-def poisson(
-    lam=1.0, size=None, *, device=None, usm_type="device", sycl_queue=None
-):
+def poisson(lam=1.0, size=None, *, device=None, usm_type=None, sycl_queue=None):
     """
     Draw samples from a Poisson distribution.
 
@@ -956,7 +953,7 @@ def poisson(
 
 @_params_doc
 def power(
-    a, size=None, dtype=None, *, device=None, usm_type="device", sycl_queue=None
+    a, size=None, dtype=None, *, device=None, usm_type=None, sycl_queue=None
 ):
     """
     Draws samples in [0, 1] from a power distribution with positive
@@ -980,7 +977,7 @@ def power(
 
 
 @_params_doc
-def rand(*args, dtype=None, device=None, usm_type="device", sycl_queue=None):
+def rand(*args, dtype=None, device=None, usm_type=None, sycl_queue=None):
     """
     Random values in a given shape, from a uniform distribution over [0,
     1).
@@ -1010,7 +1007,7 @@ def randint(
     dtype=int,
     *,
     device=None,
-    usm_type="device",
+    usm_type=None,
     sycl_queue=None,
 ):
     """
@@ -1033,7 +1030,7 @@ def randint(
 
 
 @_params_doc
-def randn(*args, dtype=None, device=None, usm_type="device", sycl_queue=None):
+def randn(*args, dtype=None, device=None, usm_type=None, sycl_queue=None):
     """
     Return a sample (or samples) from the standard normal distribution.
 
@@ -1056,7 +1053,7 @@ def randn(*args, dtype=None, device=None, usm_type="device", sycl_queue=None):
 
 @_params_doc
 def random(
-    size=None, dtype=None, *, device=None, usm_type="device", sycl_queue=None
+    size=None, dtype=None, *, device=None, usm_type=None, sycl_queue=None
 ):
     """
     Return random floats in the half-open interval [0.0, 1.0).
@@ -1085,7 +1082,7 @@ def random_integers(
     size=None,
     *,
     device=None,
-    usm_type="device",
+    usm_type=None,
     sycl_queue=None,
 ):
     """
@@ -1110,7 +1107,7 @@ def random_integers(
 
 @_params_doc
 def random_sample(
-    size=None, dtype=None, *, device=None, usm_type="device", sycl_queue=None
+    size=None, dtype=None, *, device=None, usm_type=None, sycl_queue=None
 ):
     """
     Return random floats in the half-open interval [0.0, 1.0).
@@ -1133,9 +1130,7 @@ def random_sample(
 
 
 @_params_doc
-def ranf(
-    size=None, dtype=None, *, device=None, usm_type="device", sycl_queue=None
-):
+def ranf(size=None, dtype=None, *, device=None, usm_type=None, sycl_queue=None):
     """
     Return random floats in the half-open interval [0.0, 1.0). An alias of
     :obj:`dpnp.random.random_sample`.
@@ -1164,7 +1159,7 @@ def rayleigh(
     dtype=None,
     *,
     device=None,
-    usm_type="device",
+    usm_type=None,
     sycl_queue=None,
 ):
     """
@@ -1189,7 +1184,7 @@ def rayleigh(
 
 @_params_doc
 def sample(
-    size=None, dtype=None, *, device=None, usm_type="device", sycl_queue=None
+    size=None, dtype=None, *, device=None, usm_type=None, sycl_queue=None
 ):
     """
     Return random floats in the half-open interval [0.0, 1.0). An alias of
@@ -1230,7 +1225,7 @@ def shuffle(x):
 
 @_params_doc
 def standard_cauchy(
-    size=None, dtype=None, *, device=None, usm_type="device", sycl_queue=None
+    size=None, dtype=None, *, device=None, usm_type=None, sycl_queue=None
 ):
     """
     Draw samples from a standard Cauchy distribution with mode = 0.
@@ -1254,7 +1249,7 @@ def standard_cauchy(
 
 @_params_doc
 def standard_exponential(
-    size=None, dtype=None, *, device=None, usm_type="device", sycl_queue=None
+    size=None, dtype=None, *, device=None, usm_type=None, sycl_queue=None
 ):
     """
     Draw samples from the standard exponential distribution.
@@ -1283,7 +1278,7 @@ def standard_gamma(
     dtype=None,
     *,
     device=None,
-    usm_type="device",
+    usm_type=None,
     sycl_queue=None,
 ):
     """
@@ -1308,7 +1303,7 @@ def standard_gamma(
 
 @_params_doc
 def standard_normal(
-    size=None, dtype=None, *, device=None, usm_type="device", sycl_queue=None
+    size=None, dtype=None, *, device=None, usm_type=None, sycl_queue=None
 ):
     """
     Draw samples from a standard Normal distribution (mean=0, stdev=1).
@@ -1337,7 +1332,7 @@ def standard_t(
     dtype=None,
     *,
     device=None,
-    usm_type="device",
+    usm_type=None,
     sycl_queue=None,
 ):
     """
@@ -1370,7 +1365,7 @@ def triangular(
     dtype=None,
     *,
     device=None,
-    usm_type="device",
+    usm_type=None,
     sycl_queue=None,
 ):
     """
@@ -1402,7 +1397,7 @@ def uniform(
     dtype=None,
     *,
     device=None,
-    usm_type="device",
+    usm_type=None,
     sycl_queue=None,
 ):
     """
@@ -1433,7 +1428,7 @@ def vonmises(
     dtype=None,
     *,
     device=None,
-    usm_type="device",
+    usm_type=None,
     sycl_queue=None,
 ):
     """
@@ -1464,7 +1459,7 @@ def wald(
     dtype=None,
     *,
     device=None,
-    usm_type="device",
+    usm_type=None,
     sycl_queue=None,
 ):
     """
@@ -1489,7 +1484,7 @@ def wald(
 
 @_params_doc
 def weibull(
-    a, size=None, dtype=None, *, device=None, usm_type="device", sycl_queue=None
+    a, size=None, dtype=None, *, device=None, usm_type=None, sycl_queue=None
 ):
     """
     Draw samples from a Weibull distribution.
@@ -1512,7 +1507,7 @@ def weibull(
 
 
 @_params_doc
-def zipf(a, size=None, *, device=None, usm_type="device", sycl_queue=None):
+def zipf(a, size=None, *, device=None, usm_type=None, sycl_queue=None):
     """
     Draw samples from a Zipf distribution.
 

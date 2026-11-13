@@ -65,6 +65,7 @@ from ._generator import (
     _is_scalar_path,
     _normalize_size,
     _uniform_range,
+    _usm_type_of,
 )
 
 __all__ = ["RandomState"]
@@ -193,7 +194,8 @@ class RandomState:
     `size` is ``None`` and the parameters are scalars, rather than a Python
     scalar. The floating-point methods take a `dtype`, which defaults to the
     default floating-point type of the device, and every method a
-    `usm_type`, the type of USM allocation of the output. Parameters that
+    `usm_type`, the type of USM allocation of the output, which by default
+    is that of the array parameters, or ``"device"``. Parameters that
     are on the device are checked as NumPy checks all parameters, so a call
     with such parameters waits for the device, unlike the methods of
     :class:`dpnp.random.Generator`.
@@ -310,7 +312,7 @@ class RandomState:
 
     # Simple random data
 
-    def rand(self, *args, dtype=None, usm_type="device"):
+    def rand(self, *args, dtype=None, usm_type=None):
         """
         Random values in a given shape, from a uniform distribution over
         [0, 1).
@@ -320,7 +322,7 @@ class RandomState:
         """
         return self.random_sample(args or None, dtype, usm_type=usm_type)
 
-    def randn(self, *args, dtype=None, usm_type="device"):
+    def randn(self, *args, dtype=None, usm_type=None):
         """
         Samples of the standard normal distribution in a given shape.
 
@@ -329,9 +331,7 @@ class RandomState:
         """
         return self.standard_normal(args or None, dtype, usm_type=usm_type)
 
-    def randint(
-        self, low, high=None, size=None, dtype=int, *, usm_type="device"
-    ):
+    def randint(self, low, high=None, size=None, dtype=int, *, usm_type=None):
         """
         Random integers from `low` (inclusive) to `high` (exclusive).
 
@@ -348,7 +348,7 @@ class RandomState:
             low, high, size, dtype, False, usm_type, "randint"
         )
 
-    def random_integers(self, low, high=None, size=None, *, usm_type="device"):
+    def random_integers(self, low, high=None, size=None, *, usm_type=None):
         """
         Random integers from `low` to `high`, both inclusive.
 
@@ -388,7 +388,7 @@ class RandomState:
             high = int(high) + 1
         return self.randint(low, high, size, _int64, usm_type=usm_type)
 
-    def random_sample(self, size=None, dtype=None, *, usm_type="device"):
+    def random_sample(self, size=None, dtype=None, *, usm_type=None):
         """
         Random floats in the half-open interval [0.0, 1.0).
 
@@ -398,7 +398,7 @@ class RandomState:
         """
         return self._generator.random(size, dtype, usm_type=usm_type)
 
-    def random(self, size=None, dtype=None, *, usm_type="device"):
+    def random(self, size=None, dtype=None, *, usm_type=None):
         """
         Random floats in the half-open interval [0.0, 1.0).
 
@@ -407,7 +407,7 @@ class RandomState:
         """
         return self._generator.random(size, dtype, usm_type=usm_type)
 
-    def tomaxint(self, size=None, *, usm_type="device"):
+    def tomaxint(self, size=None, *, usm_type=None):
         """
         Random integers from 0 to the largest ``int64``, both inclusive.
 
@@ -424,7 +424,7 @@ class RandomState:
             0, _INT64_MAX, size, _int64, True, usm_type, "tomaxint"
         )
 
-    def choice(self, a, size=None, replace=True, p=None, *, usm_type="device"):
+    def choice(self, a, size=None, replace=True, p=None, *, usm_type=None):
         """
         Generate a random sample from a given 1-D array.
 
@@ -476,7 +476,7 @@ class RandomState:
 
     # Distributions
 
-    def beta(self, a, b, size=None, dtype=None, *, usm_type="device"):
+    def beta(self, a, b, size=None, dtype=None, *, usm_type=None):
         """
         Draw samples from a Beta distribution.
 
@@ -485,7 +485,7 @@ class RandomState:
         """
         return self._generator.beta(a, b, size, dtype, usm_type=usm_type)
 
-    def binomial(self, n, p, size=None, *, usm_type="device"):
+    def binomial(self, n, p, size=None, *, usm_type=None):
         """
         Draw samples from a binomial distribution.
 
@@ -495,7 +495,7 @@ class RandomState:
         """
         return self._generator.binomial(n, p, size, usm_type=usm_type)
 
-    def chisquare(self, df, size=None, dtype=None, *, usm_type="device"):
+    def chisquare(self, df, size=None, dtype=None, *, usm_type=None):
         """
         Draw samples from a chi-square distribution.
 
@@ -505,7 +505,7 @@ class RandomState:
         """
         return self._generator.chisquare(df, size, dtype, usm_type=usm_type)
 
-    def dirichlet(self, alpha, size=None, dtype=None, *, usm_type="device"):
+    def dirichlet(self, alpha, size=None, dtype=None, *, usm_type=None):
         """
         Draw samples from the Dirichlet distribution.
 
@@ -522,9 +522,7 @@ class RandomState:
                 raise ValueError("alpha <= 0")
         return self._generator.dirichlet(alpha, size, dtype, usm_type=usm_type)
 
-    def exponential(
-        self, scale=1.0, size=None, dtype=None, *, usm_type="device"
-    ):
+    def exponential(self, scale=1.0, size=None, dtype=None, *, usm_type=None):
         """
         Draw samples from an exponential distribution.
 
@@ -536,7 +534,7 @@ class RandomState:
             scale, size, dtype, usm_type=usm_type
         )
 
-    def f(self, dfnum, dfden, size=None, dtype=None, *, usm_type="device"):
+    def f(self, dfnum, dfden, size=None, dtype=None, *, usm_type=None):
         """
         Draw samples from an F distribution.
 
@@ -545,9 +543,7 @@ class RandomState:
         """
         return self._generator.f(dfnum, dfden, size, dtype, usm_type=usm_type)
 
-    def gamma(
-        self, shape, scale=1.0, size=None, dtype=None, *, usm_type="device"
-    ):
+    def gamma(self, shape, scale=1.0, size=None, dtype=None, *, usm_type=None):
         """
         Draw samples from a Gamma distribution.
 
@@ -558,7 +554,7 @@ class RandomState:
             shape, scale, size, dtype, usm_type=usm_type
         )
 
-    def geometric(self, p, size=None, *, usm_type="device"):
+    def geometric(self, p, size=None, *, usm_type=None):
         """
         Draw samples from the geometric distribution.
 
@@ -569,7 +565,7 @@ class RandomState:
         return self._generator.geometric(p, size, usm_type=usm_type)
 
     def gumbel(
-        self, loc=0.0, scale=1.0, size=None, dtype=None, *, usm_type="device"
+        self, loc=0.0, scale=1.0, size=None, dtype=None, *, usm_type=None
     ):
         """
         Draw samples from a Gumbel distribution.
@@ -581,9 +577,7 @@ class RandomState:
             loc, scale, size, dtype, usm_type=usm_type
         )
 
-    def hypergeometric(
-        self, ngood, nbad, nsample, size=None, *, usm_type="device"
-    ):
+    def hypergeometric(self, ngood, nbad, nsample, size=None, *, usm_type=None):
         """
         Draw samples from a hypergeometric distribution.
 
@@ -621,7 +615,7 @@ class RandomState:
         )
 
     def laplace(
-        self, loc=0.0, scale=1.0, size=None, dtype=None, *, usm_type="device"
+        self, loc=0.0, scale=1.0, size=None, dtype=None, *, usm_type=None
     ):
         """
         Draw samples from the Laplace or double exponential distribution.
@@ -635,7 +629,7 @@ class RandomState:
         )
 
     def logistic(
-        self, loc=0.0, scale=1.0, size=None, dtype=None, *, usm_type="device"
+        self, loc=0.0, scale=1.0, size=None, dtype=None, *, usm_type=None
     ):
         """
         Draw samples from a logistic distribution.
@@ -649,7 +643,7 @@ class RandomState:
         )
 
     def lognormal(
-        self, mean=0.0, sigma=1.0, size=None, dtype=None, *, usm_type="device"
+        self, mean=0.0, sigma=1.0, size=None, dtype=None, *, usm_type=None
     ):
         """
         Draw samples from a log-normal distribution.
@@ -662,7 +656,7 @@ class RandomState:
             mean, sigma, size, dtype, usm_type=usm_type
         )
 
-    def logseries(self, p, size=None, *, usm_type="device"):
+    def logseries(self, p, size=None, *, usm_type=None):
         """
         Draw samples from a logarithmic series distribution.
 
@@ -672,7 +666,7 @@ class RandomState:
         """
         return self._generator.logseries(p, size, usm_type=usm_type)
 
-    def multinomial(self, n, pvals, size=None, *, usm_type="device"):
+    def multinomial(self, n, pvals, size=None, *, usm_type=None):
         """
         Draw samples from a multinomial distribution.
 
@@ -703,7 +697,7 @@ class RandomState:
             return dpnp.empty(
                 shape,
                 dtype=_int64,
-                usm_type=usm_type,
+                usm_type=usm_type or _usm_type_of(pvals),
                 sycl_queue=self._sycl_queue,
             )
         return self._generator.multinomial(n, pvals, size, usm_type=usm_type)
@@ -717,7 +711,7 @@ class RandomState:
         tol=1e-8,
         *,
         dtype=None,
-        usm_type="device",
+        usm_type=None,
     ):
         """
         Draw random samples from a multivariate normal distribution.
@@ -750,7 +744,7 @@ class RandomState:
             stacklevel=stacklevel + 1,
         )
 
-    def negative_binomial(self, n, p, size=None, *, usm_type="device"):
+    def negative_binomial(self, n, p, size=None, *, usm_type=None):
         """
         Draw samples from a negative binomial distribution.
 
@@ -772,7 +766,7 @@ class RandomState:
         )
 
     def noncentral_chisquare(
-        self, df, nonc, size=None, dtype=None, *, usm_type="device"
+        self, df, nonc, size=None, dtype=None, *, usm_type=None
     ):
         """
         Draw samples from a noncentral chi-square distribution.
@@ -786,7 +780,7 @@ class RandomState:
         )
 
     def noncentral_f(
-        self, dfnum, dfden, nonc, size=None, dtype=None, *, usm_type="device"
+        self, dfnum, dfden, nonc, size=None, dtype=None, *, usm_type=None
     ):
         """
         Draw samples from the noncentral F distribution.
@@ -800,7 +794,7 @@ class RandomState:
         )
 
     def normal(
-        self, loc=0.0, scale=1.0, size=None, dtype=None, *, usm_type="device"
+        self, loc=0.0, scale=1.0, size=None, dtype=None, *, usm_type=None
     ):
         """
         Draw random samples from a normal (Gaussian) distribution.
@@ -812,7 +806,7 @@ class RandomState:
             loc, scale, size, dtype, usm_type=usm_type
         )
 
-    def pareto(self, a, size=None, dtype=None, *, usm_type="device"):
+    def pareto(self, a, size=None, dtype=None, *, usm_type=None):
         """
         Draw samples from a Pareto II or Lomax distribution with specified
         shape.
@@ -822,7 +816,7 @@ class RandomState:
         """
         return self._generator.pareto(a, size, dtype, usm_type=usm_type)
 
-    def poisson(self, lam=1.0, size=None, *, usm_type="device"):
+    def poisson(self, lam=1.0, size=None, *, usm_type=None):
         """
         Draw samples from a Poisson distribution.
 
@@ -832,7 +826,7 @@ class RandomState:
         """
         return self._generator.poisson(lam, size, usm_type=usm_type)
 
-    def power(self, a, size=None, dtype=None, *, usm_type="device"):
+    def power(self, a, size=None, dtype=None, *, usm_type=None):
         """
         Draws samples in [0, 1] from a power distribution with positive
         exponent a - 1.
@@ -842,7 +836,7 @@ class RandomState:
         """
         return self._generator.power(a, size, dtype, usm_type=usm_type)
 
-    def rayleigh(self, scale=1.0, size=None, dtype=None, *, usm_type="device"):
+    def rayleigh(self, scale=1.0, size=None, dtype=None, *, usm_type=None):
         """
         Draw samples from a Rayleigh distribution.
 
@@ -852,7 +846,7 @@ class RandomState:
         """
         return self._generator.rayleigh(scale, size, dtype, usm_type=usm_type)
 
-    def standard_cauchy(self, size=None, dtype=None, *, usm_type="device"):
+    def standard_cauchy(self, size=None, dtype=None, *, usm_type=None):
         """
         Draw samples from a standard Cauchy distribution with mode = 0.
 
@@ -862,7 +856,7 @@ class RandomState:
         """
         return self._generator.standard_cauchy(size, dtype, usm_type=usm_type)
 
-    def standard_exponential(self, size=None, dtype=None, *, usm_type="device"):
+    def standard_exponential(self, size=None, dtype=None, *, usm_type=None):
         """
         Draw samples from the standard exponential distribution.
 
@@ -874,9 +868,7 @@ class RandomState:
             size, dtype, usm_type=usm_type
         )
 
-    def standard_gamma(
-        self, shape, size=None, dtype=None, *, usm_type="device"
-    ):
+    def standard_gamma(self, shape, size=None, dtype=None, *, usm_type=None):
         """
         Draw samples from a standard Gamma distribution.
 
@@ -888,7 +880,7 @@ class RandomState:
             shape, size, dtype, usm_type=usm_type
         )
 
-    def standard_normal(self, size=None, dtype=None, *, usm_type="device"):
+    def standard_normal(self, size=None, dtype=None, *, usm_type=None):
         """
         Draw samples from a standard Normal distribution (mean=0, stdev=1).
 
@@ -898,7 +890,7 @@ class RandomState:
         """
         return self._generator.standard_normal(size, dtype, usm_type=usm_type)
 
-    def standard_t(self, df, size=None, dtype=None, *, usm_type="device"):
+    def standard_t(self, df, size=None, dtype=None, *, usm_type=None):
         """
         Draw samples from a standard Student's t distribution with `df`
         degrees of freedom.
@@ -910,7 +902,7 @@ class RandomState:
         return self._generator.standard_t(df, size, dtype, usm_type=usm_type)
 
     def triangular(
-        self, left, mode, right, size=None, dtype=None, *, usm_type="device"
+        self, left, mode, right, size=None, dtype=None, *, usm_type=None
     ):
         """
         Draw samples from the triangular distribution over the interval
@@ -925,7 +917,7 @@ class RandomState:
         )
 
     def uniform(
-        self, low=0.0, high=1.0, size=None, dtype=None, *, usm_type="device"
+        self, low=0.0, high=1.0, size=None, dtype=None, *, usm_type=None
     ):
         """
         Draw samples from a uniform distribution over [low, high).
@@ -942,7 +934,7 @@ class RandomState:
             ri._uniform, (low, high), size, dtype, usm_type, "uniform"
         )
 
-    def vonmises(self, mu, kappa, size=None, dtype=None, *, usm_type="device"):
+    def vonmises(self, mu, kappa, size=None, dtype=None, *, usm_type=None):
         """
         Draw samples from a von Mises distribution.
 
@@ -954,7 +946,7 @@ class RandomState:
             mu, kappa, size, dtype, usm_type=usm_type
         )
 
-    def wald(self, mean, scale, size=None, dtype=None, *, usm_type="device"):
+    def wald(self, mean, scale, size=None, dtype=None, *, usm_type=None):
         """
         Draw samples from a Wald, or inverse Gaussian, distribution.
 
@@ -963,7 +955,7 @@ class RandomState:
         """
         return self._generator.wald(mean, scale, size, dtype, usm_type=usm_type)
 
-    def weibull(self, a, size=None, dtype=None, *, usm_type="device"):
+    def weibull(self, a, size=None, dtype=None, *, usm_type=None):
         """
         Draw samples from a Weibull distribution.
 
@@ -973,7 +965,7 @@ class RandomState:
         """
         return self._generator.weibull(a, size, dtype, usm_type=usm_type)
 
-    def zipf(self, a, size=None, *, usm_type="device"):
+    def zipf(self, a, size=None, *, usm_type=None):
         """
         Draw samples from a Zipf distribution.
 
