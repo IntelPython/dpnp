@@ -158,6 +158,21 @@ def _check_arrays(params, dtype=None):
     return numpy, [numpy.asarray(p, dtype) for p in params]
 
 
+def _raise_to_float32_tiny(value):
+    """
+    Raise a positive host parameter below the smallest normal ``float32``
+    value to it, as one that is 0 in ``float32`` would be invalid.
+
+    """
+
+    if dpnp.is_supported_array_type(value):
+        return value
+    tiny = numpy.finfo(numpy.float32).tiny
+    val = _as_host_float(value)
+    val = numpy.where((val > 0) & (val < tiny), tiny, val)
+    return val if val.ndim else float(val)
+
+
 def _uniform_range(low, high, dtype, overflow_msg):
     """
     ``high - low``, raising OverflowError with `overflow_msg` unless it is
@@ -519,10 +534,21 @@ class Generator:
             kernel_params=kernel_params,
         )
 
-    def _cont(self, kernel, name, size, dtype, usm_type, *params, out=None):
+    def _cont(
+        self,
+        kernel,
+        name,
+        size,
+        dtype,
+        usm_type,
+        *params,
+        out=None,
+        kernel_params=None,
+    ):
         """
         Draw samples of a continuous distribution after checking `params`,
         triples of the value, the name and the constraint of a parameter.
+        `kernel_params` replace the values passed to the kernel.
 
         """
 
@@ -532,7 +558,14 @@ class Generator:
         for value, pname, cons in params:
             _check_constraint(value, pname, cons, scalar)
         return self._float_sample(
-            kernel, values, size, dtype, usm_type, name, out=out
+            kernel,
+            values,
+            size,
+            dtype,
+            usm_type,
+            name,
+            out=out,
+            kernel_params=kernel_params,
         )
 
     def random(self, size=None, dtype=None, out=None, *, usm_type=None):
@@ -1254,9 +1287,18 @@ class Generator:
 
         Limitations
         -----------
-        `dtype` and `usm_type` are not in NumPy's signature.
+        `dtype` and `usm_type` are not in NumPy's signature. In single
+        precision, positive `a` and `b` on the host below the smallest normal
+        ``float32`` value are raised to it, so when both are, 0 and 1 are
+        equally likely.
 
         """
+        kernel_params = None
+        if self._float_dtype(dtype, "beta") == numpy.float32:
+            kernel_params = (
+                _raise_to_float32_tiny(a),
+                _raise_to_float32_tiny(b),
+            )
         return self._cont(
             ri._beta,
             "beta",
@@ -1265,6 +1307,7 @@ class Generator:
             usm_type,
             (a, "a", _CONS_POSITIVE),
             (b, "b", _CONS_POSITIVE),
+            kernel_params=kernel_params,
         )
 
 

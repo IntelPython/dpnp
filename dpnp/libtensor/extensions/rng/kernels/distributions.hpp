@@ -175,12 +175,15 @@ T beta(BitGenT &bg, StandardNormal<T> &normal, const T a, const T b)
     }
     if ((a <= T(1)) && (b <= T(1))) {
         // Below this threshold the result is 0 or 1 with overwhelming
-        // probability, so a single uniform draw decides which. The
-        // threshold underflows to zero, disabling the shortcut, in float.
-        constexpr T tiny_threshold = static_cast<T>(3e-103);
+        // probability, so a single uniform draw decides which. NumPy's
+        // threshold is zero in float, where log(U) / a overflows below
+        // about 5e-38 and the logarithms below would give NaN.
+        constexpr T tiny_threshold =
+            std::is_same_v<T, float> ? T(1e-37) : static_cast<T>(3e-103);
         if (a < tiny_threshold && b < tiny_threshold) {
             const T U = bg.template next_uniform<T>();
-            return static_cast<T>((a + b) * U < a);
+            // (a + b) * U would be subnormal, which some devices flush
+            return static_cast<T>(U < a / (a + b));
         }
 
         for (;;) {
