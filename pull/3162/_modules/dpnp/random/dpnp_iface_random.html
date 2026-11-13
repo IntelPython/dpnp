@@ -1176,18 +1176,25 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExecutionPlacementError</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">._bit_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">BitGenerator</span><span class="p">,</span> <span class="n">Philox4x3210</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_random_state</span><span class="w"> </span><span class="kn">import</span> <span class="n">RandomState</span><span class="p">,</span> <span class="n">_reseed_in_place</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_random_state</span><span class="w"> </span><span class="kn">import</span> <span class="n">RandomState</span><span class="p">,</span> <span class="n">_legacy_seed</span><span class="p">,</span> <span class="n">_reseed_in_place</span>
 
 <span class="c1"># The states of the queues. The lock guarantees that concurrent callers</span>
 <span class="c1"># asking for the state of the same queue get the same instance back rather</span>
 <span class="c1"># than each building one of their own.</span>
 <span class="n">_dpnp_random_states</span> <span class="o">=</span> <span class="p">{}</span>
 <span class="n">_random_states_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+<span class="c1"># The seeds of the states made for new queues: spawned children of the seed</span>
+<span class="c1"># given to the last seed() call, so that seeded code gets the same values</span>
+<span class="c1"># on every run, or OS entropy before any seed() call</span>
+<span class="n">_seed_source</span> <span class="o">=</span> <span class="kc">None</span>
 
 <span class="n">_QUEUE_PARAMS</span> <span class="o">=</span> <span class="s2">"""</span><span class="se">\</span>
 <span class="s2">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
@@ -1205,10 +1212,11 @@
 <span class="s2">        Default: ``None``."""</span>
 
 <span class="n">_USM_PARAM</span> <span class="o">=</span> <span class="s2">"""</span><span class="se">\</span>
-<span class="s2">    usm_type : {"device", "shared", "host"}, optional</span>
+<span class="s2">    usm_type : {None, "device", "shared", "host"}, optional</span>
 <span class="s2">        The type of SYCL USM allocation for the output array.</span>
 
-<span class="s2">        Default: ``"device"``."""</span>
+<span class="s2">        Default: ``None``, which means the USM type of the array parameters,</span>
+<span class="s2">        or ``"device"`` when there are none."""</span>
 
 <span class="n">_DTYPE_PARAM</span> <span class="o">=</span> <span class="s2">"""</span><span class="se">\</span>
 <span class="s2">    dtype : {None, float32, float64}, optional</span>
@@ -1220,6 +1228,9 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_params_doc</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Fill the placeholders of the parameters common to the functions."""</span>
 
+    <span class="k">if</span> <span class="n">func</span><span class="o">.</span><span class="vm">__doc__</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># docstrings are stripped under python -OO</span>
+        <span class="k">return</span> <span class="n">func</span>
     <span class="n">func</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">func</span><span class="o">.</span><span class="vm">__doc__</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"    </span><span class="si">%(queue)s</span><span class="s2">"</span><span class="p">,</span> <span class="n">_QUEUE_PARAMS</span><span class="p">)</span>
         <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"    </span><span class="si">%(usm)s</span><span class="s2">"</span><span class="p">,</span> <span class="n">_USM_PARAM</span><span class="p">)</span>
@@ -1251,7 +1262,11 @@
     <span class="k">with</span> <span class="n">_random_states_lock</span><span class="p">:</span>
         <span class="n">rs</span> <span class="o">=</span> <span class="n">_dpnp_random_states</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">sycl_queue</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">rs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">rs</span> <span class="o">=</span> <span class="n">RandomState</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">_seed_source</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">rs</span> <span class="o">=</span> <span class="n">RandomState</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="p">(</span><span class="n">child</span><span class="p">,)</span> <span class="o">=</span> <span class="n">_seed_source</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">rs</span> <span class="o">=</span> <span class="n">RandomState</span><span class="p">(</span><span class="n">Philox4x3210</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">))</span>
             <span class="n">_dpnp_random_states</span><span class="p">[</span><span class="n">sycl_queue</span><span class="p">]</span> <span class="o">=</span> <span class="n">rs</span>
         <span class="k">return</span> <span class="n">rs</span>
 
@@ -1276,16 +1291,39 @@
 <span class="sd">    :class:`dpnp.random.Philox4x3210` is reseeded in place with the state a</span>
 <span class="sd">    new one of its type would have for `seed`, as in NumPy.</span>
 
+<span class="sd">    The states made later for other queues are seeded from `seed` too, in</span>
+<span class="sd">    the order they are made, so that seeded code draws the same values on</span>
+<span class="sd">    every run.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; np.random.seed(42)</span>
+<span class="sd">    &gt;&gt;&gt; a = np.random.rand(3)</span>
+<span class="sd">    &gt;&gt;&gt; np.random.seed(42)</span>
+<span class="sd">    &gt;&gt;&gt; bool((np.random.rand(3) == a).all())</span>
+<span class="sd">    True</span>
+
 <span class="sd">    """</span>
-    <span class="c1"># pylint: disable=protected-access</span>
+    <span class="c1"># pylint: disable=global-statement, protected-access</span>
+    <span class="k">global</span> <span class="n">_seed_source</span>
+
     <span class="n">rs</span> <span class="o">=</span> <span class="n">_get_random_state</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">)</span>
     <span class="n">bit_generator</span> <span class="o">=</span> <span class="n">rs</span><span class="o">.</span><span class="n">_generator</span><span class="o">.</span><span class="n">bit_generator</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">bit_generator</span><span class="p">)</span> <span class="ow">is</span> <span class="n">Philox4x3210</span><span class="p">:</span>
         <span class="n">rs</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+        <span class="n">entropy</span> <span class="o">=</span> <span class="n">_legacy_seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">_reseed_in_place</span><span class="p">(</span>
             <span class="n">bit_generator</span><span class="p">,</span>
             <span class="nb">type</span><span class="p">(</span><span class="n">bit_generator</span><span class="p">)(</span><span class="n">seed</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">bit_generator</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">entropy</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">dpnp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span> <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span> <span class="k">else</span> <span class="n">seed</span>
+        <span class="p">)</span>
+    <span class="k">with</span> <span class="n">_random_states_lock</span><span class="p">:</span>
+        <span class="n">_seed_source</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="kc">None</span> <span class="k">if</span> <span class="n">entropy</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">SeedSequence</span><span class="p">(</span><span class="n">entropy</span><span class="p">)</span>
         <span class="p">)</span></div>
 
 
@@ -1417,7 +1455,7 @@
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
@@ -1444,9 +1482,7 @@
 <div class="viewcode-block" id="binomial">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.random.binomial.html#dpnp.random.binomial">[docs]</a>
 <span class="nd">@_params_doc</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">binomial</span><span class="p">(</span>
-    <span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
-<span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">binomial</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Draw samples from a binomial distribution.</span>
 
@@ -1494,7 +1530,7 @@
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
@@ -1528,7 +1564,7 @@
     <span class="n">p</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
@@ -1560,7 +1596,7 @@
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
@@ -1593,7 +1629,7 @@
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
@@ -1627,7 +1663,7 @@
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
@@ -1661,7 +1697,7 @@
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
@@ -1688,7 +1724,7 @@
 <div class="viewcode-block" id="geometric">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.random.geometric.html#dpnp.random.geometric">[docs]</a>
 <span class="nd">@_params_doc</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">geometric</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">geometric</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Draw samples from the geometric distribution.</span>
 
@@ -1719,7 +1755,7 @@
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
@@ -1753,7 +1789,7 @@
     <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
@@ -1786,7 +1822,7 @@
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
@@ -1820,7 +1856,7 @@
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
@@ -1854,7 +1890,7 @@
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
@@ -1881,7 +1917,7 @@
 <div class="viewcode-block" id="logseries">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.random.logseries.html#dpnp.random.logseries">[docs]</a>
 <span class="nd">@_params_doc</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">logseries</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">logseries</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Draw samples from a logarithmic series distribution.</span>
 
@@ -1906,7 +1942,7 @@
 <a class="viewcode-back" href="../../../reference/generated/dpnp.random.multinomial.html#dpnp.random.multinomial">[docs]</a>
 <span class="nd">@_params_doc</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">multinomial</span><span class="p">(</span>
-    <span class="n">n</span><span class="p">,</span> <span class="n">pvals</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">pvals</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Draw samples from a multinomial distribution.</span>
@@ -1940,7 +1976,7 @@
     <span class="o">*</span><span class="p">,</span>
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
@@ -1971,7 +2007,7 @@
 <a class="viewcode-back" href="../../../reference/generated/dpnp.random.negative_binomial.html#dpnp.random.negative_binomial">[docs]</a>
 <span class="nd">@_params_doc</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">negative_binomial</span><span class="p">(</span>
-    <span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Draw samples from a negative binomial distribution.</span>
@@ -2003,7 +2039,7 @@
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
@@ -2038,7 +2074,7 @@
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
@@ -2072,7 +2108,7 @@
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
@@ -2090,6 +2126,14 @@
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.random.RandomState.normal`</span>
 
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; x = np.random.normal(np.array([0.0, 10.0]), 1.0, size=(10**5, 2))</span>
+<span class="sd">    &gt;&gt;&gt; m = x.mean(axis=0)</span>
+<span class="sd">    &gt;&gt;&gt; bool(abs(m[0]) &lt; 0.05), bool(abs(m[1] - 10) &lt; 0.05)</span>
+<span class="sd">    (True, True)</span>
+
 <span class="sd">    """</span>
     <span class="n">rs</span> <span class="o">=</span> <span class="n">_get_random_state</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">,</span> <span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span></div>
@@ -2100,7 +2144,7 @@
 <a class="viewcode-back" href="../../../reference/generated/dpnp.random.pareto.html#dpnp.random.pareto">[docs]</a>
 <span class="nd">@_params_doc</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">pareto</span><span class="p">(</span>
-    <span class="n">a</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Draw samples from a Pareto II or Lomax distribution with specified</span>
@@ -2149,9 +2193,7 @@
 <div class="viewcode-block" id="poisson">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.random.poisson.html#dpnp.random.poisson">[docs]</a>
 <span class="nd">@_params_doc</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">poisson</span><span class="p">(</span>
-    <span class="n">lam</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
-<span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">poisson</span><span class="p">(</span><span class="n">lam</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Draw samples from a Poisson distribution.</span>
 
@@ -2176,7 +2218,7 @@
 <a class="viewcode-back" href="../../../reference/generated/dpnp.random.power.html#dpnp.random.power">[docs]</a>
 <span class="nd">@_params_doc</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">power</span><span class="p">(</span>
-    <span class="n">a</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Draws samples in [0, 1] from a power distribution with positive</span>
@@ -2203,7 +2245,7 @@
 <div class="viewcode-block" id="rand">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.random.rand.html#dpnp.random.rand">[docs]</a>
 <span class="nd">@_params_doc</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">rand</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">rand</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Random values in a given shape, from a uniform distribution over [0,</span>
 <span class="sd">    1).</span>
@@ -2219,6 +2261,15 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.random.RandomState.rand`</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; x = np.random.rand(3, 2)</span>
+<span class="sd">    &gt;&gt;&gt; x.shape</span>
+<span class="sd">    (3, 2)</span>
+<span class="sd">    &gt;&gt;&gt; bool(((x &gt;= 0) &amp; (x &lt; 1)).all())</span>
+<span class="sd">    True</span>
 
 <span class="sd">    """</span>
     <span class="n">rs</span> <span class="o">=</span> <span class="n">_get_random_state</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">)</span>
@@ -2236,7 +2287,7 @@
     <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
@@ -2253,6 +2304,13 @@
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.random.RandomState.randint`</span>
 
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; x = np.random.randint(3, 11, size=1000)</span>
+<span class="sd">    &gt;&gt;&gt; bool(((x &gt;= 3) &amp; (x &lt; 11)).all())</span>
+<span class="sd">    True</span>
+
 <span class="sd">    """</span>
     <span class="n">rs</span> <span class="o">=</span> <span class="n">_get_random_state</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">,</span> <span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span></div>
@@ -2262,7 +2320,7 @@
 <div class="viewcode-block" id="randn">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.random.randn.html#dpnp.random.randn">[docs]</a>
 <span class="nd">@_params_doc</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">randn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">randn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return a sample (or samples) from the standard normal distribution.</span>
 
@@ -2278,6 +2336,15 @@
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.random.RandomState.randn`</span>
 
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Samples of the normal distribution of mean 3 and variance 6.25:</span>
+
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; x = 3 + 2.5 * np.random.randn(2, 4)</span>
+<span class="sd">    &gt;&gt;&gt; x.shape</span>
+<span class="sd">    (2, 4)</span>
+
 <span class="sd">    """</span>
     <span class="n">rs</span> <span class="o">=</span> <span class="n">_get_random_state</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">args</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span></div>
@@ -2288,7 +2355,7 @@
 <a class="viewcode-back" href="../../../reference/generated/dpnp.random.random.html#dpnp.random.random">[docs]</a>
 <span class="nd">@_params_doc</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">random</span><span class="p">(</span>
-    <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return random floats in the half-open interval [0.0, 1.0).</span>
@@ -2320,7 +2387,7 @@
     <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
@@ -2348,7 +2415,7 @@
 <a class="viewcode-back" href="../../../reference/generated/dpnp.random.random_sample.html#dpnp.random.random_sample">[docs]</a>
 <span class="nd">@_params_doc</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">random_sample</span><span class="p">(</span>
-    <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return random floats in the half-open interval [0.0, 1.0).</span>
@@ -2374,9 +2441,7 @@
 <div class="viewcode-block" id="ranf">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.random.ranf.html#dpnp.random.ranf">[docs]</a>
 <span class="nd">@_params_doc</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">ranf</span><span class="p">(</span>
-    <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
-<span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ranf</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return random floats in the half-open interval [0.0, 1.0). An alias of</span>
 <span class="sd">    :obj:`dpnp.random.random_sample`.</span>
@@ -2408,7 +2473,7 @@
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
@@ -2436,7 +2501,7 @@
 <a class="viewcode-back" href="../../../reference/generated/dpnp.random.sample.html#dpnp.random.sample">[docs]</a>
 <span class="nd">@_params_doc</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">sample</span><span class="p">(</span>
-    <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return random floats in the half-open interval [0.0, 1.0). An alias of</span>
@@ -2483,7 +2548,7 @@
 <a class="viewcode-back" href="../../../reference/generated/dpnp.random.standard_cauchy.html#dpnp.random.standard_cauchy">[docs]</a>
 <span class="nd">@_params_doc</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">standard_cauchy</span><span class="p">(</span>
-    <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Draw samples from a standard Cauchy distribution with mode = 0.</span>
@@ -2510,7 +2575,7 @@
 <a class="viewcode-back" href="../../../reference/generated/dpnp.random.standard_exponential.html#dpnp.random.standard_exponential">[docs]</a>
 <span class="nd">@_params_doc</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">standard_exponential</span><span class="p">(</span>
-    <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Draw samples from the standard exponential distribution.</span>
@@ -2542,7 +2607,7 @@
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
@@ -2570,7 +2635,7 @@
 <a class="viewcode-back" href="../../../reference/generated/dpnp.random.standard_normal.html#dpnp.random.standard_normal">[docs]</a>
 <span class="nd">@_params_doc</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">standard_normal</span><span class="p">(</span>
-    <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Draw samples from a standard Normal distribution (mean=0, stdev=1).</span>
@@ -2602,7 +2667,7 @@
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
@@ -2638,7 +2703,7 @@
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
@@ -2673,7 +2738,7 @@
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
@@ -2707,7 +2772,7 @@
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
@@ -2741,7 +2806,7 @@
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
@@ -2769,7 +2834,7 @@
 <a class="viewcode-back" href="../../../reference/generated/dpnp.random.weibull.html#dpnp.random.weibull">[docs]</a>
 <span class="nd">@_params_doc</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">weibull</span><span class="p">(</span>
-    <span class="n">a</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Draw samples from a Weibull distribution.</span>
@@ -2795,7 +2860,7 @@
 <div class="viewcode-block" id="zipf">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.random.zipf.html#dpnp.random.zipf">[docs]</a>
 <span class="nd">@_params_doc</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">zipf</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">zipf</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Draw samples from a Zipf distribution.</span>
 

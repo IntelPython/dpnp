@@ -1183,7 +1183,8 @@ whose checks agree, and depend on the device as described in
 <cite>size</cite> is <code class="docutils literal notranslate"><span class="pre">None</span></code> and the parameters are scalars, rather than a Python
 scalar. The floating-point methods take a <cite>dtype</cite>, which defaults to the
 default floating-point type of the device, and every method a
-<cite>usm_type</cite>, the type of USM allocation of the output. Parameters that
+<cite>usm_type</cite>, the type of USM allocation of the output, which by default
+is that of the array parameters, or <code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code>. Parameters that
 are on the device are checked as NumPy checks all parameters, so a call
 with such parameters waits for the device, unlike the methods of
 <a class="reference internal" href="dpnp.random.Generator.html#dpnp.random.Generator" title="dpnp.random.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.random.Generator</span></code></a>.</p>

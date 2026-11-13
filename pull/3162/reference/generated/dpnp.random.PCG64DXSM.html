@@ -1173,15 +1173,17 @@ a default queue.</p>
 <p class="rubric">Notes</p>
 <p>The raw outputs of <a class="reference internal" href="dpnp.random.PCG64DXSM.random_raw.html#dpnp.random.PCG64DXSM.random_raw" title="dpnp.random.PCG64DXSM.random_raw"><code class="xref py py-meth docutils literal notranslate"><span class="pre">random_raw()</span></code></a>, the floating-point values of
 <a class="reference internal" href="dpnp.random.Generator.random.html#dpnp.random.Generator.random" title="dpnp.random.Generator.random"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.random.Generator.random()</span></code></a> and
-<a class="reference internal" href="dpnp.random.Generator.uniform.html#dpnp.random.Generator.uniform" title="dpnp.random.Generator.uniform"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.random.Generator.uniform()</span></code></a>, and <code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.random.Generator.</span>
-<span class="pre">bytes()</span></code> take a fixed number of engine outputs for every value. They are
-drawn in the order of the stream, and are the same as NumPy's for the
-same state, where NumPy draws them with the same algorithm.</p>
-<p>Every other method is sampled as by <a class="reference internal" href="dpnp.random.PCG64DXSM.jumped.html#dpnp.random.PCG64DXSM.jumped" title="dpnp.random.PCG64DXSM.jumped"><code class="xref py py-meth docutils literal notranslate"><span class="pre">jumped()</span></code></a>: each work-item of a
-call producing <code class="docutils literal notranslate"><span class="pre">n</span></code> values draws as many values as its rejection
-samplers need from its own stream, the <code class="docutils literal notranslate"><span class="pre">w</span></code>-th of which is that of
-<code class="docutils literal notranslate"><span class="pre">jumped(w)</span></code>, and the call advances the state as <code class="docutils literal notranslate"><span class="pre">jumped(ceil(n</span> <span class="pre">/</span>
-<span class="pre">8))</span></code>, but keeps the 32-bit half NumPy buffers. The values therefore
+<a class="reference internal" href="dpnp.random.Generator.uniform.html#dpnp.random.Generator.uniform" title="dpnp.random.Generator.uniform"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.random.Generator.uniform()</span></code></a>, and
+<a class="reference internal" href="dpnp.random.Generator.bytes.html#dpnp.random.Generator.bytes" title="dpnp.random.Generator.bytes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.random.Generator.bytes()</span></code></a> take a fixed number of engine
+outputs for every value. They are drawn in the order of the stream, and
+are the same as NumPy's for the same state, where NumPy draws them with
+the same algorithm.</p>
+<p>Every other method draws from a stream per work-item: each work-item of
+a call producing <code class="docutils literal notranslate"><span class="pre">n</span></code> values draws as many values as its rejection
+samplers need from its own stream, the <code class="docutils literal notranslate"><span class="pre">w</span></code>-th of which starts
+<code class="docutils literal notranslate"><span class="pre">w</span> <span class="pre">*</span> <span class="pre">2**64</span></code> steps ahead, and the call advances the state by
+<code class="docutils literal notranslate"><span class="pre">ceil(n</span> <span class="pre">/</span> <span class="pre">8)</span> <span class="pre">*</span> <span class="pre">2**64</span></code> steps, but keeps the 32-bit half NumPy buffers.
+The streams of <a class="reference internal" href="dpnp.random.PCG64DXSM.jumped.html#dpnp.random.PCG64DXSM.jumped" title="dpnp.random.PCG64DXSM.jumped"><code class="xref py py-meth docutils literal notranslate"><span class="pre">jumped()</span></code></a> do not reach these. The values therefore
 depend on the output size, and are not the same as NumPy's. For a given
 state, output size and data type, the raw bits and the uniform floats
 are the same on every device, while the samplers built on
