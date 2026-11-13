@@ -480,13 +480,9 @@ _PCG_STRIDE = 1 << 64
 
 # The kernels that take a fixed number of 32-bit halves of raw outputs for
 # every value of a data type, and so draw the stream of PCG64DXSM in order,
-# as NumPy does. It must match halves_per_item of the samplers.
+# as NumPy does, by the data types they do it for
 _PCG_SEQUENTIAL = {
-    ri._random_raw: {
-        numpy.dtype(numpy.uint64): 2,
-        numpy.dtype(numpy.uint32): 1,
-    },
-    ri._uniform: {numpy.dtype(numpy.float64): 2, numpy.dtype(numpy.float32): 1},
+    getattr(ri, name): halves for name, halves in ri.halves_per_item.items()
 }
 
 

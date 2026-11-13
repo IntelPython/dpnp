@@ -521,6 +521,15 @@ class TestPCG64DXSM:
         assert bg.state["has_uint32"] == state["has_uint32"] == 1
         assert bg.state["uinteger"] == state["uinteger"]
 
+    def test_sequential_samplers(self):
+        # the samplers drawing the stream in order, as the extension says
+        u4, u8 = numpy.dtype(numpy.uint32), numpy.dtype(numpy.uint64)
+        f4, f8 = numpy.dtype(numpy.float32), numpy.dtype(numpy.float64)
+        assert ri.halves_per_item == {
+            "_random_raw": {u4: 1, u8: 2},
+            "_uniform": {f4: 1, f8: 2},
+        }
+
     def test_jumped_streams_differ(self):
         # the work-item streams used to be those of jumped(), so that a
         # generator made by jumped() repeated almost all of its parent's

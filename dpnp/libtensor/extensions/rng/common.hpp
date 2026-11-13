@@ -39,6 +39,7 @@
 #include <sycl/sycl.hpp>
 
 #include "dpnp4pybind11.hpp"
+#include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
@@ -315,6 +316,39 @@ extern std::pair<sycl::event, sycl::event>
 
 // Fills `table` and binds it to the Python function `name`, which takes the
 // distribution parameters as a sequence
+template <typename T>
+struct TypeTag
+{
+    using type = T;
+};
+
+// Records, in the dict halves_per_item of the module, the 32-bit halves of
+// raw outputs SamplerT takes per element for each result type that takes a
+// fixed number, so that a bit generator drawing its stream in order can
+// advance its state as the kernel does
+template <template <typename> class SamplerT,
+          template <typename> class SupportedT,
+          typename... Ts>
+void record_halves_per_item(py::module_ &m, const char *name)
+{
+    if (!py::hasattr(m, "halves_per_item")) {
+        m.attr("halves_per_item") = py::dict();
+    }
+    py::dict halves;
+    auto add = [&halves](auto tag) {
+        using T = typename decltype(tag)::type;
+        if constexpr (SupportedT<T>::value) {
+            if constexpr (SamplerT<T>::halves_per_item != 0) {
+                halves[py::dtype::of<T>()] = SamplerT<T>::halves_per_item;
+            }
+        }
+    };
+    (add(TypeTag<Ts>{}), ...);
+    if (!halves.empty()) {
+        m.attr("halves_per_item")[name] = halves;
+    }
+}
+
 template <template <typename> class SamplerT,
           template <typename> class SupportedT>
 void def_sampler(py::module_ &m,
@@ -340,6 +374,9 @@ void def_sampler(py::module_ &m,
           py::arg("seed"), py::arg("counter_lo"), py::arg("counter_hi"),
           py::arg("params"), py::arg("result"),
           py::arg("depends") = py::list());
+
+    record_halves_per_item<SamplerT, SupportedT, float, double, std::uint32_t,
+                           std::uint64_t>(m, name);
 }
 
 // As def_sampler, for a discrete sampler, whose Python function also takes
