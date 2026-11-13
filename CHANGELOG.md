@@ -41,6 +41,7 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Deprecated the upcast of `arr` by a Python numeric scalar in `dpnp.append` with `axis=None` (e.g. `int8` array and `1` giving `int64`) [#3125](https://github.com/IntelPython/dpnp/pull/3125)
 * Deprecated `dpnp.isfortran`; use `a.flags.fnc` instead [#3140](https://github.com/IntelPython/dpnp/pull/3140)
 * Deprecated omitting `axis` in `dpnp.tensor.top_k` for an input that is not 1-D, which searches the flattened array; the default will change to `axis=-1` as in the Array API standard, so pass `axis=None` to keep the current behavior [#3133](https://github.com/IntelPython/dpnp/pull/3133)
+* Deprecated `dpnp.config.__DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__`, set by the `DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK` environment variable, which has no effect without the NumPy fallback; reading or setting it now emits a `DeprecationWarning` [#3163](https://github.com/IntelPython/dpnp/pull/3163)
 
 ### Removed
 
