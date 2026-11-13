@@ -1,3 +1,4 @@
+import functools
 import math
 import threading
 
@@ -1154,6 +1155,7 @@ class TestIntegers:
         assert rng.integers([0, 1, 2], 10).usm_type == "device"
 
 
+@functools.lru_cache
 def _zeta(a, n=10**5):
     """The Riemann zeta function, by a partial sum and Euler-Maclaurin."""
     k = numpy.arange(1, n, dtype=numpy.float64)
