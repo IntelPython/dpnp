@@ -222,7 +222,9 @@ class BitGenerator:
         with the distribution parameters `params`.
 
         Each parameter is either a Python scalar or a C-contiguous array of
-        the size of `result` and of the data type the kernel expects for it.
+        the data type the kernel expects for it, whose size divides the size
+        of `result`. A smaller array repeats along `result`, which the kernel
+        reads cyclically.
 
         """
 
