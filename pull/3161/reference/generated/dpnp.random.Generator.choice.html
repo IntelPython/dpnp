@@ -1142,8 +1142,9 @@
 <p class="rubric">Limitations</p>
 <p><cite>usm_type</cite> is not in NumPy's signature. Without replacement, the
 sample is always in random order, so <cite>shuffle</cite> has no effect, and
-memory and time proportional to the population size are used. <cite>p</cite>
-is checked only when it is on the host.</p>
+memory and time proportional to the population size are used, unless
+<cite>p</cite> is <code class="docutils literal notranslate"><span class="pre">None</span></code> and <code class="docutils literal notranslate"><span class="pre">16</span> <span class="pre">*</span> <span class="pre">size**2</span></code> is at most the population size.
+<cite>p</cite> is checked only when it is on the host.</p>
 </dd></dl>
 
 </section>

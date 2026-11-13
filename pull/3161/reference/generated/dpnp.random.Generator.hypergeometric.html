@@ -1140,6 +1140,33 @@
 <dd><p>Draw samples from a hypergeometric distribution.</p>
 <p>For full documentation refer to
 <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.hypergeometric.html#numpy.random.Generator.hypergeometric" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator.hypergeometric</span></code></a>.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>ngood</strong><span class="classifier">{int, array_like of ints, dpnp.ndarray, usm_ndarray}</span></dt><dd><p>The number of good items, non-negative.</p>
+</dd>
+<dt><strong>nbad</strong><span class="classifier">{int, array_like of ints, dpnp.ndarray, usm_ndarray}</span></dt><dd><p>The number of bad items, non-negative.</p>
+</dd>
+<dt><strong>nsample</strong><span class="classifier">{int, array_like of ints, dpnp.ndarray, usm_ndarray}</span></dt><dd><p>The number of items drawn, at least 1 and at most
+<code class="docutils literal notranslate"><span class="pre">ngood</span> <span class="pre">+</span> <span class="pre">nbad</span></code>.</p>
+</dd>
+<dt><strong>size</strong><span class="classifier">{None, int, tuple of ints}, optional</span></dt><dd><p>Output shape. With <code class="docutils literal notranslate"><span class="pre">None</span></code>, the broadcast shape of <cite>ngood</cite>, <cite>nbad</cite>
+and <cite>nsample</cite>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt><strong>usm_type</strong><span class="classifier">{None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span></dt><dd><p>The type of SYCL USM allocation for the output array.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>, which means the USM type of the array
+parameters, or <code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code> when there are none.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>out</strong><span class="classifier">dpnp.ndarray</span></dt><dd><p>The samples, of data type <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.int64</span></code>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Limitations</p>
 <p><cite>usm_type</cite> is not in NumPy's signature.</p>
 </dd></dl>

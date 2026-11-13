@@ -1141,6 +1141,39 @@
 or if <code class="docutils literal notranslate"><span class="pre">endpoint=True</span></code>, <cite>low</cite> (inclusive) to <cite>high</cite> (inclusive).</p>
 <p>For full documentation refer to
 <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.integers.html#numpy.random.Generator.integers" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator.integers</span></code></a>.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>low</strong><span class="classifier">{int, array_like of ints, dpnp.ndarray, usm_ndarray}</span></dt><dd><p>The smallest integer that can be drawn, or one above the
+largest when <cite>high</cite> is <code class="docutils literal notranslate"><span class="pre">None</span></code>, in which case the smallest is 0.</p>
+</dd>
+<dt><strong>high</strong><span class="classifier">{None, int, array_like of ints, dpnp.ndarray, usm_ndarray}, optional</span></dt><dd><p>One above the largest integer that can be drawn, or the largest
+with <code class="docutils literal notranslate"><span class="pre">endpoint=True</span></code>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt><strong>size</strong><span class="classifier">{None, int, tuple of ints}, optional</span></dt><dd><p>Output shape. With <code class="docutils literal notranslate"><span class="pre">None</span></code>, the broadcast shape of <cite>low</cite> and
+<cite>high</cite>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt><strong>dtype</strong><span class="classifier">dtype, optional</span></dt><dd><p>The integer or boolean data type of the output.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">numpy.int64</span></code>.</p>
+</dd>
+<dt><strong>endpoint</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether <cite>high</cite> can be drawn.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+<dt><strong>usm_type</strong><span class="classifier">{None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span></dt><dd><p>The type of SYCL USM allocation for the output array.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>, which means the USM type of the array
+parameters, or <code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code> when there are none.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>out</strong><span class="classifier">dpnp.ndarray</span></dt><dd><p>The samples, of data type <cite>dtype</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Limitations</p>
 <p><cite>usm_type</cite> is not in NumPy's signature. The values drawn differ from
 NumPy's for the same range, as there is no buffering of 32-bit
