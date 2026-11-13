@@ -472,6 +472,12 @@ class Philox4x3210(BitGenerator):
 _PCG_MULT = 0xDA942042E4DD58B5
 _PCG_JUMP = 0x9E3779B97F4A7C15F39CC0605CEDC835
 
+# The distance between the streams of the work-items of a sampler whose
+# draws vary. The streams of jumped(k) lie between them, as _PCG_JUMP * k
+# modulo 2**64 stays away from 0: a work-item reaches one only after 2**49
+# draws for k below 20000, and after 2**40 for k below 2**20.
+_PCG_STRIDE = 1 << 64
+
 # The kernels that take a fixed number of 32-bit halves of raw outputs for
 # every value of a data type, and so draw the stream of PCG64DXSM in order,
 # as NumPy does. It must match halves_per_item of the samplers.
@@ -497,6 +503,21 @@ def _pcg_power(inc, k):
         mult = (mult * mult) & _MASK128
         k >>= 1
     return acc_mult, acc_inc
+
+
+def _affine_power(m, k):
+    """The affine map `m` = (mult, add) modulo 2**128, applied `k` times."""
+
+    acc_mult, acc_add = 1, 0
+    mult, add = m
+    while k:
+        if k & 1:
+            acc_mult = (acc_mult * mult) & _MASK128
+            acc_add = (acc_add * mult + add) & _MASK128
+        add = ((mult + 1) * add) & _MASK128
+        mult = (mult * mult) & _MASK128
+        k >>= 1
+    return acc_mult, acc_add
 
 
 def _pcg_advance(state, inc, k):
@@ -562,11 +583,12 @@ class PCG64DXSM(BitGenerator):
     are the same as NumPy's for the same state, where NumPy draws them with
     the same algorithm.
 
-    Every other method is sampled as by :meth:`jumped`: each work-item of a
-    call producing ``n`` values draws as many values as its rejection
-    samplers need from its own stream, the ``w``-th of which is that of
-    ``jumped(w)``, and the call advances the state as ``jumped(ceil(n /
-    8))``, but keeps the 32-bit half NumPy buffers. The values therefore
+    Every other method draws from a stream per work-item: each work-item of
+    a call producing ``n`` values draws as many values as its rejection
+    samplers need from its own stream, the ``w``-th of which starts
+    ``w * 2**64`` steps ahead, and the call advances the state by
+    ``ceil(n / 8) * 2**64`` steps, but keeps the 32-bit half NumPy buffers.
+    The streams of :meth:`jumped` do not reach these. The values therefore
     depend on the output size, and are not the same as NumPy's. For a given
     state, output size and data type, the raw bits and the uniform floats
     are the same on every device, while the samplers built on
@@ -585,14 +607,14 @@ class PCG64DXSM(BitGenerator):
         self._inc = state["state"]["inc"]
         self._has_uint32 = 0
         self._uinteger = 0
-        self._jump = _pcg_power(self._inc, _PCG_JUMP)
+        self._stride = _pcg_power(self._inc, _PCG_STRIDE)
 
     def _set_state(self, state, inc, has_uint32, uinteger):
         self._state = state
         self._inc = inc
         self._has_uint32 = has_uint32
         self._uinteger = uinteger
-        self._jump = _pcg_power(inc, _PCG_JUMP)
+        self._stride = _pcg_power(inc, _PCG_STRIDE)
 
     @property
     def state(self):
@@ -669,10 +691,10 @@ class PCG64DXSM(BitGenerator):
             self._state >> 64,
             self._inc & _MASK64,
             self._inc >> 64,
-            self._jump[0] & _MASK64,
-            self._jump[0] >> 64,
-            self._jump[1] & _MASK64,
-            self._jump[1] >> 64,
+            self._stride[0] & _MASK64,
+            self._stride[0] >> 64,
+            self._stride[1] & _MASK64,
+            self._stride[1] >> 64,
             self._has_uint32,
             self._uinteger,
         ]
@@ -697,9 +719,11 @@ class PCG64DXSM(BitGenerator):
                     self._has_uint32 = size % 2
                     state = _pcg_advance(state, inc, 1)
             else:
-                # work-item w draws from the stream jumped w times
-                n_wi = self._num_work_items(size)
-                state = _pcg_advance(state, inc, _PCG_JUMP * n_wi)
+                # work-item w draws from the stream advanced w * 2**64 steps
+                mult, add = _affine_power(
+                    self._stride, self._num_work_items(size)
+                )
+                state = (mult * state + add) & _MASK128
             self._state = state
         return words, 0, 0
 

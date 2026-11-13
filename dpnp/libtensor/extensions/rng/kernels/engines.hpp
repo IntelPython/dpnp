@@ -325,15 +325,15 @@ struct PCG64DXSM
     // No make_block
     static constexpr unsigned max_block_words = 0;
 
-    // The seed words are the state, the increment, the map of the stride of
-    // NumPy's jumped() (the step applied (phi - 1) * 2**128 times), each as
-    // {lo, hi}, then NumPy's has_uint32 and uinteger.
+    // The seed words are the state, the increment, the map of the stride
+    // between the streams of the work-items (the step applied 2**64 times),
+    // each as {lo, hi}, then NumPy's has_uint32 and uinteger.
     static UInt128 word128(const EngineState &state, std::size_t i)
     {
         return {state.seed[i], state.seed[i + 1]};
     }
 
-    // The stream jumped `subsequence` times, as by NumPy's jumped(), for the
+    // The stream advanced `subsequence` strides, for the
     // samplers whose draws per element vary
     static bitgen_t make(const EngineState &state, std::uint64_t subsequence)
     {
