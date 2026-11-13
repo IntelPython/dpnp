@@ -18,6 +18,7 @@ class TestRandint(unittest.TestCase):
         with self.assertRaises(ValueError):
             random.randint(100, 1)
 
+    @pytest.mark.skip("an empty draw returns an empty array, as in NumPy")
     def test_lo_hi_equal(self):
         with self.assertRaises(ValueError):
             random.randint(3, 3, size=0)
