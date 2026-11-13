@@ -853,10 +853,15 @@ def test_vecmat(device, shape1, shape2):
             [],
             {"low": 2, "high": 15, "size": (4, 8, 16), "dtype": dpnp.int32},
         ),
-        pytest.param("randn", [], {"d0": 20}),
+        pytest.param("randn", [20], {}),
         pytest.param("random", [], {"size": (35, 45)}),
         pytest.param(
-            "random_integers", [], {"low": -17, "high": 3, "size": (12, 16)}
+            "random_integers",
+            [],
+            {"low": -17, "high": 3, "size": (12, 16)},
+            marks=pytest.mark.filterwarnings(
+                "ignore:This function is deprecated:DeprecationWarning"
+            ),
         ),
         pytest.param("random_sample", [], {"size": (7, 7)}),
         pytest.param("ranf", [], {"size": (10, 7, 12)}),
@@ -1017,6 +1022,30 @@ def test_generator_permutations(func, device):
     assert_sycl_queue_equal(res.sycl_queue, sycl_queue)
 
 
+@pytest.mark.parametrize(
+    "func, args",
+    [
+        pytest.param("normal", ["f"]),
+        pytest.param("permutation", ["f"]),
+        pytest.param("poisson", ["f"]),
+        pytest.param("randint", ["i"]),
+        pytest.param("shuffle", ["f"]),
+    ],
+)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
+def test_random_param_queue(func, args, device):
+    # with no device given, the functions use the queue of the parameters
+    sycl_queue = dpctl.SyclQueue(device)
+    x = {
+        "f": dpnp.full(4, 2.0, sycl_queue=sycl_queue),
+        "i": dpnp.full(4, 5, sycl_queue=sycl_queue),
+    }
+    res = getattr(dpnp.random, func)(*[x[a] for a in args])
+    if res is None:
+        res = x[args[0]]
+    assert_sycl_queue_equal(res.sycl_queue, sycl_queue)
+
+
 # "f", "i" and "p" stand for float, integer and probability arrays on another
 # queue than the generator's
 _diff_queue_methods = [
@@ -1073,6 +1102,44 @@ def test_generator_diff_queue(func, args, device):
         kwargs["out"] = _diff_queue_args(["f"], device)[0]
     with assert_raises(ExecutionPlacementError):
         getattr(rng, func)(*args, **kwargs)
+
+
+@pytest.mark.parametrize(
+    "func, args", _diff_queue_methods + [pytest.param("randint", ["i"])]
+)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
+def test_random_state_diff_queue(func, args, device):
+    rs = dpnp.random.RandomState(1, device=device)
+    args = _diff_queue_args(args, device)
+    with assert_raises(ExecutionPlacementError):
+        getattr(rs, func)(*args)
+    if func != "shuffle":  # shuffle has no device keyword, as in NumPy
+        with assert_raises(ExecutionPlacementError):
+            getattr(dpnp.random, func)(*args, device=device)
+
+
+@pytest.mark.parametrize(
+    "func, args",
+    [
+        pytest.param("binomial", ["i", "p"]),
+        pytest.param("choice", ["f", None, True, "p"]),
+        pytest.param("hypergeometric", ["i", "i", 1]),
+        pytest.param("normal", ["f", "f"]),
+        pytest.param("triangular", [0.0, "f", "f"]),
+        pytest.param("uniform", ["f", "f"]),
+    ],
+)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
+def test_random_func_params_diff_queue(func, args, device):
+    # each array on its own queue
+    args = [
+        _diff_queue_args([a], device)[0] if isinstance(a, str) else a
+        for a in args
+    ]
+    n_states = len(dpnp.random.dpnp_iface_random._dpnp_random_states)
+    with assert_raises(ExecutionPlacementError):
+        getattr(dpnp.random, func)(*args)
+    assert len(dpnp.random.dpnp_iface_random._dpnp_random_states) == n_states
 
 
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)

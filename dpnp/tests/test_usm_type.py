@@ -1919,7 +1919,7 @@ class TestLinAlgebra:
 )
 @pytest.mark.parametrize("usm_type", list_of_usm_types)
 def test_generator(func, args, kwargs, usm_type):
-    for rng in (dpnp.random.default_rng(1),):
+    for rng in (dpnp.random.default_rng(1), dpnp.random.RandomState(1)):
         meth = getattr(rng, func, None)
         if meth is None:  # a Generator method RandomState doesn't have
             continue
@@ -1939,6 +1939,19 @@ def test_generator_array_params(usm_type):
     assert rng.multinomial(5, p, usm_type=usm_type).usm_type == usm_type
     assert rng.choice(x, 3, p=p).usm_type == usm_type
     assert rng.multinomial(5, p).usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types)
+def test_random_state_usm_type_follows_params(usm_type):
+    x = dpnp.zeros(4, usm_type=usm_type)
+    rs = dpnp.random.RandomState(0)
+    assert rs.normal(x).usm_type == usm_type
+    assert dpnp.random.normal(x).usm_type == usm_type
+    empty = dpnp.zeros(0, usm_type=usm_type)
+    assert rs.multinomial(5, empty).usm_type == usm_type
+    # without array parameters the output is on the device
+    assert rs.rand(3).usm_type == "device"
+    assert dpnp.random.rand(3).usm_type == "device"
 
 
 @pytest.mark.parametrize("usm_type_a", list_of_usm_types)
@@ -1971,6 +1984,7 @@ def test_generator_permutations(usm_type):
     assert rng.permutation(x, axis=1).usm_type == usm_type
     assert rng.permuted(x).usm_type == usm_type
     assert rng.permuted(x, axis=1).usm_type == usm_type
+    assert dpnp.random.RandomState(1).permutation(x).usm_type == usm_type
 
     rng.shuffle(x)
     assert x.usm_type == usm_type
