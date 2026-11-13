@@ -377,8 +377,11 @@ class Generator:
 
         `params` are the user's distribution parameters, which set the output
         shape along with `size`. `kernel_params` are the parameters passed to
-        the kernel, `params` by default, of data type `dtype`. Every kernel
-        parameter that is an array is broadcast to the output shape.
+        the kernel, `params` by default, of data type `dtype`. A kernel
+        parameter that is an array is passed as it is when it broadcasts
+        along the leading dimensions of the output only, which makes its
+        size divide the size of the output, and broadcast to the output
+        shape otherwise.
 
         With ``usm_type=None``, the output and the temporaries take the USM
         type of the array parameters and `out`, or ``"device"``.
