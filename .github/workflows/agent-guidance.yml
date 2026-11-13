@@ -1,0 +1,31 @@
+name: Check agent guidance (dokimi)
+
+# Checks the commands, paths and targets named in every AGENTS.md against the tree, with
+# no model and no secrets. `repo validate` fails the job on a broken manifest; the `repo scan`
+# report goes to the job summary and does not fail it.
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  dokimi:
+    name: dokimi
+
+    permissions:
+      contents: read # needed to clone the repo
+
+    # Bump both SHAs together: `uses:` runs the workflow, `dokimi-ref` installs the same dokimi
+    uses: intel/dokimi/.github/workflows/repo-eval.yml@0883b7e92337c5e860a0c340fba8c1d76421851a # v0.2.0
+    with:
+      dokimi-ref: 0883b7e92337c5e860a0c340fba8c1d76421851a
+      manifest: .github/dokimi/repo.yaml
