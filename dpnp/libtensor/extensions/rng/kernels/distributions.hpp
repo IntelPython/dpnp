@@ -697,7 +697,9 @@ template <typename T, typename BitGenT>
 std::int64_t binomial_inversion(BitGenT &bg, const std::int64_t n, const T p)
 {
     const T q = T(1) - p;
-    const T qn = sycl::exp(static_cast<T>(n) * sycl::log(q));
+    // log(q) of the rounded q is wrong for small p in float, where q can
+    // even round to 1
+    const T qn = sycl::exp(static_cast<T>(n) * sycl::log1p(-p));
     const T np = static_cast<T>(n) * p;
     const T bound_f =
         sycl::fmin(static_cast<T>(n), np + T(10) * sycl::sqrt(np * q + T(1)));

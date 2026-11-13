@@ -1234,6 +1234,9 @@ class TestDiscreteMethods:
             ("binomial", (100, 0.4)),
             ("binomial", (1000, 0.5)),
             ("binomial", (5, 1.0)),
+            # inversion with 1 - p rounding to 1, or up, in single precision
+            ("binomial", (3 * 10**9, 1e-8)),
+            ("binomial", (21428571, 1.4e-6)),
             ("negative_binomial", (5.0, 0.3)),
             ("negative_binomial", (0.5, 0.8)),
             ("negative_binomial", (100.0, 0.5)),
