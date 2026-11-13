@@ -322,7 +322,7 @@ def export_coverage(args, setup_dir, env, bin_llvm):
                 "export",
                 "-format=lcov",
                 "-ignore-filename-regex=/tmp/icpx*",
-                r"-ignore-filename-regex=.*/libtensor/include/kernels/.*\.hpp$",
+                r"-ignore-filename-regex=.*/libtensor/(include|extensions/[^/]+)/kernels/.*\.hpp$",
                 "-instr-profile=" + instr_profile_fn,
             ]
             + objects

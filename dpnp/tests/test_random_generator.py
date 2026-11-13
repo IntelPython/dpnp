@@ -1,0 +1,809 @@
+import math
+import threading
+
+import dpctl
+import dpctl.utils as dpu
+import numpy
+import pytest
+from numpy.testing import (
+    assert_allclose,
+    assert_array_equal,
+    assert_raises,
+    assert_raises_regex,
+)
+
+import dpnp
+import dpnp.libtensor._rng_impl as ri
+from dpnp.random import Generator, Philox4x3210, default_rng
+from dpnp.random._generator import _repeats_along_samples
+
+from .helper import get_float_dtypes, has_support_aspect64
+
+float_dtypes = get_float_dtypes(no_float16=True)
+
+# the number of output elements each work-item of a kernel produces, with
+# Philox4x3210
+ITEMS_PER_WORK_ITEM = 8
+
+MASK32 = 0xFFFFFFFF
+
+
+def _philox4x32x10(key, counter):
+    """Reference Philox4x32-10 (Salmon et al., 2011) for one counter."""
+
+    k0, k1 = key & MASK32, key >> 32
+    c = [(counter >> (32 * i)) & MASK32 for i in range(4)]
+    for r in range(10):
+        if r:
+            k0 = (k0 + 0x9E3779B9) & MASK32
+            k1 = (k1 + 0xBB67AE85) & MASK32
+        p0 = 0xD2511F53 * c[0]
+        p1 = 0xCD9E8D57 * c[2]
+        c = [
+            (p1 >> 32) ^ c[1] ^ k0,
+            p1 & MASK32,
+            (p0 >> 32) ^ c[3] ^ k1,
+            p0 & MASK32,
+        ]
+    return c
+
+
+def _reference_raw(key, counter, n):
+    """The expected output of Philox4x3210.random_raw(n)."""
+
+    n_wi = -(-n // ITEMS_PER_WORK_ITEM)
+    res = numpy.empty(n, dtype=numpy.uint64)
+    for w in range(n_wi):
+        stream = []
+        block = (counter + (w << 64)) & ((1 << 128) - 1)
+        for i in range(w, n, n_wi):
+            while len(stream) < 2:
+                stream.extend(_philox4x32x10(key, block))
+                block = (block + 1) & ((1 << 128) - 1)
+            hi, lo = stream.pop(0), stream.pop(0)
+            res[i] = (hi << 32) | lo
+    return res
+
+
+def _all_devices():
+    return [
+        d for d in dpctl.get_devices() if d.device_type.name in ("cpu", "gpu")
+    ]
+
+
+class TestPhilox4x3210:
+    @pytest.mark.parametrize("n", [1, 7, 8, 9, 100])
+    @pytest.mark.parametrize(
+        "counter", [0, 5, (1 << 64) - 1, (3 << 64) + 2, (1 << 128) - 2]
+    )
+    def test_known_answer(self, n, counter):
+        key = 0x0123456789ABCDEF
+        bg = Philox4x3210(key=key, counter=counter)
+        res = bg.random_raw(n)
+        assert res.dtype == dpnp.uint64
+        assert_array_equal(res, _reference_raw(key, counter, n))
+
+    def test_state_advance(self):
+        bg = Philox4x3210(1234)
+        state = bg.state
+        assert state["bit_generator"] == "Philox4x3210"
+        assert state["state"]["counter"] == 0
+
+        bg.random_raw(17)
+        assert bg.state["state"]["counter"] == 3 << 64
+        bg.random_raw(output=False)
+        assert bg.state["state"]["counter"] == 4 << 64
+
+        # an empty draw does not advance the state
+        bg.random_raw((0, 5))
+        assert bg.state["state"]["counter"] == 4 << 64
+
+    def test_state_roundtrip(self):
+        bg = Philox4x3210(42)
+        bg.random_raw(10)
+        state = bg.state
+        a = bg.random_raw(50)
+        bg.state = state
+        b = bg.random_raw(50)
+        assert_array_equal(a, b)
+
+    def test_state_errors(self):
+        bg = Philox4x3210(42)
+        assert_raises(TypeError, setattr, bg, "state", 1)
+        assert_raises(
+            ValueError, setattr, bg, "state", {"bit_generator": "PCG64"}
+        )
+        assert_raises(
+            ValueError,
+            setattr,
+            bg,
+            "state",
+            {
+                "bit_generator": "Philox4x3210",
+                "state": {"key": -1, "counter": 0},
+            },
+        )
+
+    def test_seed_and_key(self):
+        assert_raises(ValueError, Philox4x3210, 1, key=1)
+        assert_raises(ValueError, Philox4x3210, key=1 << 64)
+        assert_raises(ValueError, Philox4x3210, counter=-1)
+
+    def test_seed_sequence(self):
+        ss = numpy.random.SeedSequence(7)
+        bg = Philox4x3210(ss)
+        assert bg.seed_seq is ss
+        key = int(ss.generate_state(1, numpy.uint64)[0])
+        assert bg.state["state"]["key"] == key
+        assert Philox4x3210(7).state["state"]["key"] == key
+
+    def test_spawn(self):
+        bg = Philox4x3210(5)
+        children = bg.spawn(2)
+        keys = {c.state["state"]["key"] for c in children}
+        keys.add(bg.state["state"]["key"])
+        assert len(keys) == 3
+        for c in children:
+            assert c.sycl_queue == bg.sycl_queue
+
+    def test_base_class(self):
+        assert_raises(TypeError, dpnp.random.BitGenerator)
+
+        class _Bare(dpnp.random.BitGenerator):
+            pass
+
+        bg = _Bare(0)
+        with pytest.raises(NotImplementedError):
+            _ = bg.state
+        assert_raises(
+            NotImplementedError,
+            bg._launch,
+            ri._random_raw,
+            numpy.dtype(numpy.uint64),
+            8,
+        )
+
+    def test_seed_dpnp_array(self):
+        seed = [1, 2, 3]
+        bg = Philox4x3210(dpnp.array(seed))
+        assert bg.state == Philox4x3210(seed).state
+
+    def test_repr_and_device(self):
+        bg = Philox4x3210(0)
+        assert str(bg) == "Philox4x3210"
+        assert repr(bg) == f"Philox4x3210 at 0x{id(bg):X}"
+        assert bg.sycl_device == bg.sycl_queue.sycl_device
+
+    def test_lock_is_reentrant(self):
+        bg = Philox4x3210(1)
+
+        def _use_state():
+            with bg.lock:
+                bg.state = bg.state
+
+        t = threading.Thread(target=_use_state, daemon=True)
+        t.start()
+        t.join(timeout=10)
+        assert not t.is_alive()
+
+    def test_launch_takes_key_under_lock(self):
+        bg = Philox4x3210(key=5, counter=0)
+
+        class _SwapKeyOnRelease:
+            """A lock after whose release another thread sets a new key."""
+
+            def __init__(self):
+                self._lock = threading.RLock()
+
+            def __enter__(self):
+                self._lock.acquire()
+
+            def __exit__(self, *args):
+                self._lock.release()
+                bg._key = 6
+
+        bg._lock = _SwapKeyOnRelease()
+        seed, counter_lo, counter_hi = bg._launch(
+            ri._random_raw, numpy.dtype(numpy.uint64), 8
+        )
+        assert (seed, counter_lo, counter_hi) == ([5], 0, 0)
+
+    @pytest.mark.parametrize("size", [-8, (2, -8), 2.0, True])
+    def test_random_raw_bad_size(self, size):
+        bg = Philox4x3210(1)
+        bg.random_raw(8)
+        state = bg.state
+
+        # NumPy raises only with output=True
+        np_bg = numpy.random.Philox(1)
+        for output in (True, False):
+            _assert_same_error(
+                lambda: np_bg.random_raw(size),
+                lambda: bg.random_raw(size, output=output),
+            )
+            assert bg.state == state
+
+    def test_random_raw_skip_large(self):
+        # the number of values does not fit in 64 bits
+        bg = Philox4x3210(key=1, counter=0)
+        bg.random_raw((3**30, 3**30), output=False)
+        n_blocks = -(-math.prod((3**30, 3**30)) // ITEMS_PER_WORK_ITEM)
+        expected = (n_blocks << 64) & ((1 << 128) - 1)
+        assert bg.state["state"]["counter"] == expected
+
+    def test_spawn_with_key(self):
+        # as in NumPy, a bit generator given its key has no seed sequence
+        bg = Philox4x3210(key=5)
+        assert bg.seed_seq is None
+        assert_raises_regex(
+            TypeError, "does not implement spawning", bg.spawn, 1
+        )
+        assert_raises(TypeError, default_rng(bg).spawn, 1)
+
+    def test_float32_normal_reference(self):
+        # float32 normals take u1 from a whole 32-bit word; at this counter
+        # elements 8 and 12 come from the word 6, deep in the tail
+        key, counter, n = 0x0123456789ABCDEF, 14589945, 32
+        res = Generator(Philox4x3210(key=key, counter=counter))
+        res = res.standard_normal(n, dtype=dpnp.float32)
+
+        n_wi = n // ITEMS_PER_WORK_ITEM
+        expected = numpy.empty(n)
+        for w in range(n_wi):
+            block = counter + (w << 64)
+            words = []
+            for _ in range(ITEMS_PER_WORK_ITEM // 4):
+                words.extend(_philox4x32x10(key, block))
+                block += 1
+            for k in range(0, ITEMS_PER_WORK_ITEM, 2):
+                u1 = (numpy.float32(words[k]) + numpy.float32(0.5)) * (
+                    numpy.float32(2.0**-32)
+                )
+                u2 = (words[k + 1] >> 8) * 2.0**-24
+                r = numpy.sqrt(-2 * numpy.log(numpy.float64(u1)))
+                expected[w + k * n_wi] = r * numpy.sin(2 * numpy.pi * u2)
+                expected[w + (k + 1) * n_wi] = r * numpy.cos(2 * numpy.pi * u2)
+        expected = expected.astype(numpy.float32)
+        assert_allclose(res, expected, rtol=1e-5, atol=1e-6)
+
+    @pytest.mark.skipif(not has_support_aspect64(), reason="fp64 is required")
+    def test_float64_reference(self):
+        # as in NumPy, a double takes the high 53 bits of a 64-bit value
+        key, counter, n = 0x0123456789ABCDEF, 14589945, 32
+        u = (_reference_raw(key, counter, n) >> 11) * 2.0**-53
+        rng = Generator(Philox4x3210(key=key, counter=counter))
+        assert_array_equal(rng.random(n, dtype=dpnp.float64), u)
+
+        # work-item w draws its pairs (u1, u2) from its values w + j * n_wi
+        n_wi = n // ITEMS_PER_WORK_ITEM
+        u = u.reshape(ITEMS_PER_WORK_ITEM, n_wi)
+        r = numpy.sqrt(-2 * numpy.log(1 - u[0::2]))
+        expected = numpy.empty_like(u)
+        expected[0::2] = r * numpy.sin(2 * numpy.pi * u[1::2])
+        expected[1::2] = r * numpy.cos(2 * numpy.pi * u[1::2])
+        rng = Generator(Philox4x3210(key=key, counter=counter))
+        res = rng.standard_normal(n, dtype=dpnp.float64)
+        assert_allclose(res, expected.ravel(), rtol=1e-12, atol=1e-13)
+
+    def test_param_overlaps_result(self):
+        x = dpnp.get_usm_ndarray(dpnp.zeros(9, dtype=dpnp.float32))
+        q = x.sycl_queue
+        engine = int(ri.engine_id.philox4x32x10)
+        _manager = dpu.SequentialOrderManager[q]
+
+        assert_raises_regex(
+            ValueError,
+            "overlap",
+            ri._normal,
+            q,
+            engine,
+            [1],
+            0,
+            0,
+            [x[:-1], 1.0],
+            x[1:],
+            depends=_manager.submitted_events,
+        )
+        # a smaller parameter is read by many work-items
+        assert_raises_regex(
+            ValueError,
+            "overlap",
+            ri._normal,
+            q,
+            engine,
+            [1],
+            0,
+            0,
+            [x[:3], 1.0],
+            x,
+            depends=_manager.submitted_events,
+        )
+
+        # an exact alias is safe, as every element is read before written
+        ht_ev, ev = ri._normal(
+            q, engine, [1], 0, 0, [x, 1.0], x, depends=_manager.submitted_events
+        )
+        _manager.add_event_pair(ht_ev, ev)
+        assert dpnp.isfinite(dpnp.asarray(x)).all()
+
+    @pytest.mark.parametrize("param_size", [0, 2, 4])
+    def test_param_size_not_dividing_result(self, param_size):
+        p = dpnp.get_usm_ndarray(dpnp.zeros(param_size, dtype=dpnp.float32))
+        res = dpnp.get_usm_ndarray(dpnp.empty(9, dtype=dpnp.float32))
+        q = res.sycl_queue
+        assert_raises_regex(
+            ValueError,
+            "size dividing",
+            ri._normal,
+            q,
+            int(ri.engine_id.philox4x32x10),
+            [1],
+            0,
+            0,
+            [p, 1.0],
+            res,
+            depends=dpu.SequentialOrderManager[q].submitted_events,
+        )
+
+
+class TestDefaultRng:
+    def test_reproducible(self):
+        a = default_rng(123).random(100)
+        b = default_rng(123).random(100)
+        c = default_rng(124).random(100)
+        assert_array_equal(a, b)
+        assert not (a == c).all()
+
+    def test_passthrough(self):
+        rng = default_rng(0)
+        assert default_rng(rng) is rng
+
+        bg = Philox4x3210(0)
+        assert default_rng(bg).bit_generator is bg
+
+    def test_stream_advances(self):
+        rng = default_rng(0)
+        a = rng.random(10)
+        b = rng.random(10)
+        assert not (a == b).any()
+
+    def test_spawn(self):
+        rng = default_rng(0)
+        children = rng.spawn(2)
+        a, b = (c.random(10) for c in children)
+        assert isinstance(children[0], Generator)
+        assert not (a == b).any()
+
+    def test_bad_bit_generator(self):
+        assert_raises(TypeError, Generator, numpy.random.PCG64(0))
+
+        rng = default_rng(0)
+        assert_raises_regex(
+            TypeError,
+            "must be an instance of dpnp.random.BitGenerator",
+            setattr,
+            rng,
+            "bit_generator",
+            5,
+        )
+        bg = Philox4x3210(1)
+        rng.bit_generator = bg
+        assert rng.bit_generator is bg
+
+    def test_repr_and_device(self):
+        rng = default_rng(0)
+        assert str(rng) == "Generator(Philox4x3210)"
+        assert repr(rng) == f"Generator(Philox4x3210) at 0x{id(rng):X}"
+        assert rng.sycl_device == rng.bit_generator.sycl_device
+        assert rng.sycl_queue == rng.bit_generator.sycl_queue
+
+
+class TestFloatMethods:
+    # method name, positional parameters
+    cases = [
+        ("random", ()),
+        ("uniform", (-1.0, 2.0)),
+        ("standard_normal", ()),
+        ("normal", (1.0, 2.0)),
+    ]
+
+    @pytest.mark.parametrize("dtype", float_dtypes)
+    @pytest.mark.parametrize("name, params", cases)
+    def test_shape_dtype(self, name, params, dtype):
+        rng = default_rng(0)
+        meth = getattr(rng, name)
+
+        res = meth(*params, size=(3, 4), dtype=dtype)
+        assert isinstance(res, dpnp.ndarray)
+        assert res.shape == (3, 4)
+        assert res.dtype == dtype
+        assert dpnp.isfinite(res).all()
+
+        res = meth(*params, dtype=dtype)
+        assert res.shape == ()
+
+        res = meth(*params, size=0, dtype=dtype)
+        assert res.shape == (0,)
+
+    @pytest.mark.parametrize("name, params", cases)
+    def test_default_dtype(self, name, params):
+        rng = default_rng(0)
+        res = getattr(rng, name)(*params, size=2)
+        assert res.dtype == dpnp.default_float_type(sycl_queue=rng.sycl_queue)
+
+    @pytest.mark.parametrize("name, params", cases)
+    def test_bad_dtype(self, name, params):
+        rng = default_rng(0)
+        meth = getattr(rng, name)
+        assert_raises(TypeError, meth, *params, size=2, dtype=numpy.int32)
+
+    @pytest.mark.parametrize("usm_type", ["device", "shared", "host"])
+    def test_usm_type(self, usm_type):
+        res = default_rng(0).normal(size=4, usm_type=usm_type)
+        assert res.usm_type == usm_type
+
+    @pytest.mark.parametrize("dtype", float_dtypes)
+    def test_random_range(self, dtype):
+        res = dpnp.asnumpy(default_rng(1).random(10**6, dtype=dtype))
+        assert res.min() >= 0
+        assert res.max() < 1
+
+    @pytest.mark.parametrize("dtype", float_dtypes)
+    @pytest.mark.parametrize(
+        "name, params, mean, var",
+        [
+            ("random", (), 0.5, 1 / 12),
+            ("uniform", (-1.0, 3.0), 1.0, 16 / 12),
+            ("standard_normal", (), 0.0, 1.0),
+            ("normal", (1.0, 2.0), 1.0, 4.0),
+        ],
+    )
+    def test_moments(self, name, params, mean, var, dtype):
+        n = 10**6
+        res = getattr(default_rng(2), name)(*params, size=n, dtype=dtype)
+        res = dpnp.asnumpy(res).astype(numpy.float64)
+
+        # five standard errors of the mean and of the variance, taking a
+        # generous bound on the fourth central moment
+        assert abs(res.mean() - mean) <= 5 * numpy.sqrt(var / n)
+        assert abs(res.var() - var) <= 5 * var * numpy.sqrt(10 / n)
+
+    def test_array_params(self):
+        rng = default_rng(3)
+        loc = dpnp.arange(4.0)[:, None] * 10
+        res = rng.normal(loc, 1.0, size=(4, 10000))
+        assert res.shape == (4, 10000)
+        assert_allclose(res.mean(axis=1), [0.0, 10.0, 20.0, 30.0], atol=0.1)
+
+        # parameters given as lists
+        res = rng.uniform([0.0, 10.0], [1.0, 11.0], size=(1000, 2))
+        res = dpnp.asnumpy(res)
+        assert (res[:, 0] < 1).all() and (res[:, 1] >= 10).all()
+
+    @pytest.mark.parametrize(
+        "param_shape, expected",
+        [
+            ((), True),
+            ((1, 1), True),
+            ((2,), True),
+            ((1, 3, 2), True),
+            ((5, 3, 2), True),
+            ((3, 1), False),
+            ((5, 1, 2), False),
+        ],
+    )
+    def test_repeats_along_samples(self, param_shape, expected):
+        assert _repeats_along_samples(param_shape, (5, 3, 2)) is expected
+
+    @pytest.mark.parametrize("param_shape", [(2,), (1, 1), (3, 2), (3, 1)])
+    def test_broadcast_params(self, param_shape):
+        # a parameter read cyclically gives the values of its full copy
+        shape = (5, 3, 2)
+        loc = dpnp.arange(math.prod(param_shape) * 1.0).reshape(param_shape)
+        scale = loc + 1
+        res = default_rng(7).normal(loc, scale, size=shape)
+        full = [dpnp.broadcast_to(p, shape).copy() for p in (loc, scale)]
+        assert_array_equal(res, default_rng(7).normal(*full, size=shape))
+
+    def test_array_scale(self):
+        scale = dpnp.asarray([1.0, 10.0])
+        res = default_rng(4).normal(0.0, scale, size=(10000, 2))
+        assert_allclose(res.std(axis=0), [1.0, 10.0], rtol=0.05)
+
+    @pytest.mark.parametrize(
+        "size",
+        [
+            True,
+            [True],
+            numpy.bool_(True),
+            numpy.array(True),
+            -1,
+            (2, -1),
+            2.0,
+            (2.0,),
+            numpy.array([[2]]),
+        ],
+    )
+    def test_bad_size(self, size):
+        _assert_same_error(
+            lambda: numpy.random.default_rng(0).normal(size=size),
+            lambda: default_rng(0).normal(size=size),
+        )
+
+    @pytest.mark.parametrize(
+        "size",
+        [numpy.int64(3), numpy.array(3), dpnp.array(3), (numpy.int64(2), 3)],
+    )
+    def test_size_castable_to_integer(self, size):
+        res = default_rng(0).normal(size=size)
+        assert res.shape == numpy.random.default_rng(0).normal(size=size).shape
+
+    def test_size_not_broadcastable(self):
+        rng = default_rng(0)
+        assert_raises_regex(
+            ValueError,
+            "not compatible with broadcast",
+            rng.normal,
+            numpy.zeros(3),
+            1.0,
+            size=(2,),
+        )
+
+    @pytest.mark.parametrize(
+        "name, params, msg",
+        [
+            ("normal", (0.0, -1.0), "scale < 0"),
+        ],
+    )
+    def test_scalar_checks(self, name, params, msg):
+        rng = default_rng(0)
+        assert_raises_regex(ValueError, msg, getattr(rng, name), *params)
+
+    def test_uniform_overflow(self):
+        rng = default_rng(0)
+        big = numpy.finfo(numpy.float64).max
+        assert_raises(OverflowError, rng.uniform, -big, big)
+
+    def test_uniform_overflow_float32(self):
+        # the kernel subtracts the bounds in the sampling type
+        rng = default_rng(0)
+        args = (-3e38, 3e38)
+        assert_raises(OverflowError, rng.uniform, *args, dtype=dpnp.float32)
+        assert_raises(
+            OverflowError, rng.uniform, 0.0, [1e39], dtype=dpnp.float32
+        )
+        if has_support_aspect64():
+            res = rng.uniform(*args, size=100, dtype=dpnp.float64)
+            assert dpnp.isfinite(res).all()
+
+    @pytest.mark.parametrize("dtype", float_dtypes)
+    def test_uniform_tiny_range(self, dtype):
+        # the product with the range must not be reassociated, or it rounds
+        # through a denormal and goes above `high`
+        high = 1.5 * numpy.finfo(dtype).tiny
+        n = 4099
+        u = dpnp.asnumpy(default_rng(7).random(n, dtype=dtype))
+        res = dpnp.asnumpy(default_rng(7).uniform(0, high, n, dtype=dtype))
+        expected = dtype(0) + (dtype(high) - dtype(0)) * u
+        assert_array_equal(res, expected)
+        assert res.max() < high
+
+    @pytest.mark.parametrize("bad", [numpy.inf, -numpy.inf, numpy.nan])
+    def test_uniform_device_and_host_bounds(self, bad):
+        # a host bound is checked even when the other one is on the device
+        rng = default_rng(0)
+        low = dpnp.zeros(1)
+        assert_raises_regex(
+            OverflowError,
+            "Range exceeds valid bounds",
+            rng.uniform,
+            low,
+            numpy.array([bad]),
+        )
+        assert_raises(OverflowError, rng.uniform, bad, dpnp.ones(1))
+        assert_raises(OverflowError, rng.uniform, low, 1e39, dtype=dpnp.float32)
+        assert rng.uniform(low, 1.0).shape == (1,)
+
+    @pytest.mark.parametrize("name", ["normal", "uniform"])
+    def test_device_param_dtype(self, name):
+        rng = default_rng(0)
+        assert_raises_regex(
+            TypeError,
+            "Cannot cast array data",
+            getattr(rng, name),
+            dpnp.arange(3) * 1j,
+        )
+        res = getattr(rng, name)(dpnp.arange(3), dtype=dpnp.float32)
+        assert res.dtype == dpnp.float32
+        if has_support_aspect64():
+            # float64 parameters feed a float32 draw
+            res = getattr(rng, name)(
+                dpnp.zeros(3, dtype=dpnp.float64), dtype=dpnp.float32
+            )
+            assert res.dtype == dpnp.float32
+
+    @pytest.mark.parametrize(
+        "usm_types, expected",
+        [
+            (["shared"], "shared"),
+            (["host"], "host"),
+            (["shared", "host"], "shared"),
+            (["device", "host"], "device"),
+        ],
+    )
+    def test_usm_type_follows_params(self, usm_types, expected):
+        rng = default_rng(0)
+        params = [dpnp.ones(2, usm_type=u) for u in usm_types]
+        if len(params) == 1:
+            params.append(1.0)
+        assert rng.normal(*params).usm_type == expected
+        assert rng.uniform(*params).usm_type == expected
+        # an explicit usm_type wins
+        assert rng.normal(*params, usm_type="device").usm_type == "device"
+        # host parameters alone give a device array
+        assert rng.normal([1.0, 2.0]).usm_type == "device"
+
+    @pytest.mark.parametrize("dtype", float_dtypes)
+    @pytest.mark.parametrize(
+        "name, params",
+        [
+            ("random", ()),
+            ("standard_normal", ()),
+        ],
+    )
+    def test_out(self, name, params, dtype):
+        out = dpnp.empty((3, 5), dtype=dtype)
+        res = getattr(default_rng(5), name)(*params, dtype=dtype, out=out)
+        assert res is out
+
+        expected = getattr(default_rng(5), name)(
+            *params, size=(3, 5), dtype=dtype
+        )
+        assert_array_equal(out, expected)
+
+    def test_out_errors(self):
+        rng = default_rng(0)
+        out = dpnp.empty(3, dtype=dpnp.float32)
+        assert_raises(TypeError, rng.random, out=numpy.empty(3))
+        assert_raises(TypeError, rng.random, dtype=dpnp.int32, out=out)
+        assert_raises(TypeError, rng.random, dtype=dpnp.float64, out=out)
+        assert_raises(ValueError, rng.random, size=4, out=out, dtype=out.dtype)
+
+        # the default dtype applies even when out is given
+        default = dpnp.default_float_type(sycl_queue=rng.sycl_queue)
+        other = dpnp.float32 if default == dpnp.float64 else None
+        if other is not None:
+            assert_raises(TypeError, rng.random, out=dpnp.empty(3, dtype=other))
+
+        # out must be contiguous, as in NumPy, each with its default dtype
+        np_big = numpy.empty((3, 10))
+        big = dpnp.empty((3, 10), dtype=default)
+        _assert_same_error(
+            lambda: numpy.random.default_rng(0).random(out=np_big[:, ::2]),
+            lambda: rng.random(out=big[:, ::2]),
+        )
+        _assert_same_error(
+            lambda: numpy.random.default_rng(0).random(out=np_big[:, :3].T),
+            lambda: rng.random(out=big[:, :3].T),
+        )
+
+    @pytest.mark.parametrize("name", ["random", "standard_normal"])
+    def test_out_usm_ndarray(self, name):
+        out = dpnp.get_usm_ndarray(dpnp.empty(6, dtype=dpnp.float32))
+        res = getattr(default_rng(5), name)(dtype=dpnp.float32, out=out)
+        assert res is out
+        expected = getattr(default_rng(5), name)(6, dtype=dpnp.float32)
+        assert_array_equal(out, expected)
+
+    @pytest.mark.parametrize("name", ["random", "standard_normal"])
+    def test_out_f_contiguous(self, name):
+        # as in NumPy, an F-contiguous out is filled in memory order
+        out = dpnp.empty((3, 4), dtype=dpnp.float32, order="F")
+        res = getattr(default_rng(5), name)(dtype=dpnp.float32, out=out)
+        assert res is out
+        expected = getattr(default_rng(5), name)((4, 3), dtype=dpnp.float32)
+        assert_array_equal(out, expected.T)
+
+        usm_out = dpnp.get_usm_ndarray(dpnp.empty_like(out, order="F"))
+        res = getattr(default_rng(5), name)(dtype=dpnp.float32, out=usm_out)
+        assert res is usm_out
+        assert_array_equal(usm_out, expected.T)
+
+    def test_out_read_only(self):
+        out = dpnp.empty(3, dtype=dpnp.float32)
+        out.flags.writable = False
+        assert_raises_regex(
+            ValueError,
+            "must be contiguous, writable",
+            default_rng(0).random,
+            dtype=dpnp.float32,
+            out=out,
+        )
+
+
+def _assert_same_error(np_call, dp_call):
+    """Assert `dp_call` raises the same exception as `np_call`."""
+
+    with pytest.raises(Exception) as np_exc:
+        np_call()
+    with pytest.raises(type(np_exc.value)) as dp_exc:
+        dp_call()
+    assert str(dp_exc.value) == str(np_exc.value)
+
+
+class TestChecks:
+    nan = numpy.nan
+
+    @pytest.mark.parametrize(
+        "name, args",
+        [
+            ("uniform", (2.0, 1.0)),
+            ("uniform", ([2.0], [1.0])),
+            ("uniform", (-1e308, 1e308)),
+            ("uniform", ([-1e308], 1e308)),
+            ("uniform", (0.0, nan)),
+            ("uniform", ([0.0], nan)),
+            ("normal", (0.0, -1.0)),
+            ("normal", (0.0, -0.0)),
+            ("normal", (0.0, [1.0, -1.0])),
+            ("normal", (0.0, None)),
+            ("uniform", (None, 1.0)),
+            # complex and object arrays do not cast safely to float64
+            ("normal", (numpy.arange(3) * 1j,)),
+            ("normal", (numpy.array(1j),)),
+            ("normal", (0.0, numpy.array([1.0, None], dtype=object))),
+            ("normal", ([1j, 2j],)),
+            ("uniform", (numpy.array([1j]), 2.0)),
+            ("uniform", (0.0, numpy.array(2j))),
+        ],
+    )
+    @pytest.mark.filterwarnings("ignore:overflow encountered:RuntimeWarning")
+    def test_same_as_numpy(self, name, args):
+        np_rng = numpy.random.default_rng(0)
+        rng = default_rng(0)
+        _assert_same_error(
+            lambda: getattr(np_rng, name)(*args),
+            lambda: getattr(rng, name)(*args),
+        )
+
+    @pytest.mark.parametrize(
+        "name, args",
+        [
+            ("normal", (None, [1.0, 2.0])),
+        ],
+    )
+    def test_none_with_array_is_nan(self, name, args):
+        # as in NumPy, None is NaN when another parameter is an array
+        res = getattr(default_rng(0), name)(*args)
+        assert dpnp.isnan(res).any()
+
+
+@pytest.mark.skipif(len(_all_devices()) < 2, reason="needs two devices")
+class TestDeviceIndependence:
+    def _draw(self, device, bitgen):
+        rng = Generator(bitgen(12, device=device))
+        return (
+            rng.random(1000, dtype=dpnp.float32),
+            rng.bit_generator.random_raw(1000),
+            rng.normal(size=1000, dtype=dpnp.float32),
+        )
+
+    @pytest.mark.parametrize("bitgen", [Philox4x3210])
+    def test_same_values(self, bitgen):
+        devices = _all_devices()
+        ref = self._draw(devices[0], bitgen)
+        for dev in devices[1:]:
+            res = self._draw(dev, bitgen)
+            # uniform bits are exact
+            for a, b in zip(ref[:2], res[:2]):
+                assert_array_equal(a, b)
+            # transcendental functions may differ in the last bits
+            for a, b in zip(ref[2:], res[2:]):
+                assert_allclose(a, b, rtol=1e-4, atol=1e-5)
+
+    def test_queue(self):
+        for dev in _all_devices():
+            rng = default_rng(0, device=dev)
+            res = rng.random(3, dtype=dpnp.float32)
+            assert res.sycl_device == dev
+            assert res.sycl_queue == rng.sycl_queue
