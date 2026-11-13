@@ -1119,6 +1119,15 @@ class TestIntegers:
         rng = default_rng(0)
         assert_raises(TypeError, rng.integers, 0, 5, dtype=numpy.float32)
 
+    @pytest.mark.parametrize("usm_type", ["shared", "host"])
+    def test_usm_type_follows_bounds(self, usm_type):
+        # host bounds become temporaries of the device bound's USM type
+        rng = default_rng(0)
+        low = dpnp.zeros(3, dtype=dpnp.int64, usm_type=usm_type)
+        res = rng.integers(low, [5, 6, 7])
+        assert res.usm_type == usm_type
+        assert rng.integers([0, 1, 2], 10).usm_type == "device"
+
 
 def _zeta(a, n=10**5):
     """The Riemann zeta function, by a partial sum and Euler-Maclaurin."""
@@ -1184,15 +1193,6 @@ def discrete_precision(request, monkeypatch):
             lambda self: numpy.dtype(numpy.float32),
         )
     return request.param
-
-    @pytest.mark.parametrize("usm_type", ["shared", "host"])
-    def test_usm_type_follows_bounds(self, usm_type):
-        # host bounds become temporaries of the device bound's USM type
-        rng = default_rng(0)
-        low = dpnp.zeros(3, dtype=dpnp.int64, usm_type=usm_type)
-        res = rng.integers(low, [5, 6, 7])
-        assert res.usm_type == usm_type
-        assert rng.integers([0, 1, 2], 10).usm_type == "device"
 
 
 class TestDiscreteMethods:
@@ -1439,16 +1439,6 @@ class TestDiscreteMethods:
         mean = numpy.array([12.5e14, 5e15])
         assert_allclose(dpnp.asnumpy(res).mean(axis=0), mean, rtol=1e-3)
 
-
-def _assert_same_error(np_call, dp_call):
-    """Assert `dp_call` raises the same exception as `np_call`."""
-
-    with pytest.raises(Exception) as np_exc:
-        np_call()
-    with pytest.raises(type(np_exc.value)) as dp_exc:
-        dp_call()
-    assert str(dp_exc.value) == str(np_exc.value)
-
     def test_device_integer_param_dtype(self):
         # floating-point arrays for integer parameters are converted, but
         # complex ones raise
@@ -1460,6 +1450,16 @@ def _assert_same_error(np_call, dp_call):
         assert_raises_regex(
             TypeError, "Cannot cast array data", rng.binomial, n * 1j, 0.5
         )
+
+
+def _assert_same_error(np_call, dp_call):
+    """Assert `dp_call` raises the same exception as `np_call`."""
+
+    with pytest.raises(Exception) as np_exc:
+        np_call()
+    with pytest.raises(type(np_exc.value)) as dp_exc:
+        dp_call()
+    assert str(dp_exc.value) == str(np_exc.value)
 
 
 class TestChecks:
@@ -1567,6 +1567,11 @@ class TestChecks:
             ("exponential", (1j,)),
             ("negative_binomial", (None, 0.5)),
             ("binomial", (None, [0.5])),
+            # NumPy arrays for integer parameters must cast safely to int64
+            ("binomial", (numpy.array([5.5]), 0.5)),
+            ("binomial", (numpy.array(5.5), 0.5)),
+            ("binomial", (numpy.array([5], dtype=numpy.uint64), 0.5)),
+            ("hypergeometric", (numpy.array([5.0]), 3, 2)),
             ("integers", (1, [0, 1])),
             ("integers", ([0, 1], 1)),
             ("integers", (0, [0, 1])),

@@ -323,10 +323,23 @@ def _host_float32(value, bounds):
 
 
 def _as_int64(x):
-    """Truncate an integer parameter to int64, as NumPy does."""
+    """
+    Truncate an integer parameter to int64, as NumPy does, which raises
+    TypeError for a NumPy array that does not cast safely to int64.
+
+    """
 
     if dpnp.is_supported_array_type(x):
+        _check_device_cast(x, _int64)
         return dpnp.asarray(x).astype(_int64)
+    if isinstance(x, numpy.ndarray):
+        if not numpy.can_cast(x.dtype, _int64, "safe"):
+            what = "scalar" if x.ndim == 0 else "array data"
+            raise TypeError(
+                f"Cannot cast {what} from {x.dtype!r} to {_int64!r} "
+                "according to the rule 'safe'"
+            )
+        return x.astype(_int64) if x.ndim else int(x)
     if numpy.ndim(x) > 0:
         return numpy.asarray(x).astype(_int64)
     return int(x)
