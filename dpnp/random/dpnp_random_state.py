@@ -381,6 +381,10 @@ class RandomState:
                 stacklevel=stacklevel,
             )
         if dpnp.is_supported_array_type(high):
+            # NumPy computes int(high) + 1, which a 32-bit high at its
+            # largest value would wrap in its own type
+            if high.dtype != dpnp.uint64:
+                high = high.astype(dpnp.int64, copy=False)
             high = high + 1
         elif _is_array(high):
             high = numpy.array(high) + 1
