@@ -712,6 +712,14 @@ class TestLegacy:
             lambda: getattr(RandomState(0), name)(*args),
         )
 
+    @pytest.mark.parametrize("name", ["exponential", "pareto", "poisson"])
+    def test_complex_device_param(self, name):
+        x = numpy.array([1 + 1j], dtype=numpy.complex64)
+        _assert_same_error(
+            lambda: getattr(numpy.random.RandomState(0), name)(x),
+            lambda: getattr(RandomState(0), name)(dpnp.asarray(x)),
+        )
+
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_multinomial_0d_n(self, xp):
         # as NumPy, a 0-d array is an integer n

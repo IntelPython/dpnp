@@ -218,7 +218,13 @@ def _on_device(value):
     """
 
     value = dpnp.asarray(value)
-    if dpnp.issubdtype(value.dtype, dpnp.inexact):
+    if dpnp.issubdtype(value.dtype, dpnp.complexfloating):
+        # the error of NumPy, which casts every parameter to float64
+        raise TypeError(
+            f"Cannot cast array data from {value.dtype!r} to "
+            f"{numpy.dtype(numpy.float64)!r} according to the rule 'safe'"
+        )
+    if dpnp.issubdtype(value.dtype, dpnp.floating):
         return value
     return value.astype(dpnp.default_float_type(sycl_queue=value.sycl_queue))
 
