@@ -499,8 +499,8 @@ class TestPCG64DXSM:
             assert bg.state == ref.state
 
     def test_rejection_sampler_streams(self):
-        # work-item w of a sampler whose draws vary draws from the stream of
-        # jumped(w), and the state advances as jumped(n_wi)
+        # work-item w of a sampler whose draws vary draws from the stream
+        # advanced w * 2**64 steps, and the state advances n_wi * 2**64
         bg, ref = self._pair(6)
         rng = Generator(bg)
         rng.random(1, dtype=dpnp.float32)
@@ -511,15 +511,24 @@ class TestPCG64DXSM:
         exp = numpy.empty(n_wi * ITEMS_PER_WORK_ITEM, dtype=numpy.int64)
         for w in range(n_wi):
             ref.state = state
-            ref_rng = numpy.random.Generator(ref.jumped(w))
+            ref_rng = numpy.random.Generator(ref.advance(w << 64))
             exp[w::n_wi] = ref_rng.integers(0, 1000, ITEMS_PER_WORK_ITEM)
         assert_array_equal(res, exp)
 
         ref.state = state
-        jumped = ref.jumped(n_wi).state
-        assert bg.state["state"] == jumped["state"]
+        advanced = ref.advance(n_wi << 64).state
+        assert bg.state["state"] == advanced["state"]
         assert bg.state["has_uint32"] == state["has_uint32"] == 1
         assert bg.state["uinteger"] == state["uinteger"]
+
+    def test_jumped_streams_differ(self):
+        # the work-item streams used to be those of jumped(), so that a
+        # generator made by jumped() repeated almost all of its parent's
+        bg = PCG64DXSM(7)
+        child = bg.jumped()
+        a = dpnp.asnumpy(Generator(bg).standard_normal(4000))
+        b = dpnp.asnumpy(Generator(child).standard_normal(4000))
+        assert numpy.intersect1d(a, b).size == 0
 
     def test_state_exchange(self):
         ref = numpy.random.PCG64DXSM(8)
