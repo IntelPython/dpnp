@@ -73,11 +73,13 @@ set(_dpnp_indexing_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/putmask.cpp
 )
 set(_dpnp_reduction_sources ${CMAKE_CURRENT_SOURCE_DIR}/reductions/minmax.cpp)
+set(_dpnp_sorting_sources ${CMAKE_CURRENT_SOURCE_DIR}/sorting/partition.cpp)
 set(_statistics_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/statistics/bincount.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/statistics/histogram.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/statistics/histogramdd.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/statistics/histogram_common.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/statistics/median.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/statistics/sliding_dot_product1d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/statistics/sliding_window1d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/statistics/statistics_py.cpp
@@ -90,6 +92,7 @@ set(_dpnp_sources
     ${_dpnp_elementwise_sources}
     ${_dpnp_indexing_sources}
     ${_dpnp_reduction_sources}
+    ${_dpnp_sorting_sources}
     ${_statistics_impl_sources}
     ${_window_impl_sources}
 )
@@ -238,6 +241,7 @@ set(_tensor_reductions_impl_sources
     ${_reduction_sources}
 )
 set(_tensor_sorting_impl_sources
+    ${_dpnp_sorting_sources}
     ${CMAKE_CURRENT_SOURCE_DIR}/tensor_sorting.cpp
     ${_sorting_sources}
 )
@@ -321,6 +325,8 @@ list(
     ${_sorting_sources}
     ${_linalg_sources}
     ${_accumulator_sources}
+    # shares the radix select instantiations with topk.cpp in its module
+    ${_dpnp_sorting_sources}
 )
 # elementwise_functions_type_utils.cpp is in both the elementwise and linalg lists
 list(REMOVE_DUPLICATES _no_fast_math_sources)
@@ -338,6 +344,8 @@ endforeach()
 # An inline function with FP math that both instantiate gets the flags of the
 # copy the linker keeps (the dpnp one, see above), so keep such helpers out of
 # shared headers or give them the same flags in both groups.
+# dpnp sources of the modules with the libtensor radix select kernels
+set(_dpnp_radix_select_sources ${_dpnp_sorting_sources} ${_statistics_impl_sources})
 foreach(_src_fn ${_dpnp_sources})
     get_source_file_property(_cmpl_options_prop ${_src_fn} COMPILE_OPTIONS)
     set(_combined_options_prop
@@ -345,7 +353,7 @@ foreach(_src_fn ${_dpnp_sources})
         "${_clang_prefix}-fno-approx-func"
         "${_clang_prefix}-fno-finite-math-only"
     )
-    if(DPNP_GENERATE_COVERAGE)
+    if(DPNP_GENERATE_COVERAGE AND NOT _src_fn IN_LIST _dpnp_radix_select_sources)
         list(
             APPEND _combined_options_prop
             -fprofile-instr-generate
@@ -362,11 +370,16 @@ endforeach()
 if(DPNP_GENERATE_COVERAGE)
     # libtensor code the dpnp functions use, measured like the dpnp sources.
     # Host only: their device coverage records break sycl-link
-    # (a source property, unlike target options, keeps the repeated -Xarch_host)
+    # (a source property, unlike target options, keeps the repeated -Xarch_host).
+    # The radix select modules are host only too: every kernel image of a module
+    # gets all its device counters as device globals, and their init events
+    # crash the OpenCL CPU runtime at random in the kernel bundle launches.
+    # The device counts never reach the profile anyway
     set_property(
         SOURCE
             ${_static_lib_sources}
             ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/elementwise_functions_type_utils.cpp
+            ${_dpnp_radix_select_sources}
         APPEND
         PROPERTY
             COMPILE_OPTIONS

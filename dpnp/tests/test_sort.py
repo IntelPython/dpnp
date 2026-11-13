@@ -3,6 +3,8 @@ import pytest
 from numpy.testing import assert_array_equal, assert_equal, assert_raises
 
 import dpnp
+import dpnp.libtensor._tensor_sorting_impl as sorting_ext
+import dpnp.tensor as dpt
 from dpnp.exceptions import AxisError
 
 from .helper import (
@@ -275,6 +277,282 @@ class TestSearchSorted:
         assert_equal(result, expected)
 
 
+def _check_partitioned(a, p, kth):
+    """Check that `p` is `a` partitioned along the last axis at `kth`."""
+    a_sorted = numpy.sort(a, axis=-1)
+    assert_array_equal(numpy.sort(p, axis=-1), a_sorted)
+
+    pk = p[..., kth : kth + 1]
+    assert_array_equal(pk, a_sorted[..., kth : kth + 1])
+    if numpy.issubdtype(a.dtype, numpy.inexact):
+        # NaNs order last
+        assert ((p[..., :kth] <= pk) | numpy.isnan(pk)).all()
+        assert (
+            (p[..., kth + 1 :] >= pk) | numpy.isnan(p[..., kth + 1 :])
+        ).all()
+    else:
+        assert (p[..., :kth] <= pk).all()
+        assert (p[..., kth + 1 :] >= pk).all()
+
+
+def _check_argpartitioned(a, idx, kth):
+    """Check that `idx` indexes `a` partitioned along the last axis at `kth`."""
+    assert idx.dtype == numpy.int64
+    n = a.shape[-1]
+    assert_array_equal(
+        numpy.sort(idx, axis=-1), numpy.broadcast_to(numpy.arange(n), a.shape)
+    )
+    _check_partitioned(a, numpy.take_along_axis(a, idx, axis=-1), kth)
+
+
+def _generate_select_data(shape, dtype, kind, seed=81):
+    """Generate data exercising the radix select kernels."""
+    rnd = numpy.random.RandomState(seed)
+    dtype = numpy.dtype(dtype)
+    if dtype == numpy.bool_:
+        return rnd.randint(0, 2, size=shape).astype(dtype)
+
+    if kind == "duplicates":
+        return rnd.randint(0, 4, size=shape).astype(dtype)
+
+    if numpy.issubdtype(dtype, numpy.integer):
+        info = numpy.iinfo(dtype)
+        a = rnd.randint(info.min, info.max, size=shape, dtype=dtype)
+        if kind == "extremes":
+            a.flat[:: max(a.size // 7, 1)] = info.min
+            a.flat[1 :: max(a.size // 5, 1)] = info.max
+        return a
+
+    a = rnd.standard_normal(size=shape).astype(dtype)
+    if kind == "extremes":
+        info = numpy.finfo(dtype)
+        a.flat[:: max(a.size // 7, 1)] = numpy.nan
+        a.flat[1 :: max(a.size // 5, 1)] = -0.0
+        a.flat[2 :: max(a.size // 5, 1)] = 0.0
+        a.flat[3 :: max(a.size // 11, 1)] = numpy.inf
+        a.flat[4 :: max(a.size // 11, 1)] = -numpy.inf
+        a.flat[5 :: max(a.size // 13, 1)] = info.max
+        a.flat[6 :: max(a.size // 13, 1)] = info.tiny / 2
+    return a
+
+
+# row lengths reaching the sub-group, the work-group and the multi-group
+# kernels of radix select
+_select_shapes = [
+    (1,),
+    (2,),
+    (7,),
+    (4, 33),
+    (5, 64),
+    (3, 65),
+    (6, 1000),
+    (2, 5001),
+    (1, 2**16 + 3),
+    (3, 2**17 + 1),
+]
+
+
+class TestPartitionSelect:
+    @pytest.mark.parametrize("shape", _select_shapes)
+    @pytest.mark.parametrize("kind", ["random", "duplicates", "extremes"])
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_complex=True, no_float16=False)
+    )
+    def test_partition(self, shape, kind, dtype):
+        a = _generate_select_data(shape, dtype, kind)
+        ia = dpnp.array(a)
+
+        n = shape[-1]
+        for kth in {0, n // 3, n // 2, n - 1}:
+            _check_partitioned(a, dpnp.asnumpy(dpnp.partition(ia, kth)), kth)
+
+    @pytest.mark.parametrize("shape", _select_shapes)
+    @pytest.mark.parametrize("kind", ["random", "duplicates", "extremes"])
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_complex=True, no_float16=False)
+    )
+    def test_argpartition(self, shape, kind, dtype):
+        a = _generate_select_data(shape, dtype, kind)
+        ia = dpnp.array(a)
+
+        n = shape[-1]
+        for kth in {0, n // 3, n // 2, n - 1}:
+            idx = dpnp.argpartition(ia, kth)
+            _check_argpartitioned(a, dpnp.asnumpy(idx), kth)
+
+    @pytest.mark.parametrize("n", [50, 3000, 2**16 + 5])
+    def test_signed_zeros_kept(self, n):
+        # -0.0 and +0.0 compare equal, but each element keeps its sign
+        a = numpy.zeros(n)
+        a[::3] = -0.0
+        a[1::7] = 1.0
+        ia = dpnp.array(a)
+
+        p = dpnp.asnumpy(dpnp.partition(ia, n // 2))
+        assert numpy.signbit(p).sum() == numpy.signbit(a).sum()
+
+        idx = dpnp.asnumpy(dpnp.argpartition(ia, n // 2))
+        assert_array_equal(numpy.sort(idx), numpy.arange(n))
+
+    @pytest.mark.parametrize("axis", [0, 1, 2, -1, None])
+    def test_non_contiguous(self, axis):
+        a = generate_random_numpy_array((70, 3, 90), dtype="f4")
+        ia = dpnp.array(a)[::-1, :, ::2]
+        a = a[::-1, :, ::2]
+
+        kth = 1
+        p = dpnp.asnumpy(dpnp.partition(ia, kth, axis=axis))
+        idx = dpnp.asnumpy(dpnp.argpartition(ia, kth, axis=axis))
+        if axis is None:
+            a = a.ravel()
+            axis = -1
+        _check_partitioned(
+            numpy.moveaxis(a, axis, -1), numpy.moveaxis(p, axis, -1), kth
+        )
+        _check_argpartitioned(
+            numpy.moveaxis(a, axis, -1), numpy.moveaxis(idx, axis, -1), kth
+        )
+
+    def test_matches_argpartition(self):
+        a = _generate_select_data((4, 3000), numpy.float32, "duplicates")
+        ia = dpnp.array(a)
+
+        p = dpnp.partition(ia, 1234)
+        idx = dpnp.argpartition(ia, 1234)
+        assert_array_equal(p, dpnp.take_along_axis(ia, idx, axis=-1))
+
+    # the extension validates an empty batch like a non-empty one
+    @pytest.mark.parametrize("fn", ["_partition", "_argpartition"])
+    @pytest.mark.parametrize("shape", [(0, 5), (3, 0)])
+    def test_ext_empty_kth_error(self, fn, shape):
+        src = dpt.empty(shape, dtype="i4")
+        dst = dpt.empty(shape, dtype="i4" if fn == "_partition" else "i8")
+        with pytest.raises(ValueError, match="out of bounds"):
+            getattr(sorting_ext, fn)(src, 5, dst, sycl_queue=src.sycl_queue)
+
+    # the radix select gathers from src while writing dst
+    @pytest.mark.parametrize("fn", ["_partition", "_argpartition"])
+    @pytest.mark.parametrize("same", [True, False])
+    def test_ext_overlap_error(self, fn, same):
+        dt = "i4" if fn == "_partition" else "i8"
+        x = dpt.arange(2 * 2**14, dtype=dt)
+        src = dpt.reshape(x[: 2**14], (1, -1))
+        dst = src if same else dpt.reshape(x[1 : 2**14 + 1], (1, -1))
+        with pytest.raises(ValueError, match="overlapping"):
+            getattr(sorting_ext, fn)(src, 100, dst, sycl_queue=src.sycl_queue)
+
+    @pytest.mark.parametrize("fn", ["_partition", "_argpartition"])
+    def test_ext_empty_dtype_error(self, fn):
+        src = dpt.empty((0, 5), dtype="c8")
+        dst = dpt.empty((0, 5), dtype="c8" if fn == "_partition" else "i8")
+        with pytest.raises(ValueError, match="No partition implementation"):
+            getattr(sorting_ext, fn)(src, 1, dst, sycl_queue=src.sycl_queue)
+
+
+class TestArgpartition:
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("kth", [0, 3, -1, (1, 5), [2, 4, 8]])
+    def test_basic(self, dtype, kth):
+        a = generate_random_numpy_array(10, dtype)
+        ia = dpnp.array(a)
+
+        idx = dpnp.argpartition(ia, kth)
+        p = numpy.take(a, dpnp.asnumpy(idx))
+        expected = numpy.partition(a, kth)
+        for k in numpy.atleast_1d(kth) % a.size:
+            assert_array_equal(p[k], expected[k])
+            assert (p[:k] <= p[k]).all()
+            assert (p[k + 1 :] >= p[k]).all()
+
+    @pytest.mark.parametrize("axis", [0, 1, -1, None])
+    def test_axis(self, axis):
+        a = generate_random_numpy_array((4, 6), dtype="i4")
+        ia = dpnp.array(a)
+
+        kth = 2
+        result = dpnp.argpartition(ia, kth, axis=axis)
+        expected = numpy.partition(a, kth, axis=axis)
+        assert_array_equal(
+            dpnp.take_along_axis(ia, result, axis=axis)[..., kth],
+            expected[..., kth],
+        )
+
+    def test_method(self):
+        a = numpy.array([3, 4, 2, 1])
+        ia = dpnp.array(a)
+
+        result = ia.argpartition(1)
+        assert_array_equal(ia[result][1], numpy.partition(a, 1)[1])
+
+    @pytest.mark.parametrize("axis", list(range(-4, 4)) + [None])
+    def test_empty_array(self, axis):
+        a = numpy.empty((3, 2, 1, 0))
+        ia = dpnp.array(a)
+
+        result = dpnp.argpartition(ia, 0, axis=axis)
+        expected = numpy.argpartition(a, 0, axis=axis)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("axis", [0, 1, None])
+    def test_empty_kth(self, axis):
+        a = numpy.array([[6, 0, 4, 2], [1, 7, 3, 5]])
+        ia = dpnp.array(a)
+
+        kth = numpy.array([], dtype=numpy.intp)
+        result = dpnp.argpartition(ia, kth, axis=axis)
+        expected = numpy.argpartition(a, kth, axis=axis)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize(
+        "kth",
+        [numpy.int64(2), numpy.uint8(2), numpy.array(2), numpy.array([1, 3])],
+        ids=["int64", "uint8", "0d", "1d"],
+    )
+    def test_numpy_int_kth(self, kth):
+        a = numpy.array([6, 0, 4, 2, 9, 1])
+        ia = dpnp.array(a)
+
+        p = dpnp.partition(ia, kth)
+        idx = dpnp.argpartition(ia, kth)
+        expected = numpy.partition(a, kth)
+        for k in numpy.atleast_1d(kth):
+            assert_array_equal(p[k], expected[k])
+            assert_array_equal(ia[idx][k], expected[k])
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    def test_kth_errors(self, xp):
+        a = xp.arange(10)
+        assert_raises(ValueError, a.argpartition, 10)
+        assert_raises(ValueError, a.argpartition, -11)
+        assert_raises(TypeError, a.argpartition, 9.0)
+        assert_raises(TypeError, a.argpartition, [1, 7.0])
+        assert_raises(TypeError, a.argpartition, [])
+        assert_raises(ValueError, a.argpartition, True)
+        assert_raises(ValueError, a.argpartition, [False])
+        assert_raises(ValueError, a.argpartition, numpy.array([[1]]))
+        assert_raises(AxisError, xp.argpartition, a, 2, axis=1)
+
+    @pytest.mark.parametrize(
+        "kth, err, msg",
+        [
+            (-11, ValueError, r"kth\(=-1\) out of bounds \(10\)"),
+            (True, ValueError, "Booleans unacceptable as partition index"),
+            ([], TypeError, "Partition index must be integer"),
+            (numpy.array([[1]]), ValueError, "object too deep"),
+        ],
+    )
+    @pytest.mark.parametrize("fn", ["partition", "argpartition"])
+    def test_kth_error_messages(self, fn, kth, err, msg):
+        for xp in [numpy, dpnp]:
+            with pytest.raises(err, match=msg):
+                getattr(xp, fn)(xp.arange(10), kth)
+
+    def test_not_implemented_kwargs(self):
+        a = dpnp.arange(10)
+        assert_raises(NotImplementedError, a.argpartition, 2, kind="nonsense")
+        assert_raises(NotImplementedError, a.argpartition, 2, order=[])
+
+
 class TestPartition:
     @pytest.mark.parametrize("data", [[2, 1], [1, 2], [1, 1]])
     @pytest.mark.parametrize("kth", [0, 1])
@@ -457,7 +735,7 @@ class TestPartition:
         a = numpy.array([0, 2, 4, 6, 8, 10])
         ia = dpnp.array(a)
 
-        ia.partition([])
+        ia.partition(numpy.array([], dtype=numpy.intp))
         assert_array_equal(ia, a)
 
     @pytest.mark.parametrize("xp", [dpnp, numpy])
@@ -467,6 +745,8 @@ class TestPartition:
         assert_raises(ValueError, a.partition, -11)
         assert_raises(TypeError, a.partition, 9.0)
         assert_raises(TypeError, a.partition, [1, 7.0])
+        assert_raises(TypeError, a.partition, [])
+        assert_raises(ValueError, a.partition, True)
 
     @pytest.mark.parametrize("xp", [dpnp, numpy])
     def test_kth_axis_errors(self, xp):

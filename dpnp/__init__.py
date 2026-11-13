@@ -511,6 +511,7 @@ from .dpnp_iface_searching import (
     where,
 )
 from .dpnp_iface_sorting import (
+    argpartition,
     argsort,
     partition,
     sort,
@@ -989,6 +990,7 @@ __all__ += [
 __all__ += [
     "argmax",
     "argmin",
+    "argpartition",
     "argwhere",
     "argsort",
     "count_nonzero",

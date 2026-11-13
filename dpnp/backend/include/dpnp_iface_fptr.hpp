@@ -64,17 +64,14 @@ enum class DPNPFuncName : size_t
     DPNP_FN_NONE,    /**< Very first element of the enumeration */
     DPNP_FN_INITVAL, /**< Used in numpy ones, ones_like, zeros, zeros_like impls
                       */
-    DPNP_FN_INITVAL_EXT,   /**< Used in numpy ones, ones_like, zeros, zeros_like
-                              impls  */
-    DPNP_FN_ONES,          /**< Used in numpy.ones() impl */
-    DPNP_FN_ONES_LIKE,     /**< Used in numpy.ones_like() impl */
-    DPNP_FN_PARTITION,     /**< Used in numpy.partition() impl */
-    DPNP_FN_PARTITION_EXT, /**< Used in numpy.partition() impl, requires extra
-                              parameters */
-    DPNP_FN_RNG_BETA,      /**< Used in numpy.random.beta() impl  */
-    DPNP_FN_RNG_BETA_EXT,  /**< Used in numpy.random.beta() impl, requires extra
-                              parameters */
-    DPNP_FN_RNG_BINOMIAL,  /**< Used in numpy.random.binomial() impl  */
+    DPNP_FN_INITVAL_EXT,  /**< Used in numpy ones, ones_like, zeros, zeros_like
+                             impls  */
+    DPNP_FN_ONES,         /**< Used in numpy.ones() impl */
+    DPNP_FN_ONES_LIKE,    /**< Used in numpy.ones_like() impl */
+    DPNP_FN_RNG_BETA,     /**< Used in numpy.random.beta() impl  */
+    DPNP_FN_RNG_BETA_EXT, /**< Used in numpy.random.beta() impl, requires extra
+                             parameters */
+    DPNP_FN_RNG_BINOMIAL, /**< Used in numpy.random.binomial() impl  */
     DPNP_FN_RNG_BINOMIAL_EXT,  /**< Used in numpy.random.binomial() impl,
                                   requires extra parameters */
     DPNP_FN_RNG_CHISQUARE,     /**< Used in numpy.random.chisquare() impl  */

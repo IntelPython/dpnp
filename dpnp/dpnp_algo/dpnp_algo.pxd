@@ -32,7 +32,6 @@
 # need this namespace for Enum import
 cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":
     cdef enum DPNPFuncName "DPNPFuncName":
-        DPNP_FN_PARTITION_EXT
         DPNP_FN_RNG_BETA_EXT
         DPNP_FN_RNG_BINOMIAL_EXT
         DPNP_FN_RNG_CHISQUARE_EXT
