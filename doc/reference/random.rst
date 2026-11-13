@@ -46,9 +46,8 @@ Differences from NumPy
 * Parameters on the host (Python scalars, lists and NumPy arrays) are
   checked as in NumPy. Parameters in :class:`dpnp.ndarray` are
   not, since that would wait for the device.
-  Invalid ones give undefined values, such as NaN or the smallest ``int64``,
-  but the kernels handle them safely: they never loop without end or access
-  memory out of bounds.
+  Invalid ones give undefined values, such as NaN, but the kernels handle
+  them safely: they never loop without end or access memory out of bounds.
 * Parameters given as lists or NumPy arrays are copied to the device first,
   which waits for the work already submitted to the queue. Scalars and
   :class:`dpnp.ndarray` parameters don't wait.
