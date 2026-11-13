@@ -16,7 +16,9 @@ updates:
       github-actions:
         patterns: ["*"]
 
-  # Note: only "==" pins are bumped; ">=" floors and dev pre-releases are not
+  # A dpctl release makes this raise the dpctl floor in dpctl_pkg.txt only: don't
+  # merge that PR; bump the dev pins to the next dev series and the release-only
+  # pins (build-system, conda-recipe-cf) to the new release by hand (see .github/AGENTS.md)
   - package-ecosystem: "pip"
     directory: "/environments"
     schedule:

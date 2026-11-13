@@ -628,9 +628,8 @@ jobs:
       upload-env-name: 'upload'
       python-label: ${{ endsWith(matrix.python_spec, 't') && format('{0}t', matrix.python) || matrix.python }}
 
-    if: |
-      (github.repository == 'IntelPython/dpnp') &&
-      (github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
+    # Only master pushes upload: the workflow has no release branch or tag trigger
+    if: github.repository == 'IntelPython/dpnp' && github.ref == 'refs/heads/master'
 
     steps:
       - name: Checkout DPNP repo
@@ -776,18 +775,6 @@ jobs:
         run: |
           pip install -r requirements.txt
         working-directory: ${{ env.array-api-tests-path }}
-
-      - name: Install jq
-        run: |
-          sudo apt-get install jq
-
-      - name: List installed packages
-        run: mamba list
-
-      - name: Smoke test
-        run: |
-          python -c "import dpctl; dpctl.lsplatform()"
-          python -c "import dpnp; print(dpnp.__version__)"
 
       - name: Run array API conformance tests
         run: |

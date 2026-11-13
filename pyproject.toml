@@ -6,7 +6,7 @@ requires = [
   "cmake>=3.31.6",
   "cython>=3.1.0",
   # WARNING: use only dpctl version available on PyPi
-  "dpctl>=0.20.0",
+  "dpctl>=0.23.0",
   "ninja>=1.11.1; platform_system!='Windows'",
   # NOTE: no DPNP restriction on NumPy version, so follow NumPy's drop schedule
   "numpy>=1.26.0",
@@ -27,7 +27,6 @@ classifiers = [
   "Programming Language :: Cython",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
@@ -52,7 +51,7 @@ dependencies = [
   # "dpcpp-cpp-rt>=0.59.0",
   # "intel-cmplr-lib-rt>=0.59.0"
   # WARNING: use the latest dpctl dev version, otherwise stable w/f will fail
-  "dpctl>=0.23.0dev0",
+  "dpctl>=0.24.0dev0",
   "numpy>=1.26.0"
 ]
 description = "Data Parallel Extension for NumPy"
@@ -73,7 +72,7 @@ license-files = ["LICENSE.txt"]
 maintainers = [{ name = "Intel Corporation" }]
 name = "dpnp"
 readme = { file = "README.md", content-type = "text/markdown" }
-requires-python = ">=3.10,<3.16"
+requires-python = ">=3.11,<3.16"
 
 [project.optional-dependencies]
 benchmark = ["asv>=0.6", "scipy"]
@@ -83,8 +82,7 @@ coverage = [
   "llvm",
   "pytest",
   "pytest-cov",
-  "scipy",
-  "tomli"
+  "scipy"
 ]
 docs = [
   "Cython",
@@ -109,7 +107,7 @@ Repository = "https://github.com/IntelPython/dpnp.git"
 
 [tool.black]
 line-length = 80
-target-version = ['py310', 'py311', 'py312', 'py313', 'py314', 'py315']
+target-version = ['py311', 'py312', 'py313', 'py314', 'py315']
 
 [tool.codespell]
 builtin = "clear,rare,informal,names"

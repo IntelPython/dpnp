@@ -20,7 +20,7 @@
 #
 
 if(NOT Dpnp_FOUND)
-    find_package(Python 3.10 REQUIRED COMPONENTS Interpreter Development.Module)
+    find_package(Python 3.11 REQUIRED COMPONENTS Interpreter Development.Module)
 
     if(Python_EXECUTABLE)
         execute_process(
