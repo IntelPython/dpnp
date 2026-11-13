@@ -456,7 +456,8 @@ class RandomState:
 
         Limitations
         -----------
-        As in CuPy, `x` must be a :class:`dpnp.ndarray`.
+        As in CuPy, `x` must be an array on the device, a
+        :class:`dpnp.ndarray` or :class:`dpnp.tensor.usm_ndarray`.
 
         """
         self._generator.shuffle(x)
