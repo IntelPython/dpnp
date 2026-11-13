@@ -1,3 +1,5 @@
+import subprocess
+import sys
 import warnings
 
 import dpctl
@@ -76,6 +78,12 @@ class TestAPI:
         public = lambda c: {n for n in dir(c) if not n.startswith("_")}
         missing = public(numpy.random.RandomState) - public(RandomState)
         assert not missing
+
+    def test_import_without_docstrings(self):
+        # python -OO strips the docstrings that the functions fill in
+        subprocess.run(
+            [sys.executable, "-OO", "-c", "import dpnp.random"], check=True
+        )
 
     def test_module_functions(self):
         # NumPy's other bit generators are not provided

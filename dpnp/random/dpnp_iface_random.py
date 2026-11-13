@@ -89,6 +89,9 @@ _DTYPE_PARAM = """\
 def _params_doc(func):
     """Fill the placeholders of the parameters common to the functions."""
 
+    if func.__doc__ is None:
+        # docstrings are stripped under python -OO
+        return func
     func.__doc__ = (
         func.__doc__.replace("    %(queue)s", _QUEUE_PARAMS)
         .replace("    %(usm)s", _USM_PARAM)
