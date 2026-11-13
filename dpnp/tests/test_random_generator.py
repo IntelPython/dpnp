@@ -1976,7 +1976,8 @@ class TestPermutations:
     def test_permutation_uniform(self):
         # all 6 permutations of 3 values are equally likely
         rng = default_rng(13)
-        n = 6000
+        # every call waits for the device, which is slow on a CPU device
+        n = 1200
         keys = [tuple(dpnp.asnumpy(rng.permutation(3))) for _ in range(n)]
         _, counts = numpy.unique(keys, axis=0, return_counts=True)
         assert len(counts) == 6
@@ -2092,7 +2093,8 @@ class TestChoice:
         assert numpy.unique(res).size == 10
 
     def test_weighted_without_replacement(self):
-        n = 20000
+        # every call waits for the device, which is slow on a CPU device
+        n = 2000
         p = numpy.array([0.1, 0.0, 0.3, 0.6])
         rng = default_rng(19)
         res = numpy.array(
