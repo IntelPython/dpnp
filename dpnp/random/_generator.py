@@ -2090,6 +2090,33 @@ class Generator:
         For full documentation refer to
         :obj:`numpy.random.Generator.noncentral_chisquare`.
 
+        Parameters
+        ----------
+        df : {float, array_like of floats, dpnp.ndarray, usm_ndarray}
+            Degrees of freedom, positive.
+        nonc : {float, array_like of floats, dpnp.ndarray, usm_ndarray}
+            Non-centrality, non-negative.
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, the broadcast shape of `df` and `nonc`.
+
+            Default: ``None``.
+        dtype : {None, dtype}, optional
+            The data type of the output, :obj:`dpnp.float32` or
+            :obj:`dpnp.float64`.
+
+            Default: ``None``, which means the default floating-point type of
+            the device.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+            Default: ``None``, which means the USM type of the array
+            parameters, or ``"device"`` when there are none.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples.
+
         Limitations
         -----------
         `dtype` and `usm_type` are not in NumPy's signature.
@@ -2226,6 +2253,36 @@ class Generator:
         For full documentation refer to
         :obj:`numpy.random.Generator.noncentral_f`.
 
+        Parameters
+        ----------
+        dfnum : {float, array_like of floats, dpnp.ndarray, usm_ndarray}
+            Numerator degrees of freedom, positive.
+        dfden : {float, array_like of floats, dpnp.ndarray, usm_ndarray}
+            Denominator degrees of freedom, positive.
+        nonc : {float, array_like of floats, dpnp.ndarray, usm_ndarray}
+            Non-centrality, non-negative.
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, the broadcast shape of `dfnum`, `dfden`
+            and `nonc`.
+
+            Default: ``None``.
+        dtype : {None, dtype}, optional
+            The data type of the output, :obj:`dpnp.float32` or
+            :obj:`dpnp.float64`.
+
+            Default: ``None``, which means the default floating-point type of
+            the device.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+            Default: ``None``, which means the USM type of the array
+            parameters, or ``"device"`` when there are none.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples.
+
         Limitations
         -----------
         `dtype` and `usm_type` are not in NumPy's signature.
@@ -2316,6 +2373,27 @@ class Generator:
 
         For full documentation refer to :obj:`numpy.random.Generator.poisson`.
 
+        Parameters
+        ----------
+        lam : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, optional
+            The expected number of events, non-negative.
+
+            Default: ``1.0``.
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, the broadcast shape of `lam`.
+
+            Default: ``None``.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+            Default: ``None``, which means the USM type of the array
+            parameters, or ``"device"`` when there are none.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples, of data type :obj:`dpnp.int64`.
+
         Limitations
         -----------
         `usm_type` is not in NumPy's signature.
@@ -2340,6 +2418,28 @@ class Generator:
         For full documentation refer to
         :obj:`numpy.random.Generator.binomial`.
 
+        Parameters
+        ----------
+        n : {int, array_like of ints, dpnp.ndarray, usm_ndarray}
+            The number of trials, non-negative. Floating-point values are
+            truncated to integers.
+        p : {float, array_like of floats, dpnp.ndarray, usm_ndarray}
+            The probability of success, in [0, 1].
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, the broadcast shape of `n` and `p`.
+
+            Default: ``None``.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+            Default: ``None``, which means the USM type of the array
+            parameters, or ``"device"`` when there are none.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples, of data type :obj:`dpnp.int64`.
+
         Limitations
         -----------
         `usm_type` is not in NumPy's signature.
@@ -2362,6 +2462,27 @@ class Generator:
 
         For full documentation refer to
         :obj:`numpy.random.Generator.negative_binomial`.
+
+        Parameters
+        ----------
+        n : {float, array_like of floats, dpnp.ndarray, usm_ndarray}
+            The number of successes, positive.
+        p : {float, array_like of floats, dpnp.ndarray, usm_ndarray}
+            The probability of success, in (0, 1].
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, the broadcast shape of `n` and `p`.
+
+            Default: ``None``.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+            Default: ``None``, which means the USM type of the array
+            parameters, or ``"device"`` when there are none.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples, of data type :obj:`dpnp.int64`.
 
         Limitations
         -----------
@@ -2396,6 +2517,25 @@ class Generator:
         For full documentation refer to
         :obj:`numpy.random.Generator.geometric`.
 
+        Parameters
+        ----------
+        p : {float, array_like of floats, dpnp.ndarray, usm_ndarray}
+            The probability of success of a trial, in (0, 1].
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, the broadcast shape of `p`.
+
+            Default: ``None``.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+            Default: ``None``, which means the USM type of the array
+            parameters, or ``"device"`` when there are none.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples, of data type :obj:`dpnp.int64`.
+
         Limitations
         -----------
         `usm_type` is not in NumPy's signature.
@@ -2420,6 +2560,25 @@ class Generator:
         For full documentation refer to
         :obj:`numpy.random.Generator.logseries`.
 
+        Parameters
+        ----------
+        p : {float, array_like of floats, dpnp.ndarray, usm_ndarray}
+            The shape parameter, in [0, 1).
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, the broadcast shape of `p`.
+
+            Default: ``None``.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+            Default: ``None``, which means the USM type of the array
+            parameters, or ``"device"`` when there are none.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples, of data type :obj:`dpnp.int64`.
+
         Limitations
         -----------
         `usm_type` is not in NumPy's signature.
@@ -2443,6 +2602,25 @@ class Generator:
 
         For full documentation refer to :obj:`numpy.random.Generator.zipf`.
 
+        Parameters
+        ----------
+        a : {float, array_like of floats, dpnp.ndarray, usm_ndarray}
+            The distribution parameter, greater than 1.
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, the broadcast shape of `a`.
+
+            Default: ``None``.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+            Default: ``None``, which means the USM type of the array
+            parameters, or ``"device"`` when there are none.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples, of data type :obj:`dpnp.int64`.
+
         Limitations
         -----------
         `usm_type` is not in NumPy's signature. The samples follow the Zipf
@@ -2464,6 +2642,31 @@ class Generator:
 
         For full documentation refer to
         :obj:`numpy.random.Generator.hypergeometric`.
+
+        Parameters
+        ----------
+        ngood : {int, array_like of ints, dpnp.ndarray, usm_ndarray}
+            The number of good items, non-negative.
+        nbad : {int, array_like of ints, dpnp.ndarray, usm_ndarray}
+            The number of bad items, non-negative.
+        nsample : {int, array_like of ints, dpnp.ndarray, usm_ndarray}
+            The number of items drawn, at least 1 and at most
+            ``ngood + nbad``.
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, the broadcast shape of `ngood`, `nbad`
+            and `nsample`.
+
+            Default: ``None``.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+            Default: ``None``, which means the USM type of the array
+            parameters, or ``"device"`` when there are none.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples, of data type :obj:`dpnp.int64`.
 
         Limitations
         -----------
@@ -2512,6 +2715,41 @@ class Generator:
 
         For full documentation refer to
         :obj:`numpy.random.Generator.integers`.
+
+        Parameters
+        ----------
+        low : {int, array_like of ints, dpnp.ndarray, usm_ndarray}
+            The smallest integer that can be drawn, or one above the
+            largest when `high` is ``None``, in which case the smallest is 0.
+        high : {None, int, array_like of ints, dpnp.ndarray, usm_ndarray}, \
+        optional
+            One above the largest integer that can be drawn, or the largest
+            with ``endpoint=True``.
+
+            Default: ``None``.
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, the broadcast shape of `low` and
+            `high`.
+
+            Default: ``None``.
+        dtype : dtype, optional
+            The integer or boolean data type of the output.
+
+            Default: ``numpy.int64``.
+        endpoint : bool, optional
+            Whether `high` can be drawn.
+
+            Default: ``False``.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+            Default: ``None``, which means the USM type of the array
+            parameters, or ``"device"`` when there are none.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples, of data type `dtype`.
 
         Limitations
         -----------
