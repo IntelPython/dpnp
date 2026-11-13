@@ -8,9 +8,10 @@ Random sampling (:mod:`dpnp.random`)
 DPNP draws random numbers on the SYCL device, by default with the
 counter-based Philox4x32x10 generator of the oneMKL device RNG API, or with
 NumPy's PCG64DXSM generator or the MRG32k3a generator of the oneMKL device
-RNG API. It provides both NumPy random APIs: the :class:`Generator` API recommended for new code,
-and the legacy :class:`RandomState` API with the module-level functions
-built on it.
+RNG API. A oneMath build takes Philox4x32x10 and MRG32k3a from oneMath's
+device RNG API instead. It provides both NumPy random APIs: the
+:class:`Generator` API recommended for new code, and the legacy
+:class:`RandomState` API with the module-level functions built on it.
 
 .. code-block:: python
 
@@ -60,6 +61,9 @@ Differences from NumPy
   memory out of bounds. Floating-point arrays given for integer parameters
   are converted as by :meth:`dpnp.ndarray.astype`, whose result for NaN and
   out-of-range values is undefined.
+* Parameters given as lists or NumPy arrays are copied to the device first,
+  which waits for the work already submitted to the queue. Scalars and
+  :class:`dpnp.ndarray` parameters don't wait.
 * The discrete distributions return ``int64`` values. They compute in double
   precision on devices supporting it, and in single precision otherwise.
   There, the streams differ from the ones of devices with double precision,
