@@ -553,6 +553,19 @@ class TestFloatMethods:
         assert abs(numpy.sin(res - mu).mean()) < 5 / numpy.sqrt(n)
 
     @pytest.mark.parametrize("dtype", float_dtypes)
+    @pytest.mark.parametrize("kappa", [1e4, 1e6])
+    def test_vonmises_large_kappa(self, kappa, dtype):
+        # 1 - W and the angle lost most bits in single precision, which put
+        # a fifth of the samples exactly on mu
+        n = 10**5
+        res = default_rng(3).vonmises(0.0, kappa, size=n, dtype=dtype)
+        res = dpnp.asnumpy(res).astype(numpy.float64)
+        assert (res == 0).mean() < 1e-4
+        assert numpy.unique(numpy.abs(res)).size > 0.9 * n
+        # the variance of the angle is about 1 / kappa
+        assert abs(res.var() * kappa - 1) < 0.05
+
+    @pytest.mark.parametrize("dtype", float_dtypes)
     @pytest.mark.parametrize(
         "name, params, lo, hi",
         [
