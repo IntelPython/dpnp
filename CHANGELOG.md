@@ -36,7 +36,7 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Bumped the minimum required `dpctl` version to `0.24.0` [#3169](https://github.com/IntelPython/dpnp/pull/3169)
 * Changed `dpnp.median`, `dpnp.nanmedian` and `dpnp.partition` with a single `kth` to use a radix select instead of a full sort for all but complex data types and, on a GPU, `dpnp.partition` of rows of 65 to 128 elements of 8-byte integers [#3138](https://github.com/IntelPython/dpnp/pull/3138)
 * Improved performance of `dpnp.top_k` and `dpnp.tensor.top_k` on a GPU for batches of rows of 65536 to about 10^6 elements that occupy it with a work-group per row [#3138](https://github.com/IntelPython/dpnp/pull/3138)
-* Reimplemented `dpnp.random.RandomState` and the `dpnp.random` functions on device kernels, drawing on the queue of the generator. `device`, `usm_type` and `sycl_queue` are now keyword-only, `randint(dtype=int)` returns `int64` and `shuffle` requires a `dpnp.ndarray` or `usm_ndarray` [#3162](https://github.com/IntelPython/dpnp/pull/3162)
+* Reimplemented `dpnp.random.RandomState` and the `dpnp.random` functions on device kernels, drawing on the queue of the generator. `device`, `usm_type` and `sycl_queue` are now keyword-only, `usm_type` defaults to the USM type of the array parameters, `randint(dtype=int)` returns `int64` and `shuffle` requires a `dpnp.ndarray` or `usm_ndarray` [#3162](https://github.com/IntelPython/dpnp/pull/3162)
 
 ### Deprecated
 
