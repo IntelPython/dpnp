@@ -147,6 +147,15 @@ def seed(seed=None, *, device=None, sycl_queue=None):
     :class:`dpnp.random.Philox4x3210` is reseeded in place with the state a
     new one of its type would have for `seed`, as in NumPy.
 
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.random.seed(42)
+    >>> a = np.random.rand(3)
+    >>> np.random.seed(42)
+    >>> bool((np.random.rand(3) == a).all())
+    True
+
     """
     # pylint: disable=protected-access
     rs = _get_random_state(device, sycl_queue)
@@ -881,6 +890,14 @@ def normal(
     --------
     :obj:`dpnp.random.RandomState.normal`
 
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.random.normal(np.array([0.0, 10.0]), 1.0, size=(10**5, 2))
+    >>> m = x.mean(axis=0)
+    >>> bool(abs(m[0]) < 0.05), bool(abs(m[1] - 10) < 0.05)
+    (True, True)
+
     """
     rs = _get_random_state(device, sycl_queue, (loc, scale))
     return rs.normal(loc, scale, size, dtype, usm_type=usm_type)
@@ -994,6 +1011,15 @@ def rand(*args, dtype=None, device=None, usm_type=None, sycl_queue=None):
     --------
     :obj:`dpnp.random.RandomState.rand`
 
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.random.rand(3, 2)
+    >>> x.shape
+    (3, 2)
+    >>> bool(((x >= 0) & (x < 1)).all())
+    True
+
     """
     rs = _get_random_state(device, sycl_queue)
     return rs.random_sample(args or None, dtype, usm_type=usm_type)
@@ -1024,6 +1050,13 @@ def randint(
     --------
     :obj:`dpnp.random.RandomState.randint`
 
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.random.randint(3, 11, size=1000)
+    >>> bool(((x >= 3) & (x < 11)).all())
+    True
+
     """
     rs = _get_random_state(device, sycl_queue, (low, high))
     return rs.randint(low, high, size, dtype, usm_type=usm_type)
@@ -1045,6 +1078,15 @@ def randn(*args, dtype=None, device=None, usm_type=None, sycl_queue=None):
     See Also
     --------
     :obj:`dpnp.random.RandomState.randn`
+
+    Examples
+    --------
+    Samples of the normal distribution of mean 3 and variance 6.25:
+
+    >>> import dpnp as np
+    >>> x = 3 + 2.5 * np.random.randn(2, 4)
+    >>> x.shape
+    (2, 4)
 
     """
     rs = _get_random_state(device, sycl_queue)
