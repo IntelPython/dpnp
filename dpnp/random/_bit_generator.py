@@ -556,10 +556,11 @@ class PCG64DXSM(BitGenerator):
     -----
     The raw outputs of :meth:`random_raw`, the floating-point values of
     :meth:`dpnp.random.Generator.random` and
-    :meth:`dpnp.random.Generator.uniform`, and :meth:`dpnp.random.Generator.
-    bytes` take a fixed number of engine outputs for every value. They are
-    drawn in the order of the stream, and are the same as NumPy's for the
-    same state, where NumPy draws them with the same algorithm.
+    :meth:`dpnp.random.Generator.uniform`, and
+    :meth:`dpnp.random.Generator.bytes` take a fixed number of engine
+    outputs for every value. They are drawn in the order of the stream, and
+    are the same as NumPy's for the same state, where NumPy draws them with
+    the same algorithm.
 
     Every other method is sampled as by :meth:`jumped`: each work-item of a
     call producing ``n`` values draws as many values as its rejection
