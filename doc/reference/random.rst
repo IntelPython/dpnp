@@ -66,7 +66,15 @@ Differences from NumPy
 * ``zipf`` follows the Zipf distribution truncated to the largest ``int64``.
   NumPy's rejection test rounds to accepting every sample above ``2**53``,
   which makes its tail too heavy for ``a`` close to 1.
-* ``hypergeometric`` requires ``ngood`` and ``nbad`` below ``10**9``.
+* ``hypergeometric`` requires ``ngood`` and ``nbad`` below ``10**9``, and
+  ``multivariate_hypergeometric`` requires ``sum(colors)`` below ``10**9``
+  for the ``"count"`` method too.
+* ``choice`` always returns a sample without replacement in random order,
+  so its ``shuffle`` parameter has no effect.
+* ``p`` of ``choice`` and ``pvals`` of ``multinomial`` are only checked when
+  they are on the host, as the other parameters are.
+* :meth:`Generator.shuffle` only accepts an array on the device, a
+  :class:`dpnp.ndarray` or :class:`dpnp.tensor.usm_ndarray`, as in CuPy.
 * Generators and bit generators cannot be pickled or deep-copied, and the
   bit generators have no ``advance`` or ``jumped`` method.
 
@@ -101,6 +109,19 @@ Simple random data
 
    Generator.integers
    Generator.random
+   Generator.choice
+   Generator.bytes
+
+Permutations
+^^^^^^^^^^^^
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   Generator.shuffle
+   Generator.permutation
+   Generator.permuted
 
 Distributions
 ^^^^^^^^^^^^^
@@ -112,6 +133,7 @@ Distributions
    Generator.beta
    Generator.binomial
    Generator.chisquare
+   Generator.dirichlet
    Generator.exponential
    Generator.f
    Generator.gamma
@@ -122,6 +144,9 @@ Distributions
    Generator.logistic
    Generator.lognormal
    Generator.logseries
+   Generator.multinomial
+   Generator.multivariate_hypergeometric
+   Generator.multivariate_normal
    Generator.negative_binomial
    Generator.noncentral_chisquare
    Generator.noncentral_f
