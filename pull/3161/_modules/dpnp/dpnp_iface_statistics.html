@@ -14,7 +14,7 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
 
     <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
-        <title>dpnp.dpnp_iface_statistics - Data Parallel Extension for NumPy (dpnp) 0.22.0dev1 documentation</title>
+        <title>dpnp.dpnp_iface_statistics - Data Parallel Extension for NumPy (dpnp) 0.22.0dev2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -172,7 +172,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.22.0dev1 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.22.0dev2 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.22.0dev1 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.22.0dev2 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -849,6 +849,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.amin.html">dpnp.amin</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.fmin.html">dpnp.fmin</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.nanmin.html">dpnp.nanmin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.minmax.html">dpnp.minmax</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.convolve.html">dpnp.convolve</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.clip.html">dpnp.clip</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.sqrt.html">dpnp.sqrt</a></li>
@@ -1048,6 +1049,8 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/scipy.html">Routines (SciPy) (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.scipy</span></code>)</a><input aria-label="Toggle navigation of Routines (SciPy) (dpnp.scipy)" class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../reference/scipy_linalg.html">Linear algebra (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.scipy.linalg</span></code>)</a><input aria-label="Toggle navigation of Linear algebra (dpnp.scipy.linalg)" class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.scipy.linalg.cho_factor.html">dpnp.scipy.linalg.cho_factor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.scipy.linalg.cho_solve.html">dpnp.scipy.linalg.cho_solve</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.scipy.linalg.lu.html">dpnp.scipy.linalg.lu</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.scipy.linalg.lu_factor.html">dpnp.scipy.linalg.lu_factor</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.scipy.linalg.lu_solve.html">dpnp.scipy.linalg.lu_solve</a></li>
@@ -1173,6 +1176,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.libtensor._statistics_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">statistics_ext</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.libtensor._tensor_elementwise_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.libtensor._tensor_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dti</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_usm_allocations</span>
@@ -1181,7 +1185,11 @@
     <span class="n">to_supported_dtypes</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils.dpnp_utils_reduction</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_wrap_reduction_call</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils.dpnp_utils_statistics</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_cov</span><span class="p">,</span> <span class="n">dpnp_median</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils.dpnp_utils_statistics</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">dpnp_cov</span><span class="p">,</span>
+    <span class="n">dpnp_median</span><span class="p">,</span>
+    <span class="n">dpnp_minmax</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.tensor._numpy_helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_axis_index</span>
 
 
@@ -2241,6 +2249,7 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.min` : Return the minimum of an array.</span>
+<span class="sd">    :obj:`dpnp.minmax` : Return the minimum and maximum of an array.</span>
 <span class="sd">    :obj:`dpnp.maximum` : Element-wise maximum of two arrays, propagates NaNs.</span>
 <span class="sd">    :obj:`dpnp.fmax` : Element-wise maximum of two arrays, ignores NaNs.</span>
 <span class="sd">    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis,</span>
@@ -2525,6 +2534,7 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.max` : Return the maximum of an array.</span>
+<span class="sd">    :obj:`dpnp.minmax` : Return the minimum and maximum of an array.</span>
 <span class="sd">    :obj:`dpnp.minimum` : Element-wise minimum of two arrays, propagates NaNs.</span>
 <span class="sd">    :obj:`dpnp.fmin` : Element-wise minimum of two arrays, ignores NaNs.</span>
 <span class="sd">    :obj:`dpnp.nanmin` : The minimum value of an array along a given axis,</span>
@@ -2562,6 +2572,142 @@
         <span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
         <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
         <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="minmax">
+<a class="viewcode-back" href="../../reference/generated/dpnp.minmax.html#dpnp.minmax">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">minmax</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Return the minimum and maximum of an array or along an axis.</span>
+
+<span class="sd">    This is equivalent to ``(dpnp.min(a, ...), dpnp.max(a, ...))`` but computes</span>
+<span class="sd">    both the minimum and the maximum in a single pass over `a`.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.minmax`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    axis : {None, int or tuple of ints}, optional</span>
+<span class="sd">        Axis or axes along which to operate. By default, flattened input is</span>
+<span class="sd">        used. If this is a tuple of integers, the minimum and the maximum are</span>
+<span class="sd">        selected over multiple axes, instead of a single axis or all the axes</span>
+<span class="sd">        as before.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    out : {None, tuple of None, dpnp.ndarray or usm_ndarray}, optional</span>
+<span class="sd">        A tuple ``(min, max)`` of two arrays in which to place the result.</span>
+<span class="sd">        Each array must be of the same shape and buffer length as the expected</span>
+<span class="sd">        output. A ``None`` entry means that a new array is allocated for that</span>
+<span class="sd">        result.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    keepdims : {None, bool}, optional</span>
+<span class="sd">        If this is set to ``True``, the axes which are reduced are left in the</span>
+<span class="sd">        result as dimensions with size one. With this option, the result will</span>
+<span class="sd">        broadcast correctly against the input array.</span>
+
+<span class="sd">        Default: ``False``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : tuple of dpnp.ndarray</span>
+<span class="sd">        A tuple ``(min, max)`` holding the minimum and maximum of `a`. If</span>
+<span class="sd">        `axis` is ``None``, the results are zero-dimensional arrays. If `axis`</span>
+<span class="sd">        is an integer, the results are arrays of dimension ``a.ndim - 1``. If</span>
+<span class="sd">        `axis` is a tuple, the results are arrays of dimension</span>
+<span class="sd">        ``a.ndim - len(axis)``.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameters `where`, and `initial` are only supported with their default</span>
+<span class="sd">    values. Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="sd">    If an array in `out` has a data type other than that of `a`, the result is</span>
+<span class="sd">    computed in the data type of `a` and then cast, while NumPy casts `a` to</span>
+<span class="sd">    the data type of `out` first. The results differ when the cast does not</span>
+<span class="sd">    preserve the order of values, e.g. for a narrowing integer cast.</span>
+
+<span class="sd">    The arrays in `out` must not overlap in memory. Interleaved views, such as</span>
+<span class="sd">    ``(r[:, 0], r[:, 1])``, are rejected as well, while NumPy accepts them.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.min` : Return the minimum of an array.</span>
+<span class="sd">    :obj:`dpnp.max` : Return the maximum of an array.</span>
+<span class="sd">    :obj:`dpnp.ptp` : Range of values (maximum - minimum) along an axis.</span>
+<span class="sd">    :obj:`dpnp.nanmin` : The minimum value of an array along a given axis,</span>
+<span class="sd">                         ignores NaNs.</span>
+<span class="sd">    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis,</span>
+<span class="sd">                         ignores NaNs.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    NaN values are propagated, that is if at least one item is NaN, the</span>
+<span class="sd">    corresponding output value will be NaN as well. To ignore NaN values</span>
+<span class="sd">    use :obj:`dpnp.nanmin` and :obj:`dpnp.nanmax`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(4).reshape((2, 2))</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
+<span class="sd">    array([[0, 1],</span>
+<span class="sd">           [2, 3]])</span>
+<span class="sd">    &gt;&gt;&gt; np.minmax(a)            # min and max of the flattened array</span>
+<span class="sd">    (array(0), array(3))</span>
+
+<span class="sd">    &gt;&gt;&gt; np.minmax(a, axis=0)    # along the first axis</span>
+<span class="sd">    (array([0, 1]), array([2, 3]))</span>
+<span class="sd">    &gt;&gt;&gt; np.minmax(a, axis=1)    # along the second axis</span>
+<span class="sd">    (array([0, 2]), array([1, 3]))</span>
+
+<span class="sd">    &gt;&gt;&gt; b = np.arange(5, dtype=float)</span>
+<span class="sd">    &gt;&gt;&gt; b[2] = np.nan</span>
+<span class="sd">    &gt;&gt;&gt; np.minmax(b)</span>
+<span class="sd">    (array(nan), array(nan))</span>
+
+<span class="sd">    """</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="n">initial</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span>
+    <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"'out' must be a tuple of arrays"</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">out</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"'out' tuple must have exactly two entries"</span><span class="p">)</span>
+
+    <span class="n">out_arrays</span> <span class="o">=</span> <span class="p">[</span><span class="n">res</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">out</span> <span class="k">if</span> <span class="n">res</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="o">*</span><span class="n">out_arrays</span><span class="p">)</span>
+    <span class="c1"># pylint: disable=protected-access</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">out_arrays</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">dti</span><span class="o">.</span><span class="n">_array_overlap</span><span class="p">(</span>
+        <span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">,</span> <span class="n">out_arrays</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Output arrays cannot overlap"</span><span class="p">)</span>
+
+    <span class="n">usm_out</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">out</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">res</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># the result is computed in the data type of `a`</span>
+            <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+                <span class="c1"># a writable temporary would hide the flag</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">res</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">writable</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"provided `out` array is read-only"</span><span class="p">)</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+        <span class="n">usm_out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+
+    <span class="n">usm_res</span> <span class="o">=</span> <span class="n">dpnp_minmax</span><span class="p">(</span>
+        <span class="n">usm_a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">usm_out</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">"unsafe"</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">res</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">usm_res</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
     <span class="p">)</span></div>
 
 
@@ -3089,7 +3235,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=0e5b763f"></script>
+</div><script src="../../_static/documentation_options.js?v=39a3fc55"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
