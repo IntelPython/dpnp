@@ -1429,6 +1429,14 @@ class TestDiscreteMethods:
         res = rng.geometric(p, size=(8, 5))
         assert_array_equal(res, int64_min, strict=False)
 
+    def test_geometric_zero_uniform(self, discrete_precision):
+        # the first word at this counter makes a single-precision uniform of
+        # exactly 0, on which inversion gave 0, outside the support
+        key, counter = 0x0123456789ABCDEF, 15060569
+        assert _philox4x32x10(key, counter)[0] < 256
+        rng = Generator(Philox4x3210(key=key, counter=counter))
+        assert int(rng.geometric(0.1, size=1)[0]) >= 1
+
     def test_host_params_terminate(self, discrete_precision):
         # valid parameters on which rounding in single precision made every
         # draw of a rejection sampler fail

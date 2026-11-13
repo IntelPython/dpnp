@@ -974,7 +974,9 @@ std::int64_t geometric(BitGenT &bg, const T p)
     }
 
     // inversion
-    const T z = sycl::ceil(-standard_exponential<T>(bg) / sycl::log1p(-p));
+    // a uniform of exactly 0, once in 2**24 draws in float, gives z = 0
+    const T z = sycl::fmax(
+        sycl::ceil(-standard_exponential<T>(bg) / sycl::log1p(-p)), T(1));
     // the smallest value above INT64_MAX in both float and double
     if (z >= T(9.223372036854775808e18)) {
         return std::numeric_limits<std::int64_t>::max();
