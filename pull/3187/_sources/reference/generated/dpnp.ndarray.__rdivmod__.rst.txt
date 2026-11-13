@@ -1,0 +1,10 @@
+﻿:orphan:
+
+dpnp.ndarray.\_\_rdivmod\_\_
+============================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: ndarray.__rdivmod__
