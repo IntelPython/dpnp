@@ -41,12 +41,15 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Deprecated the upcast of `arr` by a Python numeric scalar in `dpnp.append` with `axis=None` (e.g. `int8` array and `1` giving `int64`) [#3125](https://github.com/IntelPython/dpnp/pull/3125)
 * Deprecated `dpnp.isfortran`; use `a.flags.fnc` instead [#3140](https://github.com/IntelPython/dpnp/pull/3140)
 * Deprecated omitting `axis` in `dpnp.tensor.top_k` for an input that is not 1-D, which searches the flattened array; the default will change to `axis=-1` as in the Array API standard, so pass `axis=None` to keep the current behavior [#3133](https://github.com/IntelPython/dpnp/pull/3133)
+* Deprecated `dpnp.config.__DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__`, set by the `DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK` environment variable, which has no effect without the NumPy fallback; reading or setting it now emits a `DeprecationWarning` [#3163](https://github.com/IntelPython/dpnp/pull/3163)
 
 ### Removed
 
 * Removed the unused `FourZeroOffsets_Indexer`, `FixedDimStridedIndexer` and `ThreeOffsets_FixedDimStridedIndexer` from the libtensor header `utils/offset_utils.hpp` [#3131](https://github.com/IntelPython/dpnp/pull/3131)
 * Dropped support for Python 3.10 [#3173](https://github.com/IntelPython/dpnp/pull/3173)
 * Removed the `USE_GROUP_LOAD_STORE` macro from the libtensor header `utils/sycl_utils.hpp`, so `sub_group_load` and `sub_group_store` always use the `sycl_ext_oneapi_group_load_store` extension; the `sycl::sub_group` member load/store fallback it selected does not compile with DPC++ 2026.0, the minimum supported compiler [#3174](https://github.com/IntelPython/dpnp/pull/3174)
+* Removed the legacy backend implementation of `dpnp.random`, which no longer needs `onemkl-sycl-rng` [#3163](https://github.com/IntelPython/dpnp/pull/3163)
+* Removed the unused parts of the legacy `dpnp_backend_c` library, including its empty GTest suite, the `DPNP_BACKEND_TESTS` CMake option and the NumPy fallback helper `call_origin` [#3163](https://github.com/IntelPython/dpnp/pull/3163)
 
 ### Fixed
 

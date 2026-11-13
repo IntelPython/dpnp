@@ -14,6 +14,8 @@ build:
     - dpctl
     - numpy
     - python
+    # leaked from mkl-devel-dpcpp; drags in unused onemkl-sycl-{datafitting,rng,stats}
+    - mkl-dpcpp
     # building with Intel DPC++ and do not import the MSVC runtime DLLs
     - vc14_runtime  # [win]
     - ucrt          # [win]
@@ -54,7 +56,6 @@ requirements:
     - {{ pin_compatible('onemkl-sycl-blas', min_pin='x.x', max_pin='x') }}
     - {{ pin_compatible('onemkl-sycl-dft', min_pin='x.x', max_pin='x') }}
     - {{ pin_compatible('onemkl-sycl-lapack', min_pin='x.x', max_pin='x') }}
-    - {{ pin_compatible('onemkl-sycl-rng', min_pin='x.x', max_pin='x') }}
     - {{ pin_compatible('onemkl-sycl-vm', min_pin='x.x', max_pin='x') }}
     - numpy
     - ocl-icd-system  # [linux]

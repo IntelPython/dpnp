@@ -22,13 +22,18 @@ class TestDeprecatedSettings:
                 "__DPNP_OUTPUT_DPCTL_DEFAULT_SHARED__",
                 "DPNP_OUTPUT_DPCTL_DEFAULT_SHARED",
             ),
+            (
+                "__DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__",
+                "DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK",
+            ),
         ],
     )
     def test_read_warns(self, monkeypatch, name, env):
         monkeypatch.delenv(env, raising=False)
         with pytest.warns(DeprecationWarning, match=re.escape(name)):
             value = getattr(dpnp.config, name)
-        assert value == 0
+        # the fallback setting was on by default
+        assert value == (1 if "FALLBACK" in name else 0)
 
     @pytest.mark.parametrize(
         "name",
@@ -36,6 +41,7 @@ class TestDeprecatedSettings:
             "__DPNP_QUEUE_GPU__",
             "__DPNP_OUTPUT_NUMPY__",
             "__DPNP_OUTPUT_DPCTL_DEFAULT_SHARED__",
+            "__DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__",
         ],
     )
     def test_write_warns(self, name):
@@ -47,10 +53,7 @@ class TestDeprecatedSettings:
             value = getattr(dpnp.config, name)
         assert value == 1
 
-    @pytest.mark.parametrize(
-        "name",
-        ["__DPNP_ORIGIN__", "__DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__"],
-    )
+    @pytest.mark.parametrize("name", ["__DPNP_ORIGIN__"])
     def test_no_warning(self, monkeypatch, name):
         with warnings.catch_warnings():
             warnings.simplefilter("error")
