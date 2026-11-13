@@ -79,7 +79,7 @@ requirements:
       - dpctl
       - numpy
       - python
-      # leaked from mkl-devel-dpcpp; drags in unused onemkl-sycl-{datafitting,stats}
+      # leaked from mkl-devel-dpcpp; drags in unused onemkl-sycl-{datafitting,rng,stats}
       - mkl-dpcpp
       # building with Intel DPC++ and do not import the MSVC runtime DLLs
       - if: win
