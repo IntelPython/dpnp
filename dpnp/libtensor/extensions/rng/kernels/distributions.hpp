@@ -1021,7 +1021,7 @@ std::int64_t zipf(BitGenT &bg, const T a)
 {
     if (!(a > T(1))) {
         // invalid, and every draw would be rejected
-        return 0;
+        return std::numeric_limits<std::int64_t>::min();
     }
     if (a >= T(std::numeric_limits<T>::max_exponent + 1)) {
         // every draw is 1, and 2**(a - 1) would overflow, so that every
