@@ -584,6 +584,13 @@ class TestIntegers:
             lambda: RandomState().randint(*args, **kwargs),
         )
 
+    def test_random_integers_device_high_at_max(self):
+        high = dpnp.asarray(2**31 - 1, dtype=dpnp.int32)
+        with pytest.warns(DeprecationWarning):
+            res = RandomState(0).random_integers(0, high, size=1000)
+        res = dpnp.asnumpy(res)
+        assert ((res >= 0) & (res <= 2**31 - 1)).all()
+
     def test_random_integers_none(self):
         with pytest.warns(DeprecationWarning):
             _assert_same_error(
