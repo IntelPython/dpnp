@@ -1,5 +1,4 @@
 import re
-import warnings
 
 import pytest
 
@@ -46,15 +45,6 @@ class TestDeprecatedSettings:
         with pytest.warns(DeprecationWarning, match=re.escape(name)):
             value = getattr(dpnp.config, name)
         assert value == 1
-
-    @pytest.mark.parametrize(
-        "name", ["__DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__"]
-    )
-    def test_no_warning(self, monkeypatch, name):
-        with warnings.catch_warnings():
-            warnings.simplefilter("error")
-            value = getattr(dpnp.config, name)
-            monkeypatch.setattr(dpnp.config, name, value)
 
     def test_unknown_name(self):
         with pytest.raises(AttributeError, match="has no attribute"):

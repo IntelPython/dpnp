@@ -60,7 +60,6 @@ class RandomDistributionsTestCase:
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsBeta(RandomDistributionsTestCase):
 
     @testing.for_dtypes_combination(_float_dtypes, names=["a_dtype", "b_dtype"])
@@ -101,7 +100,6 @@ class TestDistributionsBinomial(RandomDistributionsTestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsChisquare:
 
     def check_distribution(self, dist_func, df_dtype):
@@ -124,7 +122,6 @@ class TestDistributionsChisquare:
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsDirichlet(RandomDistributionsTestCase):
 
     @testing.for_dtypes_combination(
@@ -143,7 +140,6 @@ class TestDistributionsDirichlet(RandomDistributionsTestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsExponential(RandomDistributionsTestCase):
 
     # @testing.for_float_dtypes("dtype", no_float16=True) # dtype is not supported
@@ -153,7 +149,6 @@ class TestDistributionsExponential(RandomDistributionsTestCase):
         self.check_distribution("exponential", {"scale": scale})
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsExponentialError(RandomDistributionsTestCase):
 
     def test_negative_scale(self):
@@ -173,7 +168,6 @@ class TestDistributionsExponentialError(RandomDistributionsTestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsF:
 
     def check_distribution(self, dist_func, dfnum_dtype, dfden_dtype, dtype):
@@ -202,7 +196,6 @@ class TestDistributionsF:
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsGamma:
 
     def check_distribution(
@@ -248,7 +241,6 @@ class TestDistributionsGamma:
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsGeometric:
 
     def check_distribution(self, dist_func, p_dtype, dtype):
@@ -271,7 +263,6 @@ class TestDistributionsGeometric:
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsGumbel(RandomDistributionsTestCase):
 
     # @testing.for_float_dtypes("dtype", no_float16=True) # no dtype supported
@@ -297,7 +288,6 @@ class TestDistributionsGumbel(RandomDistributionsTestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsHyperGeometric:
 
     def check_distribution(
@@ -339,7 +329,6 @@ class TestDistributionsHyperGeometric:
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsuLaplace(RandomDistributionsTestCase):
 
     # @testing.for_float_dtypes("dtype", no_float16=True) # no dtype supported
@@ -361,7 +350,6 @@ class TestDistributionsuLaplace(RandomDistributionsTestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsLogistic(RandomDistributionsTestCase):
 
     # @testing.for_float_dtypes("dtype", no_float16=True) # no dtype supported
@@ -383,7 +371,6 @@ class TestDistributionsLogistic(RandomDistributionsTestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsLognormal(RandomDistributionsTestCase):
 
     # @testing.for_float_dtypes("dtype", no_float16=True) # no dtype supported
@@ -404,7 +391,6 @@ class TestDistributionsLognormal(RandomDistributionsTestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsLogseries(RandomDistributionsTestCase):
 
     # @testing.for_dtypes([numpy.int64, numpy.int32], "dtype") # no dtype supported
@@ -462,7 +448,6 @@ class TestDistributionsMultivariateNormal:
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsNegativeBinomial(RandomDistributionsTestCase):
 
     @testing.for_float_dtypes("n_dtype")
@@ -495,7 +480,6 @@ class TestDistributionsNegativeBinomial(RandomDistributionsTestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsNoncentralChisquare(RandomDistributionsTestCase):
 
     @testing.for_dtypes_combination(
@@ -533,7 +517,6 @@ class TestDistributionsNoncentralChisquare(RandomDistributionsTestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsNoncentralF(RandomDistributionsTestCase):
 
     @testing.for_dtypes_combination(
@@ -580,7 +563,6 @@ class TestDistributionsNoncentralF(RandomDistributionsTestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsNormal(RandomDistributionsTestCase):
 
     # @testing.for_float_dtypes("dtype", no_float16=True) # no dtype supported
@@ -601,7 +583,6 @@ class TestDistributionsNormal(RandomDistributionsTestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsPareto:
 
     def check_distribution(self, dist_func, a_dtype):
@@ -625,7 +606,6 @@ class TestDistributionsPareto:
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsPoisson:
 
     def check_distribution(self, dist_func, lam_dtype, dtype=None):
@@ -656,7 +636,6 @@ class TestDistributionsPoissonInvalid:
         with pytest.raises(TypeError):
             cupy.random.default_rng(0).poisson(None)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_none_lam_legacy(self):
         with pytest.raises(TypeError):
             _distributions.poisson(None)
@@ -670,7 +649,6 @@ class TestDistributionsPoissonInvalid:
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsPower(RandomDistributionsTestCase):
 
     # @testing.for_float_dtypes("dtype", no_float16=True) # no dtype supported
@@ -696,7 +674,6 @@ class TestDistributionsPower(RandomDistributionsTestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsRayleigh(RandomDistributionsTestCase):
 
     # @testing.for_float_dtypes("dtype", no_float16=True) # no dtype supported
@@ -756,7 +733,6 @@ class TestDistributionsStandardExponential(RandomDistributionsTestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsStandardGamma(RandomDistributionsTestCase):
 
     # @testing.for_float_dtypes("dtype", no_float16=True) # no dtype supported
@@ -781,7 +757,6 @@ class TestDistributionsStandardGammaInvalid(RandomDistributionsTestCase):
         with pytest.raises(TypeError):
             cupy.random.default_rng(0).standard_gamma(None)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_none_shape_legacy(self):
         with pytest.raises(TypeError):
             _distributions.standard_gamma(None)
@@ -809,7 +784,6 @@ class TestDistributionsStandardNormal(RandomDistributionsTestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsStandardT:
 
     def check_distribution(self, dist_func, df_dtype):
@@ -836,7 +810,6 @@ class TestDistributionsStandardT:
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsTriangular(RandomDistributionsTestCase):
 
     @testing.for_dtypes_combination(
@@ -882,7 +855,6 @@ class TestDistributionsTriangular(RandomDistributionsTestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsUniform(RandomDistributionsTestCase):
 
     # @testing.for_float_dtypes("dtype", no_float16=True) # no dtype supported
@@ -906,7 +878,6 @@ class TestDistributionsUniform(RandomDistributionsTestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsVonmises:
 
     def check_distribution(self, dist_func, mu_dtype, kappa_dtype, dtype):
@@ -936,7 +907,6 @@ class TestDistributionsVonmises:
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsWald(RandomDistributionsTestCase):
 
     @testing.for_dtypes_combination(
@@ -958,7 +928,6 @@ class TestDistributionsWald(RandomDistributionsTestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsWeibull(RandomDistributionsTestCase):
 
     # @testing.for_float_dtypes("dtype", no_float16=True) # no dtype supported
@@ -990,7 +959,6 @@ class TestDistributionsWeibull(RandomDistributionsTestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsZipf(RandomDistributionsTestCase):
 
     # @testing.for_dtypes([numpy.int32, numpy.int64], "dtype") # no dtype supported

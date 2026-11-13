@@ -56,6 +56,7 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Removed the legacy backend implementation of `dpnp.random`, which no longer needs `onemkl-sycl-rng` [#3163](https://github.com/IntelPython/dpnp/pull/3163)
 * Removed the legacy `dpnp_backend_c` library with its GTest suite and the `DPNP_BACKEND_TESTS` CMake option, the Cython module `dpnp.dpnp_algo.dpnp_algo` built on it, and the NumPy fallback helper `call_origin` [#3163](https://github.com/IntelPython/dpnp/pull/3163)
 * Removed `dpnp.get_dpnp_descriptor` and the `dpnp.config.__DPNP_ORIGIN__` setting, set by the `DPNP_ORIGIN` environment variable, which only it read [#3163](https://github.com/IntelPython/dpnp/pull/3163)
+* Removed the `dpnp.config.__DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__` setting, set by the `DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK` environment variable, which nothing reads since dpnp no longer falls back on NumPy [#3163](https://github.com/IntelPython/dpnp/pull/3163)
 
 ### Fixed
 
