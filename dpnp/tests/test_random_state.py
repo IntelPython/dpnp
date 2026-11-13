@@ -13,6 +13,7 @@ from numpy.testing import (
 )
 
 import dpnp
+from dpnp.exceptions import ExecutionPlacementError
 from dpnp.random import RandomState
 
 from .helper import get_all_dtypes, get_float_dtypes
@@ -371,6 +372,11 @@ class TestQueue:
         x = dpnp.arange(5, sycl_queue=queue)
         assert dpnp.random.permutation(x).sycl_queue == queue
         assert dpnp.random.choice(x, 3).sycl_queue == queue
+
+    def test_uniform_checks_queue_first(self):
+        # the range check computes on the queue of the bounds
+        low = dpnp.asarray([-numpy.inf], sycl_queue=dpctl.SyclQueue())
+        assert_raises(ExecutionPlacementError, RandomState(0).uniform, low, 1.0)
 
 
 class TestDistributions:
