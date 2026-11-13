@@ -45,18 +45,25 @@ queue, which :func:`seed` reseeds.
 
 import threading
 
+import numpy
+
 import dpnp
 import dpnp.tensor as dpt
 from dpnp.exceptions import ExecutionPlacementError
 
 from ._bit_generator import BitGenerator, Philox4x3210
-from .dpnp_random_state import RandomState, _reseed_in_place
+from .dpnp_random_state import RandomState, _legacy_seed, _reseed_in_place
 
 # The states of the queues. The lock guarantees that concurrent callers
 # asking for the state of the same queue get the same instance back rather
 # than each building one of their own.
 _dpnp_random_states = {}
 _random_states_lock = threading.Lock()
+
+# The seeds of the states made for new queues: spawned children of the seed
+# given to the last seed() call, so that seeded code gets the same values
+# on every run, or OS entropy before any seed() call
+_seed_source = None
 
 _QUEUE_PARAMS = """\
     device : {None, string, SyclDevice, SyclQueue, Device}, optional
@@ -124,7 +131,11 @@ def _get_random_state(device=None, sycl_queue=None, arrays=()):
     with _random_states_lock:
         rs = _dpnp_random_states.get(sycl_queue)
         if rs is None:
-            rs = RandomState(sycl_queue=sycl_queue)
+            if _seed_source is None:
+                rs = RandomState(sycl_queue=sycl_queue)
+            else:
+                (child,) = _seed_source.spawn(1)
+                rs = RandomState(Philox4x3210(child, sycl_queue=sycl_queue))
             _dpnp_random_states[sycl_queue] = rs
         return rs
 
@@ -147,6 +158,10 @@ def seed(seed=None, *, device=None, sycl_queue=None):
     :class:`dpnp.random.Philox4x3210` is reseeded in place with the state a
     new one of its type would have for `seed`, as in NumPy.
 
+    The states made later for other queues are seeded from `seed` too, in
+    the order they are made, so that seeded code draws the same values on
+    every run.
+
     Examples
     --------
     >>> import dpnp as np
@@ -157,15 +172,25 @@ def seed(seed=None, *, device=None, sycl_queue=None):
     True
 
     """
-    # pylint: disable=protected-access
+    # pylint: disable=global-statement, protected-access
+    global _seed_source
+
     rs = _get_random_state(device, sycl_queue)
     bit_generator = rs._generator.bit_generator
     if type(bit_generator) is Philox4x3210:
         rs.seed(seed)
+        entropy = _legacy_seed(seed)
     else:
         _reseed_in_place(
             bit_generator,
             type(bit_generator)(seed, sycl_queue=bit_generator.sycl_queue),
+        )
+        entropy = (
+            dpnp.asnumpy(seed) if dpnp.is_supported_array_type(seed) else seed
+        )
+    with _random_states_lock:
+        _seed_source = (
+            None if entropy is None else numpy.random.SeedSequence(entropy)
         )
 
 

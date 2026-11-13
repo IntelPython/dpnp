@@ -172,6 +172,18 @@ class TestSeed:
         rs.seed(7)
         assert_array_equal(rs.random_sample(5), RandomState(7).random_sample(5))
 
+    def test_module_seed_new_queue(self):
+        # the state of a queue first used after seed() is seeded from it
+        dpnp.random.seed(0)
+        a = dpnp.random.rand(3, sycl_queue=dpctl.SyclQueue())
+        dpnp.random.seed(0)
+        b = dpnp.random.rand(3, sycl_queue=dpctl.SyclQueue())
+        assert_array_equal(dpnp.asnumpy(a), dpnp.asnumpy(b))
+
+        dpnp.random.seed(1)
+        c = dpnp.random.rand(3, sycl_queue=dpctl.SyclQueue())
+        assert not (dpnp.asnumpy(a) == dpnp.asnumpy(c)).all()
+
     def test_module_seed(self):
         dpnp.random.seed(7)
         a1 = dpnp.random.random_sample(5)
