@@ -3202,7 +3202,8 @@ class Generator:
 
         Limitations
         -----------
-        `out` must be a :class:`dpnp.ndarray`.
+        `out` must be a :class:`dpnp.ndarray` or
+        :class:`dpnp.tensor.usm_ndarray`, not a :class:`numpy.ndarray`.
 
         """
 
