@@ -1941,6 +1941,15 @@ def test_generator_array_params(usm_type):
     assert rng.multinomial(5, p).usm_type == usm_type
 
 
+@pytest.mark.parametrize("usm_type_a", list_of_usm_types)
+@pytest.mark.parametrize("usm_type", list_of_usm_types)
+def test_generator_choice_usm_type(usm_type_a, usm_type):
+    rng = dpnp.random.default_rng(1)
+    a = dpnp.arange(5, usm_type=usm_type_a)
+    assert rng.choice(a, 3, usm_type=usm_type).usm_type == usm_type
+    assert rng.choice(a, 3).usm_type == usm_type_a
+
+
 @pytest.mark.parametrize("func", ["normal", "uniform"])
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types)
 @pytest.mark.parametrize("usm_type_y", list_of_usm_types)

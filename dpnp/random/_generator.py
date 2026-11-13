@@ -2599,7 +2599,8 @@ class Generator:
             return idx
         if not isinstance(a, dpnp.ndarray):
             a = dpnp.asarray(a, usm_type=usm_type, sycl_queue=queue)
-        return dpnp.take(a, idx, axis=axis)
+        # the sample, not `a`, takes the requested USM type
+        return dpnp.asarray(dpnp.take(a, idx, axis=axis), usm_type=usm_type)
 
     def integers(
         self,
