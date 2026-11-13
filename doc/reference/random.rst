@@ -66,7 +66,13 @@ Differences from NumPy
 * ``zipf`` follows the Zipf distribution truncated to the largest ``int64``.
   NumPy's rejection test rounds to accepting every sample above ``2**53``,
   which makes its tail too heavy for ``a`` close to 1.
-* ``hypergeometric`` requires ``ngood`` and ``nbad`` below ``10**9``.
+* ``hypergeometric`` requires ``ngood`` and ``nbad`` below ``10**9``, and
+  ``multivariate_hypergeometric`` requires ``sum(colors)`` below ``10**9``
+  for the ``"count"`` method too.
+* ``choice`` always returns a sample without replacement in random order,
+  so its ``shuffle`` parameter has no effect.
+* ``p`` of ``choice`` and ``pvals`` of ``multinomial`` are only checked when
+  they are on the host, as the other parameters are.
 * :meth:`Generator.shuffle` only accepts an array on the device, a
   :class:`dpnp.ndarray` or :class:`dpnp.tensor.usm_ndarray`, as in CuPy.
 * Generators and bit generators cannot be pickled or deep-copied, and the
