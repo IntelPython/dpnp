@@ -1,0 +1,10 @@
+﻿
+
+dpnp.iterable
+=============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: iterable

@@ -1,0 +1,10 @@
+﻿
+
+dpnp.top\_k
+===========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: top_k

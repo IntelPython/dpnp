@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.scipy.sparse.linalg.LinearOperator.dot
+===========================================
+
+.. currentmodule:: dpnp.scipy.sparse.linalg
+
+method
+
+.. automethod:: LinearOperator.dot

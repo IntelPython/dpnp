@@ -1,0 +1,14 @@
+
+:orphan:
+
+
+dpnp.scipy.sparse.linalg.LinearOperator.H
+=========================================
+
+.. currentmodule:: dpnp.scipy.sparse.linalg
+
+
+property
+
+
+.. autoproperty:: LinearOperator.H
