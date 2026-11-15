@@ -1,6 +1,0 @@
-﻿dpnp.frombuffer
-===============
-
-.. currentmodule:: dpnp
-
-.. autofunction:: frombuffer

@@ -1,6 +1,0 @@
-﻿dpnp.ndarray.transpose
-======================
-
-.. currentmodule:: dpnp
-
-.. automethod:: ndarray.transpose

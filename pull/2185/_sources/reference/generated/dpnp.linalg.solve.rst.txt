@@ -1,6 +1,0 @@
-﻿dpnp.linalg.solve
-=================
-
-.. currentmodule:: dpnp.linalg
-
-.. autofunction:: solve

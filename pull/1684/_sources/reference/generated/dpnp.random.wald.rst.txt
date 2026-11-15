@@ -1,6 +1,0 @@
-﻿dpnp.random.wald
-================
-
-.. currentmodule:: dpnp.random
-
-.. autofunction:: wald

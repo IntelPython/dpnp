@@ -1,6 +1,0 @@
-﻿dpnp.random.vonmises
-====================
-
-.. currentmodule:: dpnp.random
-
-.. autofunction:: vonmises

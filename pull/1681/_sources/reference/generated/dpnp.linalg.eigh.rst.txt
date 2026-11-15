@@ -1,6 +1,0 @@
-﻿dpnp.linalg.eigh
-================
-
-.. currentmodule:: dpnp.linalg
-
-.. autofunction:: eigh

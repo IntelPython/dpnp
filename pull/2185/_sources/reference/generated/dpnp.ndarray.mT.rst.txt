@@ -1,6 +1,0 @@
-﻿dpnp.ndarray.mT
-===============
-
-.. currentmodule:: dpnp
-
-.. autoproperty:: ndarray.mT

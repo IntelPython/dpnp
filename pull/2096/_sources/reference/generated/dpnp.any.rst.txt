@@ -1,6 +1,0 @@
-﻿dpnp.any
-========
-
-.. currentmodule:: dpnp
-
-.. autofunction:: any

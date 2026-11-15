@@ -1,6 +1,0 @@
-﻿dpnp.true\_divide
-=================
-
-.. currentmodule:: dpnp
-
-.. autofunction:: true_divide

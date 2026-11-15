@@ -1,6 +1,0 @@
-﻿dpnp.ndarray.flatten
-====================
-
-.. currentmodule:: dpnp
-
-.. automethod:: ndarray.flatten

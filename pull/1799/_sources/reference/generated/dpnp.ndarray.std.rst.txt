@@ -1,6 +1,0 @@
-﻿dpnp.ndarray.std
-================
-
-.. currentmodule:: dpnp
-
-.. automethod:: ndarray.std

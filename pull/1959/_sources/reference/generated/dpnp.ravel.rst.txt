@@ -1,6 +1,0 @@
-﻿dpnp.ravel
-==========
-
-.. currentmodule:: dpnp
-
-.. autofunction:: ravel

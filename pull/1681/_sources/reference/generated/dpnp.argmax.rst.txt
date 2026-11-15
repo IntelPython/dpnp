@@ -1,6 +1,0 @@
-﻿dpnp.argmax
-===========
-
-.. currentmodule:: dpnp
-
-.. autofunction:: argmax

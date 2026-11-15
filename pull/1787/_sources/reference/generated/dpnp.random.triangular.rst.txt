@@ -1,6 +1,0 @@
-﻿dpnp.random.triangular
-======================
-
-.. currentmodule:: dpnp.random
-
-.. autofunction:: triangular

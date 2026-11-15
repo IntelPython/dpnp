@@ -1,5 +1,0 @@
-<map id="dpnp_memory_alloc_c" name="dpnp_memory_alloc_c">
-<area shape="rect" id="node1" title="SYCL queue memory allocation." alt="" coords="201,42,352,67"/>
-<area shape="rect" id="node2" href="$group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga5f47f787627aa8dbd02301760482d7d6" title="Broadcast input data to specified shape." alt="" coords="5,5,153,45"/>
-<area shape="rect" id="node3" href="$group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga87a0b53a5ae1b69762f201cd6521e210" title="Set axes for the data object to use in computation." alt="" coords="8,70,151,95"/>
-</map>

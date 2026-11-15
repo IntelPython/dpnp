@@ -1,6 +1,0 @@
-﻿dpnp.common\_type
-=================
-
-.. currentmodule:: dpnp
-
-.. autofunction:: common_type

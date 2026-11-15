@@ -1,6 +1,0 @@
-﻿dpnp.diagonal
-=============
-
-.. currentmodule:: dpnp
-
-.. autofunction:: diagonal

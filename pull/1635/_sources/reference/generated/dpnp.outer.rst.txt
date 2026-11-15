@@ -1,6 +1,0 @@
-﻿dpnp.outer
-==========
-
-.. currentmodule:: dpnp
-
-.. autofunction:: outer

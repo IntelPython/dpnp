@@ -1,6 +1,0 @@
-﻿dpnp.random.gumbel
-==================
-
-.. currentmodule:: dpnp.random
-
-.. autofunction:: gumbel

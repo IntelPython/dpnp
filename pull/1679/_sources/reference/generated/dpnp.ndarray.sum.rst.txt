@@ -1,6 +1,0 @@
-﻿dpnp.ndarray.sum
-================
-
-.. currentmodule:: dpnp
-
-.. automethod:: ndarray.sum

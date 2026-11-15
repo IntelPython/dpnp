@@ -1,6 +1,0 @@
-﻿dpnp.ndarray.trace
-==================
-
-.. currentmodule:: dpnp
-
-.. automethod:: ndarray.trace

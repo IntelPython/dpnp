@@ -1,6 +1,0 @@
-﻿dpnp.atleast\_1d
-================
-
-.. currentmodule:: dpnp
-
-.. autofunction:: atleast_1d
