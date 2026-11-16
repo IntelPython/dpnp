@@ -29,6 +29,7 @@
 import math
 import warnings
 
+import dpctl.memory as dpm
 import dpctl.utils as dpu
 import numpy
 
@@ -152,7 +153,12 @@ def _calc_median_by_select(a, ignore_nan, out=None):
             median_ev.wait()
             all_nan = numpy.frombuffer(usm_all_nan.usm_data, dtype=numpy.uint32)
         else:
-            all_nan = dpt.asnumpy(usm_all_nan)
+            # copy once the median is done, waiting for the copy only
+            host_flag = dpm.MemoryUSMHost(4, queue=exec_q)
+            exec_q.memcpy_async(
+                host_flag, usm_all_nan.usm_data, 4, [median_ev]
+            ).wait()
+            all_nan = numpy.frombuffer(host_flag, dtype=numpy.uint32)
         if all_nan[0]:
             warnings.warn(
                 "All-NaN slice encountered", RuntimeWarning, stacklevel=4
