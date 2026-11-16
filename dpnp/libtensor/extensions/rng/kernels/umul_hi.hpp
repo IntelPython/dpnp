@@ -32,10 +32,11 @@
 
 namespace dpnp::kernels::rng
 {
-// The high 64 bits of the 128-bit product a * b, from 32-bit halves.
-// sycl::mul_hi is not used: optimized DPC++ 2026.2 builds get it wrong on
-// Intel GPUs when one 64-bit operand is a compile-time constant (all results
-// wrong at -O2, right at -O0). oneMKL's device RNG uses 32-bit halves too.
+// The high 64 bits of the 128-bit product a * b, from 32-bit halves, as
+// oneMKL's device RNG computes it. sycl::mul_hi is not used: the Intel GPU
+// compiler gets a 64-bit mul_hi wrong when one operand is a compile-time
+// constant (IGC 2.41 and 2.42). Remove once fixed:
+// https://github.com/intel/intel-graphics-compiler/issues/479
 inline std::uint64_t umul_hi(const std::uint64_t a, const std::uint64_t b)
 {
     const std::uint64_t a_lo = a & 0xffffffffULL;
