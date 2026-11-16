@@ -1457,6 +1457,38 @@ class TestMedianSelect:
         else:
             assert_dtype_allclose(result, expected)
 
+    # the mean of the two middle integers is rounded once, also to float32 as
+    # on devices without fp64
+    @pytest.mark.parametrize(
+        "row",
+        [[-150000001, 151316868], [16777217, 16777218], [3, 4]]
+        + [[-(2**63), -(2**63) + 1], [2**63 - 2, 2**63 - 1]],
+    )
+    @pytest.mark.parametrize("dtype", get_integer_dtypes(no_unsigned=True))
+    @pytest.mark.parametrize("res_dtype", ["f4", None])
+    def test_ext_integer_mean(self, row, dtype, res_dtype):
+        info = numpy.iinfo(dtype)
+        if not all(info.min <= v <= info.max for v in row):
+            pytest.skip("values out of range")
+        a = numpy.array([row], dtype=dtype)
+        src = dpt.asarray(a)
+        if res_dtype is None:
+            res_dtype = dpnp.default_float_type(sycl_queue=src.sycl_queue)
+        dst = dpt.empty((1,), dtype=res_dtype, sycl_queue=src.sycl_queue)
+        mgr = dpctl.utils.SequentialOrderManager[src.sycl_queue]
+        ht_ev, ev = statistics_ext._median(
+            src,
+            False,
+            dst,
+            sycl_queue=src.sycl_queue,
+            depends=mgr.submitted_events,
+        )
+        ht_ev.wait()
+        ev.wait()
+
+        expected = numpy.median(a, axis=-1).astype(dst.dtype)
+        assert_array_equal(dpt.asnumpy(dst), expected, strict=True)
+
     @pytest.mark.parametrize("n", [5, 64, 1000, 2**16 + 1, 2**17])
     @pytest.mark.parametrize("dtype", get_float_dtypes(no_float16=False))
     def test_special_values(self, n, dtype):

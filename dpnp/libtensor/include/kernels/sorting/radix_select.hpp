@@ -277,6 +277,30 @@ struct ArgPartitionOp
     }
 };
 
+/*! @brief The mean of 64-bit integers `lo <= hi`, rounded once to `ResT` */
+template <typename ResT, typename T>
+ResT integer_midpoint(T lo, T hi)
+{
+    using UT = std::make_unsigned_t<T>;
+    const UT diff = static_cast<UT>(hi) - static_cast<UT>(lo);
+    // the floor of the mean lies between `lo` and `hi`, so it can't overflow
+    const T mid = static_cast<T>(static_cast<UT>(lo) + diff / 2);
+    if (diff % 2 == 0) {
+        return static_cast<ResT>(mid);
+    }
+    // twice the mean is an exact integer while it fits
+    static constexpr T bound = T(1) << 62;
+    bool fits = (mid < bound);
+    if constexpr (std::is_signed_v<T>) {
+        fits = fits && (mid >= -bound);
+    }
+    if (fits) {
+        return static_cast<ResT>(2 * mid + 1) / ResT(2);
+    }
+    // a mean this large rounds as the odd one of its neighbouring integers
+    return static_cast<ResT>(mid | T(1));
+}
+
 /*! @brief The median of each row, the mean of its lower and upper medians,
  * written as `ResT` into an `(n_iters,)` array; it is NaN for a row with NaNs
  * unless `ignore_nan`, and for a row of NaNs only, which then sets
@@ -339,6 +363,18 @@ struct MedianOp
             // as numpy, the mean of half floats is taken in single precision
             out[iter_id] = static_cast<ResT>(
                 (static_cast<float>(lo) + static_cast<float>(hi)) / 2);
+        }
+        else if constexpr (std::is_integral_v<ValueT> && sizeof(ValueT) <= 4) {
+            // the sum is exact in 64 bits, so it is rounded only once
+            out[iter_id] = static_cast<ResT>(static_cast<std::int64_t>(lo) +
+                                             static_cast<std::int64_t>(hi)) /
+                           ResT(2);
+        }
+        else if constexpr (std::is_integral_v<ValueT> &&
+                           !std::is_same_v<ResT, double>) {
+            // without fp64 numpy's rounding to double can't be followed, so
+            // the exact mean is rounded once
+            out[iter_id] = integer_midpoint<ResT>(lo, hi);
         }
         else {
             out[iter_id] =
