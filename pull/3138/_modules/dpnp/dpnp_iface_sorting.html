@@ -1153,10 +1153,31 @@
     <span class="k">return</span> <span class="n">kth</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_partition_by_sort</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">sycl_device</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Whether rows of `n` elements of `dtype` are partitioned faster by a full</span>
+<span class="sd">    sort than by the work-group kernel of radix select on `sycl_device`.</span>
+
+<span class="sd">    """</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">sycl_device</span><span class="o">.</span><span class="n">is_gpu</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="n">dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="s2">"iu"</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">elif</span> <span class="n">dtype</span> <span class="o">!=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float32</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="c1"># shorter rows are ranked by a sub-group each</span>
+    <span class="n">sub_group_max_n</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">8</span> <span class="o">*</span> <span class="nb">min</span><span class="p">(</span><span class="n">sycl_device</span><span class="o">.</span><span class="n">sub_group_sizes</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">sub_group_max_n</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">128</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_wrap_partition_argpartition</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">kth</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">return_indices</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Partition `a` along `axis` about a single `kth` by radix select, falling</span>
-<span class="sd">    back to a full sort for several `kth` and for complex data types.</span>
+<span class="sd">    back to a full sort for several `kth`, for complex data types and for the</span>
+<span class="sd">    rows whose values `_partition_by_sort` finds a sort faster for.</span>
 
 <span class="sd">    """</span>
 
@@ -1197,6 +1218,10 @@
         <span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span>
         <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">kth</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span>
         <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="n">return_indices</span>
+            <span class="ow">and</span> <span class="n">_partition_by_sort</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">],</span> <span class="n">a</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
+        <span class="p">)</span>
     <span class="p">):</span>
         <span class="n">sort_fn</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">argsort</span> <span class="k">if</span> <span class="n">return_indices</span> <span class="k">else</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sort</span>
         <span class="k">return</span> <span class="n">sort_fn</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
