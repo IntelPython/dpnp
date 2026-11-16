@@ -1907,8 +1907,13 @@ sycl::event radix_select_dispatch(sycl::queue &exec_q,
     // below this row size a kernel per pass costs more than it saves
     static constexpr std::size_t multi_group_min_n = std::size_t(1) << 16;
 
+    // from about a row per four compute units of a GPU, a work-group per row
+    // already occupies it and the extra passes cost more than they save
+    const std::size_t max_multi_group_iters =
+        (dev.is_gpu()) ? n_cus / 4 : target_groups;
+
     std::size_t n_segments = 1;
-    if (n_iters < target_groups && n_values >= multi_group_min_n) {
+    if (n_iters < max_multi_group_iters && n_values >= multi_group_min_n) {
         n_segments =
             std::min((target_groups + n_iters - 1) / n_iters,
                      (n_values + min_segment_size - 1) / min_segment_size);
