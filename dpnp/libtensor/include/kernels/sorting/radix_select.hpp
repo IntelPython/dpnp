@@ -184,6 +184,13 @@ ShiftedOut<OutT> shifted(const OutT &out, std::uint64_t offset)
     return {out, offset};
 }
 
+/*! @brief A shifted sink shifted again, of the same type as the first */
+template <typename OutT>
+ShiftedOut<OutT> shifted(const ShiftedOut<OutT> &out, std::uint64_t offset)
+{
+    return {out.out, out.offset + offset};
+}
+
 inline NoOut shifted(const NoOut &, std::uint64_t) { return {}; }
 
 /*! @brief Passes candidate `i` of a row to `out` as the element of the row it
@@ -659,6 +666,12 @@ void gather_selected(const sycl::nd_item<1> &ndit,
 {
     static constexpr bool keeps_less = !std::is_same_v<LessOutT, NoOut>;
     static constexpr bool keeps_greater = !std::is_same_v<GreaterOutT, NoOut>;
+    // sinks of one type differ only in their offsets, so an element is written
+    // with one store: a CPU device makes a masked store of each sink per
+    // work-item for 1-byte values
+    static constexpr bool one_sink = keeps_less && keeps_greater &&
+                                     std::is_same_v<LessOutT, TieOutT> &&
+                                     std::is_same_v<LessOutT, GreaterOutT>;
 
     // an element's kind and its rank within a tile are counted in the low
     // (less) and high (tie) halves of one integer
@@ -730,19 +743,33 @@ void gather_selected(const sycl::nd_item<1> &ndit,
                 less_offset + less_done + (r & half_mask);
             const std::uint64_t tie_rank =
                 n_ties_before + ties_done + (r >> 16);
-            if (flags[j] == less_flag) {
-                if constexpr (keeps_less) {
-                    less_out(less_rank, i);
+            if constexpr (one_sink) {
+                const bool is_less = (flags[j] == less_flag);
+                const bool is_tie = (flags[j] == tie_flag);
+                if (i < end && (!is_tie || tie_rank < n_ties)) {
+                    const LessOutT out =
+                        is_less ? less_out : (is_tie ? tie_out : greater_out);
+                    out(is_less  ? less_rank
+                        : is_tie ? tie_rank
+                                 : i - less_rank - tie_rank,
+                        i);
                 }
             }
-            else if (flags[j] == tie_flag) {
-                if (tie_rank < n_ties) {
-                    tie_out(tie_rank, i);
+            else {
+                if (flags[j] == less_flag) {
+                    if constexpr (keeps_less) {
+                        less_out(less_rank, i);
+                    }
                 }
-            }
-            else if constexpr (keeps_greater) {
-                if (i < end) {
-                    greater_out(i - less_rank - tie_rank, i);
+                else if (flags[j] == tie_flag) {
+                    if (tie_rank < n_ties) {
+                        tie_out(tie_rank, i);
+                    }
+                }
+                else if constexpr (keeps_greater) {
+                    if (i < end) {
+                        greater_out(i - less_rank - tie_rank, i);
+                    }
                 }
             }
         }
@@ -980,7 +1007,7 @@ sycl::event
                         : sel.k - sel.n_less;
                 gather_selected<elems_per_wi>(
                     ndit, key_fn, 0, n_values, sel.desired, sel.mask, 0,
-                    sel.n_less, 0, n_ties, row_out,
+                    sel.n_less, 0, n_ties, shifted(row_out, 0),
                     shifted(row_out, sel.n_less),
                     greater_out<OpT>(shifted(row_out, sel.n_less + sel.n_eq)));
             }
