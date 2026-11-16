@@ -1,0 +1,10 @@
+﻿
+
+dpnp.maximum
+============
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: maximum
