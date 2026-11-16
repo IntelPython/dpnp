@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.scipy.sparse.linalg.LinearOperator.ndim
+============================================
+
+.. currentmodule:: dpnp.scipy.sparse.linalg
+
+attribute
+
+.. autoattribute:: LinearOperator.ndim
