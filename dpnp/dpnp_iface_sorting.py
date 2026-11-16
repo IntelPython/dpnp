@@ -87,10 +87,31 @@ def _normalize_kth(kth, length, check_bounds=True):
     return kth
 
 
+def _partition_by_sort(dtype, n, sycl_device):
+    """
+    Whether rows of `n` elements of `dtype` are partitioned faster by a full
+    sort than by the work-group kernel of radix select on `sycl_device`.
+
+    """
+
+    if not sycl_device.is_gpu:
+        return False
+    dtype = dpnp.dtype(dtype)
+    if dtype.kind in "iu":
+        if dtype.itemsize < 4:
+            return False
+    elif dtype != dpnp.float32:
+        return False
+    # shorter rows are ranked by a sub-group each
+    sub_group_max_n = min(64, 8 * min(sycl_device.sub_group_sizes))
+    return sub_group_max_n < n <= 128
+
+
 def _wrap_partition_argpartition(a, kth, axis, kind, order, return_indices):
     """
     Partition `a` along `axis` about a single `kth` by radix select, falling
-    back to a full sort for several `kth` and for complex data types.
+    back to a full sort for several `kth`, for complex data types and for the
+    rows whose values `_partition_by_sort` finds a sort faster for.
 
     """
 
@@ -131,6 +152,10 @@ def _wrap_partition_argpartition(a, kth, axis, kind, order, return_indices):
         a.size == 0
         or len(kth) != 1
         or dpnp.issubdtype(a.dtype, dpnp.complexfloating)
+        or (
+            not return_indices
+            and _partition_by_sort(a.dtype, a.shape[axis], a.sycl_device)
+        )
     ):
         sort_fn = dpnp.argsort if return_indices else dpnp.sort
         return sort_fn(a, axis=axis)

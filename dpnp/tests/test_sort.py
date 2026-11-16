@@ -1,8 +1,11 @@
+from types import SimpleNamespace
+
 import numpy
 import pytest
 from numpy.testing import assert_array_equal, assert_equal, assert_raises
 
 import dpnp
+import dpnp.dpnp_iface_sorting as dpnp_iface_sorting
 import dpnp.libtensor._tensor_sorting_impl as sorting_ext
 import dpnp.tensor as dpt
 from dpnp.exceptions import AxisError
@@ -353,6 +356,13 @@ _select_shapes = [
 
 
 class TestPartitionSelect:
+    @pytest.fixture(autouse=True)
+    def _always_select(self, monkeypatch):
+        # the rows a sort partitions faster are still selected here
+        monkeypatch.setattr(
+            dpnp_iface_sorting, "_partition_by_sort", lambda *args: False
+        )
+
     @pytest.mark.parametrize("shape", _select_shapes)
     @pytest.mark.parametrize("kind", ["random", "duplicates", "extremes"])
     @pytest.mark.parametrize(
@@ -447,6 +457,51 @@ class TestPartitionSelect:
         dst = dpt.empty((0, 5), dtype="c8" if fn == "_partition" else "i8")
         with pytest.raises(ValueError, match="No partition implementation"):
             getattr(sorting_ext, fn)(src, 1, dst, sycl_queue=src.sycl_queue)
+
+
+class TestPartitionBySort:
+    @pytest.mark.parametrize(
+        "dtype, n, device, expected",
+        [
+            ("i8", 65, "gpu", True),
+            ("u8", 128, "gpu", True),
+            ("i4", 100, "gpu", True),
+            ("f4", 100, "gpu", True),
+            ("i8", 64, "gpu", False),
+            ("i8", 129, "gpu", False),
+            ("i2", 100, "gpu", False),
+            ("f8", 100, "gpu", False),
+            ("?", 100, "gpu", False),
+            ("i8", 100, "cpu", False),
+        ],
+    )
+    def test_choice(self, dtype, n, device, expected):
+        dev = SimpleNamespace(
+            is_cpu=device == "cpu",
+            is_gpu=device == "gpu",
+            sub_group_sizes=[8, 16, 32],
+        )
+        assert dpnp_iface_sorting._partition_by_sort(dtype, n, dev) is expected
+
+    # rows ranked by a sub-group on a device with sub-groups of 4
+    def test_choice_small_sub_groups(self):
+        dev = SimpleNamespace(is_cpu=False, is_gpu=True, sub_group_sizes=[4])
+        assert dpnp_iface_sorting._partition_by_sort("i8", 32, dev) is False
+        assert dpnp_iface_sorting._partition_by_sort("i8", 33, dev) is True
+
+    def test_sorted(self, monkeypatch):
+        monkeypatch.setattr(
+            dpnp_iface_sorting, "_partition_by_sort", lambda *args: True
+        )
+        monkeypatch.delattr(sorting_ext, "_partition")
+        a = generate_random_numpy_array((4, 100), dtype="i8")
+        ia = dpnp.array(a)
+
+        assert_array_equal(dpnp.partition(ia, 30), numpy.sort(a, axis=-1))
+        # the indices are still selected
+        monkeypatch.delattr(sorting_ext, "_argpartition")
+        with pytest.raises(AttributeError):
+            dpnp.argpartition(ia, 30)
 
 
 class TestArgpartition:
