@@ -15,8 +15,6 @@ env:
   channels-list: '-c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels'
   test-env-name: test
   test-packages: 'pytest scipy'
-  # A retry reruns only the failed tests (--lf), or all of them after a timeout kill
-  # Serial runs also need --continue-on-collection-errors, or a collection error skips all other tests
   rerun-tests-max-attempts: 2
   rerun-tests-timeout: 20
 

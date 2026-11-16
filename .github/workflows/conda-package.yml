@@ -27,8 +27,6 @@ env:
   python-ver-test-all-dtypes: '3.14'
   test-env-name: 'test'
   rerun-tests-on-failure: 'true'
-  # A retry reruns only the failed tests (--lf), or all of them after a timeout kill
-  # Serial runs also need --continue-on-collection-errors, or a collection error skips all other tests
   rerun-tests-max-attempts: 2
   rerun-tests-timeout: 45
   rerun-tensor-tests-timeout: 15

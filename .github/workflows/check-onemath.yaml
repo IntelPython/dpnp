@@ -31,8 +31,6 @@ env:
   test-pkg-env: 'environments/test.yml'
   test-env-name: 'test_onemath'
   rerun-tests-on-failure: 'true'
-  # A retry reruns only the failed tests (--lf), or all of them after a timeout kill
-  # Serial runs also need --continue-on-collection-errors, or a collection error skips all other tests
   rerun-tests-max-attempts: 2
   rerun-tests-timeout: 30
   rerun-tensor-tests-timeout: 10
