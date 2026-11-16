@@ -1086,8 +1086,9 @@ private:
             const std::uint32_t krn_sg_size = krn.template get_info<
                 sycl::info::kernel_device_specific::max_sub_group_size>(dev);
 
-            // due to a bug in CPU device implementation, an additional
-            // synchronization is necessary for short sub-group sizes
+            // the CPU device compiler miscompiles the counting for short
+            // sub-groups unless each update is fenced (CMPLRLLVM-64592); a
+            // barrier in place of the fence crashes its barrier pass
             const bool work_around_needed =
                 exec_q.get_device().has(sycl::aspect::cpu) &&
                 (krn_sg_size < 16);
@@ -1198,8 +1199,9 @@ private:
                                         *counters[i] = indices[i] + 1;
 
                                         if (work_around_needed) {
-                                            sycl::group_barrier(
-                                                ndit.get_group());
+                                            sycl::atomic_fence(
+                                                sycl::memory_order::acq_rel,
+                                                sycl::memory_scope::work_group);
                                         }
                                     }
                                 }
@@ -1234,8 +1236,9 @@ private:
                                         *counters[i] = indices[i] + 1;
 
                                         if (work_around_needed) {
-                                            sycl::group_barrier(
-                                                ndit.get_group());
+                                            sycl::atomic_fence(
+                                                sycl::memory_order::acq_rel,
+                                                sycl::memory_scope::work_group);
                                         }
                                     }
                                 }

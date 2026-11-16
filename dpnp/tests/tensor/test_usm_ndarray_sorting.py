@@ -412,3 +412,33 @@ def test_radix_argsort_size_1_axis():
     x4 = dpt.reshape(dpt.arange(10, dtype="i1"), (1, 10))
     r4 = dpt.argsort(x4, axis=0, kind="radixsort")
     assert dpt.asnumpy(r4 == 0).all()
+
+
+# rows of every size class of the one-work-group radix sort above 256; on the
+# CPU device int8 argsort came out unstable and some data types crashed the
+# compiler at block sizes of 16 and more
+@pytest.mark.parametrize("n", [257, 1025, 2049, 4096, 8193, 16384])
+@pytest.mark.parametrize("dtype", ["?", "i1", "u1", "i2", "i4", "i8"])
+@pytest.mark.parametrize("descending", [False, True])
+def test_radix_sort_one_work_group(n, dtype, descending):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    rng = np.random.default_rng(42)
+    if dtype == "?":
+        x_np = rng.integers(0, 2, size=(2, n)).astype(dtype)
+    else:
+        info = np.iinfo(dtype)
+        x_np = rng.integers(info.min, info.max, size=(2, n), dtype=dtype)
+    x = dpt.asarray(x_np, sycl_queue=q)
+
+    # stable in either order: ties keep the order of the input
+    _, ranks = np.unique(x_np, return_inverse=True)
+    ranks = ranks.reshape(x_np.shape)
+    expected_inds = np.argsort(-ranks if descending else ranks, kind="stable")
+    expected = np.take_along_axis(x_np, expected_inds, axis=-1)
+
+    s = dpt.sort(x, descending=descending, kind="radixsort")
+    assert_array_equal(dpt.asnumpy(s), expected)
+    inds = dpt.argsort(x, descending=descending, kind="radixsort")
+    assert_array_equal(dpt.asnumpy(inds), expected_inds)
