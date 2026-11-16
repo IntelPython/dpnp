@@ -30,8 +30,9 @@ env:
   # A retry reruns only the failed tests (--lf), or all of them after a timeout kill
   # Serial runs also need --continue-on-collection-errors, or a collection error skips all other tests
   # Names the tests a --lf retry reruns, so a test that fails only in the full run stays visible
+  # With TEST_RETRIES_FILE set, also appends them there as a JSON line
   report-last-failed: >-
-    import json, os; p = os.path.join('.pytest_cache', 'v', 'cache', 'lastfailed'); f = sorted(json.load(open(p))) if os.path.exists(p) else []; f and print(f'::warning title=Rerunning {len(f)} failed tests::' + '%0A'.join([t.replace('%', '%25') for t in f[:50]] + ['...'] * (len(f) > 50)))
+    import json, os; p = os.path.join('.pytest_cache', 'v', 'cache', 'lastfailed'); f = sorted(json.load(open(p))) if os.path.exists(p) else []; f and print(f'::warning title=Rerunning {len(f)} failed tests::' + '%0A'.join([t.replace('%', '%25') for t in f[:50]] + ['...'] * (len(f) > 50))); r = os.environ.get('TEST_RETRIES_FILE'); f and r and open(r, 'a').write(json.dumps({'tensor': not os.environ.get('SKIP_TENSOR_TESTS'), 'tests': f}) + chr(10))
   rerun-tests-max-attempts: 2
   rerun-tests-timeout: 45
   rerun-tensor-tests-timeout: 15
@@ -190,6 +191,7 @@ jobs:
       channel-path: '${{ github.workspace }}/channel/'
       pkg-path-in-channel: '${{ github.workspace }}/channel/linux-64/'
       ver-json-path: '${{ github.workspace }}/version.json'
+      TEST_RETRIES_FILE: '${{ github.workspace }}/test-retries.jsonl'
       python-label: ${{ endsWith(matrix.python_spec, 't') && format('{0}t', matrix.python) || matrix.python }}
       python-install-spec: "python ${{ matrix.python_spec || format('{0}.*', matrix.python) }}"
 
@@ -312,6 +314,15 @@ jobs:
 
             python -c "${{ env.report-last-failed }}"
             python -m pytest -n auto -ra --lf --timeout=${{ env.tensor-test-timeout }} --timeout-method=thread --pyargs dpnp.tests.tensor
+
+      - name: Upload the list of retried tests
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: test-retries ${{ runner.os }} Python ${{ env.python-label }}
+          path: ${{ env.TEST_RETRIES_FILE }}
+          if-no-files-found: ignore
+          retention-days: 1
 
   test_examples_linux:
     name: Test examples
@@ -447,6 +458,7 @@ jobs:
       channel-path: '${{ github.workspace }}\channel\'
       pkg-path-in-channel: '${{ github.workspace }}\channel\win-64\'
       ver-json-path: '${{ github.workspace }}\version.json'
+      TEST_RETRIES_FILE: '${{ github.workspace }}\test-retries.jsonl'
       python-label: ${{ endsWith(matrix.python_spec, 't') && format('{0}t', matrix.python) || matrix.python }}
       python-install-spec: "python ${{ matrix.python_spec || format('{0}.*', matrix.python) }}"
 
@@ -592,6 +604,88 @@ jobs:
           command: |
             python -c "${{ env.report-last-failed }}"
             python -m pytest -n auto -ra --lf --timeout=${{ env.tensor-test-timeout }} --timeout-method=thread --pyargs dpnp.tests.tensor
+
+      - name: Upload the list of retried tests
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: test-retries ${{ runner.os }} Python ${{ env.python-label }}
+          path: ${{ env.TEST_RETRIES_FILE }}
+          if-no-files-found: ignore
+          retention-days: 1
+
+  report_test_retries:
+    name: Report retried tests
+
+    needs: [test_linux, test_windows]
+
+    # Skipped on fork PRs, whose token can't comment; the warning annotations still name the tests
+    if: ${{ !cancelled() && needs.test_linux.result != 'skipped' && github.event.pull_request && !github.event.pull_request.head.repo.fork }}
+
+    permissions:
+      # Needed to add a comment to a pull request's issue
+      pull-requests: write
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Download the lists of retried tests
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: test-retries *
+          path: test-retries
+
+      - name: Compose the report
+        id: compose
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          python3 - <<'EOF'
+          import json, os, pathlib
+
+          max_tests = 100
+          sections = []
+          for d in sorted(pathlib.Path('test-retries').glob('*')):
+              job = d.name.removeprefix('test-retries ')
+              for line in (d / 'test-retries.jsonl').read_text().splitlines():
+                  rec = json.loads(line)
+                  # node IDs are relative to the --pyargs package
+                  suite, prefix = ('tensor', 'dpnp/tests/tensor/') if rec['tensor'] else ('dpnp', 'dpnp/tests/')
+                  tests = [prefix + t for t in rec['tests']]
+                  shown = tests[:max_tests] + ['...'] * (len(tests) > max_tests)
+                  body = '\n'.join(shown)
+                  sections.append(
+                      f'<details><summary>{job}, {suite} tests: {len(tests)} rerun</summary>\n\n'
+                      f'```\n{body}\n```\n\n</details>'
+                  )
+
+          if sections:
+              head = (
+                  f'Tests retried on CI at {os.environ["HEAD_SHA"]}: they failed in the full run and were '
+                  'rerun on their own with `--lf`. A test that passed on the rerun may depend on the tests '
+                  'that ran before it.'
+              )
+              pathlib.Path('test-retries.md').write_text('\n\n'.join([head] + sections) + '\n')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as out:
+              out.write(f'retried={"true" if sections else "false"}\n')
+          EOF
+
+      - name: Post the retried tests to the PR
+        if: steps.compose.outputs.retried == 'true'
+        uses: mshick/add-pr-comment@ec328af66588ab8f77cdeb2c264f14aba45bbf59 # v3.12.0
+        with:
+          message-id: test_retries
+          message-path: test-retries.md
+
+      - name: Update an earlier report when nothing was retried
+        if: steps.compose.outputs.retried != 'true'
+        uses: mshick/add-pr-comment@ec328af66588ab8f77cdeb2c264f14aba45bbf59 # v3.12.0
+        with:
+          message-id: test_retries
+          update-only: true
+          message: |
+            No tests were retried on CI at ${{ github.event.pull_request.head.sha }}.
 
   upload:
     name: Upload
