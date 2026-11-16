@@ -17,10 +17,6 @@ env:
   test-packages: 'pytest scipy'
   # A retry reruns only the failed tests (--lf), or all of them after a timeout kill
   # Serial runs also need --continue-on-collection-errors, or a collection error skips all other tests
-  # Names the tests a --lf retry reruns, so a test that fails only in the full run stays visible
-  # With TEST_RETRIES_FILE set, also appends them there as a JSON line
-  report-last-failed: >-
-    import json, os; p = os.path.join('.pytest_cache', 'v', 'cache', 'lastfailed'); f = sorted(json.load(open(p))) if os.path.exists(p) else []; f and print(f'::warning title=Rerunning {len(f)} failed tests::' + '%0A'.join([t.replace('%', '%25') for t in f[:50]] + ['...'] * (len(f) > 50))); r = os.environ.get('TEST_RETRIES_FILE'); f and r and open(r, 'a').write(json.dumps({'tensor': not os.environ.get('SKIP_TENSOR_TESTS'), 'tests': f}) + chr(10))
   rerun-tests-max-attempts: 2
   rerun-tests-timeout: 20
 
@@ -80,12 +76,14 @@ jobs:
         run: |
           echo "Latest tag is ${{ steps.find_latest_tag.outputs.tag }}"
 
-      # Only for the local setup-miniconda action; the tests run from the installed package
+      # Only for the local setup-miniconda action and the CI scripts; the tests run from the installed package
       - name: Checkout DPNP repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-          sparse-checkout: .github/actions
+          sparse-checkout: |
+            .github/actions
+            .github/scripts
 
       - name: Setup miniconda
         uses: ./.github/actions/setup-miniconda
@@ -152,7 +150,7 @@ jobs:
             . $CONDA/etc/profile.d/mamba.sh
             mamba activate ${{ env.test-env-name }}
 
-            python -c "${{ env.report-last-failed }}"
+            python ".github/scripts/test_retries.py" record
             python -m pytest -ra --lf --continue-on-collection-errors --pyargs ${{ env.package-name }}.tests
         env:
           SYCL_CACHE_PERSISTENT: 1
@@ -166,7 +164,7 @@ jobs:
           max_attempts: ${{ env.rerun-tests-max-attempts }}
           retry_on: any
           command: |
-            python -c "${{ env.report-last-failed }}"
+            python ".github/scripts/test_retries.py" record
             python -m pytest -ra --lf --continue-on-collection-errors --pyargs ${{ env.package-name }}.tests
         env:
           SYCL_CACHE_PERSISTENT: 1
