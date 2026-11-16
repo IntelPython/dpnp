@@ -17,6 +17,9 @@ env:
   test-packages: 'pytest scipy'
   # A retry reruns only the failed tests (--lf), or all of them after a timeout kill
   # Serial runs also need --continue-on-collection-errors, or a collection error skips all other tests
+  # Names the tests a --lf retry reruns, so a test that fails only in the full run stays visible
+  report-last-failed: >-
+    import json, os; p = os.path.join('.pytest_cache', 'v', 'cache', 'lastfailed'); f = sorted(json.load(open(p))) if os.path.exists(p) else []; f and print(f'::warning title=Rerunning {len(f)} failed tests::' + '%0A'.join([t.replace('%', '%25') for t in f[:50]] + ['...'] * (len(f) > 50)))
   rerun-tests-max-attempts: 2
   rerun-tests-timeout: 20
 
@@ -148,6 +151,7 @@ jobs:
             . $CONDA/etc/profile.d/mamba.sh
             mamba activate ${{ env.test-env-name }}
 
+            python -c "${{ env.report-last-failed }}"
             python -m pytest -ra --lf --continue-on-collection-errors --pyargs ${{ env.package-name }}.tests
         env:
           SYCL_CACHE_PERSISTENT: 1
@@ -161,6 +165,7 @@ jobs:
           max_attempts: ${{ env.rerun-tests-max-attempts }}
           retry_on: any
           command: |
+            python -c "${{ env.report-last-failed }}"
             python -m pytest -ra --lf --continue-on-collection-errors --pyargs ${{ env.package-name }}.tests
         env:
           SYCL_CACHE_PERSISTENT: 1
