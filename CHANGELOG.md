@@ -12,6 +12,8 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 
 * Added support for boolean input in `dpnp.positive` and the `+` operator of `dpnp.ndarray` [#3128](https://github.com/IntelPython/dpnp/pull/3128)
 * Added `dpnp.top_k` to return the `k` largest or smallest elements and their indices along an axis, with a `sorted` keyword to return them in sorted order [#3133](https://github.com/IntelPython/dpnp/pull/3133)
+* Added implementation of `dpnp.minmax`, computing the minimum and the maximum of an array in a single pass by a new fused reduction kernel [#3135](https://github.com/IntelPython/dpnp/pull/3135)
+* Added implementation of `dpnp.scipy.linalg.cho_factor` and `dpnp.scipy.linalg.cho_solve` (SciPy-compatible) [#3116](https://github.com/IntelPython/dpnp/pull/3116)
 
 ### Changed
 
@@ -23,6 +25,7 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Improved performance of `dpnp.scipy.sparse.csr_matrix.sort_indices` by sorting once on a combined row and column key instead of in two passes [#3134](https://github.com/IntelPython/dpnp/pull/3134)
 * Reduced the overhead of `dpnp.ndarray.flags` and `dpnp.tensor.usm_ndarray.flags` [#3168](https://github.com/IntelPython/dpnp/pull/3168)
 * Changed `dpnp.linalg.LinAlgError` to derive from `numpy.linalg.LinAlgError`, so `except numpy.linalg.LinAlgError` also catches errors raised by dpnp linear algebra functions [#3184](https://github.com/IntelPython/dpnp/pull/3184)
+* Bumped the minimum required `dpctl` version to `0.24.0` [#3169](https://github.com/IntelPython/dpnp/pull/3169)
 
 ### Deprecated
 
