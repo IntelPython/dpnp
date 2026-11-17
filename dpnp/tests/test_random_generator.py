@@ -572,12 +572,18 @@ class TestPCG64DXSM:
         )
 
         ref = numpy.random.PCG64DXSM(42)
-        for uinteger in [-1, 2**32]:
-            state = dict(ref.state, uinteger=uinteger)
-            _assert_same_error(
-                lambda: setattr(ref, "state", state),
-                lambda: setattr(bg, "state", state),
-            )
+        # the messages differ by the size of a C long
+        bad = {
+            "uinteger": [-1, 2**32, 2**64, "1", None, numpy.nan],
+            "has_uint32": [2**31, -(2**31) - 1, 2**63, -(2**63) - 1, "1"],
+        }
+        for key, values in bad.items():
+            for v in values:
+                state = dict(ref.state, **{key: v})
+                _assert_same_error(
+                    lambda: setattr(ref, "state", state),
+                    lambda: setattr(bg, "state", state),
+                )
 
     def test_state_has_uint32(self):
         # NumPy takes any nonzero has_uint32 as true
