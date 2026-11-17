@@ -2779,16 +2779,8 @@ class Generator:
         if dtype not in _integer_types:
             raise TypeError(f"Unsupported dtype {dtype!r} for {name}")
 
-        # as NumPy, an empty draw checks neither bound
+        # as NumPy, an empty `size` checks neither bound
         shape = _normalize_size(size)
-        if shape is None:
-            try:
-                shape = numpy.broadcast_shapes(
-                    numpy.shape(low), numpy.shape(high)
-                )
-            except ValueError:
-                # left for the shape checks of the draw
-                shape = None
         if shape is not None and math.prod(shape) == 0:
             return dpnp.empty(
                 shape,
