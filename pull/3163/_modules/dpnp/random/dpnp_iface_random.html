@@ -1183,7 +1183,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExecutionPlacementError</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">._bit_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">BitGenerator</span><span class="p">,</span> <span class="n">Philox4x3210</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_random_state</span><span class="w"> </span><span class="kn">import</span> <span class="n">RandomState</span><span class="p">,</span> <span class="n">_legacy_seed</span><span class="p">,</span> <span class="n">_reseed_in_place</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_random_state</span><span class="w"> </span><span class="kn">import</span> <span class="n">RandomState</span><span class="p">,</span> <span class="n">_reseed_in_place</span>
 
 <span class="c1"># The states of the queues. The lock guarantees that concurrent callers</span>
 <span class="c1"># asking for the state of the same queue get the same instance back rather</span>
@@ -1195,6 +1195,8 @@
 <span class="c1"># given to the last seed() call, so that seeded code gets the same values</span>
 <span class="c1"># on every run, or OS entropy before any seed() call</span>
 <span class="n">_seed_source</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="n">_ISpawnableSeedSequence</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">bit_generator</span><span class="o">.</span><span class="n">ISpawnableSeedSequence</span>
 
 <span class="n">_QUEUE_PARAMS</span> <span class="o">=</span> <span class="s2">"""</span><span class="se">\</span>
 <span class="s2">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
@@ -1312,19 +1314,19 @@
     <span class="n">bit_generator</span> <span class="o">=</span> <span class="n">rs</span><span class="o">.</span><span class="n">_generator</span><span class="o">.</span><span class="n">bit_generator</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">bit_generator</span><span class="p">)</span> <span class="ow">is</span> <span class="n">Philox4x3210</span><span class="p">:</span>
         <span class="n">rs</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
-        <span class="n">entropy</span> <span class="o">=</span> <span class="n">_legacy_seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">_reseed_in_place</span><span class="p">(</span>
             <span class="n">bit_generator</span><span class="p">,</span>
             <span class="nb">type</span><span class="p">(</span><span class="n">bit_generator</span><span class="p">)(</span><span class="n">seed</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">bit_generator</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">),</span>
         <span class="p">)</span>
-        <span class="n">entropy</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">dpnp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span> <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span> <span class="k">else</span> <span class="n">seed</span>
-        <span class="p">)</span>
+
+    <span class="c1"># spawn from the seed sequence of the reseeded bit generator itself, so</span>
+    <span class="c1"># that its own children differ from those of the new states</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="n">bit_generator</span><span class="o">.</span><span class="n">seed_seq</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">_ISpawnableSeedSequence</span><span class="p">):</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">SeedSequence</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">generate_state</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
     <span class="k">with</span> <span class="n">_random_states_lock</span><span class="p">:</span>
-        <span class="n">_seed_source</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="kc">None</span> <span class="k">if</span> <span class="n">entropy</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">SeedSequence</span><span class="p">(</span><span class="n">entropy</span><span class="p">)</span>
-        <span class="p">)</span></div>
+        <span class="n">_seed_source</span> <span class="o">=</span> <span class="n">source</span></div>
 
 
 
