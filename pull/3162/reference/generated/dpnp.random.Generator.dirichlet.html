@@ -1147,7 +1147,8 @@
 <p class="rubric">Limitations</p>
 <p><cite>dtype</cite> and <cite>usm_type</cite> are not in NumPy's signature. <cite>alpha</cite> is
 copied to the host, where it is checked, and one kernel is launched
-for every component when all of <cite>alpha</cite> is less than 0.1.</p>
+for every component when all of <cite>alpha</cite> is less than 0.1 or, in
+single precision, when its sum is less than 1.</p>
 </dd></dl>
 
 </section>

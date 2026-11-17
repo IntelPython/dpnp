@@ -1174,9 +1174,10 @@ when <cite>out</cite> is given.</p>
 </dd>
 </dl>
 <p class="rubric">Limitations</p>
-<p><cite>dtype</cite> and <cite>usm_type</cite> are not in NumPy's signature. The Box-Muller
-transform is used rather than NumPy's ziggurat, so the magnitude of
-the samples is bounded: by about 6.8 in float32, and 8.6 in float64.</p>
+<p><cite>dtype</cite> defaults to the default floating-point type of the device, and
+<cite>usm_type</cite> is not in NumPy's signature. The Box-Muller transform is
+used rather than NumPy's ziggurat, so the magnitude of the samples is
+bounded: by about 6.8 in float32, and 8.6 in float64.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
