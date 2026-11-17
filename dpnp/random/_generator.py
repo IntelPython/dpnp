@@ -684,9 +684,10 @@ class Generator:
 
         Limitations
         -----------
-        `dtype` and `usm_type` are not in NumPy's signature. The Box-Muller
-        transform is used rather than NumPy's ziggurat, so the magnitude of
-        the samples is bounded: by about 6.8 in float32, and 8.6 in float64.
+        `dtype` defaults to the default floating-point type of the device, and
+        `usm_type` is not in NumPy's signature. The Box-Muller transform is
+        used rather than NumPy's ziggurat, so the magnitude of the samples is
+        bounded: by about 6.8 in float32, and 8.6 in float64.
 
         Examples
         --------
