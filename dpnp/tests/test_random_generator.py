@@ -1132,6 +1132,17 @@ class TestIntegers:
             ),
             ((0, 256), {"dtype": numpy.uint8, "endpoint": True}, "high is out"),
             ((0, 3), {"dtype": numpy.bool_}, "high is out of bounds for bool"),
+            # an empty broadcast without `size` still checks the bounds
+            (
+                (-1, numpy.empty(0, dtype=numpy.int64)),
+                {"dtype": numpy.uint8},
+                "low is out of bounds for uint8",
+            ),
+            (
+                (numpy.empty(0, dtype=numpy.int64), 300),
+                {"dtype": numpy.uint8},
+                "high is out of bounds for uint8",
+            ),
         ],
     )
     def test_errors(self, args, kwargs, msg):
@@ -1155,7 +1166,7 @@ class TestIntegers:
         ],
     )
     def test_empty_size(self, low, high, size, kwargs):
-        # as in NumPy, an empty draw checks neither bound
+        # as in NumPy, an empty `size` checks neither bound
         expected = numpy.random.default_rng(0).integers(
             low, high, size=size, **kwargs
         )
