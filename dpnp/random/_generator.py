@@ -98,10 +98,10 @@ _F32_GT_1 = (numpy.nextafter(numpy.float32(1), numpy.float32(2)), None)
 _F32_LT_1 = (None, numpy.nextafter(numpy.float32(1), numpy.float32(0)))
 _F32_LT_2_63 = (None, numpy.nextafter(numpy.float32(2**63), numpy.float32(0)))
 
-# the messages of Generator.choice
 # The draws of a small sample without replacement before it permutes
 _CHOICE_DRAWS = 8
 
+# the messages of Generator.choice
 _CHOICE_MSGS = {
     "a_type": "a must be a sequence or an integer, not {}",
     "a_int": "a must be a positive integer unless no samples are taken",
