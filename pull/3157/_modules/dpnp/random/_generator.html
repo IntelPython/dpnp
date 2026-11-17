@@ -1781,9 +1781,10 @@
 
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
-<span class="sd">        `dtype` and `usm_type` are not in NumPy's signature. The Box-Muller</span>
-<span class="sd">        transform is used rather than NumPy's ziggurat, so the magnitude of</span>
-<span class="sd">        the samples is bounded: by about 6.8 in float32, and 8.6 in float64.</span>
+<span class="sd">        `dtype` defaults to the default floating-point type of the device, and</span>
+<span class="sd">        `usm_type` is not in NumPy's signature. The Box-Muller transform is</span>
+<span class="sd">        used rather than NumPy's ziggurat, so the magnitude of the samples is</span>
+<span class="sd">        bounded: by about 6.8 in float32, and 8.6 in float64.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
