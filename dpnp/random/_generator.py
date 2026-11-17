@@ -2748,7 +2748,8 @@ class Generator:
         -----------
         `dtype` and `usm_type` are not in NumPy's signature. `alpha` is
         copied to the host, where it is checked, and one kernel is launched
-        for every component when all of `alpha` is less than 0.1.
+        for every component when all of `alpha` is less than 0.1 or, in
+        single precision, when its sum is less than 1.
 
         """
 
@@ -2774,11 +2775,12 @@ class Generator:
         size = _normalize_size(size)
         shape = (() if size is None else size) + (k,)
 
-        # NumPy's threshold for the gamma variates to underflow is too low
-        # in single precision, where alpha of 0.1 to 0.2 still gives rows
-        # of 0 / 0
-        small = 0.1 if dtype == numpy.float64 else 1.0
-        if k == 0 or not alpha.max() < small:
+        # NumPy breaks a stick when all of alpha is below 0.1. In single
+        # precision a row is also 0 / 0 when all its gamma variates
+        # underflow, which is likely only for a sum of alpha below 1
+        if k == 0 or not (
+            alpha.max() < 0.1 or (dtype == numpy.float32 and alpha.sum() < 1)
+        ):
             # normalize gamma variates, NaN in alpha giving NaN
             res = self._float_sample(
                 ri._gamma,

@@ -1854,6 +1854,8 @@ class TestMultivariate:
             # gamma variates that underflow in single precision
             [0.1, 0.0],
             [0.2, 0.15],
+            [0.5, 0.4],
+            [0.6, 0.5],
         ],
     )
     def test_dirichlet(self, alpha, dtype):
@@ -1872,6 +1874,33 @@ class TestMultivariate:
         assert (
             abs(res.mean(axis=0) - mean) <= 5 * numpy.sqrt(var / (2 * n))
         ).all()
+
+    @pytest.mark.parametrize(
+        "alpha, dtype, kernel",
+        [
+            ([0.05] * 30, dpnp.float32, ri._beta),
+            ([0.5, 0.4], dpnp.float32, ri._beta),
+            ([0.5] * 3, dpnp.float32, ri._gamma),
+            ([0.5, 0.4], dpnp.float64, ri._gamma),
+            ([0.05] * 30, dpnp.float64, ri._beta),
+        ],
+    )
+    def test_dirichlet_kernel(self, monkeypatch, alpha, dtype, kernel):
+        # one beta kernel per component only where gamma variates underflow
+        if dtype == dpnp.float64 and not has_support_aspect64():
+            pytest.skip("fp64 is required")
+
+        kernels = []
+        float_sample = Generator._float_sample
+
+        def _recorded(self, fn, *args, **kwargs):
+            kernels.append(fn)
+            return float_sample(self, fn, *args, **kwargs)
+
+        monkeypatch.setattr(Generator, "_float_sample", _recorded)
+        default_rng(0).dirichlet(alpha, size=4, dtype=dtype)
+        n_kernels = len(alpha) - 1 if kernel is ri._beta else 1
+        assert kernels == [kernel] * n_kernels
 
     @pytest.mark.parametrize(
         "alpha", [[0.0], [0.0, 0.0], [0.05, 0.0], [0.0, 0.0, 0.05], [0.0, 2.0]]
