@@ -52,7 +52,7 @@ import dpnp.tensor as dpt
 from dpnp.exceptions import ExecutionPlacementError
 
 from ._bit_generator import BitGenerator, Philox4x3210
-from .dpnp_random_state import RandomState, _legacy_seed, _reseed_in_place
+from .dpnp_random_state import RandomState, _reseed_in_place
 
 # The states of the queues. The lock guarantees that concurrent callers
 # asking for the state of the same queue get the same instance back rather
@@ -64,6 +64,8 @@ _random_states_lock = threading.Lock()
 # given to the last seed() call, so that seeded code gets the same values
 # on every run, or OS entropy before any seed() call
 _seed_source = None
+
+_ISpawnableSeedSequence = numpy.random.bit_generator.ISpawnableSeedSequence
 
 _QUEUE_PARAMS = """\
     device : {None, string, SyclDevice, SyclQueue, Device}, optional
@@ -179,19 +181,19 @@ def seed(seed=None, *, device=None, sycl_queue=None):
     bit_generator = rs._generator.bit_generator
     if type(bit_generator) is Philox4x3210:
         rs.seed(seed)
-        entropy = _legacy_seed(seed)
     else:
         _reseed_in_place(
             bit_generator,
             type(bit_generator)(seed, sycl_queue=bit_generator.sycl_queue),
         )
-        entropy = (
-            dpnp.asnumpy(seed) if dpnp.is_supported_array_type(seed) else seed
-        )
+
+    # spawn from the seed sequence of the reseeded bit generator itself, so
+    # that its own children differ from those of the new states
+    source = bit_generator.seed_seq
+    if not isinstance(source, _ISpawnableSeedSequence):
+        source = numpy.random.SeedSequence(source.generate_state(4))
     with _random_states_lock:
-        _seed_source = (
-            None if entropy is None else numpy.random.SeedSequence(entropy)
-        )
+        _seed_source = source
 
 
 @_params_doc
