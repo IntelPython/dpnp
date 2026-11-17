@@ -346,8 +346,6 @@ extern std::pair<sycl::event, sycl::event>
               const std::vector<sycl::event> &depends,
               const sample_fn_ptr_t fn);
 
-// Fills `table` and binds it to the Python function `name`, which takes the
-// distribution parameters as a sequence
 template <typename T>
 struct TypeTag
 {
@@ -381,6 +379,8 @@ void record_halves_per_item(py::module_ &m, const char *name)
     }
 }
 
+// Fills `table` and binds it to the Python function `name`, which takes the
+// distribution parameters as a sequence
 template <template <typename> class SamplerT,
           template <typename> class SupportedT>
 void def_sampler(py::module_ &m,
