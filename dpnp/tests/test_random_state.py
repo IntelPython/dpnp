@@ -279,6 +279,39 @@ class TestBitGenerator:
         ref = dpnp.random.Generator(dpnp.random.PCG64DXSM(9)).random(4)
         assert_array_equal(dpnp.random.random_sample(4), ref)
 
+    def test_module_seed_seed_sequence(self):
+        bg = dpnp.random.PCG64DXSM(1)
+        dpnp.random.set_bit_generator(bg)
+        seq = numpy.random.SeedSequence(5)
+        dpnp.random.seed(seq)
+        assert bg.state == dpnp.random.PCG64DXSM(seq).state
+
+        a = dpnp.random.rand(3, sycl_queue=dpctl.SyclQueue())
+        dpnp.random.seed(numpy.random.SeedSequence(5))
+        b = dpnp.random.rand(3, sycl_queue=dpctl.SyclQueue())
+        assert_array_equal(dpnp.asnumpy(a), dpnp.asnumpy(b))
+
+    def test_module_seed_not_spawnable(self):
+        class _Seq(numpy.random.bit_generator.ISeedSequence):
+            def generate_state(self, n_words, dtype=numpy.uint32):
+                return numpy.arange(1, n_words + 1, dtype=dtype)
+
+        dpnp.random.set_bit_generator(dpnp.random.PCG64DXSM(1))
+        dpnp.random.seed(_Seq())
+        a = dpnp.random.rand(3, sycl_queue=dpctl.SyclQueue())
+        dpnp.random.seed(_Seq())
+        b = dpnp.random.rand(3, sycl_queue=dpctl.SyclQueue())
+        assert_array_equal(dpnp.asnumpy(a), dpnp.asnumpy(b))
+
+    def test_module_seed_children_differ(self):
+        # a new queue's state and a child of the reseeded bit generator
+        # are spawned from the same seed sequence, so they differ
+        dpnp.random.seed(4)
+        (child,) = dpnp.random.get_bit_generator().spawn(1)
+        a = dpnp.random.rand(3, sycl_queue=dpctl.SyclQueue())
+        b = RandomState(child).rand(3)
+        assert not (dpnp.asnumpy(a) == dpnp.asnumpy(b)).any()
+
     def test_queue(self):
         queue = dpctl.SyclQueue()
         bg = dpnp.random.PCG64DXSM(1, sycl_queue=queue)
