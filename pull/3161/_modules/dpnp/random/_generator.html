@@ -1225,10 +1225,10 @@
 <span class="n">_F32_LT_1</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">nextafter</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
 <span class="n">_F32_LT_2_63</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">nextafter</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="mi">63</span><span class="p">),</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
 
-<span class="c1"># the messages of Generator.choice</span>
 <span class="c1"># The draws of a small sample without replacement before it permutes</span>
 <span class="n">_CHOICE_DRAWS</span> <span class="o">=</span> <span class="mi">8</span>
 
+<span class="c1"># the messages of Generator.choice</span>
 <span class="n">_CHOICE_MSGS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">"a_type"</span><span class="p">:</span> <span class="s2">"a must be a sequence or an integer, not </span><span class="si">{}</span><span class="s2">"</span><span class="p">,</span>
     <span class="s2">"a_int"</span><span class="p">:</span> <span class="s2">"a must be a positive integer unless no samples are taken"</span><span class="p">,</span>
@@ -2102,9 +2102,10 @@
 
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
-<span class="sd">        `dtype` and `usm_type` are not in NumPy's signature. The Box-Muller</span>
-<span class="sd">        transform is used rather than NumPy's ziggurat, so the magnitude of</span>
-<span class="sd">        the samples is bounded: by about 6.8 in float32, and 8.6 in float64.</span>
+<span class="sd">        `dtype` defaults to the default floating-point type of the device, and</span>
+<span class="sd">        `usm_type` is not in NumPy's signature. The Box-Muller transform is</span>
+<span class="sd">        used rather than NumPy's ziggurat, so the magnitude of the samples is</span>
+<span class="sd">        bounded: by about 6.8 in float32, and 8.6 in float64.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -2208,9 +2209,52 @@
 <span class="sd">        For full documentation refer to</span>
 <span class="sd">        :obj:`numpy.random.Generator.lognormal`.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        mean : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \</span>
+<span class="sd">                optional</span>
+<span class="sd">            The mean of the underlying normal distribution.</span>
+
+<span class="sd">            Default: ``0.0``.</span>
+<span class="sd">        sigma : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \</span>
+<span class="sd">                optional</span>
+<span class="sd">            The standard deviation of the underlying normal distribution,</span>
+<span class="sd">            non-negative.</span>
+
+<span class="sd">            Default: ``1.0``.</span>
+<span class="sd">        size : {None, int, tuple of ints}, optional</span>
+<span class="sd">            Output shape. With ``None``, the broadcast shape of `mean` and</span>
+<span class="sd">            `sigma`.</span>
+
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        dtype : {None, dtype}, optional</span>
+<span class="sd">            The data type of the output, :obj:`dpnp.float32` or</span>
+<span class="sd">            :obj:`dpnp.float64`.</span>
+
+<span class="sd">            Default: ``None``, which means the default floating-point type of</span>
+<span class="sd">            the device.</span>
+<span class="sd">        usm_type : {None, "device", "shared", "host"}, optional</span>
+<span class="sd">            The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">            Default: ``None``, which means the USM type of the array</span>
+<span class="sd">            parameters, or ``"device"`` when there are none.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            The samples.</span>
+
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
 <span class="sd">        `dtype` and `usm_type` are not in NumPy's signature.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(42)</span>
+<span class="sd">        &gt;&gt;&gt; y = np.log(rng.lognormal(0.0, 0.5, 10**5))</span>
+<span class="sd">        &gt;&gt;&gt; bool(abs(y.mean()) &lt; 0.01), bool(abs(y.std() - 0.5) &lt; 0.01)</span>
+<span class="sd">        (True, True)</span>
 
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cont</span><span class="p">(</span>
@@ -2233,9 +2277,39 @@
 <span class="sd">        For full documentation refer to</span>
 <span class="sd">        :obj:`numpy.random.Generator.standard_cauchy`.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        size : {None, int, tuple of ints}, optional</span>
+<span class="sd">            Output shape. With ``None``, a zero-dimensional array is returned.</span>
+
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        dtype : {None, dtype}, optional</span>
+<span class="sd">            The data type of the output, :obj:`dpnp.float32` or</span>
+<span class="sd">            :obj:`dpnp.float64`.</span>
+
+<span class="sd">            Default: ``None``, which means the default floating-point type of</span>
+<span class="sd">            the device.</span>
+<span class="sd">        usm_type : {None, "device", "shared", "host"}, optional</span>
+<span class="sd">            The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">            Default: ``None``, which means ``"device"``.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            The samples.</span>
+
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
 <span class="sd">        `dtype` and `usm_type` are not in NumPy's signature.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(42)</span>
+<span class="sd">        &gt;&gt;&gt; x = rng.standard_cauchy(10**5)</span>
+<span class="sd">        &gt;&gt;&gt; bool(abs(np.median(x)) &lt; 0.05)</span>
+<span class="sd">        True</span>
 
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_float_sample</span><span class="p">(</span>
@@ -2251,9 +2325,45 @@
 
 <span class="sd">        For full documentation refer to :obj:`numpy.random.Generator.wald`.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        mean : {float, array_like of floats, dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">            The mean of the distribution, positive.</span>
+<span class="sd">        scale : {float, array_like of floats, dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">            The scale parameter of the distribution, positive.</span>
+<span class="sd">        size : {None, int, tuple of ints}, optional</span>
+<span class="sd">            Output shape. With ``None``, the broadcast shape of `mean` and</span>
+<span class="sd">            `scale`.</span>
+
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        dtype : {None, dtype}, optional</span>
+<span class="sd">            The data type of the output, :obj:`dpnp.float32` or</span>
+<span class="sd">            :obj:`dpnp.float64`.</span>
+
+<span class="sd">            Default: ``None``, which means the default floating-point type of</span>
+<span class="sd">            the device.</span>
+<span class="sd">        usm_type : {None, "device", "shared", "host"}, optional</span>
+<span class="sd">            The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">            Default: ``None``, which means the USM type of the array</span>
+<span class="sd">            parameters, or ``"device"`` when there are none.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            The samples.</span>
+
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
 <span class="sd">        `dtype` and `usm_type` are not in NumPy's signature.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(42)</span>
+<span class="sd">        &gt;&gt;&gt; x = rng.wald(1.0, 2.0, 10**5)</span>
+<span class="sd">        &gt;&gt;&gt; bool((x &gt; 0).all()), bool(abs(x.mean() - 1) &lt; 0.02)</span>
+<span class="sd">        (True, True)</span>
 
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cont</span><span class="p">(</span>
@@ -2284,9 +2394,52 @@
 <span class="sd">        For full documentation refer to</span>
 <span class="sd">        :obj:`numpy.random.Generator.standard_exponential`.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        size : {None, int, tuple of ints}, optional</span>
+<span class="sd">            Output shape. With ``None``, a zero-dimensional array is returned.</span>
+
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        dtype : {None, dtype}, optional</span>
+<span class="sd">            The data type of the output, :obj:`dpnp.float32` or</span>
+<span class="sd">            :obj:`dpnp.float64`.</span>
+
+<span class="sd">            Default: ``None``, which means the default floating-point type of</span>
+<span class="sd">            the device.</span>
+<span class="sd">        method : {"zig", "inv"}, optional</span>
+<span class="sd">            The sampling method. Both draw by inversion, see Limitations.</span>
+
+<span class="sd">            Default: ``"zig"``.</span>
+<span class="sd">        out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">            A C- or F-contiguous array to fill, of the data type `dtype` and on</span>
+<span class="sd">            the SYCL queue of the generator. If `size` is given as well, it</span>
+<span class="sd">            must be the shape of `out`.</span>
+
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        usm_type : {None, "device", "shared", "host"}, optional</span>
+<span class="sd">            The type of SYCL USM allocation for the output array. Ignored when</span>
+<span class="sd">            `out` is given.</span>
+
+<span class="sd">            Default: ``None``, which means ``"device"``.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            The samples, or `out` when it is given.</span>
+
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
-<span class="sd">        Both methods use inversion; ``"zig"`` is accepted for compatibility.</span>
+<span class="sd">        `dtype` defaults to the default floating-point type of the device, and</span>
+<span class="sd">        `usm_type` is not in NumPy's signature. Both methods use inversion;</span>
+<span class="sd">        ``"zig"`` is accepted for compatibility.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(42)</span>
+<span class="sd">        &gt;&gt;&gt; x = rng.standard_exponential(10**5)</span>
+<span class="sd">        &gt;&gt;&gt; bool((x &gt;= 0).all()), bool(abs(x.mean() - 1) &lt; 0.02)</span>
+<span class="sd">        (True, True)</span>
 
 <span class="sd">        """</span>
 
@@ -2313,9 +2466,46 @@
 <span class="sd">        For full documentation refer to</span>
 <span class="sd">        :obj:`numpy.random.Generator.exponential`.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        scale : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \</span>
+<span class="sd">                optional</span>
+<span class="sd">            The scale parameter of the distribution, the inverse of the rate,</span>
+<span class="sd">            non-negative.</span>
+
+<span class="sd">            Default: ``1.0``.</span>
+<span class="sd">        size : {None, int, tuple of ints}, optional</span>
+<span class="sd">            Output shape. With ``None``, the shape of `scale`.</span>
+
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        dtype : {None, dtype}, optional</span>
+<span class="sd">            The data type of the output, :obj:`dpnp.float32` or</span>
+<span class="sd">            :obj:`dpnp.float64`.</span>
+
+<span class="sd">            Default: ``None``, which means the default floating-point type of</span>
+<span class="sd">            the device.</span>
+<span class="sd">        usm_type : {None, "device", "shared", "host"}, optional</span>
+<span class="sd">            The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">            Default: ``None``, which means the USM type of the array</span>
+<span class="sd">            parameters, or ``"device"`` when there are none.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            The samples.</span>
+
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
 <span class="sd">        `dtype` and `usm_type` are not in NumPy's signature.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(42)</span>
+<span class="sd">        &gt;&gt;&gt; x = rng.exponential(2.0, 10**5)</span>
+<span class="sd">        &gt;&gt;&gt; bool((x &gt;= 0).all()), bool(abs(x.mean() - 2) &lt; 0.04)</span>
+<span class="sd">        (True, True)</span>
 
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cont</span><span class="p">(</span>
@@ -2337,9 +2527,42 @@
 
 <span class="sd">        For full documentation refer to :obj:`numpy.random.Generator.pareto`.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        a : {float, array_like of floats, dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">            The shape of the distribution, positive.</span>
+<span class="sd">        size : {None, int, tuple of ints}, optional</span>
+<span class="sd">            Output shape. With ``None``, the shape of `a`.</span>
+
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        dtype : {None, dtype}, optional</span>
+<span class="sd">            The data type of the output, :obj:`dpnp.float32` or</span>
+<span class="sd">            :obj:`dpnp.float64`.</span>
+
+<span class="sd">            Default: ``None``, which means the default floating-point type of</span>
+<span class="sd">            the device.</span>
+<span class="sd">        usm_type : {None, "device", "shared", "host"}, optional</span>
+<span class="sd">            The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">            Default: ``None``, which means the USM type of the array</span>
+<span class="sd">            parameters, or ``"device"`` when there are none.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            The samples.</span>
+
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
 <span class="sd">        `dtype` and `usm_type` are not in NumPy's signature.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(42)</span>
+<span class="sd">        &gt;&gt;&gt; x = rng.pareto(3.0, 10**5)</span>
+<span class="sd">        &gt;&gt;&gt; bool((x &gt;= 0).all()), bool(abs((x &gt; 1).mean() - 0.125) &lt; 0.01)</span>
+<span class="sd">        (True, True)</span>
 
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cont</span><span class="p">(</span>
@@ -2360,9 +2583,42 @@
 
 <span class="sd">        For full documentation refer to :obj:`numpy.random.Generator.weibull`.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        a : {float, array_like of floats, dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">            The shape of the distribution, non-negative.</span>
+<span class="sd">        size : {None, int, tuple of ints}, optional</span>
+<span class="sd">            Output shape. With ``None``, the shape of `a`.</span>
+
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        dtype : {None, dtype}, optional</span>
+<span class="sd">            The data type of the output, :obj:`dpnp.float32` or</span>
+<span class="sd">            :obj:`dpnp.float64`.</span>
+
+<span class="sd">            Default: ``None``, which means the default floating-point type of</span>
+<span class="sd">            the device.</span>
+<span class="sd">        usm_type : {None, "device", "shared", "host"}, optional</span>
+<span class="sd">            The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">            Default: ``None``, which means the USM type of the array</span>
+<span class="sd">            parameters, or ``"device"`` when there are none.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            The samples.</span>
+
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
 <span class="sd">        `dtype` and `usm_type` are not in NumPy's signature.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(42)</span>
+<span class="sd">        &gt;&gt;&gt; x = rng.weibull(2.0, 10**5)</span>
+<span class="sd">        &gt;&gt;&gt; bool((x &gt;= 0).all()), bool(abs((x**2).mean() - 1) &lt; 0.02)</span>
+<span class="sd">        (True, True)</span>
 
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cont</span><span class="p">(</span>
@@ -2384,9 +2640,44 @@
 
 <span class="sd">        For full documentation refer to :obj:`numpy.random.Generator.power`.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        a : {float, array_like of floats, dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">            The parameter of the distribution, positive.</span>
+<span class="sd">        size : {None, int, tuple of ints}, optional</span>
+<span class="sd">            Output shape. With ``None``, the shape of `a`.</span>
+
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        dtype : {None, dtype}, optional</span>
+<span class="sd">            The data type of the output, :obj:`dpnp.float32` or</span>
+<span class="sd">            :obj:`dpnp.float64`.</span>
+
+<span class="sd">            Default: ``None``, which means the default floating-point type of</span>
+<span class="sd">            the device.</span>
+<span class="sd">        usm_type : {None, "device", "shared", "host"}, optional</span>
+<span class="sd">            The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">            Default: ``None``, which means the USM type of the array</span>
+<span class="sd">            parameters, or ``"device"`` when there are none.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            The samples.</span>
+
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
 <span class="sd">        `dtype` and `usm_type` are not in NumPy's signature.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(42)</span>
+<span class="sd">        &gt;&gt;&gt; x = rng.power(3.0, 10**5)</span>
+<span class="sd">        &gt;&gt;&gt; a = bool(((0 &lt;= x) &amp; (x &lt;= 1)).all())</span>
+<span class="sd">        &gt;&gt;&gt; b = bool(abs(x.mean() - 0.75) &lt; 0.005)</span>
+<span class="sd">        &gt;&gt;&gt; a, b</span>
+<span class="sd">        (True, True)</span>
 
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cont</span><span class="p">(</span>
@@ -2403,9 +2694,45 @@
 <span class="sd">        For full documentation refer to</span>
 <span class="sd">        :obj:`numpy.random.Generator.rayleigh`.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        scale : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \</span>
+<span class="sd">                optional</span>
+<span class="sd">            The scale of the distribution, also its mode, non-negative.</span>
+
+<span class="sd">            Default: ``1.0``.</span>
+<span class="sd">        size : {None, int, tuple of ints}, optional</span>
+<span class="sd">            Output shape. With ``None``, the shape of `scale`.</span>
+
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        dtype : {None, dtype}, optional</span>
+<span class="sd">            The data type of the output, :obj:`dpnp.float32` or</span>
+<span class="sd">            :obj:`dpnp.float64`.</span>
+
+<span class="sd">            Default: ``None``, which means the default floating-point type of</span>
+<span class="sd">            the device.</span>
+<span class="sd">        usm_type : {None, "device", "shared", "host"}, optional</span>
+<span class="sd">            The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">            Default: ``None``, which means the USM type of the array</span>
+<span class="sd">            parameters, or ``"device"`` when there are none.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            The samples.</span>
+
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
 <span class="sd">        `dtype` and `usm_type` are not in NumPy's signature.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(42)</span>
+<span class="sd">        &gt;&gt;&gt; x = rng.rayleigh(2.0, 10**5)</span>
+<span class="sd">        &gt;&gt;&gt; bool((x &gt;= 0).all()), bool(abs((x**2).mean() - 8) &lt; 0.2)</span>
+<span class="sd">        (True, True)</span>
 
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cont</span><span class="p">(</span>
@@ -2429,9 +2756,53 @@
 
 <span class="sd">        For full documentation refer to :obj:`numpy.random.Generator.laplace`.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        loc : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \</span>
+<span class="sd">                optional</span>
+<span class="sd">            The position of the peak of the distribution.</span>
+
+<span class="sd">            Default: ``0.0``.</span>
+<span class="sd">        scale : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \</span>
+<span class="sd">                optional</span>
+<span class="sd">            The exponential decay of the distribution, non-negative.</span>
+
+<span class="sd">            Default: ``1.0``.</span>
+<span class="sd">        size : {None, int, tuple of ints}, optional</span>
+<span class="sd">            Output shape. With ``None``, the broadcast shape of `loc` and</span>
+<span class="sd">            `scale`.</span>
+
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        dtype : {None, dtype}, optional</span>
+<span class="sd">            The data type of the output, :obj:`dpnp.float32` or</span>
+<span class="sd">            :obj:`dpnp.float64`.</span>
+
+<span class="sd">            Default: ``None``, which means the default floating-point type of</span>
+<span class="sd">            the device.</span>
+<span class="sd">        usm_type : {None, "device", "shared", "host"}, optional</span>
+<span class="sd">            The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">            Default: ``None``, which means the USM type of the array</span>
+<span class="sd">            parameters, or ``"device"`` when there are none.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            The samples.</span>
+
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
 <span class="sd">        `dtype` and `usm_type` are not in NumPy's signature.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(42)</span>
+<span class="sd">        &gt;&gt;&gt; x = rng.laplace(1.0, 2.0, 10**5)</span>
+<span class="sd">        &gt;&gt;&gt; a = bool(abs(x.mean() - 1) &lt; 0.06)</span>
+<span class="sd">        &gt;&gt;&gt; b = bool(abs(abs(x - 1).mean() - 2) &lt; 0.05)</span>
+<span class="sd">        &gt;&gt;&gt; a, b</span>
+<span class="sd">        (True, True)</span>
 
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cont</span><span class="p">(</span>
@@ -2455,9 +2826,51 @@
 
 <span class="sd">        For full documentation refer to :obj:`numpy.random.Generator.gumbel`.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        loc : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \</span>
+<span class="sd">                optional</span>
+<span class="sd">            The location of the mode of the distribution.</span>
+
+<span class="sd">            Default: ``0.0``.</span>
+<span class="sd">        scale : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \</span>
+<span class="sd">                optional</span>
+<span class="sd">            The scale parameter of the distribution, non-negative.</span>
+
+<span class="sd">            Default: ``1.0``.</span>
+<span class="sd">        size : {None, int, tuple of ints}, optional</span>
+<span class="sd">            Output shape. With ``None``, the broadcast shape of `loc` and</span>
+<span class="sd">            `scale`.</span>
+
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        dtype : {None, dtype}, optional</span>
+<span class="sd">            The data type of the output, :obj:`dpnp.float32` or</span>
+<span class="sd">            :obj:`dpnp.float64`.</span>
+
+<span class="sd">            Default: ``None``, which means the default floating-point type of</span>
+<span class="sd">            the device.</span>
+<span class="sd">        usm_type : {None, "device", "shared", "host"}, optional</span>
+<span class="sd">            The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">            Default: ``None``, which means the USM type of the array</span>
+<span class="sd">            parameters, or ``"device"`` when there are none.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            The samples.</span>
+
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
 <span class="sd">        `dtype` and `usm_type` are not in NumPy's signature.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(42)</span>
+<span class="sd">        &gt;&gt;&gt; x = rng.gumbel(0.0, 1.0, 10**5)</span>
+<span class="sd">        &gt;&gt;&gt; bool(abs(x.mean() - np.euler_gamma) &lt; 0.03)</span>
+<span class="sd">        True</span>
 
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cont</span><span class="p">(</span>
@@ -2482,9 +2895,53 @@
 <span class="sd">        For full documentation refer to</span>
 <span class="sd">        :obj:`numpy.random.Generator.logistic`.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        loc : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \</span>
+<span class="sd">                optional</span>
+<span class="sd">            The mean of the distribution.</span>
+
+<span class="sd">            Default: ``0.0``.</span>
+<span class="sd">        scale : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \</span>
+<span class="sd">                optional</span>
+<span class="sd">            The scale parameter of the distribution, non-negative.</span>
+
+<span class="sd">            Default: ``1.0``.</span>
+<span class="sd">        size : {None, int, tuple of ints}, optional</span>
+<span class="sd">            Output shape. With ``None``, the broadcast shape of `loc` and</span>
+<span class="sd">            `scale`.</span>
+
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        dtype : {None, dtype}, optional</span>
+<span class="sd">            The data type of the output, :obj:`dpnp.float32` or</span>
+<span class="sd">            :obj:`dpnp.float64`.</span>
+
+<span class="sd">            Default: ``None``, which means the default floating-point type of</span>
+<span class="sd">            the device.</span>
+<span class="sd">        usm_type : {None, "device", "shared", "host"}, optional</span>
+<span class="sd">            The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">            Default: ``None``, which means the USM type of the array</span>
+<span class="sd">            parameters, or ``"device"`` when there are none.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            The samples.</span>
+
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
 <span class="sd">        `dtype` and `usm_type` are not in NumPy's signature.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(42)</span>
+<span class="sd">        &gt;&gt;&gt; x = rng.logistic(1.0, 2.0, 10**5)</span>
+<span class="sd">        &gt;&gt;&gt; a = bool(abs(x.mean() - 1) &lt; 0.08)</span>
+<span class="sd">        &gt;&gt;&gt; b = bool(abs((x &lt; 1).mean() - 0.5) &lt; 0.01)</span>
+<span class="sd">        &gt;&gt;&gt; a, b</span>
+<span class="sd">        (True, True)</span>
 
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cont</span><span class="p">(</span>
@@ -2510,9 +2967,50 @@
 <span class="sd">        For full documentation refer to</span>
 <span class="sd">        :obj:`numpy.random.Generator.triangular`.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        left : {float, array_like of floats, dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">            The lower limit of the distribution.</span>
+<span class="sd">        mode : {float, array_like of floats, dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">            The value where the peak of the distribution occurs, with</span>
+<span class="sd">            ``left &lt;= mode &lt;= right``.</span>
+<span class="sd">        right : {float, array_like of floats, dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">            The upper limit of the distribution, greater than `left`.</span>
+<span class="sd">        size : {None, int, tuple of ints}, optional</span>
+<span class="sd">            Output shape. With ``None``, the broadcast shape of `left`, `mode`</span>
+<span class="sd">            and `right`.</span>
+
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        dtype : {None, dtype}, optional</span>
+<span class="sd">            The data type of the output, :obj:`dpnp.float32` or</span>
+<span class="sd">            :obj:`dpnp.float64`.</span>
+
+<span class="sd">            Default: ``None``, which means the default floating-point type of</span>
+<span class="sd">            the device.</span>
+<span class="sd">        usm_type : {None, "device", "shared", "host"}, optional</span>
+<span class="sd">            The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">            Default: ``None``, which means the USM type of the array</span>
+<span class="sd">            parameters, or ``"device"`` when there are none.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            The samples.</span>
+
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
 <span class="sd">        `dtype` and `usm_type` are not in NumPy's signature.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(42)</span>
+<span class="sd">        &gt;&gt;&gt; x = rng.triangular(-1.0, 0.0, 2.0, 10**5)</span>
+<span class="sd">        &gt;&gt;&gt; a = bool(((-1 &lt;= x) &amp; (x &lt;= 2)).all())</span>
+<span class="sd">        &gt;&gt;&gt; b = bool(abs(x.mean() - 1 / 3) &lt; 0.015)</span>
+<span class="sd">        &gt;&gt;&gt; a, b</span>
+<span class="sd">        (True, True)</span>
 
 <span class="sd">        """</span>
 
@@ -2543,9 +3041,47 @@
 <span class="sd">        For full documentation refer to</span>
 <span class="sd">        :obj:`numpy.random.Generator.vonmises`.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        mu : {float, array_like of floats, dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">            The mode of the distribution.</span>
+<span class="sd">        kappa : {float, array_like of floats, dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">            The concentration of the distribution, non-negative.</span>
+<span class="sd">        size : {None, int, tuple of ints}, optional</span>
+<span class="sd">            Output shape. With ``None``, the broadcast shape of `mu` and</span>
+<span class="sd">            `kappa`.</span>
+
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        dtype : {None, dtype}, optional</span>
+<span class="sd">            The data type of the output, :obj:`dpnp.float32` or</span>
+<span class="sd">            :obj:`dpnp.float64`.</span>
+
+<span class="sd">            Default: ``None``, which means the default floating-point type of</span>
+<span class="sd">            the device.</span>
+<span class="sd">        usm_type : {None, "device", "shared", "host"}, optional</span>
+<span class="sd">            The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">            Default: ``None``, which means the USM type of the array</span>
+<span class="sd">            parameters, or ``"device"`` when there are none.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            The samples.</span>
+
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
 <span class="sd">        `dtype` and `usm_type` are not in NumPy's signature.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(42)</span>
+<span class="sd">        &gt;&gt;&gt; x = rng.vonmises(1.0, 4.0, 10**5)</span>
+<span class="sd">        &gt;&gt;&gt; a = bool((abs(x) &lt;= np.pi).all())</span>
+<span class="sd">        &gt;&gt;&gt; b = bool(abs(np.sin(x - 1).mean()) &lt; 0.01)</span>
+<span class="sd">        &gt;&gt;&gt; a, b</span>
+<span class="sd">        (True, True)</span>
 
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cont</span><span class="p">(</span>
@@ -2570,9 +3106,50 @@
 <span class="sd">        For full documentation refer to</span>
 <span class="sd">        :obj:`numpy.random.Generator.standard_gamma`.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        shape : {float, array_like of floats, dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">            The shape of the distribution, non-negative.</span>
+<span class="sd">        size : {None, int, tuple of ints}, optional</span>
+<span class="sd">            Output shape. With ``None``, the shape of `shape`.</span>
+
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        dtype : {None, dtype}, optional</span>
+<span class="sd">            The data type of the output, :obj:`dpnp.float32` or</span>
+<span class="sd">            :obj:`dpnp.float64`.</span>
+
+<span class="sd">            Default: ``None``, which means the default floating-point type of</span>
+<span class="sd">            the device.</span>
+<span class="sd">        out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">            A C-contiguous array to fill, of the data type `dtype` and on the</span>
+<span class="sd">            SYCL queue of the generator. If `size` is given as well, it must be</span>
+<span class="sd">            the shape of `out`.</span>
+
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        usm_type : {None, "device", "shared", "host"}, optional</span>
+<span class="sd">            The type of SYCL USM allocation for the output array. Ignored when</span>
+<span class="sd">            `out` is given.</span>
+
+<span class="sd">            Default: ``None``, which means the USM type of the array</span>
+<span class="sd">            parameters, or ``"device"`` when there are none.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            The samples, or `out` when it is given.</span>
+
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
+<span class="sd">        `dtype` defaults to the default floating-point type of the device, and</span>
 <span class="sd">        `usm_type` is not in NumPy's signature.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(42)</span>
+<span class="sd">        &gt;&gt;&gt; x = rng.standard_gamma(2.0, 10**5)</span>
+<span class="sd">        &gt;&gt;&gt; bool((x &gt;= 0).all()), bool(abs(x.mean() - 2) &lt; 0.03)</span>
+<span class="sd">        (True, True)</span>
 
 <span class="sd">        """</span>
 
@@ -2603,9 +3180,48 @@
 
 <span class="sd">        For full documentation refer to :obj:`numpy.random.Generator.gamma`.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        shape : {float, array_like of floats, dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">            The shape of the distribution, non-negative.</span>
+<span class="sd">        scale : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \</span>
+<span class="sd">                optional</span>
+<span class="sd">            The scale of the distribution, non-negative.</span>
+
+<span class="sd">            Default: ``1.0``.</span>
+<span class="sd">        size : {None, int, tuple of ints}, optional</span>
+<span class="sd">            Output shape. With ``None``, the broadcast shape of `shape` and</span>
+<span class="sd">            `scale`.</span>
+
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        dtype : {None, dtype}, optional</span>
+<span class="sd">            The data type of the output, :obj:`dpnp.float32` or</span>
+<span class="sd">            :obj:`dpnp.float64`.</span>
+
+<span class="sd">            Default: ``None``, which means the default floating-point type of</span>
+<span class="sd">            the device.</span>
+<span class="sd">        usm_type : {None, "device", "shared", "host"}, optional</span>
+<span class="sd">            The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">            Default: ``None``, which means the USM type of the array</span>
+<span class="sd">            parameters, or ``"device"`` when there are none.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            The samples.</span>
+
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
 <span class="sd">        `dtype` and `usm_type` are not in NumPy's signature.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(42)</span>
+<span class="sd">        &gt;&gt;&gt; x = rng.gamma(2.0, 3.0, 10**5)</span>
+<span class="sd">        &gt;&gt;&gt; bool((x &gt;= 0).all()), bool(abs(x.mean() - 6) &lt; 0.1)</span>
+<span class="sd">        (True, True)</span>
 
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cont</span><span class="p">(</span>
@@ -2628,9 +3244,42 @@
 <span class="sd">        For full documentation refer to</span>
 <span class="sd">        :obj:`numpy.random.Generator.chisquare`.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        df : {float, array_like of floats, dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">            The number of degrees of freedom, positive.</span>
+<span class="sd">        size : {None, int, tuple of ints}, optional</span>
+<span class="sd">            Output shape. With ``None``, the shape of `df`.</span>
+
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        dtype : {None, dtype}, optional</span>
+<span class="sd">            The data type of the output, :obj:`dpnp.float32` or</span>
+<span class="sd">            :obj:`dpnp.float64`.</span>
+
+<span class="sd">            Default: ``None``, which means the default floating-point type of</span>
+<span class="sd">            the device.</span>
+<span class="sd">        usm_type : {None, "device", "shared", "host"}, optional</span>
+<span class="sd">            The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">            Default: ``None``, which means the USM type of the array</span>
+<span class="sd">            parameters, or ``"device"`` when there are none.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            The samples.</span>
+
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
 <span class="sd">        `dtype` and `usm_type` are not in NumPy's signature.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(42)</span>
+<span class="sd">        &gt;&gt;&gt; x = rng.chisquare(4.0, 10**5)</span>
+<span class="sd">        &gt;&gt;&gt; bool((x &gt;= 0).all()), bool(abs(x.mean() - 4) &lt; 0.06)</span>
+<span class="sd">        (True, True)</span>
 
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cont</span><span class="p">(</span>
@@ -2707,9 +3356,42 @@
 <span class="sd">        For full documentation refer to</span>
 <span class="sd">        :obj:`numpy.random.Generator.standard_t`.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        df : {float, array_like of floats, dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">            The number of degrees of freedom, positive.</span>
+<span class="sd">        size : {None, int, tuple of ints}, optional</span>
+<span class="sd">            Output shape. With ``None``, the shape of `df`.</span>
+
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        dtype : {None, dtype}, optional</span>
+<span class="sd">            The data type of the output, :obj:`dpnp.float32` or</span>
+<span class="sd">            :obj:`dpnp.float64`.</span>
+
+<span class="sd">            Default: ``None``, which means the default floating-point type of</span>
+<span class="sd">            the device.</span>
+<span class="sd">        usm_type : {None, "device", "shared", "host"}, optional</span>
+<span class="sd">            The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">            Default: ``None``, which means the USM type of the array</span>
+<span class="sd">            parameters, or ``"device"`` when there are none.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            The samples.</span>
+
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
 <span class="sd">        `dtype` and `usm_type` are not in NumPy's signature.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(42)</span>
+<span class="sd">        &gt;&gt;&gt; x = rng.standard_t(10.0, 10**5)</span>
+<span class="sd">        &gt;&gt;&gt; bool(abs(x.mean()) &lt; 0.025), bool(abs(x.var() - 1.25) &lt; 0.05)</span>
+<span class="sd">        (True, True)</span>
 
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cont</span><span class="p">(</span>
@@ -2730,9 +3412,45 @@
 
 <span class="sd">        For full documentation refer to :obj:`numpy.random.Generator.f`.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dfnum : {float, array_like of floats, dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">            The number of degrees of freedom in the numerator, positive.</span>
+<span class="sd">        dfden : {float, array_like of floats, dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">            The number of degrees of freedom in the denominator, positive.</span>
+<span class="sd">        size : {None, int, tuple of ints}, optional</span>
+<span class="sd">            Output shape. With ``None``, the broadcast shape of `dfnum` and</span>
+<span class="sd">            `dfden`.</span>
+
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        dtype : {None, dtype}, optional</span>
+<span class="sd">            The data type of the output, :obj:`dpnp.float32` or</span>
+<span class="sd">            :obj:`dpnp.float64`.</span>
+
+<span class="sd">            Default: ``None``, which means the default floating-point type of</span>
+<span class="sd">            the device.</span>
+<span class="sd">        usm_type : {None, "device", "shared", "host"}, optional</span>
+<span class="sd">            The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">            Default: ``None``, which means the USM type of the array</span>
+<span class="sd">            parameters, or ``"device"`` when there are none.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            The samples.</span>
+
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
 <span class="sd">        `dtype` and `usm_type` are not in NumPy's signature.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(42)</span>
+<span class="sd">        &gt;&gt;&gt; x = rng.f(5.0, 10.0, 10**5)</span>
+<span class="sd">        &gt;&gt;&gt; bool((x &gt;= 0).all()), bool(abs(x.mean() - 1.25) &lt; 0.03)</span>
+<span class="sd">        (True, True)</span>
 
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cont</span><span class="p">(</span>
@@ -2812,12 +3530,49 @@
 
 <span class="sd">        For full documentation refer to :obj:`numpy.random.Generator.beta`.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        a : {float, array_like of floats, dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">            The alpha parameter of the distribution, positive.</span>
+<span class="sd">        b : {float, array_like of floats, dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">            The beta parameter of the distribution, positive.</span>
+<span class="sd">        size : {None, int, tuple of ints}, optional</span>
+<span class="sd">            Output shape. With ``None``, the broadcast shape of `a` and `b`.</span>
+
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        dtype : {None, dtype}, optional</span>
+<span class="sd">            The data type of the output, :obj:`dpnp.float32` or</span>
+<span class="sd">            :obj:`dpnp.float64`.</span>
+
+<span class="sd">            Default: ``None``, which means the default floating-point type of</span>
+<span class="sd">            the device.</span>
+<span class="sd">        usm_type : {None, "device", "shared", "host"}, optional</span>
+<span class="sd">            The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">            Default: ``None``, which means the USM type of the array</span>
+<span class="sd">            parameters, or ``"device"`` when there are none.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            The samples.</span>
+
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
 <span class="sd">        `dtype` and `usm_type` are not in NumPy's signature. In single</span>
 <span class="sd">        precision, positive `a` and `b` on the host below the smallest normal</span>
 <span class="sd">        ``float32`` value are raised to it, so when both are, 0 and 1 are</span>
 <span class="sd">        equally likely.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(42)</span>
+<span class="sd">        &gt;&gt;&gt; x = rng.beta(2.0, 3.0, 10**5)</span>
+<span class="sd">        &gt;&gt;&gt; a = bool(((0 &lt;= x) &amp; (x &lt;= 1)).all())</span>
+<span class="sd">        &gt;&gt;&gt; b = bool(abs(x.mean() - 0.4) &lt; 0.005)</span>
+<span class="sd">        &gt;&gt;&gt; a, b</span>
+<span class="sd">        (True, True)</span>
 
 <span class="sd">        """</span>
         <span class="n">kernel_params</span> <span class="o">=</span> <span class="kc">None</span>
@@ -3204,7 +3959,8 @@
 <span class="sd">        -----------</span>
 <span class="sd">        `dtype` and `usm_type` are not in NumPy's signature. `alpha` is</span>
 <span class="sd">        copied to the host, where it is checked, and one kernel is launched</span>
-<span class="sd">        for every component when all of `alpha` is less than 0.1.</span>
+<span class="sd">        for every component when all of `alpha` is less than 0.1 or, in</span>
+<span class="sd">        single precision, when its sum is less than 1.</span>
 
 <span class="sd">        """</span>
 
@@ -3230,11 +3986,12 @@
         <span class="n">size</span> <span class="o">=</span> <span class="n">_normalize_size</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
         <span class="n">shape</span> <span class="o">=</span> <span class="p">(()</span> <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">size</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">k</span><span class="p">,)</span>
 
-        <span class="c1"># NumPy's threshold for the gamma variates to underflow is too low</span>
-        <span class="c1"># in single precision, where alpha of 0.1 to 0.2 still gives rows</span>
-        <span class="c1"># of 0 / 0</span>
-        <span class="n">small</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float64</span> <span class="k">else</span> <span class="mf">1.0</span>
-        <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">alpha</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">small</span><span class="p">:</span>
+        <span class="c1"># NumPy breaks a stick when all of alpha is below 0.1. In single</span>
+        <span class="c1"># precision a row is also 0 / 0 when all its gamma variates</span>
+        <span class="c1"># underflow, which is likely only for a sum of alpha below 1</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span>
+            <span class="n">alpha</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.1</span> <span class="ow">or</span> <span class="p">(</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float32</span> <span class="ow">and</span> <span class="n">alpha</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="p">):</span>
             <span class="c1"># normalize gamma variates, NaN in alpha giving NaN</span>
             <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_float_sample</span><span class="p">(</span>
                 <span class="n">ri</span><span class="o">.</span><span class="n">_gamma</span><span class="p">,</span>
@@ -3961,16 +4718,8 @@
         <span class="k">if</span> <span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_integer_types</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported dtype </span><span class="si">{</span><span class="n">dtype</span><span class="si">!r}</span><span class="s2"> for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-        <span class="c1"># as NumPy, an empty draw checks neither bound</span>
+        <span class="c1"># as NumPy, an empty `size` checks neither bound</span>
         <span class="n">shape</span> <span class="o">=</span> <span class="n">_normalize_size</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">shape</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">broadcast_shapes</span><span class="p">(</span>
-                    <span class="n">numpy</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">low</span><span class="p">),</span> <span class="n">numpy</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">high</span><span class="p">)</span>
-                <span class="p">)</span>
-            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                <span class="c1"># left for the shape checks of the draw</span>
-                <span class="n">shape</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">math</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
                 <span class="n">shape</span><span class="p">,</span>
