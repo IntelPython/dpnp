@@ -498,21 +498,6 @@ _PCG_SEQUENTIAL = {
 }
 
 
-def _pcg_power(inc, k):
-    """The step of the LCG applied `k` times, as a map (mult, inc)."""
-
-    acc_mult, acc_inc = 1, 0
-    mult = _PCG_MULT
-    while k:
-        if k & 1:
-            acc_mult = (acc_mult * mult) & _MASK128
-            acc_inc = (acc_inc * mult + inc) & _MASK128
-        inc = ((mult + 1) * inc) & _MASK128
-        mult = (mult * mult) & _MASK128
-        k >>= 1
-    return acc_mult, acc_inc
-
-
 def _affine_power(m, k):
     """The affine map `m` = (mult, add) modulo 2**128, applied `k` times."""
 
@@ -526,6 +511,12 @@ def _affine_power(m, k):
         mult = (mult * mult) & _MASK128
         k >>= 1
     return acc_mult, acc_add
+
+
+def _pcg_power(inc, k):
+    """The step of the LCG applied `k` times, as a map (mult, inc)."""
+
+    return _affine_power((_PCG_MULT, inc), k)
 
 
 def _pcg_advance(state, inc, k):
