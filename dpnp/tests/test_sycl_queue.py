@@ -14,6 +14,7 @@ from dpnp.dpnp_utils import get_usm_allocations
 from dpnp.exceptions import ExecutionPlacementError
 
 from .helper import (
+    assert_dtype_allclose,
     generate_random_numpy_array,
     get_all_dtypes,
     is_win_platform,
@@ -146,12 +147,15 @@ def test_array_creation_from_array(func, args, device_x, device_y):
     args = [eval(val, {"x0": x}) for val in args]
 
     # follow device
-    y = getattr(dpnp, func)(*args)
-    assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
+    expected = getattr(dpnp, func)(*args)
+    assert_sycl_queue_equal(expected.sycl_queue, x.sycl_queue)
 
     # cross device
     y = getattr(dpnp, func)(*args, device=device_y)
     assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
+    if func != "empty_like":
+        # dtype kind only: one of the devices may lack fp64
+        assert_dtype_allclose(y, expected.asnumpy(), check_only_type_kind=True)
 
 
 @pytest.mark.parametrize("device_x", valid_dev, ids=dev_ids)
@@ -160,12 +164,14 @@ def test_array_creation_logspace_base(device_x, device_y):
     x = dpnp.array([1, 2, 3, 4], device=device_x)
 
     # follow device
-    y = dpnp.logspace(0, 8, 4, base=x[1:3])
-    assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
+    expected = dpnp.logspace(0, 8, 4, base=x[1:3])
+    assert_sycl_queue_equal(expected.sycl_queue, x.sycl_queue)
 
     # cross device
     y = dpnp.logspace(0, 8, 4, base=x[1:3], device=device_y)
     assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
+    # dtype kind only: one of the devices may lack fp64
+    assert_dtype_allclose(y, expected.asnumpy(), check_only_type_kind=True)
 
 
 @pytest.mark.parametrize("device", valid_dev + [None], ids=dev_ids + [None])
@@ -201,13 +207,15 @@ def test_array_creation_load_txt(device):
 @pytest.mark.parametrize("device_x", valid_dev, ids=dev_ids)
 @pytest.mark.parametrize("device_y", valid_dev, ids=dev_ids)
 def test_copy_method(device_x, device_y):
-    x = dpnp.array([[1, 2, 3], [4, 5, 6]], device=device_x)
+    # strided view with an offset
+    x = dpnp.arange(12, device=device_x).reshape(3, 4)[1:, ::2]
     y = x.copy()
     assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
 
     q = dpctl.SyclQueue(device_y)
     y = x.copy(sycl_queue=q)
     assert_sycl_queue_equal(y.sycl_queue, q)
+    assert_array_equal(y, x)
 
 
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
@@ -1032,12 +1040,13 @@ class TestToDevice:
     @pytest.mark.parametrize("device_from", valid_dev, ids=dev_ids)
     @pytest.mark.parametrize("device_to", valid_dev, ids=dev_ids)
     def test_basic(self, device_from, device_to):
-        data = [1.0, 1.0, 1.0, 1.0, 1.0]
-        x = dpnp.array(data, dtype=dpnp.float32, device=device_from)
+        # strided view with an offset
+        x = dpnp.arange(12, dtype=dpnp.float32, device=device_from)
+        x = x.reshape(3, 4)[1:, ::2]
         y = x.to_device(device_to)
 
         assert y.sycl_device == device_to
-        assert (x.asnumpy() == y.asnumpy()).all()
+        assert_array_equal(y, x)
 
     def test_to_queue(self):
         x = dpnp.full(100, 2, dtype=dpnp.int64)
@@ -1291,9 +1300,11 @@ def test_piecewise(device):
 @pytest.mark.parametrize("device_x", valid_dev, ids=dev_ids)
 @pytest.mark.parametrize("device_y", valid_dev, ids=dev_ids)
 def test_asarray(device_x, device_y):
-    x = dpnp.array([1, 2, 3], device=device_x)
+    # strided view with an offset
+    x = dpnp.arange(7, device=device_x)[1::2]
     y = dpnp.asarray([x, x, x], device=device_y)
     assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
+    assert_array_equal(y, dpnp.stack([x, x, x]))
 
 
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
@@ -1473,13 +1484,15 @@ def test_histogram_bin_edges(wgt, device):
 @pytest.mark.parametrize("device_x", valid_dev, ids=dev_ids)
 @pytest.mark.parametrize("device_y", valid_dev, ids=dev_ids)
 def test_astype(device_x, device_y):
-    x = dpnp.array([1, 2, 3], dtype="i4", device=device_x)
-    y = dpnp.astype(x, "f4")
-    assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
+    # strided view with an offset
+    x = dpnp.arange(7, dtype="i4", device=device_x)[1::2]
+    expected = dpnp.astype(x, "f4")
+    assert_sycl_queue_equal(expected.sycl_queue, x.sycl_queue)
 
     sycl_queue = dpctl.SyclQueue(device_y)
     y = dpnp.astype(x, "f4", device=sycl_queue)
     assert_sycl_queue_equal(y.sycl_queue, sycl_queue)
+    assert_array_equal(y, expected, strict=True)
 
 
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
