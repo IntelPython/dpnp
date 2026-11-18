@@ -110,11 +110,6 @@ def pytest_configure(config):
         "markers",
         "multi_gpu: marks tests that require a specified number of GPUs",
     )
-    config.addinivalue_line(
-        "markers",
-        "single_device: marks test_sycl_queue.py tests that also check "
-        "placement when only the default device is available",
-    )
 
     # NumPy arccosh
     # Undefined behavior depends on the backend:

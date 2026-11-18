@@ -43,16 +43,6 @@ for device in available_devices:
 
 dev_ids = [device.filter_string for device in valid_dev]
 
-# inputs on the default device share its queue, so placement goes unchecked
-only_default_dev = all(d == dpctl.select_default_device() for d in valid_dev)
-
-
-@pytest.fixture(autouse=True)
-def skip_if_only_default_device(request):
-    marked = request.node.get_closest_marker("single_device") is not None
-    if only_default_dev and not marked:
-        pytest.skip("needs a SYCL device other than the default one")
-
 
 def assert_sycl_queue_equal(result, expected):
     assert result.backend == expected.backend
@@ -664,7 +654,6 @@ def test_2in_broadcasting(func, data1, data2, device):
     assert_sycl_queue_equal(result.sycl_queue, x1.sycl_queue)
 
 
-@pytest.mark.single_device
 @pytest.mark.parametrize(
     "func",
     [
@@ -705,7 +694,6 @@ def test_flat(device):
     assert_sycl_queue_equal(x.flat[y].sycl_queue, x.sycl_queue)
 
 
-@pytest.mark.single_device
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_flat_setitem_diff_queue(device):
     a = dpnp.arange(6, device=device)
@@ -855,7 +843,6 @@ def test_vecmat(device, shape1, shape2):
     assert_sycl_queue_equal(result_queue, b.sycl_queue)
 
 
-@pytest.mark.single_device
 @pytest.mark.parametrize(
     "func, args, kwargs",
     [
@@ -900,7 +887,6 @@ def test_random(func, args, kwargs, device, usm_type):
     assert_sycl_queue_equal(res_array.sycl_queue, sycl_queue)
 
 
-@pytest.mark.single_device
 @pytest.mark.parametrize(
     "func, args, kwargs",
     [
@@ -1053,7 +1039,6 @@ class TestToDevice:
         assert y.sycl_device == device_to
         assert (x.asnumpy() == y.asnumpy()).all()
 
-    @pytest.mark.single_device
     def test_to_queue(self):
         x = dpnp.full(100, 2, dtype=dpnp.int64)
         q_prof = dpctl.SyclQueue(x.sycl_device, property="enable_profiling")
@@ -1062,7 +1047,6 @@ class TestToDevice:
         assert (x.asnumpy() == y.asnumpy()).all()
         assert_sycl_queue_equal(y.sycl_queue, q_prof)
 
-    @pytest.mark.single_device
     def test_stream(self):
         x = dpnp.full(100, 2, dtype=dpnp.int64)
         q_prof = dpctl.SyclQueue(x.sycl_device, property="enable_profiling")
@@ -1078,7 +1062,6 @@ class TestToDevice:
         assert (x.asnumpy() == y.asnumpy()).all()
         assert_sycl_queue_equal(y.sycl_queue, q_prof)
 
-    @pytest.mark.single_device
     def test_stream_no_sync(self):
         x = dpnp.full(100, 2, dtype=dpnp.int64)
         q_prof = dpctl.SyclQueue(x.sycl_device, property="enable_profiling")
@@ -1088,7 +1071,6 @@ class TestToDevice:
             assert (x.asnumpy() == y.asnumpy()).all()
             assert_sycl_queue_equal(y.sycl_queue, q_prof)
 
-    @pytest.mark.single_device
     @pytest.mark.parametrize(
         "stream",
         [1, dict(), dpctl.SyclDevice()],
@@ -1801,7 +1783,6 @@ class TestLinAlgebra:
         assert_sycl_queue_equal(result.sycl_queue, a.sycl_queue)
         assert_sycl_queue_equal(result.sycl_queue, b.sycl_queue)
 
-    @pytest.mark.single_device
     @pytest.mark.parametrize("c_shape", [(2, 2), (1, 2, 2)])
     def test_cho_solve_diff_queue(self, c_shape, device):
         c = dpnp.full(c_shape, 2.0, device=device)

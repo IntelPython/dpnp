@@ -21,7 +21,7 @@
 - Compute-follows-data error tests expect `(ValueError, ExecutionPlacementError)`: dpnp raises either, depending on the helper.
 - A new function is added to the matching parametrized lists in `test_sycl_queue.py` and `test_usm_type.py` (`test_1in_1out`, `test_2in_1out`, ...); elementwise ones also to `test_strides.py`.
 - A test that may exceed the device's maximum allocation size skips on `USMAllocationError` (from `dpnp.exceptions`), not `MemoryError`, which it does not derive from.
-- Markers are strict and only `slow`, `multi_gpu` and `single_device` are registered. `test_sycl_queue.py` skips a test when only the default device is available, unless it is marked `single_device` (it uses a second queue on the same device, or an in-order or profiling one). Tests that need huge allocations are `@pytest.mark.slow`; they never run in CI by design.
+- Markers are strict and only `slow` and `multi_gpu` are registered. Tests that need huge allocations are `@pytest.mark.slow`; they never run in CI by design.
 - Skip lists are for device- or backend-specific failures only; use the full parametrized node ID relative to `dpnp/` (`tests/test_x.py::TestY::test_z[param]`; `conftest.py` matches it exactly, so a `dpnp/tests/...` entry matches nothing), and update or drop the entries of a test you rename or remove.
 - The conda CI jobs run the installed package (`--pyargs dpnp.tests`), so a new test directory or data file needs a matching glob in `package_data` in `setup.py`, or they silently skip it. The oneMath, coverage and open-source LLVM SYCL jobs test an editable or in-place tree and won't catch the omission.
 
