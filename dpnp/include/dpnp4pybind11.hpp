@@ -28,6 +28,10 @@
 
 #pragma once
 
+#if (defined(_MSVC_LANG) ? _MSVC_LANG : __cplusplus) < 202002L
+#error "dpnp4pybind11.hpp requires C++20 or later"
+#endif
+
 // Include for dpctl_capi struct and casters
 #include "dpctl4pybind11.hpp"
 
