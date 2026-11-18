@@ -1,0 +1,10 @@
+﻿
+
+dpnp.scipy.sparse.linalg.aslinearoperator
+=========================================
+
+.. currentmodule:: dpnp.scipy.sparse.linalg
+
+
+
+.. autofunction:: aslinearoperator
