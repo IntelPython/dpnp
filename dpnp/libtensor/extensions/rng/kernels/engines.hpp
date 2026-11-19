@@ -111,8 +111,9 @@ private:
     Derived &self() { return static_cast<Derived &>(*this); }
 };
 
-// Adapts a oneMKL device engine to the next_uint32/next_uint64/next_float/
-// next_double interface NumPy's distribution algorithms are written against.
+// Adapts a oneMKL or oneMath device engine to the next_uint32/next_uint64/
+// next_float/next_double interface NumPy's distribution algorithms are
+// written against.
 template <typename EngineT>
 class BitGen : public UniformBits<BitGen<EngineT>>
 {
@@ -136,14 +137,14 @@ public:
     }
 };
 
-// The first N words of the stream of BitGen<EngineT>, for a oneMKL device
-// engine of vector size N, generated together in one engine call. The
-// sampler must draw no more than N words (see SamplerBase::words_per_item);
-// their positions are then known at compile time in a fully unrolled loop,
-// so the words stay in registers. That needs everything touching them
-// inlined: when the compiler instead returned the generator from an
-// out-of-line call, the words lived in private memory and the kernel ran
-// 2-3 times slower.
+// The first N words of the stream of BitGen<EngineT>, for a oneMKL or
+// oneMath device engine of vector size N, generated together in one engine
+// call. The sampler must draw no more than N words (see
+// SamplerBase::words_per_item); their positions are then known at compile
+// time in a fully unrolled loop, so the words stay in registers. That needs
+// everything touching them inlined: when the compiler instead returned the
+// generator from an out-of-line call, the words lived in private memory and
+// the kernel ran 2-3 times slower.
 template <typename EngineT>
 class BlockBitGen : public UniformBits<BlockBitGen<EngineT>>
 {
