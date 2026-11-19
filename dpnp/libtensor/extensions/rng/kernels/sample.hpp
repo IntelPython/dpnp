@@ -32,6 +32,7 @@
 
 #include <sycl/sycl.hpp>
 
+#include "distributions.hpp"
 #include "engines.hpp"
 
 namespace dpnp::kernels::rng
@@ -71,12 +72,14 @@ inline std::size_t num_work_items(std::size_t n)
     return (n + m - 1) / m;
 }
 
-// Fills out[0:n] with samples, in the layout L
-template <typename EngineTraitsT, typename SamplerT, Layout L>
+// Fills out[0:n] with samples, in the layout L. Cyclic is set when a
+// parameter array repeats along the result.
+template <typename EngineTraitsT, typename SamplerT, Layout L, bool Cyclic>
 class SampleFunctor
 {
 private:
     using T = typename SamplerT::result_type;
+    using Index = ElementIndex<Cyclic>;
 
     static_assert(L != Layout::blocked ||
                   can_draw_blocked<EngineTraitsT, SamplerT>);
@@ -118,7 +121,7 @@ public:
             for (std::size_t k = 0; k < items; ++k) {
                 const std::size_t i = w + k * n_wi_;
                 const bool valid = i < n_;
-                const T v = sampler(bg, valid ? i : w);
+                const T v = sampler(bg, Index{valid ? i : w});
                 if (valid) {
                     out_[i] = v;
                 }
@@ -127,7 +130,7 @@ public:
         else {
             auto bg = EngineTraitsT::make(state_, w);
             for (std::size_t i = w; i < n_; i += n_wi_) {
-                out_[i] = sampler(bg, i);
+                out_[i] = sampler(bg, Index{i});
             }
         }
     }

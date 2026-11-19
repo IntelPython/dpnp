@@ -505,6 +505,17 @@ class TestFloatMethods:
         full = [dpnp.broadcast_to(p, shape).copy() for p in (loc, scale)]
         assert_array_equal(res, default_rng(7).normal(*full, size=shape))
 
+    @pytest.mark.parametrize("scale", [2.0, "full"])
+    def test_one_broadcast_param(self, scale):
+        # one repeating parameter makes the whole launch read cyclically
+        shape = (5, 3, 2)
+        loc = dpnp.arange(2.0)
+        if scale == "full":
+            scale = dpnp.arange(1.0, 31.0).reshape(shape)
+        res = default_rng(7).normal(loc, scale, size=shape)
+        full = dpnp.broadcast_to(loc, shape).copy()
+        assert_array_equal(res, default_rng(7).normal(full, scale, size=shape))
+
     def test_array_scale(self):
         scale = dpnp.asarray([1.0, 10.0])
         res = default_rng(4).normal(0.0, scale, size=(10000, 2))

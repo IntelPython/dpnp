@@ -35,6 +35,15 @@
 
 namespace dpnp::kernels::rng
 {
+// The index of an output element, at which a sampler reads its
+// parameters. Only a launch with a repeating parameter array is Cyclic, so
+// that the others read their arrays without the period test.
+template <bool Cyclic>
+struct ElementIndex
+{
+    std::size_t value;
+};
+
 // A distribution parameter: one value for every sample, a C-contiguous
 // array holding one value per sample, or, with a nonzero `period`, a
 // C-contiguous array of `period` values repeating along the samples, as a
@@ -46,14 +55,20 @@ struct Param
     T value{};
     std::size_t period = 0;
 
-    // the branches are the same for every work-item, so a vectorizing
-    // compiler takes the modulo only for a repeating array
-    T operator[](std::size_t i) const
+    template <bool Cyclic>
+    T operator[](const ElementIndex<Cyclic> i) const
     {
         if (!ptr) {
             return value;
         }
-        return period ? ptr[i % period] : ptr[i];
+        if constexpr (Cyclic) {
+            // the modulo only for a repeating array, as the vectorizer
+            // otherwise computes it for every element
+            return period ? ptr[i.value % period] : ptr[i.value];
+        }
+        else {
+            return ptr[i.value];
+        }
     }
 };
 

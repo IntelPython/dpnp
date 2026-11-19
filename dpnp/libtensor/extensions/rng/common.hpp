@@ -28,6 +28,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <string>
@@ -119,7 +120,10 @@ void validate_types_for_device(sycl::queue &exec_q, std::index_sequence<Is...>)
 {
     (validate_type_for_device<std::tuple_element_t<Is, Tuple>>(exec_q), ...);
 }
-template <typename EngineTraitsT, typename SamplerT, rng_ns::Layout L>
+template <typename EngineTraitsT,
+          typename SamplerT,
+          rng_ns::Layout L,
+          bool Cyclic>
 sycl::event submit_sample(sycl::queue &exec_q,
                           const rng_ns::EngineState &state,
                           const SamplerT &sampler,
@@ -132,11 +136,32 @@ sycl::event submit_sample(sycl::queue &exec_q,
     return exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        using SampleKernel = rng_ns::SampleFunctor<EngineTraitsT, SamplerT, L>;
+        using SampleKernel =
+            rng_ns::SampleFunctor<EngineTraitsT, SamplerT, L, Cyclic>;
         cgh.parallel_for<SampleKernel>(
             sycl::range<1>(n_wi),
             SampleKernel(state, sampler, res, nelems, n_wi));
     });
+}
+
+template <typename EngineTraitsT, typename SamplerT, bool Cyclic>
+sycl::event submit_sample_in_layout(sycl::queue &exec_q,
+                                    const rng_ns::EngineState &state,
+                                    const SamplerT &sampler,
+                                    typename SamplerT::result_type *res,
+                                    const std::size_t nelems,
+                                    const bool blocked,
+                                    const std::vector<sycl::event> &depends)
+{
+    if constexpr (rng_ns::can_draw_blocked<EngineTraitsT, SamplerT>) {
+        if (blocked) {
+            return submit_sample<EngineTraitsT, SamplerT,
+                                 rng_ns::Layout::blocked, Cyclic>(
+                exec_q, state, sampler, res, nelems, depends);
+        }
+    }
+    return submit_sample<EngineTraitsT, SamplerT, rng_ns::Layout::strided,
+                         Cyclic>(exec_q, state, sampler, res, nelems, depends);
 }
 } // namespace detail
 
@@ -177,18 +202,25 @@ sycl::event sample_impl(sycl::queue &exec_q,
 
     T *res = reinterpret_cast<T *>(result);
 
-    if constexpr (rng_ns::can_draw_blocked<EngineTraitsT, SamplerT>) {
-        // the blocked layout gives the same values, faster on GPUs but
-        // slower on CPUs
-        if (exec_q.get_device().is_gpu()) {
-            return detail::submit_sample<EngineTraitsT, SamplerT,
-                                         rng_ns::Layout::blocked>(
-                exec_q, state, sampler, res, nelems, depends);
+    // the blocked layout gives the same values, faster on GPUs but slower
+    // on CPUs
+    const bool blocked = rng_ns::can_draw_blocked<EngineTraitsT, SamplerT> &&
+                         exec_q.get_device().is_gpu();
+
+    if constexpr (n_params > 0) {
+        // a kernel of its own for repeating parameters keeps the period
+        // test out of the others
+        const bool cyclic =
+            std::any_of(params.begin(), params.end(),
+                        [](const ParamArg &p) { return p.period != 0; });
+        if (cyclic) {
+            return detail::submit_sample_in_layout<EngineTraitsT, SamplerT,
+                                                   true>(
+                exec_q, state, sampler, res, nelems, blocked, depends);
         }
     }
-    return detail::submit_sample<EngineTraitsT, SamplerT,
-                                 rng_ns::Layout::strided>(
-        exec_q, state, sampler, res, nelems, depends);
+    return detail::submit_sample_in_layout<EngineTraitsT, SamplerT, false>(
+        exec_q, state, sampler, res, nelems, blocked, depends);
 }
 
 // Types the floating-point samplers support

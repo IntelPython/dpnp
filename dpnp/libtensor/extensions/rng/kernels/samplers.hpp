@@ -38,8 +38,8 @@
 namespace dpnp::kernels::rng
 {
 // A sampler holds the parameters of a distribution; operator() returns the
-// sample for output element `i`. It may update its own state, such as a
-// cached normal, so each work-item works on a copy.
+// sample for output element `i`, an ElementIndex. It may update its own
+// state, such as a cached normal, so each work-item works on a copy.
 //
 // `result_type` is the type of the samples, and `param_types` lists the
 // type of each parameter, in the order the constructor takes them.
@@ -69,8 +69,8 @@ class RawSampler : public SamplerBase<T>
 public:
     static constexpr unsigned words_per_item = sizeof(T) / 4;
 
-    template <typename BitGenT>
-    T operator()(BitGenT &bg, const std::size_t)
+    template <typename BitGenT, typename IndexT>
+    T operator()(BitGenT &bg, const IndexT)
     {
         if constexpr (sizeof(T) == 8) {
             return bg.next_uint64();
@@ -97,8 +97,8 @@ public:
     {
     }
 
-    template <typename BitGenT>
-    T operator()(BitGenT &bg, const std::size_t i)
+    template <typename BitGenT, typename IndexT>
+    T operator()(BitGenT &bg, const IndexT i)
     {
         // no fused multiply-add, to round as NumPy does
 #pragma clang fp contract(off)
@@ -125,8 +125,8 @@ public:
     {
     }
 
-    template <typename BitGenT>
-    T operator()(BitGenT &bg, const std::size_t i)
+    template <typename BitGenT, typename IndexT>
+    T operator()(BitGenT &bg, const IndexT i)
     {
         // no fused multiply-add, to round the same on every device
 #pragma clang fp contract(off)
