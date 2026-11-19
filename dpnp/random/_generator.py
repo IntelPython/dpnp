@@ -792,7 +792,10 @@ def default_rng(seed=None, *, device=None, sycl_queue=None):
     ----------
     seed : {None, int, array_like[ints], SeedSequence, BitGenerator, \
             Generator}, optional
-        The entropy to seed the bit generator with. A
+        The entropy to seed the bit generator with. If ``None``, fresh,
+        unpredictable entropy is pulled from the OS. An int, or the ints of
+        an array_like, must be non-negative and are passed to
+        :class:`dpnp.random.SeedSequence`. A
         :class:`dpnp.random.BitGenerator` is wrapped in a new generator, and
         a :class:`dpnp.random.Generator` is returned unaltered.
 
@@ -824,7 +827,9 @@ def default_rng(seed=None, *, device=None, sycl_queue=None):
     Limitations
     -----------
     NumPy's default bit generator is PCG64, so the same seed gives different
-    values.
+    values. A NumPy :class:`numpy.random.RandomState`,
+    :class:`numpy.random.BitGenerator` or :class:`numpy.random.Generator` is
+    not accepted as `seed` and raises :class:`TypeError`.
 
     Examples
     --------
