@@ -510,6 +510,17 @@ class TestFloatMethods:
         res = default_rng(4).normal(0.0, scale, size=(10000, 2))
         assert_allclose(res.std(axis=0), [1.0, 10.0], rtol=0.05)
 
+    @pytest.mark.skipif(not has_support_aspect64(), reason="fp64 is required")
+    @pytest.mark.parametrize("method", ["normal", "uniform"])
+    def test_python_float_params(self, method):
+        # Python scalars skip the NumPy checks but keep their float64 value
+        def draw(a, b):
+            rng = default_rng(7)
+            return getattr(rng, method)(a, b, 100, dtype=dpnp.float64)
+
+        expected = draw(numpy.float64(0.1), numpy.float64(0.7))
+        assert_array_equal(draw(0.1, 0.7), expected)
+
     @pytest.mark.parametrize(
         "size",
         [
