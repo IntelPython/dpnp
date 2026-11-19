@@ -284,9 +284,9 @@ class BitGenerator:
         Unlike NumPy, a zero-dimensional array is returned rather than a
         Python integer when `size` is ``None``. With ``output=False``, the
         state advances by the number of elements of `size`, and an invalid
-        `size` raises as it does with ``output=True``. NumPy advances by
-        the sum of the dimensions of `size` instead, and not at all when
-        that sum is negative.
+        `size` raises as it does with ``output=True``, as in NumPy 2.5.5
+        and later. Older NumPy advances by the sum of the dimensions of
+        `size` instead, and not at all when that sum is negative.
 
         """
 
