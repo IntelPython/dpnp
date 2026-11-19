@@ -417,8 +417,8 @@ def test_radix_argsort_size_1_axis():
 # rows of every size class of the one-work-group radix sort above 256; on the
 # CPU device int8 argsort came out unstable and some data types crashed the
 # compiler at block sizes of 16 and more
-@pytest.mark.parametrize("n", [257, 1025, 2049, 4096, 8193, 16384])
-@pytest.mark.parametrize("dtype", ["?", "i1", "u1", "i2", "i4", "i8"])
+@pytest.mark.parametrize("n", [257, 513, 1025, 2049, 4097, 8193])
+@pytest.mark.parametrize("dtype", ["?", "i1", "u1", "i2", "u2", "i4", "i8"])
 @pytest.mark.parametrize("descending", [False, True])
 def test_radix_sort_one_work_group(n, dtype, descending):
     q = get_queue_or_skip()
@@ -428,8 +428,15 @@ def test_radix_sort_one_work_group(n, dtype, descending):
     if dtype == "?":
         x_np = rng.integers(0, 2, size=(2, n)).astype(dtype)
     else:
+        # full-range data, and data of three values with many ties to show an
+        # unstable argsort
         info = np.iinfo(dtype)
-        x_np = rng.integers(info.min, info.max, size=(2, n), dtype=dtype)
+        x_np = np.stack(
+            [
+                rng.integers(info.min, info.max, size=n, dtype=dtype),
+                rng.integers(0, 3, size=n, dtype=dtype),
+            ]
+        )
     x = dpt.asarray(x_np, sycl_queue=q)
 
     # stable in either order: ties keep the order of the input
