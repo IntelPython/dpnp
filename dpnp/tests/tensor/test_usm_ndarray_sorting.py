@@ -414,10 +414,10 @@ def test_radix_argsort_size_1_axis():
     assert dpt.asnumpy(r4 == 0).all()
 
 
-# rows of every size class of the one-work-group radix sort above 256; on the
-# CPU device int8 argsort came out unstable and some data types crashed the
-# compiler at block sizes of 16 and more
-@pytest.mark.parametrize("n", [257, 513, 1025, 2049, 4097, 8193])
+# rows of every size class of the one-work-group radix sort above 256, and of
+# its largest size; on the CPU device int8 argsort came out unstable and some
+# data types crashed the compiler at block sizes of 16 and more
+@pytest.mark.parametrize("n", [257, 513, 1025, 2049, 4097, 8193, 16384])
 @pytest.mark.parametrize("dtype", ["?", "i1", "u1", "i2", "u2", "i4", "i8"])
 @pytest.mark.parametrize("descending", [False, True])
 def test_radix_sort_one_work_group(n, dtype, descending):
