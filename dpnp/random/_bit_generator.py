@@ -257,6 +257,9 @@ class BitGenerator:
         """
         Return raw 64-bit outputs of the bit generator.
 
+        For full documentation refer to
+        :obj:`numpy.random.BitGenerator.random_raw`.
+
         Parameters
         ----------
         size : {None, int, tuple of ints}, optional
