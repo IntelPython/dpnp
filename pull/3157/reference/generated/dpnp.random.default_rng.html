@@ -893,6 +893,7 @@
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.sycl_device.html">dpnp.random.BitGenerator.sycl_device</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.sycl_queue.html">dpnp.random.BitGenerator.sycl_queue</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Philox4x3210.html">dpnp.random.Philox4x3210</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.Philox4x3210.state.html">dpnp.random.Philox4x3210.state</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.SeedSequence.html">dpnp.random.SeedSequence</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.rand.html">dpnp.random.rand</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.randn.html">dpnp.random.randn</a></li>
@@ -1099,7 +1100,10 @@ generator, <a class="reference internal" href="dpnp.random.Philox4x3210.html#dpn
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>seed</strong><span class="classifier">{None, int, array_like[ints], SeedSequence, BitGenerator, Generator}, optional</span></dt><dd><p>The entropy to seed the bit generator with. A
+<dt><strong>seed</strong><span class="classifier">{None, int, array_like[ints], SeedSequence, BitGenerator, Generator}, optional</span></dt><dd><p>The entropy to seed the bit generator with. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, fresh,
+unpredictable entropy is pulled from the OS. An int, or the ints of
+an array_like, must be non-negative and are passed to
+<a class="reference internal" href="dpnp.random.SeedSequence.html#dpnp.random.SeedSequence" title="dpnp.random.SeedSequence"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.random.SeedSequence</span></code></a>. A
 <a class="reference internal" href="dpnp.random.BitGenerator.html#dpnp.random.BitGenerator" title="dpnp.random.BitGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.random.BitGenerator</span></code></a> is wrapped in a new generator, and
 a <a class="reference internal" href="dpnp.random.Generator.html#dpnp.random.Generator" title="dpnp.random.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.random.Generator</span></code></a> is returned unaltered.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
@@ -1131,7 +1135,9 @@ generator.</p>
 </dl>
 <p class="rubric">Limitations</p>
 <p>NumPy's default bit generator is PCG64, so the same seed gives different
-values.</p>
+values. A NumPy <a class="reference external" href="https://numpy.org/doc/stable/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.random.RandomState</span></code></a>,
+<a class="reference external" href="https://numpy.org/doc/stable/reference/random/bit_generators/generated/numpy.random.BitGenerator.html#numpy.random.BitGenerator" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.random.BitGenerator</span></code></a> or <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code></a> is
+not accepted as <cite>seed</cite> and raises <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#TypeError" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code></a>.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">12345</span><span class="p">)</span>

@@ -893,6 +893,7 @@
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.sycl_device.html">dpnp.random.BitGenerator.sycl_device</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.sycl_queue.html">dpnp.random.BitGenerator.sycl_queue</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Philox4x3210.html">dpnp.random.Philox4x3210</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.Philox4x3210.state.html">dpnp.random.Philox4x3210.state</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.SeedSequence.html">dpnp.random.SeedSequence</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.rand.html">dpnp.random.rand</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.randn.html">dpnp.random.randn</a></li>
@@ -1102,7 +1103,11 @@
 <dt><strong>low</strong><span class="classifier">{float, array_like of floats, dpnp.ndarray, usm_ndarray}, optional</span></dt><dd><p>The lower bound of the output interval.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">0.0</span></code>.</p>
 </dd>
-<dt><strong>high</strong><span class="classifier">{float, array_like of floats, dpnp.ndarray, usm_ndarray}, optional</span></dt><dd><p>The upper bound of the output interval.</p>
+<dt><strong>high</strong><span class="classifier">{float, array_like of floats, dpnp.ndarray, usm_ndarray}, optional</span></dt><dd><p>The upper bound of the output interval. All values generated
+will be less than <cite>high</cite>, but the high limit may be included in
+the result due to floating-point rounding in
+<code class="docutils literal notranslate"><span class="pre">low</span> <span class="pre">+</span> <span class="pre">(high</span> <span class="pre">-</span> <span class="pre">low)</span> <span class="pre">*</span> <span class="pre">u</span></code>, with <cite>u</cite> on [0, 1), and more often in
+float32. <code class="docutils literal notranslate"><span class="pre">high</span> <span class="pre">-</span> <span class="pre">low</span></code> must be non-negative.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">1.0</span></code>.</p>
 </dd>
 <dt><strong>size</strong><span class="classifier">{None, int, tuple of ints}, optional</span></dt><dd><p>Output shape. With <code class="docutils literal notranslate"><span class="pre">None</span></code>, the broadcast shape of <cite>low</cite>
