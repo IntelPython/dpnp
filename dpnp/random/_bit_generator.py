@@ -198,7 +198,7 @@ class BitGenerator:
 
     @property
     def state(self):
-        """The state of the bit generator, as a dictionary."""
+        """Get or set the state of the bit generator, as a dictionary."""
         raise NotImplementedError
 
     def _num_work_items(self, size):
@@ -431,11 +431,12 @@ class Philox4x3210(BitGenerator):
     @property
     def state(self):
         """
-        The state of the bit generator.
+        Get or set the state of the bit generator.
 
         A dictionary ``{"bit_generator": "Philox4x3210", "state": {"key":
         key, "counter": counter}}`` with the 64-bit key and the 128-bit
-        counter as Python integers.
+        counter as Python integers. Setting it to a dictionary of this form
+        restarts the stream at that key and counter.
 
         """
 
