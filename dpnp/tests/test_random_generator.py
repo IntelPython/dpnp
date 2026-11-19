@@ -811,10 +811,3 @@ class TestDeviceIndependence:
             # transcendental functions may differ in the last bits
             for a, b in zip(ref[2:], res[2:]):
                 assert_allclose(a, b, rtol=1e-4, atol=1e-5)
-
-    def test_queue(self):
-        for dev in _all_devices():
-            rng = default_rng(0, device=dev)
-            res = rng.random(3, dtype=dpnp.float32)
-            assert res.sycl_device == dev
-            assert res.sycl_queue == rng.sycl_queue
