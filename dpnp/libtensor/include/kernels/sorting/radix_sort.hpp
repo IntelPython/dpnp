@@ -1087,8 +1087,9 @@ private:
                 sycl::info::kernel_device_specific::max_sub_group_size>(dev);
 
             // the CPU device compiler miscompiles the counting for short
-            // sub-groups unless each update is fenced (CMPLRLLVM-64592); a
-            // barrier in place of the fence crashes its barrier pass
+            // sub-groups (CMPLRLLVM-64592), which a fence after each update
+            // avoids in this kernel; a barrier there crashes the compiler
+            // (CMPLRLLVM-79305)
             const bool work_around_needed =
                 exec_q.get_device().has(sycl::aspect::cpu) &&
                 (krn_sg_size < 16);
