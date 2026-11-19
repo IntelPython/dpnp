@@ -37,22 +37,22 @@ in the next installation section.
 Installation
 ============
 
-Install Package from Intel(R) channel
--------------------------------------------
+Install Package from conda-forge or PyPI
+----------------------------------------
 
 You will need one of the commands below:
 
-* Conda: ``conda install dpnp -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels``
+* Conda: ``conda install dpnp -c conda-forge --override-channels``
 
-* Pip: ``python -m pip install --index-url https://software.repos.intel.com/python/pypi dpnp``
+* Pip: ``python -m pip install dpnp``
 
 These commands install dpnp package along with its dependencies, including
 ``dpctl`` package with `Data Parallel Control Library`_ and all required
 compiler runtimes and OneMKL.
 
 .. warning::
-    Packages from the Intel channel are meant to be used together with dependencies from the **conda-forge** channel, and might not
-    work correctly when used in an environment where packages from the ``anaconda`` default channel have been installed. It is
+    Packages from the **conda-forge** channel might not work correctly when used in an environment where packages from the
+    ``anaconda`` default channel have been installed. It is
     advisable to use the `miniforge <https://github.com/conda-forge/miniforge>`__ installer for ``conda``/``mamba``, as it comes with
     ``conda-forge`` as the only default channel.
 
@@ -70,11 +70,12 @@ Alternatively you can create and activate a local conda build environment:
     conda create -n build-env conda-build
     conda activate build-env
 
-And to build dpnp package from the sources:
+And to build dpnp package from the sources, with ``dpctl``'s dev build from ``dppy/label/dev``, which a flexible channel
+priority lets conda take over conda-forge's release:
 
 .. code-block:: bash
 
-    conda-build conda-recipe -c conda-forge --override-channels --python "3.14.* *_cp314"
+    CONDA_CHANNEL_PRIORITY=flexible conda-build conda-recipe -c conda-forge -c dppy/label/dev --override-channels --python "3.14.* *_cp314"
 
 Finally, to install the result package:
 
@@ -96,7 +97,7 @@ On Linux:
 
     conda create -n build-env dpctl cython dpcpp_linux-64 mkl-devel-dpcpp tbb-devel        \
           onedpl-devel cmake scikit-build ninja versioneer pytest ocl-icd-system           \
-          -c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels
+          -c dppy/label/dev -c conda-forge --override-channels
     conda activate build-env
 
 On Windows:
@@ -105,7 +106,7 @@ On Windows:
 
     conda create -n build-env dpctl cython dpcpp_win-64 mkl-devel-dpcpp tbb-devel          \
           onedpl-devel cmake scikit-build ninja versioneer pytest khronos-opencl-icd-loader\
-          -c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels
+          -c dppy/label/dev -c conda-forge --override-channels
     conda activate build-env
 
 To build and install the package on Linux OS, run:

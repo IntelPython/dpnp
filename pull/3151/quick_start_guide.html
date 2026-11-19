@@ -1093,20 +1093,20 @@ in the next installation section.</p>
 </section>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
-<section id="install-package-from-intel-r-channel">
-<h3>Install Package from Intel(R) channel<a class="headerlink" href="#install-package-from-intel-r-channel" title="Link to this heading">¶</a></h3>
+<section id="install-package-from-conda-forge-or-pypi">
+<h3>Install Package from conda-forge or PyPI<a class="headerlink" href="#install-package-from-conda-forge-or-pypi" title="Link to this heading">¶</a></h3>
 <p>You will need one of the commands below:</p>
 <ul class="simple">
-<li><p>Conda: <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">dpnp</span> <span class="pre">-c</span> <span class="pre">https://software.repos.intel.com/python/conda/</span> <span class="pre">-c</span> <span class="pre">conda-forge</span> <span class="pre">--override-channels</span></code></p></li>
-<li><p>Pip: <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--index-url</span> <span class="pre">https://software.repos.intel.com/python/pypi</span> <span class="pre">dpnp</span></code></p></li>
+<li><p>Conda: <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">dpnp</span> <span class="pre">-c</span> <span class="pre">conda-forge</span> <span class="pre">--override-channels</span></code></p></li>
+<li><p>Pip: <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">dpnp</span></code></p></li>
 </ul>
 <p>These commands install dpnp package along with its dependencies, including
 <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> package with <a class="reference external" href="https://intelpython.github.io/dpctl/latest/index.html">Data Parallel Control Library</a> and all required
 compiler runtimes and OneMKL.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Packages from the Intel channel are meant to be used together with dependencies from the <strong>conda-forge</strong> channel, and might not
-work correctly when used in an environment where packages from the <code class="docutils literal notranslate"><span class="pre">anaconda</span></code> default channel have been installed. It is
+<p>Packages from the <strong>conda-forge</strong> channel might not work correctly when used in an environment where packages from the
+<code class="docutils literal notranslate"><span class="pre">anaconda</span></code> default channel have been installed. It is
 advisable to use the <a class="reference external" href="https://github.com/conda-forge/miniforge">miniforge</a> installer for <code class="docutils literal notranslate"><span class="pre">conda</span></code>/<code class="docutils literal notranslate"><span class="pre">mamba</span></code>, as it comes with
 <code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> as the only default channel.</p>
 </div>
@@ -1122,8 +1122,9 @@ advisable to use the <a class="reference external" href="https://github.com/cond
 conda<span class="w"> </span>activate<span class="w"> </span>build-env
 </pre></div>
 </div>
-<p>And to build dpnp package from the sources:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda-build<span class="w"> </span>conda-recipe<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>--override-channels<span class="w"> </span>--python<span class="w"> </span><span class="s2">"3.14.* *_cp314"</span>
+<p>And to build dpnp package from the sources, with <code class="docutils literal notranslate"><span class="pre">dpctl</span></code>'s dev build from <code class="docutils literal notranslate"><span class="pre">dppy/label/dev</span></code>, which a flexible channel
+priority lets conda take over conda-forge's release:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">CONDA_CHANNEL_PRIORITY</span><span class="o">=</span>flexible<span class="w"> </span>conda-build<span class="w"> </span>conda-recipe<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>-c<span class="w"> </span>dppy/label/dev<span class="w"> </span>--override-channels<span class="w"> </span>--python<span class="w"> </span><span class="s2">"3.14.* *_cp314"</span>
 </pre></div>
 </div>
 <p>Finally, to install the result package:</p>
@@ -1139,14 +1140,14 @@ build environment by command below depending on hosting OS.</p>
 <p>On Linux:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>build-env<span class="w"> </span>dpctl<span class="w"> </span>cython<span class="w"> </span>dpcpp_linux-64<span class="w"> </span>mkl-devel-dpcpp<span class="w"> </span>tbb-devel<span class="w">        </span><span class="se">\</span>
 <span class="w">      </span>onedpl-devel<span class="w"> </span>cmake<span class="w"> </span>scikit-build<span class="w"> </span>ninja<span class="w"> </span>versioneer<span class="w"> </span>pytest<span class="w"> </span>ocl-icd-system<span class="w">           </span><span class="se">\</span>
-<span class="w">      </span>-c<span class="w"> </span>dppy/label/dev<span class="w"> </span>-c<span class="w"> </span>https://software.repos.intel.com/python/conda/<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>--override-channels
+<span class="w">      </span>-c<span class="w"> </span>dppy/label/dev<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>--override-channels
 conda<span class="w"> </span>activate<span class="w"> </span>build-env
 </pre></div>
 </div>
 <p>On Windows:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>build-env<span class="w"> </span>dpctl<span class="w"> </span>cython<span class="w"> </span>dpcpp_win-64<span class="w"> </span>mkl-devel-dpcpp<span class="w"> </span>tbb-devel<span class="w">          </span><span class="se">\</span>
 <span class="w">      </span>onedpl-devel<span class="w"> </span>cmake<span class="w"> </span>scikit-build<span class="w"> </span>ninja<span class="w"> </span>versioneer<span class="w"> </span>pytest<span class="w"> </span>khronos-opencl-icd-loader<span class="se">\</span>
-<span class="w">      </span>-c<span class="w"> </span>dppy/label/dev<span class="w"> </span>-c<span class="w"> </span>https://software.repos.intel.com/python/conda/<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>--override-channels
+<span class="w">      </span>-c<span class="w"> </span>dppy/label/dev<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>--override-channels
 conda<span class="w"> </span>activate<span class="w"> </span>build-env
 </pre></div>
 </div>
@@ -1362,7 +1363,7 @@ described above, run:</p>
 <li><a class="reference internal" href="#device-drivers">Device Drivers</a></li>
 <li><a class="reference internal" href="#python-interpreter">Python Interpreter</a></li>
 <li><a class="reference internal" href="#installation">Installation</a><ul>
-<li><a class="reference internal" href="#install-package-from-intel-r-channel">Install Package from Intel(R) channel</a></li>
+<li><a class="reference internal" href="#install-package-from-conda-forge-or-pypi">Install Package from conda-forge or PyPI</a></li>
 <li><a class="reference internal" href="#build-and-install-conda-package">Build and Install Conda Package</a></li>
 <li><a class="reference internal" href="#build-and-install-with-scikit-build">Build and Install with scikit-build</a></li>
 <li><a class="reference internal" href="#building-for-custom-sycl-targets">Building for custom SYCL targets</a><ul>
