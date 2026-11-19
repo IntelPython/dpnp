@@ -311,6 +311,12 @@ class Generator:
         out : list of Generator
             The child generators.
 
+        Raises
+        ------
+        TypeError
+            When the underlying seed sequence does not implement spawning,
+            as when `key` is given to :class:`dpnp.random.Philox4x3210`.
+
         """
         return [type(self)(bg) for bg in self._bit_generator.spawn(n_children)]
 

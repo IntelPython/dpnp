@@ -312,6 +312,8 @@ class BitGenerator:
         """
         Create new independent child bit generators on the same SYCL queue.
 
+        For full documentation refer to :obj:`numpy.random.BitGenerator.spawn`.
+
         Children are seeded by :meth:`numpy.random.SeedSequence.spawn` of
         :attr:`seed_seq`.
 
@@ -324,6 +326,12 @@ class BitGenerator:
         -------
         out : list of BitGenerator
             The child bit generators.
+
+        Raises
+        ------
+        TypeError
+            When the underlying seed sequence does not implement spawning,
+            as when `key` is given to :class:`dpnp.random.Philox4x3210`.
 
         """
 
