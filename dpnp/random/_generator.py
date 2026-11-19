@@ -579,7 +579,11 @@ class Generator:
             Default: ``0.0``.
         high : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \
                 optional
-            The upper bound of the output interval.
+            The upper bound of the output interval. All values generated
+            will be less than `high`, but the high limit may be included in
+            the result due to floating-point rounding in
+            ``low + (high - low) * u``, with `u` on [0, 1), and more often in
+            float32. ``high - low`` must be non-negative.
 
             Default: ``1.0``.
         size : {None, int, tuple of ints}, optional
