@@ -1632,6 +1632,8 @@ class TestChecks:
             ("hypergeometric", (5, 3, -1)),
             ("hypergeometric", ([5], [3], [-1])),
             ("hypergeometric", (nan, 3, 1)),
+            ("binomial", ([nan], 0.5)),
+            ("hypergeometric", (5, [nan], 1)),
             ("dirichlet", ([-1.0, 1.0],)),
             ("dirichlet", ([[1.0, 2.0]],)),
             ("dirichlet", (1.0,)),
@@ -1712,6 +1714,23 @@ class TestChecks:
             lambda: getattr(np_rng, name)(*args),
             lambda: getattr(rng, name)(*args),
         )
+
+    @pytest.mark.parametrize(
+        "name, args",
+        [
+            ("binomial", (2**63, 0.5)),
+            ("binomial", ([2**63], 0.5)),
+            ("binomial", (numpy.float64(2**63), 0.5)),
+            ("hypergeometric", (2**63, 1, 1)),
+            ("hypergeometric", (1, 1, [-(2**63) - 1])),
+        ],
+    )
+    def test_int64_overflow_as_numpy(self, name, args):
+        # the text names a C type, which depends on the platform
+        with pytest.raises(OverflowError):
+            getattr(numpy.random.default_rng(0), name)(*args)
+        with pytest.raises(OverflowError):
+            getattr(default_rng(0), name)(*args)
 
     @pytest.mark.parametrize(
         "name, args",

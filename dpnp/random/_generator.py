@@ -367,8 +367,11 @@ def _as_int64(x):
             )
         return x.astype(_int64) if x.ndim else int(x)
     if numpy.ndim(x) > 0:
-        return numpy.asarray(x).astype(_int64)
-    return int(x)
+        return numpy.asarray(x, dtype=_int64)
+    x = int(x)
+    # raises NumPy's OverflowError outside of int64
+    numpy.asarray(x, dtype=_int64)
+    return x
 
 
 # pylint: disable=too-many-public-methods
@@ -1506,6 +1509,11 @@ class Generator:
         out : dpnp.ndarray
             The samples.
 
+        Raises
+        ------
+        ValueError
+            If `a` <= 0, for an `a` on the host.
+
         Limitations
         -----------
         `dtype` and `usm_type` are not in NumPy's signature.
@@ -2082,6 +2090,12 @@ class Generator:
         -------
         out : dpnp.ndarray
             The samples.
+
+        Raises
+        ------
+        ValueError
+            When `df` <= 0, for a `df` on the host, or when an inappropriate
+            `size` (e.g. ``size=-1``) is given.
 
         Limitations
         -----------
