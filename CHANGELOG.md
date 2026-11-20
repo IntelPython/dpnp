@@ -48,6 +48,7 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Fixed the example of handling duplicate indices in the `dpnp.tensor.put` docstring, which imported `dpctl.tensor`, did not parse and lost writes when `x` is longer than `indices` [#3165](https://github.com/IntelPython/dpnp/pull/3165)
 * Fixed a segfault when setting `writable` on a `Flags` object created without an array [#3168](https://github.com/IntelPython/dpnp/pull/3168)
 * Fixed a crash of the OpenCL CPU compiler in `dpnp.sort`, `dpnp.argsort`, `dpnp.tensor.sort` and `dpnp.tensor.argsort` by radix sort of rows of 2049 to 16384 elements [#3191](https://github.com/IntelPython/dpnp/pull/3191)
+* Fixed a random segfault of the OpenCL CPU runtime in coverage builds by instrumenting only host code [#3193](https://github.com/IntelPython/dpnp/pull/3193)
 
 ### Security
 
