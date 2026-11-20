@@ -367,8 +367,11 @@ def _as_int64(x):
             )
         return x.astype(_int64) if x.ndim else int(x)
     if numpy.ndim(x) > 0:
-        return numpy.asarray(x).astype(_int64)
-    return int(x)
+        return numpy.asarray(x, dtype=_int64)
+    x = int(x)
+    # raises NumPy's OverflowError outside of int64
+    numpy.asarray(x, dtype=_int64)
+    return x
 
 
 # pylint: disable=too-many-public-methods
@@ -1508,6 +1511,11 @@ class Generator:
         out : dpnp.ndarray
             The samples.
 
+        Raises
+        ------
+        ValueError
+            If `a` <= 0, for an `a` on the host.
+
         Limitations
         -----------
         `dtype` and `usm_type` are not in NumPy's signature.
@@ -2084,6 +2092,12 @@ class Generator:
         -------
         out : dpnp.ndarray
             The samples.
+
+        Raises
+        ------
+        ValueError
+            When `df` <= 0, for a `df` on the host, or when an inappropriate
+            `size` (e.g. ``size=-1``) is given.
 
         Limitations
         -----------
@@ -2735,9 +2749,10 @@ class Generator:
         Limitations
         -----------
         `dtype` and `usm_type` are not in NumPy's signature. `alpha` is
-        copied to the host, where it is checked, and one kernel is launched
-        for every component when all of `alpha` is less than 0.1 or, in
-        single precision, when its sum is less than 1.
+        copied to the host, where it is checked. In double precision, one
+        kernel is launched for every component when all of `alpha` is less
+        than 0.1, as NumPy does. In single precision, `alpha` below the
+        smallest ``float32`` value is 0.
 
         """
 
@@ -2782,6 +2797,9 @@ class Generator:
             res /= res.sum(axis=-1, keepdims=True)
             return res
 
+        if dtype == numpy.float32:
+            return self._dirichlet_log_gamma(alpha, shape, usm_type)
+
         # With small alpha the gamma variates underflow, so break a stick
         # by beta variates instead, as NumPy does. csum[j] is sum(alpha[j:]).
         csum = numpy.cumsum(alpha[::-1])[::-1]
@@ -2813,6 +2831,60 @@ class Generator:
             res[..., j] = acc * v
             acc *= 1 - v
         res[..., last] = acc
+        return res
+
+    def _dirichlet_log_gamma(self, alpha, shape, usm_type):
+        """
+        Draw float32 Dirichlet samples of the host `alpha` from the logarithms
+        of the gamma variates, log G(a) = log G(a + 1) - E / a with E
+        standard exponential, normalized by a softmax, so that neither small
+        components nor whole rows underflow.
+
+        """
+
+        dtype = numpy.float32
+        queue = self.sycl_queue
+        with numpy.errstate(under="ignore"):
+            alpha = alpha.astype(dtype)
+        nonzero = alpha > 0
+        if not nonzero.any():
+            return dpnp.zeros(
+                shape, dtype=dtype, usm_type=usm_type, sycl_queue=queue
+            )
+
+        log_g = self._float_sample(
+            ri._gamma,
+            (),
+            shape,
+            dtype,
+            usm_type,
+            "dirichlet",
+            kernel_params=(alpha + 1, 1.0),
+        )
+        dpnp.log(log_g, out=log_g)
+        e = self._float_sample(
+            ri._exponential,
+            (),
+            shape,
+            dtype,
+            usm_type,
+            "dirichlet",
+            kernel_params=(1.0,),
+        )
+
+        def _on_device(x):
+            return dpnp.asarray(x, usm_type=usm_type, sycl_queue=queue)
+
+        # a component of zero alpha is exactly 0, and the bound keeps a row
+        # of tiny alpha from becoming -inf throughout
+        e /= _on_device(numpy.where(nonzero, alpha, 1))
+        e = dpnp.minimum(e, numpy.finfo(dtype).max)
+        log_g -= e
+        log_g -= _on_device(numpy.where(nonzero, 0, numpy.inf).astype(dtype))
+
+        log_g -= log_g.max(axis=-1, keepdims=True)
+        res = dpnp.exp(log_g, out=log_g)
+        res /= res.sum(axis=-1, keepdims=True)
         return res
 
     def multinomial(self, n, pvals, size=None, *, usm_type=None):
