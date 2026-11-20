@@ -932,6 +932,7 @@
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.sycl_device.html">dpnp.random.BitGenerator.sycl_device</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.sycl_queue.html">dpnp.random.BitGenerator.sycl_queue</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Philox4x3210.html">dpnp.random.Philox4x3210</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.Philox4x3210.state.html">dpnp.random.Philox4x3210.state</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.SeedSequence.html">dpnp.random.SeedSequence</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.rand.html">dpnp.random.rand</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.randn.html">dpnp.random.randn</a></li>
@@ -1134,6 +1135,8 @@
 <dt class="sig sig-object py" id="dpnp.random.BitGenerator.random_raw">
 <span class="sig-prename descclassname"><span class="pre">BitGenerator.</span></span><span class="sig-name descname"><span class="pre">random_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/_bit_generator.html#BitGenerator.random_raw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.random.BitGenerator.random_raw" title="Link to this definition">¶</a></dt>
 <dd><p>Return raw 64-bit outputs of the bit generator.</p>
+<p>For full documentation refer to
+<a class="reference external" href="https://numpy.org/doc/stable/reference/random/bit_generators/generated/numpy.random.BitGenerator.random_raw.html#numpy.random.BitGenerator.random_raw" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.BitGenerator.random_raw</span></code></a>.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
@@ -1161,9 +1164,9 @@ drawn, and <code class="docutils literal notranslate"><span class="pre">None</sp
 <p>Unlike NumPy, a zero-dimensional array is returned rather than a
 Python integer when <cite>size</cite> is <code class="docutils literal notranslate"><span class="pre">None</span></code>. With <code class="docutils literal notranslate"><span class="pre">output=False</span></code>, the
 state advances by the number of elements of <cite>size</cite>, and an invalid
-<cite>size</cite> raises as it does with <code class="docutils literal notranslate"><span class="pre">output=True</span></code>. NumPy advances by
-the sum of the dimensions of <cite>size</cite> instead, and not at all when
-that sum is negative.</p>
+<cite>size</cite> raises as it does with <code class="docutils literal notranslate"><span class="pre">output=True</span></code>, as in NumPy 2.5.5
+and later. Older NumPy advances by the sum of the dimensions of
+<cite>size</cite> instead, and not at all when that sum is negative.</p>
 </dd></dl>
 
 </section>
