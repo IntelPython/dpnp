@@ -1,0 +1,3 @@
+# The dpctl the wheels build against: the dev series they require, from the
+# dev index in [tool.cibuildwheel] (pip's constraint, so only dpctl takes a dev build)
+dpctl>=0.24.0dev0

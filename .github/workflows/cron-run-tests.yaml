@@ -12,7 +12,7 @@ env:
   # Pinned: Miniforge3 26.9.4-0 fails 'conda init' on Windows runners
   miniforge-version: '26.7.2-1'
   package-name: dpnp
-  channels-list: '-c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels'
+  channels-list: '-c dppy/label/dev -c conda-forge --override-channels'
   test-env-name: test
   test-packages: 'pytest scipy'
   rerun-tests-max-attempts: 2
@@ -89,8 +89,8 @@ jobs:
           channels: conda-forge
           activate-environment: ${{ env.test-env-name }}
 
-      - name: Install OCL CPU RT from Intel channel
-        run: mamba install intel-opencl-rt=*=intel_* ${{ env.channels-list }}
+      - name: Install OCL CPU RT
+        run: mamba install intel-opencl-rt ${{ env.channels-list }}
 
       - name: Install dpnp
         id: install_dpnp

@@ -26,6 +26,8 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Reduced the overhead of `dpnp.ndarray.flags` and `dpnp.tensor.usm_ndarray.flags` [#3168](https://github.com/IntelPython/dpnp/pull/3168)
 * Changed `dpnp.linalg.LinAlgError` to derive from `numpy.linalg.LinAlgError`, so `except numpy.linalg.LinAlgError` also catches errors raised by dpnp linear algebra functions [#3184](https://github.com/IntelPython/dpnp/pull/3184)
 * Bumped the minimum required `dpctl` version to `0.24.0` [#3169](https://github.com/IntelPython/dpnp/pull/3169)
+* Changed the CI to build and test the conda packages of `conda-recipe` and the wheels with Intel CI (`ci/`, `.github/workflows/intel-ci.yml`); the conda packages build against conda-forge and the wheels against PyPI, both with `dpctl` dev builds from `dppy/label/dev`, and the wheels declare the oneAPI runtime wheels in their metadata [#3151](https://github.com/IntelPython/dpnp/pull/3151)
+* Changed the install instructions in `README.md` and the quick start guide to conda-forge and PyPI [#3151](https://github.com/IntelPython/dpnp/pull/3151)
 
 ### Deprecated
 
@@ -39,6 +41,7 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Removed the unused `FourZeroOffsets_Indexer`, `FixedDimStridedIndexer` and `ThreeOffsets_FixedDimStridedIndexer` from the libtensor header `utils/offset_utils.hpp` [#3131](https://github.com/IntelPython/dpnp/pull/3131)
 * Dropped support for Python 3.10 [#3173](https://github.com/IntelPython/dpnp/pull/3173)
 * Removed the `USE_GROUP_LOAD_STORE` macro from the libtensor header `utils/sycl_utils.hpp`, so `sub_group_load` and `sub_group_store` always use the `sycl_ext_oneapi_group_load_store` extension; the `sycl::sub_group` member load/store fallback it selected does not compile with DPC++ 2026.0, the minimum supported compiler [#3174](https://github.com/IntelPython/dpnp/pull/3174)
+* Removed the Intel channel conda recipe, with `rattler_recipe.yaml`, and the `conda-package.yml` workflow; `conda-recipe/` is now the conda-forge recipe that was `conda-recipe-cf/` [#3151](https://github.com/IntelPython/dpnp/pull/3151)
 
 ### Fixed
 
