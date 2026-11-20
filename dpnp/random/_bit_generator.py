@@ -343,10 +343,10 @@ class BitGenerator:
             raise TypeError(
                 "The underlying SeedSequence does not implement spawning."
             )
-        return [
-            type(self)(child, sycl_queue=self._sycl_queue)
-            for child in self._seed_seq.spawn(n_children)
-        ]
+        # SeedSequence.spawn counts the children without a lock
+        with self._lock:
+            children = self._seed_seq.spawn(n_children)
+        return [type(self)(c, sycl_queue=self._sycl_queue) for c in children]
 
 
 class Philox4x3210(BitGenerator):

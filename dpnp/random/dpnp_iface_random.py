@@ -62,8 +62,10 @@ _random_states_lock = threading.Lock()
 
 # The seeds of the states made for new queues: spawned children of the seed
 # given to the last seed() call, so that seeded code gets the same values
-# on every run, or OS entropy before any seed() call
+# on every run, or OS entropy before any seed() call. The lock is that of
+# the bit generator whose seed sequence it is, which spawns from it too.
 _seed_source = None
+_seed_source_lock = threading.Lock()
 
 _ISpawnableSeedSequence = numpy.random.bit_generator.ISpawnableSeedSequence
 
@@ -136,7 +138,8 @@ def _get_random_state(device=None, sycl_queue=None, arrays=()):
             if _seed_source is None:
                 rs = RandomState(sycl_queue=sycl_queue)
             else:
-                (child,) = _seed_source.spawn(1)
+                with _seed_source_lock:
+                    (child,) = _seed_source.spawn(1)
                 rs = RandomState(Philox4x3210(child, sycl_queue=sycl_queue))
             _dpnp_random_states[sycl_queue] = rs
         return rs
@@ -175,7 +178,7 @@ def seed(seed=None, *, device=None, sycl_queue=None):
 
     """
     # pylint: disable=global-statement, protected-access
-    global _seed_source
+    global _seed_source, _seed_source_lock
 
     rs = _get_random_state(device, sycl_queue)
     bit_generator = rs._generator.bit_generator
@@ -190,10 +193,13 @@ def seed(seed=None, *, device=None, sycl_queue=None):
     # spawn from the seed sequence of the reseeded bit generator itself, so
     # that its own children differ from those of the new states
     source = bit_generator.seed_seq
+    lock = bit_generator.lock
     if not isinstance(source, _ISpawnableSeedSequence):
         source = numpy.random.SeedSequence(source.generate_state(4))
+        lock = threading.Lock()
     with _random_states_lock:
         _seed_source = source
+        _seed_source_lock = lock
 
 
 @_params_doc
