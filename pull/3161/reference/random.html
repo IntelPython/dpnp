@@ -932,10 +932,13 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.BitGenerator.sycl_device.html">dpnp.random.BitGenerator.sycl_device</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.BitGenerator.sycl_queue.html">dpnp.random.BitGenerator.sycl_queue</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.Philox4x3210.html">dpnp.random.Philox4x3210</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.Philox4x3210.state.html">dpnp.random.Philox4x3210.state</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.PCG64DXSM.html">dpnp.random.PCG64DXSM</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.PCG64DXSM.advance.html">dpnp.random.PCG64DXSM.advance</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.PCG64DXSM.jumped.html">dpnp.random.PCG64DXSM.jumped</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.PCG64DXSM.state.html">dpnp.random.PCG64DXSM.state</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.MRG32k3a.html">dpnp.random.MRG32k3a</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.MRG32k3a.state.html">dpnp.random.MRG32k3a.state</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.SeedSequence.html">dpnp.random.SeedSequence</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.rand.html">dpnp.random.rand</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.randn.html">dpnp.random.randn</a></li>
@@ -1428,7 +1431,7 @@ and <a class="reference internal" href="generated/dpnp.random.Philox4x3210.html#
 <td><p>Create new independent child bit generators on the same SYCL queue.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.BitGenerator.state.html#dpnp.random.BitGenerator.state" title="dpnp.random.BitGenerator.state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BitGenerator.state</span></code></a></p></td>
-<td><p>The state of the bit generator, as a dictionary.</p></td>
+<td><p>Get or set the state of the bit generator, as a dictionary.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.BitGenerator.sycl_device.html#dpnp.random.BitGenerator.sycl_device" title="dpnp.random.BitGenerator.sycl_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BitGenerator.sycl_device</span></code></a></p></td>
 <td><p>The SYCL device arrays are created on.</p></td>
@@ -1439,19 +1442,28 @@ and <a class="reference internal" href="generated/dpnp.random.Philox4x3210.html#
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.Philox4x3210.html#dpnp.random.Philox4x3210" title="dpnp.random.Philox4x3210"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Philox4x3210</span></code></a></p></td>
 <td><p>A Philox4x32-10 counter-based bit generator on the device.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.PCG64DXSM.html#dpnp.random.PCG64DXSM" title="dpnp.random.PCG64DXSM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PCG64DXSM</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.Philox4x3210.state.html#dpnp.random.Philox4x3210.state" title="dpnp.random.Philox4x3210.state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Philox4x3210.state</span></code></a></p></td>
+<td><p>Get or set the state of the bit generator.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.PCG64DXSM.html#dpnp.random.PCG64DXSM" title="dpnp.random.PCG64DXSM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PCG64DXSM</span></code></a></p></td>
 <td><p>NumPy's PCG64DXSM bit generator on the device.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.PCG64DXSM.advance.html#dpnp.random.PCG64DXSM.advance" title="dpnp.random.PCG64DXSM.advance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PCG64DXSM.advance</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.PCG64DXSM.advance.html#dpnp.random.PCG64DXSM.advance" title="dpnp.random.PCG64DXSM.advance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PCG64DXSM.advance</span></code></a></p></td>
 <td><p>Advance the state as if <cite>delta</cite> raw values had been drawn.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.PCG64DXSM.jumped.html#dpnp.random.PCG64DXSM.jumped" title="dpnp.random.PCG64DXSM.jumped"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PCG64DXSM.jumped</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.PCG64DXSM.jumped.html#dpnp.random.PCG64DXSM.jumped" title="dpnp.random.PCG64DXSM.jumped"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PCG64DXSM.jumped</span></code></a></p></td>
 <td><p>Return a new bit generator with the state jumped ahead.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.PCG64DXSM.state.html#dpnp.random.PCG64DXSM.state" title="dpnp.random.PCG64DXSM.state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PCG64DXSM.state</span></code></a></p></td>
+<td><p>Get or set the state of the bit generator.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.MRG32k3a.html#dpnp.random.MRG32k3a" title="dpnp.random.MRG32k3a"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MRG32k3a</span></code></a></p></td>
 <td><p>An MRG32k3a combined multiple recursive bit generator on the device.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.SeedSequence.html#dpnp.random.SeedSequence" title="dpnp.random.SeedSequence"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SeedSequence</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.MRG32k3a.state.html#dpnp.random.MRG32k3a.state" title="dpnp.random.MRG32k3a.state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MRG32k3a.state</span></code></a></p></td>
+<td><p>Get or set the state of the bit generator.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.SeedSequence.html#dpnp.random.SeedSequence" title="dpnp.random.SeedSequence"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SeedSequence</span></code></a></p></td>
 <td><p>SeedSequence mixes sources of entropy in a reproducible way to set the initial state for independent and very probably non-overlapping BitGenerators.</p></td>
 </tr>
 </tbody>

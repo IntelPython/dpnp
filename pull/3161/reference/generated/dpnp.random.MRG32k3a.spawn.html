@@ -932,10 +932,13 @@
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.sycl_device.html">dpnp.random.BitGenerator.sycl_device</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.BitGenerator.sycl_queue.html">dpnp.random.BitGenerator.sycl_queue</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.Philox4x3210.html">dpnp.random.Philox4x3210</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.Philox4x3210.state.html">dpnp.random.Philox4x3210.state</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.PCG64DXSM.html">dpnp.random.PCG64DXSM</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.PCG64DXSM.advance.html">dpnp.random.PCG64DXSM.advance</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.PCG64DXSM.jumped.html">dpnp.random.PCG64DXSM.jumped</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.PCG64DXSM.state.html">dpnp.random.PCG64DXSM.state</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.MRG32k3a.html">dpnp.random.MRG32k3a</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.random.MRG32k3a.state.html">dpnp.random.MRG32k3a.state</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.SeedSequence.html">dpnp.random.SeedSequence</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.rand.html">dpnp.random.rand</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.random.randn.html">dpnp.random.randn</a></li>
@@ -1138,6 +1141,7 @@
 <dt class="sig sig-object py" id="dpnp.random.MRG32k3a.spawn">
 <span class="sig-prename descclassname"><span class="pre">MRG32k3a.</span></span><span class="sig-name descname"><span class="pre">spawn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_children</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.random.MRG32k3a.spawn" title="Link to this definition">¶</a></dt>
 <dd><p>Create new independent child bit generators on the same SYCL queue.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/bit_generators/generated/numpy.random.BitGenerator.spawn.html#numpy.random.BitGenerator.spawn" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.BitGenerator.spawn</span></code></a>.</p>
 <p>Children are seeded by <a class="reference external" href="https://numpy.org/doc/stable/reference/random/bit_generators/generated/numpy.random.SeedSequence.spawn.html#numpy.random.SeedSequence.spawn" title="(in NumPy v2.5)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.random.SeedSequence.spawn()</span></code></a> of
 <a class="reference internal" href="dpnp.random.MRG32k3a.seed_seq.html#dpnp.random.MRG32k3a.seed_seq" title="dpnp.random.MRG32k3a.seed_seq"><code class="xref py py-attr docutils literal notranslate"><span class="pre">seed_seq</span></code></a>.</p>
 <dl class="field-list simple">
@@ -1150,6 +1154,13 @@
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt><strong>out</strong><span class="classifier">list of BitGenerator</span></dt><dd><p>The child bit generators.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>TypeError</dt><dd><p>When the underlying seed sequence does not implement spawning,
+as when <cite>key</cite> is given to <a class="reference internal" href="dpnp.random.Philox4x3210.html#dpnp.random.Philox4x3210" title="dpnp.random.Philox4x3210"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.random.Philox4x3210</span></code></a>.</p>
 </dd>
 </dl>
 </dd>
