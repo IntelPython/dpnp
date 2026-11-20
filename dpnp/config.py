@@ -37,19 +37,19 @@ __DPNP_ORIGIN__ = int(os.getenv("DPNP_ORIGIN", 0))
 Explicitly use original host Python NumPy
 """
 
-__DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__ = int(
-    os.getenv("DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK", 1)
-)
-"""
-Trigger non-implemented exception when DPNP fallbacks on NumPy implementation
-"""
-
 # settings that no longer have any effect: attribute name -> env var name
 _DEPRECATED_SETTINGS = {
     "__DPNP_QUEUE_GPU__": "DPNP_QUEUE_GPU",
     "__DPNP_OUTPUT_NUMPY__": "DPNP_OUTPUT_NUMPY",
     "__DPNP_OUTPUT_DPCTL_DEFAULT_SHARED__": "DPNP_OUTPUT_DPCTL_DEFAULT_SHARED",
+    # read only by the NumPy fallback, which is gone
+    "__DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__": (
+        "DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK"
+    ),
 }
+
+# the defaults of the deprecated settings that were not 0
+_DEPRECATED_DEFAULTS = {"__DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__": 1}
 
 # values assigned to deprecated settings after import
 _deprecated_values = {}
@@ -70,7 +70,8 @@ def __getattr__(name):
         if name in _deprecated_values:
             return _deprecated_values[name]
         # parse lazily, so a bad env value can't break `import dpnp`
-        return int(os.getenv(_DEPRECATED_SETTINGS[name], 0))
+        default = _DEPRECATED_DEFAULTS.get(name, 0)
+        return int(os.getenv(_DEPRECATED_SETTINGS[name], default))
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
