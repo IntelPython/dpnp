@@ -36,6 +36,7 @@
 #include <sycl/sycl.hpp>
 
 #include "distributions.hpp"
+#include "engines.hpp"
 
 namespace dpnp::kernels::rng
 {
@@ -163,7 +164,15 @@ public:
     {
         // no fused multiply-add, to round the same on every device
 #pragma clang fp contract(off)
-        return loc_[i] + scale_[i] * normal_(bg);
+        if constexpr (is_block_bitgen_v<BitGenT>) {
+            // a block's words stay in registers only when every call
+            // touching them is inlined (see BlockBitGen); forcing it on the
+            // strided path slows the CPU
+            [[clang::always_inline]] return loc_[i] + scale_[i] * normal_(bg);
+        }
+        else {
+            return loc_[i] + scale_[i] * normal_(bg);
+        }
     }
 };
 
@@ -188,7 +197,14 @@ public:
     template <typename BitGenT, typename IndexT>
     T operator()(BitGenT &bg, const IndexT i)
     {
-        return sycl::exp(mean_[i] + sigma_[i] * normal_(bg));
+        if constexpr (is_block_bitgen_v<BitGenT>) {
+            // see NormalSampler
+            [[clang::always_inline]] return sycl::exp(mean_[i] +
+                                                      sigma_[i] * normal_(bg));
+        }
+        else {
+            return sycl::exp(mean_[i] + sigma_[i] * normal_(bg));
+        }
     }
 };
 
@@ -205,7 +221,13 @@ public:
     template <typename BitGenT, typename IndexT>
     T operator()(BitGenT &bg, const IndexT)
     {
-        return standard_cauchy<T>(bg, normal_);
+        if constexpr (is_block_bitgen_v<BitGenT>) {
+            // see NormalSampler
+            [[clang::always_inline]] return standard_cauchy<T>(bg, normal_);
+        }
+        else {
+            return standard_cauchy<T>(bg, normal_);
+        }
     }
 };
 
@@ -230,7 +252,14 @@ public:
     template <typename BitGenT, typename IndexT>
     T operator()(BitGenT &bg, const IndexT i)
     {
-        return wald<T>(bg, normal_, mean_[i], scale_[i]);
+        if constexpr (is_block_bitgen_v<BitGenT>) {
+            // see NormalSampler
+            [[clang::always_inline]] return wald<T>(bg, normal_, mean_[i],
+                                                    scale_[i]);
+        }
+        else {
+            return wald<T>(bg, normal_, mean_[i], scale_[i]);
+        }
     }
 };
 
