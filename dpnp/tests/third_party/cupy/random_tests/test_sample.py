@@ -18,6 +18,7 @@ class TestRandint(unittest.TestCase):
         with self.assertRaises(ValueError):
             random.randint(100, 1)
 
+    @pytest.mark.skip("an empty draw returns an empty array, as in NumPy")
     def test_lo_hi_equal(self):
         with self.assertRaises(ValueError):
             random.randint(3, 3, size=0)
@@ -105,7 +106,6 @@ class TestRandint2(unittest.TestCase):
         assert _hypothesis.chi_square_test(counts, expected)
 
 
-@pytest.mark.skip("high=(max+1) is not supported")
 class TestRandintDtype(unittest.TestCase):
 
     @testing.with_requires("numpy>=2.0")
@@ -120,6 +120,7 @@ class TestRandintDtype(unittest.TestCase):
         assert low <= min(x)
         assert max(x) <= high
 
+    @pytest.mark.skip("dpnp.ndarray has no get()")
     @testing.for_int_dtypes(no_bool=True)
     @testing.for_dtypes([numpy.int32])
     def test_dtype2(self, dtype):
@@ -146,6 +147,10 @@ class TestRandintDtype(unittest.TestCase):
             random.randint(iinfo.max - 10, iinfo.max + 2, size, dtype)
 
 
+@pytest.mark.skip(
+    "dpnp passes the arguments of randint positionally, and low=1 for "
+    "high=None as NumPy does"
+)
 class TestRandomIntegers(unittest.TestCase):
 
     def test_normal(self):
@@ -171,6 +176,9 @@ class TestRandomIntegers(unittest.TestCase):
 
 
 @testing.fix_random()
+@pytest.mark.filterwarnings(
+    "ignore:This function is deprecated:DeprecationWarning"
+)
 class TestRandomIntegers2(unittest.TestCase):
 
     @_condition.repeat(3, 10)
@@ -207,7 +215,7 @@ class TestRandomIntegers2(unittest.TestCase):
         assert _hypothesis.chi_square_test(counts, expected)
 
 
-@pytest.mark.skip("random.choice() is not supported yet")
+@pytest.mark.skip("mocks CuPy internals (random._generator._random_states)")
 class TestChoice(unittest.TestCase):
 
     def setUp(self):
@@ -255,11 +263,13 @@ class TestChoice(unittest.TestCase):
 
 class TestRandomSample(unittest.TestCase):
 
+    @pytest.mark.skip("dpnp passes size and dtype positionally")
     def test_rand(self):
         with mock.patch("dpnp.random.RandomState.random_sample") as m:
             random.rand(1, 2, 3)
         m.assert_called_once_with(size=(1, 2, 3), usm_type="device")
 
+    @pytest.mark.skip("dpnp passes size and dtype positionally")
     def test_rand_default_dtype(self):
         with mock.patch("dpnp.random.RandomState.random_sample") as m:
             random.rand(1, 2, 3)
@@ -269,11 +279,13 @@ class TestRandomSample(unittest.TestCase):
         with self.assertRaises(TypeError):
             random.rand(1, 2, 3, unnecessary="unnecessary_argument")
 
+    @pytest.mark.skip("dpnp passes size and dtype positionally")
     def test_randn(self):
         with mock.patch("dpnp.random.RandomState.standard_normal") as m:
             random.randn(1, 2, 3)
         m.assert_called_once_with(size=(1, 2, 3), usm_type="device")
 
+    @pytest.mark.skip("dpnp passes size and dtype positionally")
     def test_randn_default_dtype(self):
         with mock.patch("dpnp.random.RandomState.standard_normal") as m:
             random.randn(1, 2, 3)
@@ -292,7 +304,10 @@ class TestRandomSample(unittest.TestCase):
     {"size": (1, 0)},
 )
 @testing.fix_random()
-@pytest.mark.skip("random.multinomial() is not fully supported")
+@pytest.mark.skip(
+    "tests CuPy's internal _sample._multinominal_kernel, and asserts "
+    'dtype.kind == "l", which fails for NumPy as well'
+)
 class TestMultinomial(unittest.TestCase):
 
     def test_kernel_accepts_large_n(self):

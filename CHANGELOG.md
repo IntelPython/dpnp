@@ -20,6 +20,8 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Added the multivariate distributions, `permutation`, `shuffle`, `permuted`, `choice` and `bytes` to `dpnp.random.Generator` [#3160](https://github.com/IntelPython/dpnp/pull/3160)
 * Added the `dpnp.random.PCG64DXSM` bit generator, which matches `numpy.random.PCG64DXSM` for raw values, `random`, `uniform` and `bytes` [#3161](https://github.com/IntelPython/dpnp/pull/3161)
 * Added the `dpnp.random.MRG32k3a` bit generator [#3161](https://github.com/IntelPython/dpnp/pull/3161)
+* Added `dpnp.random.get_state`, `dpnp.random.set_state`, `dpnp.random.get_bit_generator` and `dpnp.random.set_bit_generator`, and support for a bit generator as the seed of `dpnp.random.RandomState` [#3162](https://github.com/IntelPython/dpnp/pull/3162)
+* Added the other methods of `numpy.random.RandomState` to `dpnp.random.RandomState`: `seed`, `set_state`, `random`, `random_integers`, `tomaxint`, `choice`, `bytes`, `shuffle`, `permutation` and the distributions from `beta` to `zipf` [#3162](https://github.com/IntelPython/dpnp/pull/3162)
 
 ### Changed
 
@@ -32,6 +34,7 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Reduced the overhead of `dpnp.ndarray.flags` and `dpnp.tensor.usm_ndarray.flags` [#3168](https://github.com/IntelPython/dpnp/pull/3168)
 * Changed `dpnp.linalg.LinAlgError` to derive from `numpy.linalg.LinAlgError`, so `except numpy.linalg.LinAlgError` also catches errors raised by dpnp linear algebra functions [#3184](https://github.com/IntelPython/dpnp/pull/3184)
 * Bumped the minimum required `dpctl` version to `0.24.0` [#3169](https://github.com/IntelPython/dpnp/pull/3169)
+* Reimplemented `dpnp.random.RandomState` and the `dpnp.random` functions on device kernels, drawing on the queue of the generator. `device`, `usm_type` and `sycl_queue` are now keyword-only, `usm_type` defaults to the USM type of the array parameters, `randint(dtype=int)` returns `int64` and `shuffle` requires a `dpnp.ndarray` or `usm_ndarray` [#3162](https://github.com/IntelPython/dpnp/pull/3162)
 
 ### Deprecated
 
@@ -54,6 +57,8 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Fixed the example of handling duplicate indices in the `dpnp.tensor.put` docstring, which imported `dpctl.tensor`, did not parse and lost writes when `x` is longer than `indices` [#3165](https://github.com/IntelPython/dpnp/pull/3165)
 * Fixed a segfault when setting `writable` on a `Flags` object created without an array [#3168](https://github.com/IntelPython/dpnp/pull/3168)
 * Fixed a crash of the OpenCL CPU compiler in `dpnp.sort`, `dpnp.argsort`, `dpnp.tensor.sort` and `dpnp.tensor.argsort` by radix sort of rows of 2049 to 16384 elements [#3191](https://github.com/IntelPython/dpnp/pull/3191)
+* Fixed `geometric`, `pareto` and `laplace` of `dpnp.random` to give NumPy's distributions: `geometric` counted the failures instead of the trials, `pareto` drew from the Pareto I distribution instead of the Lomax one, and `laplace` with `scale=0` returned 0 instead of `loc` [#3162](https://github.com/IntelPython/dpnp/pull/3162)
+* Fixed `multivariate_normal`, `multinomial` and `shuffle` of `dpnp.random`, which copied every input to a new queue, so that `multivariate_normal` raised `ValueError` and each call of the others left a queue alive [#3162](https://github.com/IntelPython/dpnp/pull/3162)
 
 ### Security
 

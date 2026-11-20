@@ -146,6 +146,24 @@ def _mrg_reference_raw(s1, s2, n):
     return res
 
 
+def _held_by_another_thread(lock):
+    """Whether `lock` is held, tried from a thread other than the caller."""
+
+    held = []
+
+    def _try():
+        if lock.acquire(blocking=False):
+            lock.release()
+            held.append(False)
+        else:
+            held.append(True)
+
+    t = threading.Thread(target=_try)
+    t.start()
+    t.join()
+    return held[0]
+
+
 def _all_devices():
     return [
         d for d in dpctl.get_devices() if d.device_type.name in ("cpu", "gpu")
@@ -311,6 +329,21 @@ class TestPhilox4x3210:
         n_blocks = -(-math.prod((3**30, 3**30)) // ITEMS_PER_WORK_ITEM)
         expected = (n_blocks << 64) & ((1 << 128) - 1)
         assert bg.state["state"]["counter"] == expected
+
+    def test_spawn_under_lock(self):
+        # SeedSequence.spawn counts the children without a lock
+        bg = Philox4x3210(1)
+        seq = bg.seed_seq
+        held = []
+
+        class _Seq:
+            def spawn(self, n_children):
+                held.append(_held_by_another_thread(bg.lock))
+                return seq.spawn(n_children)
+
+        bg._seed_seq = _Seq()
+        assert len(bg.spawn(2)) == 2
+        assert held == [True]
 
     def test_spawn_with_key(self):
         # as in NumPy, a bit generator given its key has no seed sequence
