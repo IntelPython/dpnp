@@ -97,10 +97,8 @@ def _partition_by_sort(dtype, n, sycl_device):
     if not sycl_device.is_gpu:
         return False
     dtype = dpnp.dtype(dtype)
-    if dtype.kind in "iu":
-        if dtype.itemsize < 4:
-            return False
-    elif dtype != dpnp.float32:
+    # the sort gains for 4-byte keys only with few distinct values
+    if dtype.kind not in "iu" or dtype.itemsize < 8:
         return False
     # shorter rows are ranked by a sub-group each
     sub_group_max_n = min(64, 8 * min(sycl_device.sub_group_sizes))
