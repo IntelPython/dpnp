@@ -74,11 +74,12 @@ Differences from NumPy
 * ``zipf`` follows the Zipf distribution truncated to the largest ``int64``.
   NumPy's rejection test rounds to accepting every sample above ``2**53``,
   which makes its tail too heavy for ``a`` close to 1.
-* :meth:`RandomState.randint` and :func:`randint` return ``int64`` values by
-  default, as do :meth:`RandomState.random_integers`,
-  :func:`random_integers` and :meth:`RandomState.tomaxint`, whose values
-  reach the largest ``int64``. NumPy returns a C ``long`` instead, which is
-  ``int32`` on Windows.
+* The integer results of :class:`RandomState` and of the :mod:`dpnp.random`
+  functions are ``int64`` by default, such as those of ``randint``,
+  ``random_integers``, ``choice``, ``permutation`` of an integer and the
+  discrete distributions, and :meth:`RandomState.tomaxint` reaches the
+  largest ``int64``. NumPy returns a C ``long`` instead, which is ``int32``
+  on Windows.
 * ``hypergeometric`` requires ``ngood`` and ``nbad`` below ``10**9``, also in
   :class:`RandomState`, and ``multivariate_hypergeometric`` requires
   ``sum(colors)`` below ``10**9`` for the ``"count"`` method too.
