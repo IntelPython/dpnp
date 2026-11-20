@@ -22,6 +22,7 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Added the `dpnp.random.PCG64DXSM` bit generator, which matches `numpy.random.PCG64DXSM` for raw values, `random`, `uniform` and `bytes` [#3161](https://github.com/IntelPython/dpnp/pull/3161)
 * Added the `dpnp.random.MRG32k3a` bit generator [#3161](https://github.com/IntelPython/dpnp/pull/3161)
 * Added `dpnp.random.get_state`, `dpnp.random.set_state`, `dpnp.random.get_bit_generator` and `dpnp.random.set_bit_generator`, and support for a bit generator as the seed of `dpnp.random.RandomState` [#3162](https://github.com/IntelPython/dpnp/pull/3162)
+* Added the other methods of `numpy.random.RandomState` to `dpnp.random.RandomState`: `seed`, `set_state`, `random`, `random_integers`, `tomaxint`, `choice`, `bytes`, `shuffle`, `permutation` and the distributions from `beta` to `zipf` [#3162](https://github.com/IntelPython/dpnp/pull/3162)
 
 ### Changed
 
@@ -65,8 +66,8 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Fixed `dpnp.median` and `dpnp.nanmedian` raising `ValueError` for an `out` array of the result shape with `keepdims=True` [#3138](https://github.com/IntelPython/dpnp/pull/3138)
 * Fixed `dpnp.partition` to accept NumPy integers and integer arrays as `kth`, and to raise as NumPy does for a boolean or an empty `kth` [#3138](https://github.com/IntelPython/dpnp/pull/3138)
 * Fixed `dpnp.nanmedian` raising `TypeError` for an `out` array of a lower precision data type instead of casting to it as `dpnp.median` does [#3138](https://github.com/IntelPython/dpnp/pull/3138)
-* Fixed `geometric`, `pareto` and `laplace` of `dpnp.random` and `dpnp.random.RandomState` to give NumPy's distributions: `geometric` counted the failures instead of the trials, `pareto` drew from the Pareto I distribution instead of the Lomax one, and `laplace` with `scale=0` returned 0 instead of `loc` [#3162](https://github.com/IntelPython/dpnp/pull/3162)
-* Fixed `multivariate_normal`, `multinomial` and `shuffle` of `dpnp.random` and `dpnp.random.RandomState`, which copied every input to a new queue, so that `multivariate_normal` raised `ValueError` and each call of the others left a queue alive [#3162](https://github.com/IntelPython/dpnp/pull/3162)
+* Fixed `geometric`, `pareto` and `laplace` of `dpnp.random` to give NumPy's distributions: `geometric` counted the failures instead of the trials, `pareto` drew from the Pareto I distribution instead of the Lomax one, and `laplace` with `scale=0` returned 0 instead of `loc` [#3162](https://github.com/IntelPython/dpnp/pull/3162)
+* Fixed `multivariate_normal`, `multinomial` and `shuffle` of `dpnp.random`, which copied every input to a new queue, so that `multivariate_normal` raised `ValueError` and each call of the others left a queue alive [#3162](https://github.com/IntelPython/dpnp/pull/3162)
 
 ### Security
 
