@@ -3432,12 +3432,13 @@ struct can_use_minmax_group_reducer
          can_use_reduce_over_group<MaxOpT, argT>::value);
 };
 
-/* @brief Reduces both extrema over a work-group with
- * custom_reduce_over_group */
+/* @brief Reduces both extrema over a work-group in one tree in local memory,
+ * as custom_reduce_over_group does for one value */
 template <typename argT, typename MinOpT, typename MaxOpT, typename SlmT>
 struct CustomMinMaxGroupReducer
 {
 private:
+    // minima in [0, wgs), maxima in [wgs, 2 * wgs)
     SlmT local_mem_;
 
 public:
@@ -3446,12 +3447,46 @@ public:
     template <typename GroupT>
     void operator()(const GroupT &wg, argT &red_min, argT &red_max) const
     {
-        red_min =
-            su_ns::custom_reduce_over_group(wg, local_mem_, red_min, MinOpT());
-        // local memory is reused for the maximum
+        // the tuning of custom_reduce_over_group
+        static constexpr std::uint32_t low_sz = 8u;
+        static constexpr std::uint32_t high_sz = 1024u;
+
+        const std::uint32_t wgs = wg.get_local_linear_range();
+        const std::uint32_t lid = wg.get_local_linear_id();
+        const MinOpT min_op{};
+        const MaxOpT max_op{};
+
+        local_mem_[lid] = red_min;
+        local_mem_[wgs + lid] = red_max;
         sycl::group_barrier(wg, sycl::memory_scope::work_group);
-        red_max =
-            su_ns::custom_reduce_over_group(wg, local_mem_, red_max, MaxOpT());
+
+        std::uint32_t n_witems = wgs;
+#pragma unroll
+        for (std::uint32_t sz = high_sz; sz >= low_sz; sz >>= 1) {
+            if (n_witems >= sz) {
+                const std::uint32_t step = (n_witems + 1) >> 1;
+                if (lid < n_witems - step) {
+                    local_mem_[lid] =
+                        min_op(local_mem_[lid], local_mem_[step + lid]);
+                    local_mem_[wgs + lid] = max_op(
+                        local_mem_[wgs + lid], local_mem_[wgs + step + lid]);
+                }
+                sycl::group_barrier(wg, sycl::memory_scope::work_group);
+                n_witems = step;
+            }
+        }
+
+        argT min_over_wg = local_mem_[0];
+        argT max_over_wg = local_mem_[wgs];
+        if (wg.leader()) {
+            for (std::uint32_t i = 1; i < n_witems; ++i) {
+                min_over_wg = min_op(min_over_wg, local_mem_[i]);
+                max_over_wg = max_op(max_over_wg, local_mem_[wgs + i]);
+            }
+        }
+
+        red_min = sycl::group_broadcast(wg, min_over_wg, 0);
+        red_max = sycl::group_broadcast(wg, max_over_wg, 0);
     }
 };
 
@@ -3633,7 +3668,8 @@ sycl::event
         }
         else {
             using SlmT = sycl::local_accessor<argTy, 1>;
-            SlmT local_memory = SlmT(localRange, cgh);
+            const auto slmRange = sycl::range<1>{2 * wg};
+            SlmT local_memory = SlmT(slmRange, cgh);
 
             using GroupReducerT =
                 CustomMinMaxGroupReducer<argTy, MinOpT, MaxOpT, SlmT>;
