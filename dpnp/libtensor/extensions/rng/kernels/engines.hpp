@@ -374,10 +374,11 @@ struct PCG64DXSM
     }
 };
 
-// Adapts oneMKL's mrg32k3a, whose raw values r are in [1, m1] with
-// m1 = 2**32 - 209, to uniform 32-bit words. v = r - 1 is spread over the
-// 32-bit range as v + floor(209 * v / 2**32), which increases strictly, so
-// every word has probability 1 / m1, except 209 words that never occur.
+// Adapts the mrg32k3a of oneMKL or oneMath, whose raw values r are in
+// [1, m1] with m1 = 2**32 - 209, to uniform 32-bit words. v = r - 1 is
+// spread over the 32-bit range as v + floor(209 * v / 2**32), which
+// increases strictly, so every word has probability 1 / m1, except 209
+// words that never occur.
 template <typename EngineT>
 class Mrg32k3aBitGen : public UniformBits<Mrg32k3aBitGen<EngineT>>
 {
@@ -406,7 +407,7 @@ public:
 };
 
 // L'Ecuyer's MRG32k3a combined multiple recursive generator, as implemented
-// by the oneMKL device RNG API
+// by the device RNG API of oneMKL or oneMath
 struct MRG32k3a
 {
     using engine_t = mkl_rng_dev::mrg32k3a<1>;
