@@ -158,6 +158,7 @@ Bit generators
    BitGenerator.sycl_device
    BitGenerator.sycl_queue
    Philox4x3210
+   Philox4x3210.state
    SeedSequence
 
 Legacy random generation

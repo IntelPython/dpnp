@@ -923,6 +923,7 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.BitGenerator.sycl_device.html">dpnp.random.BitGenerator.sycl_device</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.BitGenerator.sycl_queue.html">dpnp.random.BitGenerator.sycl_queue</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.Philox4x3210.html">dpnp.random.Philox4x3210</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.Philox4x3210.state.html">dpnp.random.Philox4x3210.state</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.SeedSequence.html">dpnp.random.SeedSequence</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.rand.html">dpnp.random.rand</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.randn.html">dpnp.random.randn</a></li>
@@ -1364,7 +1365,7 @@ bit generators have no <code class="docutils literal notranslate"><span class="p
 <td><p>Create new independent child bit generators on the same SYCL queue.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.BitGenerator.state.html#dpnp.random.BitGenerator.state" title="dpnp.random.BitGenerator.state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BitGenerator.state</span></code></a></p></td>
-<td><p>The state of the bit generator, as a dictionary.</p></td>
+<td><p>Get or set the state of the bit generator, as a dictionary.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.BitGenerator.sycl_device.html#dpnp.random.BitGenerator.sycl_device" title="dpnp.random.BitGenerator.sycl_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BitGenerator.sycl_device</span></code></a></p></td>
 <td><p>The SYCL device arrays are created on.</p></td>
@@ -1375,7 +1376,10 @@ bit generators have no <code class="docutils literal notranslate"><span class="p
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.Philox4x3210.html#dpnp.random.Philox4x3210" title="dpnp.random.Philox4x3210"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Philox4x3210</span></code></a></p></td>
 <td><p>A Philox4x32-10 counter-based bit generator on the device.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.SeedSequence.html#dpnp.random.SeedSequence" title="dpnp.random.SeedSequence"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SeedSequence</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.Philox4x3210.state.html#dpnp.random.Philox4x3210.state" title="dpnp.random.Philox4x3210.state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Philox4x3210.state</span></code></a></p></td>
+<td><p>Get or set the state of the bit generator.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.SeedSequence.html#dpnp.random.SeedSequence" title="dpnp.random.SeedSequence"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SeedSequence</span></code></a></p></td>
 <td><p>SeedSequence mixes sources of entropy in a reproducible way to set the initial state for independent and very probably non-overlapping BitGenerators.</p></td>
 </tr>
 </tbody>
