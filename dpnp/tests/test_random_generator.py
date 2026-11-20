@@ -1876,31 +1876,49 @@ class TestMultivariate:
         ).all()
 
     @pytest.mark.parametrize(
-        "alpha, dtype, kernel",
+        "alpha, dtype, kernels",
         [
-            ([0.05] * 30, dpnp.float32, ri._beta),
-            ([0.5, 0.4], dpnp.float32, ri._beta),
-            ([0.5] * 3, dpnp.float32, ri._gamma),
-            ([0.5, 0.4], dpnp.float64, ri._gamma),
-            ([0.05] * 30, dpnp.float64, ri._beta),
+            ([0.05] * 30, dpnp.float32, [ri._gamma, ri._exponential]),
+            ([0.5, 0.4], dpnp.float32, [ri._gamma, ri._exponential]),
+            ([0.5] * 3, dpnp.float32, [ri._gamma]),
+            ([0.5, 0.4], dpnp.float64, [ri._gamma]),
+            ([0.05] * 30, dpnp.float64, [ri._beta] * 29),
         ],
     )
-    def test_dirichlet_kernel(self, monkeypatch, alpha, dtype, kernel):
-        # one beta kernel per component only where gamma variates underflow
+    def test_dirichlet_kernel(self, monkeypatch, alpha, dtype, kernels):
+        # where gamma variates underflow, float64 breaks a stick and float32
+        # takes their logarithms
         if dtype == dpnp.float64 and not has_support_aspect64():
             pytest.skip("fp64 is required")
 
-        kernels = []
+        launched = []
         float_sample = Generator._float_sample
 
         def _recorded(self, fn, *args, **kwargs):
-            kernels.append(fn)
+            launched.append(fn)
             return float_sample(self, fn, *args, **kwargs)
 
         monkeypatch.setattr(Generator, "_float_sample", _recorded)
         default_rng(0).dirichlet(alpha, size=4, dtype=dtype)
-        n_kernels = len(alpha) - 1 if kernel is ri._beta else 1
-        assert kernels == [kernel] * n_kernels
+        assert launched == kernels
+
+    def test_dirichlet_float32_small_components(self):
+        # a stick broken in float32 rounds 4.7% of these components to 0
+        alpha = [0.2, 0.15]
+        res = default_rng(1).dirichlet(alpha, size=10**5, dtype=dpnp.float32)
+        res = dpnp.asnumpy(res)
+        assert (res == 0).mean() < 1e-3
+        assert (abs(res.sum(axis=-1, dtype=numpy.float64) - 1) < 1e-6).all()
+
+    @pytest.mark.parametrize(
+        "alpha", [[0.5, 1e-50], [1e-50, 0.2, 0.0], [1e-50, 1e-60]]
+    )
+    def test_dirichlet_float32_below_range(self, alpha):
+        # alpha below the float32 range is 0
+        nonzero = numpy.asarray(alpha, dtype=numpy.float32) > 0
+        res = default_rng(0).dirichlet(alpha, size=3, dtype=dpnp.float32)
+        expected = numpy.tile(nonzero, (3, 1)).astype(numpy.float32)
+        assert_array_equal(dpnp.asnumpy(res), expected)
 
     @pytest.mark.parametrize(
         "alpha", [[0.0], [0.0, 0.0], [0.05, 0.0], [0.0, 0.0, 0.05], [0.0, 2.0]]
