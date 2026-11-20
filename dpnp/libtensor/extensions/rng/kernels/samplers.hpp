@@ -34,6 +34,7 @@
 #include <sycl/sycl.hpp>
 
 #include "distributions.hpp"
+#include "engines.hpp"
 
 namespace dpnp::kernels::rng
 {
@@ -130,7 +131,15 @@ public:
     {
         // no fused multiply-add, to round the same on every device
 #pragma clang fp contract(off)
-        return loc_[i] + scale_[i] * normal_(bg);
+        if constexpr (is_block_bitgen_v<BitGenT>) {
+            // a block's words stay in registers only when every call
+            // touching them is inlined (see BlockBitGen); forcing it on the
+            // strided path slows the CPU
+            [[clang::always_inline]] return loc_[i] + scale_[i] * normal_(bg);
+        }
+        else {
+            return loc_[i] + scale_[i] * normal_(bg);
+        }
     }
 };
 } // namespace dpnp::kernels::rng
