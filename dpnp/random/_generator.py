@@ -1878,6 +1878,12 @@ class Generator:
         out : dpnp.ndarray
             The samples.
 
+        Raises
+        ------
+        ValueError
+            When `df` <= 0, for a `df` on the host, or when an inappropriate
+            `size` (e.g. ``size=-1``) is given.
+
         Limitations
         -----------
         `dtype` and `usm_type` are not in NumPy's signature.
