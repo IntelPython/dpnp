@@ -1296,6 +1296,11 @@ class Generator:
         out : dpnp.ndarray
             The samples.
 
+        Raises
+        ------
+        ValueError
+            If `a` <= 0, for an `a` on the host.
+
         Limitations
         -----------
         `dtype` and `usm_type` are not in NumPy's signature.
