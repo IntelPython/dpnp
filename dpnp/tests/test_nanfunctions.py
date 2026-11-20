@@ -12,6 +12,7 @@ from numpy.testing import (
 
 import dpnp
 import dpnp.tensor as dpt
+from dpnp.dpnp_utils import dpnp_utils_statistics
 from dpnp.exceptions import ExecutionPlacementError
 
 from .helper import (
@@ -22,6 +23,7 @@ from .helper import (
     get_complex_dtypes,
     get_float_complex_dtypes,
     get_float_dtypes,
+    has_support_aspect16,
     has_support_aspect64,
     numpy_version,
 )
@@ -441,6 +443,22 @@ class TestNanMedian:
         expected = numpy.nanmedian(a, axis=(1, 2), keepdims=keepdims)
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.usefixtures(
+        "suppress_invalid_numpy_warnings",
+        "suppress_mean_empty_slice_numpy_warnings",
+    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("keepdims", [False, True])
+    def test_empty_dtype(self, dtype, keepdims):
+        a = numpy.empty((3, 0), dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = dpnp.nanmedian(ia, axis=1, keepdims=keepdims)
+        expected = numpy.nanmedian(a, axis=1, keepdims=keepdims)
+        assert_dtype_allclose(result, expected)
+        # the median of an empty complex slice is NaN in both parts
+        assert_array_equal(dpnp.isnan(result.imag), numpy.isnan(expected.imag))
+
     @pytest.mark.usefixtures("suppress_mean_empty_slice_numpy_warnings")
     @pytest.mark.parametrize(
         "shape, axis", [((1, 5), 1), ((3, 1, 4), 2), ((2, 1, 5), (0, 2))]
@@ -467,15 +485,16 @@ class TestNanMedian:
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.filterwarnings("ignore:All-NaN slice:RuntimeWarning")
-    def test_all_nan(self):
-        a = numpy.array(numpy.nan)
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_all_nan(self, dtype):
+        a = numpy.array(numpy.nan, dtype=dtype)
         ia = dpnp.array(a)
 
         result = dpnp.nanmedian(ia)
         expected = numpy.nanmedian(a)
         assert_dtype_allclose(result, expected)
 
-        a = generate_random_numpy_array((2, 3, 4))
+        a = generate_random_numpy_array((2, 3, 4), dtype=dtype)
         a[:, :, 2] = numpy.nan
         ia = dpnp.array(a)
 
@@ -493,15 +512,16 @@ class TestNanMedian:
         ib = ia.copy()
         expected = numpy.nanmedian(b, axis=axis, overwrite_input=True)
         result = dpnp.nanmedian(ib, axis=axis, overwrite_input=True)
+        # overwrite_input only allows the input to be modified
         assert not numpy.all(a == b)
-        assert not dpnp.all(ia == ib)
 
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     @pytest.mark.parametrize("axis", [None, 0, (-1,), [0, 1]])
     @pytest.mark.parametrize("overwrite_input", [True, False])
-    def test_usm_ndarray(self, axis, overwrite_input):
-        a = generate_random_numpy_array((2, 3, 4))
+    def test_usm_ndarray(self, dtype, axis, overwrite_input):
+        a = generate_random_numpy_array((2, 3, 4), dtype=dtype)
         a[0, 0, 0] = a[-2, -2, -2] = numpy.nan
         ia = dpt.asarray(a)
 
@@ -526,8 +546,47 @@ class TestNanMedian:
         assert result is out_dp
         assert_dtype_allclose(result, expected)
 
-    def test_error(self):
-        a = dpnp.arange(6.0).reshape(2, 3)
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    @pytest.mark.parametrize("axis", [None, 1, (0, 2)])
+    def test_out_keepdims(self, dtype, axis):
+        a = generate_random_numpy_array((2, 3, 4), dtype=dtype)
+        a[0, 1, ::2] = a[1, 2, 1] = numpy.nan
+        ia = dpnp.array(a)
+        out_shape = numpy.nanmedian(a, axis=axis, keepdims=True).shape
+
+        out_np = numpy.empty_like(a, shape=out_shape)
+        out_dp = dpt.empty(out_shape, dtype=dtype)
+        expected = numpy.nanmedian(a, axis=axis, keepdims=True, out=out_np)
+        result = dpnp.nanmedian(ia, axis=axis, keepdims=True, out=out_dp)
+        assert result.get_array() is out_dp
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "dtype, out_dtype", [("f8", "f4"), ("f4", "f2"), ("c16", "c8")]
+    )
+    @pytest.mark.parametrize("keepdims", [False, True])
+    def test_out_lower_dtype(self, dtype, out_dtype, keepdims):
+        if not has_support_aspect64() and dtype in ("f8", "c16"):
+            pytest.skip("requires fp64 support")
+        if not has_support_aspect16() and out_dtype == "f2":
+            pytest.skip("requires fp16 support")
+
+        a = numpy.array([[1, numpy.nan, 2.5], [3, 1, 2]], dtype=dtype)
+        if dpnp.issubdtype(dtype, dpnp.complexfloating):
+            a += 1j
+        ia = dpnp.array(a)
+        out_shape = (2, 1) if keepdims else (2,)
+
+        out_np = numpy.empty(out_shape, dtype=out_dtype)
+        out_dp = dpnp.empty(out_shape, dtype=out_dtype)
+        expected = numpy.nanmedian(a, axis=1, keepdims=keepdims, out=out_np)
+        result = dpnp.nanmedian(ia, axis=1, keepdims=keepdims, out=out_dp)
+        assert result is out_dp
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_error(self, dtype):
+        a = dpnp.arange(6.0).reshape(2, 3).astype(dtype)
         a[0, 0] = a[-1, -1] = numpy.nan
 
         # out shape is incorrect
@@ -540,6 +599,124 @@ class TestNanMedian:
         res = dpnp.empty(2, dtype=a.dtype, sycl_queue=exec_q)
         with pytest.raises(ExecutionPlacementError):
             dpnp.nanmedian(a, axis=1, out=res)
+
+
+class TestNanMedianSelect:
+    # row lengths reaching the sub-group, the work-group and the multi-group
+    # kernels of radix select
+    @pytest.mark.parametrize(
+        "n", [1, 2, 3, 63, 64, 65, 1000, 1001, 2**16 + 2, 2**17 + 1]
+    )
+    @pytest.mark.parametrize("dtype", get_float_dtypes(no_float16=False))
+    def test_basic(self, n, dtype):
+        rnd = numpy.random.RandomState(81)
+        a = rnd.standard_normal(size=(5, n)).astype(dtype)
+        # a varying number of NaNs, to give both even and odd valid counts
+        for i in range(1, 4):
+            a[i, rnd.choice(n, min(i * n // 4 + i, n - 1), replace=False)] = (
+                numpy.nan
+            )
+        # signed zeros and NaNs, never all NaN (see test_all_nan_rows)
+        a[4, :] = -0.0
+        a[4, 1::3] = numpy.nan
+        ia = dpnp.array(a)
+
+        expected = numpy.nanmedian(a, axis=-1)
+        result = dpnp.nanmedian(ia, axis=-1)
+        # a tolerance would hide a neighbouring rank in float16
+        assert_array_equal(result, expected, strict=True)
+
+    @pytest.mark.parametrize("n", [5, 64, 1000, 2**16 + 1, 2**17])
+    @pytest.mark.parametrize("dtype", get_float_dtypes(no_float16=False))
+    def test_special_values(self, n, dtype):
+        a = numpy.zeros((3, n), dtype=dtype)
+        a[0, ::5] = numpy.inf
+        a[0, ::7] = numpy.nan
+        # both middle values of an even number of non-NaNs are max, so their
+        # mean overflows; one row has an odd number of them, the other even
+        for i, n_nan in [(1, n // 4), (2, n // 4 + 1)]:
+            a[i, n - n_nan :] = numpy.nan
+            a[i, : (n - n_nan) // 2 + 1] = numpy.finfo(dtype).max
+        ia = dpnp.array(a)
+
+        # along an axis shorter than 600, numpy.nanmedian also averages the
+        # single median of an odd count with itself, unlike numpy.median and
+        # its own 1-D path
+        with numpy.errstate(over="ignore"):
+            expected = numpy.array([numpy.nanmedian(row) for row in a])
+        result = dpnp.nanmedian(ia, axis=-1)
+        assert_array_equal(result, expected, strict=True)
+
+    # NumPy's mean gives +0.0 for zeros of either sign
+    @pytest.mark.parametrize("n", [2, 3, 64, 1000, 2**16 + 1])
+    @pytest.mark.parametrize("dtype", get_float_dtypes(no_float16=False))
+    def test_zero_sign(self, n, dtype):
+        a = numpy.full((3, n), -0.0, dtype=dtype)
+        a[:, 1::4] = numpy.nan
+        a[1, ::3] = 0.0
+        a[2, : n // 4] = -1
+        ia = dpnp.array(a)
+
+        expected = numpy.nanmedian(a, axis=-1)
+        result = dpnp.nanmedian(ia, axis=-1)
+        assert_dtype_allclose(result, expected)
+        assert_array_equal(dpnp.signbit(result), numpy.signbit(expected))
+
+    @pytest.mark.parametrize("n", [3, 1000, 2**16 + 1])
+    @pytest.mark.parametrize("flag_usm_type", [None, "device"])
+    def test_all_nan_rows(self, monkeypatch, n, flag_usm_type):
+        # the flag is in device USM where the device lacks host USM atomics
+        if flag_usm_type is not None:
+            monkeypatch.setattr(
+                dpnp_utils_statistics,
+                "_all_nan_usm_type",
+                lambda _: flag_usm_type,
+            )
+        a = generate_random_numpy_array((3, n), dtype="f4")
+        a[1] = numpy.nan
+        ia = dpnp.array(a)
+
+        with pytest.warns(RuntimeWarning, match="All-NaN slice"):
+            result = dpnp.nanmedian(ia, axis=-1)
+        with pytest.warns(RuntimeWarning, match="All-NaN slice"):
+            expected = numpy.nanmedian(a, axis=-1)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_float16=False, no_complex=True)
+    )
+    def test_no_warning(self, dtype, recwarn):
+        a = generate_random_numpy_array((3, 100), dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = dpnp.nanmedian(ia, axis=-1)
+        assert_dtype_allclose(result, numpy.nanmedian(a, axis=-1))
+        assert not [w for w in recwarn if "All-NaN" in str(w.message)]
+
+    @pytest.mark.parametrize("keepdims", [False, True])
+    def test_out(self, keepdims):
+        a = generate_random_numpy_array((4, 3))
+        a[1, 2] = numpy.nan
+        ia = dpnp.array(a)
+        shape = (1, 3) if keepdims else (3,)
+
+        out_np = numpy.empty_like(a, shape=shape)
+        out_dp = dpnp.empty_like(ia, shape=shape)
+        expected = numpy.nanmedian(a, axis=0, keepdims=keepdims, out=out_np)
+        result = dpnp.nanmedian(ia, axis=0, keepdims=keepdims, out=out_dp)
+        assert result is out_dp
+        assert_dtype_allclose(result, expected)
+
+    # NumPy broadcasts the result into these, dpnp requires the exact shape
+    @pytest.mark.parametrize(
+        "axis, out_shape", [(0, (2, 3)), (0, (1, 3)), (None, (3,))]
+    )
+    def test_out_wrong_shape(self, axis, out_shape):
+        a = dpnp.arange(12.0).reshape(4, 3)
+        a[1, 2] = dpnp.nan
+        out = dpnp.empty(out_shape)
+        with pytest.raises(ValueError, match="Output array of shape"):
+            dpnp.nanmedian(a, axis=axis, out=out)
 
 
 @pytest.mark.parametrize("func", ["nanprod", "nansum"])

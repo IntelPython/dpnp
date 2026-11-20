@@ -297,18 +297,6 @@ struct uint_of_size<8>
 template <typename T>
 using radix_key_t = typename uint_of_size<sizeof(T)>::type;
 
-template <typename T>
-T normalize_signed_zero(T val)
-{
-    if constexpr (std::is_floating_point_v<T> ||
-                  std::is_same_v<T, sycl::half>) {
-        return (val == T(0)) ? T(0) : val;
-    }
-    else {
-        return val;
-    }
-}
-
 /*! @brief Order-preserving unsigned key of `val`, unlike
  * `order_preserving_cast` equal exactly when the values compare equal, so that
  * -0.0 and +0.0 as well as all NaNs share a key */
@@ -320,9 +308,55 @@ radix_key_t<T> ordered_radix_key(const T &val)
         // by reference, see order_preserving_cast for bool
         return KeyT(order_preserving_cast<is_ascending>(val));
     }
+    else if constexpr (std::is_floating_point_v<T> ||
+                       std::is_same_v<T, sycl::half>) {
+        static constexpr KeyT sign_bit =
+            KeyT(1) << (number_of_bits_in_type<KeyT>() - 1);
+        // the keys of -0.0 and +0.0, the descending keys being the inverses of
+        // the ascending ones
+        static constexpr KeyT neg_zero_key =
+            (is_ascending) ? static_cast<KeyT>(~sign_bit) : sign_bit;
+        static constexpr KeyT pos_zero_key =
+            (is_ascending) ? sign_bit : static_cast<KeyT>(~sign_bit);
+
+        // compared as keys: -fno-signed-zeros lets a test on the value fold
+        const KeyT key = KeyT(order_preserving_cast<is_ascending>(val));
+        return (key == neg_zero_key) ? pos_zero_key : key;
+    }
     else {
-        return KeyT(
-            order_preserving_cast<is_ascending>(normalize_signed_zero(val)));
+        return KeyT(order_preserving_cast<is_ascending>(val));
+    }
+}
+
+/*! @brief Value of type `T` whose `ordered_radix_key` is `key`, NaNs and zeros
+ * come back as the quiet NaN and +0.0 */
+template <bool is_ascending, typename T>
+T ordered_radix_value(radix_key_t<T> key)
+{
+    using KeyT = radix_key_t<T>;
+    static constexpr KeyT sign_bit = KeyT(1)
+                                     << (number_of_bits_in_type<KeyT>() - 1);
+
+    if constexpr (std::is_same_v<T, bool>) {
+        return (is_ascending) ? (key != 0) : (key == 0);
+    }
+    else {
+        // the descending keys are the bitwise inverses of the ascending ones
+        const KeyT asc_key = (is_ascending) ? key : static_cast<KeyT>(~key);
+        if constexpr (std::is_integral_v<T> && std::is_unsigned_v<T>) {
+            return T(asc_key);
+        }
+        else if constexpr (std::is_integral_v<T>) {
+            return sycl::bit_cast<T>(static_cast<KeyT>(asc_key ^ sign_bit));
+        }
+        else {
+            // non-negative values have the sign bit flipped, negative ones
+            // all their bits
+            const KeyT bits = (asc_key & sign_bit)
+                                  ? static_cast<KeyT>(asc_key ^ sign_bit)
+                                  : static_cast<KeyT>(~asc_key);
+            return sycl::bit_cast<T>(bits);
+        }
     }
 }
 
