@@ -796,7 +796,9 @@ class TestLegacy:
         res = RandomState(0).normal(dpnp.arange(4), 1.0)
         assert res.shape == (4,)
 
-    @pytest.mark.parametrize("name", ["exponential", "pareto", "poisson"])
+    @pytest.mark.parametrize(
+        "name", ["exponential", "pareto", "poisson", "normal", "logistic"]
+    )
     def test_complex_device_param(self, name):
         x = numpy.array([1 + 1j], dtype=numpy.complex64)
         _assert_same_error(

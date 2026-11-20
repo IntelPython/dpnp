@@ -210,6 +210,17 @@ def _as_host_float(value):
     return numpy.asarray(value, dtype=numpy.float64)
 
 
+def _check_not_complex(value):
+    """Raise NumPy's TypeError for the complex device array `value`."""
+
+    if dpnp.issubdtype(value.dtype, dpnp.complexfloating):
+        # the error of NumPy, which casts every parameter to float64
+        raise TypeError(
+            f"Cannot cast array data from {value.dtype!r} to "
+            f"{numpy.dtype(numpy.float64)!r} according to the rule 'safe'"
+        )
+
+
 def _on_device(value):
     """
     `value` for a check on the device, as a floating-point array unless it
@@ -218,12 +229,7 @@ def _on_device(value):
     """
 
     value = dpnp.asarray(value)
-    if dpnp.issubdtype(value.dtype, dpnp.complexfloating):
-        # the error of NumPy, which casts every parameter to float64
-        raise TypeError(
-            f"Cannot cast array data from {value.dtype!r} to "
-            f"{numpy.dtype(numpy.float64)!r} according to the rule 'safe'"
-        )
+    _check_not_complex(value)
     if dpnp.issubdtype(value.dtype, dpnp.floating):
         return value
     return value.astype(dpnp.default_float_type(sycl_queue=value.sycl_queue))
@@ -342,8 +348,11 @@ def _check_constraint(value, name, cons, scalar, device=False):
     """
 
     if dpnp.is_supported_array_type(value):
-        # a device parameter without a constraint needs no conversion
-        if not device or cons == _CONS_NONE:
+        if not device:
+            return
+        if cons == _CONS_NONE:
+            # a device parameter without a constraint needs no conversion
+            _check_not_complex(value)
             return
         xp = dpnp
         val = _on_device(value)
