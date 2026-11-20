@@ -1,0 +1,10 @@
+﻿
+
+dpnp.scipy.sparse.linalg.cg
+===========================
+
+.. currentmodule:: dpnp.scipy.sparse.linalg
+
+
+
+.. autofunction:: cg
