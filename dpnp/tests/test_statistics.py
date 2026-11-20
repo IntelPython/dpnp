@@ -1489,6 +1489,32 @@ class TestMedianSelect:
         expected = numpy.median(a, axis=-1).astype(dst.dtype)
         assert_array_equal(dpt.asnumpy(dst), expected, strict=True)
 
+    # NumPy adds the two values in float64 first, which rounds twice
+    @pytest.mark.parametrize(
+        "row, expected",
+        [
+            ([-(2**63), 2**63 - 1], -0.5),
+            ([2**62 + 2**38, 2**62 + 2**38 + 1], 2**62 + 2**39),
+        ],
+    )
+    def test_ext_integer_mean_float32(self, row, expected):
+        src = dpt.asarray(numpy.array([row], dtype="i8"))
+        dst = dpt.empty((1,), dtype="f4", sycl_queue=src.sycl_queue)
+        mgr = dpctl.utils.SequentialOrderManager[src.sycl_queue]
+        ht_ev, ev = statistics_ext._median(
+            src,
+            False,
+            dst,
+            sycl_queue=src.sycl_queue,
+            depends=mgr.submitted_events,
+        )
+        ht_ev.wait()
+        ev.wait()
+
+        assert_array_equal(
+            dpt.asnumpy(dst), numpy.array([expected], dtype="f4"), strict=True
+        )
+
     @pytest.mark.parametrize("n", [5, 64, 1000, 2**16 + 1, 2**17])
     @pytest.mark.parametrize("dtype", get_float_dtypes(no_float16=False))
     def test_special_values(self, n, dtype):

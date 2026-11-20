@@ -1290,6 +1290,12 @@ def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
     ``V_sorted[(N-1)/2]``, when ``N`` is odd, and the average of the
     two middle values of ``V_sorted`` when ``N`` is even.
 
+    On a device without double precision floating-point support, the average
+    of two middle values of a 64-bit integer data type is the single precision
+    value nearest to their exact average. NumPy adds them in double precision
+    first, so for values of magnitude about :math:`2^{52}` or more the result
+    can differ from NumPy's cast to single precision.
+
     Examples
     --------
     >>> import dpnp as np
