@@ -1163,10 +1163,8 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">sycl_device</span><span class="o">.</span><span class="n">is_gpu</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span>
     <span class="n">dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="s2">"iu"</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span>
-    <span class="k">elif</span> <span class="n">dtype</span> <span class="o">!=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float32</span><span class="p">:</span>
+    <span class="c1"># the sort gains for 4-byte keys only with few distinct values</span>
+    <span class="k">if</span> <span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">"iu"</span> <span class="ow">or</span> <span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span>
     <span class="c1"># shorter rows are ranked by a sub-group each</span>
     <span class="n">sub_group_max_n</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">8</span> <span class="o">*</span> <span class="nb">min</span><span class="p">(</span><span class="n">sycl_device</span><span class="o">.</span><span class="n">sub_group_sizes</span><span class="p">))</span>

@@ -1797,6 +1797,12 @@
 <span class="sd">    ``V_sorted[(N-1)/2]``, when ``N`` is odd, and the average of the</span>
 <span class="sd">    two middle values of ``V_sorted`` when ``N`` is even.</span>
 
+<span class="sd">    On a device without double precision floating-point support, the average</span>
+<span class="sd">    of two middle values of a 64-bit integer data type is the single precision</span>
+<span class="sd">    value nearest to their exact average. NumPy adds them in double precision</span>
+<span class="sd">    first, so for values of magnitude about :math:`2^{52}` or more the result</span>
+<span class="sd">    can differ from NumPy's cast to single precision.</span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
