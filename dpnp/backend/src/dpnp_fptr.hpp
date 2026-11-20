@@ -38,6 +38,7 @@
 #include <complex>
 #include <map>
 #include <stdexcept>
+#include <type_traits>
 
 #include <sycl/sycl.hpp>
 
@@ -105,17 +106,6 @@ constexpr auto both_types_are_same =
     std::conjunction_v<is_any<T1, Ts...>, are_same<T1, T2>>;
 
 /**
- * @brief If the type _Tp is a reference type, provides the member typedef type
- * which is the type referred to by _Tp with its topmost cv-qualifiers removed.
- * Otherwise type is _Tp with its topmost cv-qualifiers removed.
- *
- * @note std::remove_cvref is only available since c++20
- */
-template <typename _Tp>
-using dpnp_remove_cvref_t =
-    typename std::remove_cv_t<typename std::remove_reference_t<_Tp>>;
-
-/**
  * @brief "<" comparison with complex types support.
  *
  * @note return a result of lexicographical "<" comparison for complex types.
@@ -127,7 +117,7 @@ public:
     bool operator()(_Xp &&__x, _Yp &&__y) const
     {
         if constexpr (both_types_are_same<
-                          dpnp_remove_cvref_t<_Xp>, dpnp_remove_cvref_t<_Yp>,
+                          std::remove_cvref_t<_Xp>, std::remove_cvref_t<_Yp>,
                           std::complex<float>, std::complex<double>>) {
             bool ret = false;
             _Xp a = std::forward<_Xp>(__x);
