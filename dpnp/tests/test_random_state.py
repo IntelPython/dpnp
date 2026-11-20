@@ -17,7 +17,10 @@ from dpnp.exceptions import ExecutionPlacementError
 from dpnp.random import RandomState
 
 from .helper import get_all_dtypes, get_float_dtypes
-from .test_random_generator import _assert_same_error
+from .test_random_generator import (
+    _assert_same_error,
+    _held_by_another_thread,
+)
 
 float_dtypes = get_float_dtypes(no_float16=True)
 list_of_usm_types = ["host", "device", "shared"]
@@ -311,6 +314,24 @@ class TestBitGenerator:
         a = dpnp.random.rand(3, sycl_queue=dpctl.SyclQueue())
         b = RandomState(child).rand(3)
         assert not (dpnp.asnumpy(a) == dpnp.asnumpy(b)).any()
+
+    def test_module_spawn_under_lock(self, monkeypatch):
+        # a new queue's state and a child of the reseeded bit generator
+        # spawn from the same seed sequence
+        dpnp.random.seed(4)
+        bg = dpnp.random.get_bit_generator()
+        seq = bg.seed_seq
+        held = []
+
+        class _Seq:
+            def spawn(self, n_children):
+                held.append(_held_by_another_thread(bg.lock))
+                return seq.spawn(n_children)
+
+        iface = dpnp.random.dpnp_iface_random
+        monkeypatch.setattr(iface, "_seed_source", _Seq())
+        dpnp.random.rand(3, sycl_queue=dpctl.SyclQueue())
+        assert held == [True]
 
     def test_queue(self):
         queue = dpctl.SyclQueue()
@@ -775,7 +796,9 @@ class TestLegacy:
         res = RandomState(0).normal(dpnp.arange(4), 1.0)
         assert res.shape == (4,)
 
-    @pytest.mark.parametrize("name", ["exponential", "pareto", "poisson"])
+    @pytest.mark.parametrize(
+        "name", ["exponential", "pareto", "poisson", "normal", "logistic"]
+    )
     def test_complex_device_param(self, name):
         x = numpy.array([1 + 1j], dtype=numpy.complex64)
         _assert_same_error(
