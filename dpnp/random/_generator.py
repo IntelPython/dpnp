@@ -342,8 +342,11 @@ def _as_int64(x):
             )
         return x.astype(_int64) if x.ndim else int(x)
     if numpy.ndim(x) > 0:
-        return numpy.asarray(x).astype(_int64)
-    return int(x)
+        return numpy.asarray(x, dtype=_int64)
+    x = int(x)
+    # raises NumPy's OverflowError outside of int64
+    numpy.asarray(x, dtype=_int64)
+    return x
 
 
 # pylint: disable=too-many-public-methods
