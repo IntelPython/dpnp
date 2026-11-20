@@ -1935,9 +1935,13 @@ sycl::event radix_select_dispatch(sycl::queue &exec_q,
     static constexpr std::size_t multi_group_min_n = std::size_t(1) << 16;
 
     // from about a row per four compute units of a GPU, a work-group per row
-    // already occupies it and the extra passes cost more than they save
+    // of multi_group_min_n already occupies it and the extra passes cost more
+    // than they save; their cost doesn't grow with the row but the split's
+    // gain does, so the cut grows with the row length
     const std::size_t max_multi_group_iters =
-        (dev.is_gpu()) ? n_cus / 4 : target_groups;
+        (dev.is_gpu()) ? std::min(target_groups,
+                                  n_cus * n_values / (4 * multi_group_min_n))
+                       : target_groups;
 
     std::size_t n_segments = 1;
     if (n_iters < max_multi_group_iters && n_values >= multi_group_min_n) {
