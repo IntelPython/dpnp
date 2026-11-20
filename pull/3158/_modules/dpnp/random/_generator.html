@@ -912,6 +912,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.BitGenerator.sycl_device.html">dpnp.random.BitGenerator.sycl_device</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.BitGenerator.sycl_queue.html">dpnp.random.BitGenerator.sycl_queue</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Philox4x3210.html">dpnp.random.Philox4x3210</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Philox4x3210.state.html">dpnp.random.Philox4x3210.state</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.SeedSequence.html">dpnp.random.SeedSequence</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.rand.html">dpnp.random.rand</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.randn.html">dpnp.random.randn</a></li>
@@ -1456,6 +1457,12 @@
 <span class="sd">        out : list of Generator</span>
 <span class="sd">            The child generators.</span>
 
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            When the underlying seed sequence does not implement spawning,</span>
+<span class="sd">            as when `key` is given to :class:`dpnp.random.Philox4x3210`.</span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="p">[</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="n">bg</span><span class="p">)</span> <span class="k">for</span> <span class="n">bg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bit_generator</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="n">n_children</span><span class="p">)]</span></div>
 
@@ -1759,7 +1766,11 @@
 <span class="sd">            Default: ``0.0``.</span>
 <span class="sd">        high : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \</span>
 <span class="sd">                optional</span>
-<span class="sd">            The upper bound of the output interval.</span>
+<span class="sd">            The upper bound of the output interval. All values generated</span>
+<span class="sd">            will be less than `high`, but the high limit may be included in</span>
+<span class="sd">            the result due to floating-point rounding in</span>
+<span class="sd">            ``low + (high - low) * u``, with `u` on [0, 1), and more often in</span>
+<span class="sd">            float32. ``high - low`` must be non-negative.</span>
 
 <span class="sd">            Default: ``1.0``.</span>
 <span class="sd">        size : {None, int, tuple of ints}, optional</span>
@@ -3261,7 +3272,10 @@
 <span class="sd">    ----------</span>
 <span class="sd">    seed : {None, int, array_like[ints], SeedSequence, BitGenerator, \</span>
 <span class="sd">            Generator}, optional</span>
-<span class="sd">        The entropy to seed the bit generator with. A</span>
+<span class="sd">        The entropy to seed the bit generator with. If ``None``, fresh,</span>
+<span class="sd">        unpredictable entropy is pulled from the OS. An int, or the ints of</span>
+<span class="sd">        an array_like, must be non-negative and are passed to</span>
+<span class="sd">        :class:`dpnp.random.SeedSequence`. A</span>
 <span class="sd">        :class:`dpnp.random.BitGenerator` is wrapped in a new generator, and</span>
 <span class="sd">        a :class:`dpnp.random.Generator` is returned unaltered.</span>
 
@@ -3293,7 +3307,9 @@
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
 <span class="sd">    NumPy's default bit generator is PCG64, so the same seed gives different</span>
-<span class="sd">    values.</span>
+<span class="sd">    values. A NumPy :class:`numpy.random.RandomState`,</span>
+<span class="sd">    :class:`numpy.random.BitGenerator` or :class:`numpy.random.Generator` is</span>
+<span class="sd">    not accepted as `seed` and raises :class:`TypeError`.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
