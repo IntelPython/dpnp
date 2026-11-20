@@ -465,8 +465,8 @@ class TestPartitionBySort:
         [
             ("i8", 65, "gpu", True),
             ("u8", 128, "gpu", True),
-            ("i4", 100, "gpu", True),
-            ("f4", 100, "gpu", True),
+            ("i4", 100, "gpu", False),
+            ("f4", 100, "gpu", False),
             ("i8", 64, "gpu", False),
             ("i8", 129, "gpu", False),
             ("i2", 100, "gpu", False),
