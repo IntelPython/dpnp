@@ -45,9 +45,7 @@ endif()
 # Remove global coverage flags for tensor
 # use link-time only approach like dpctl
 if(DPNP_GENERATE_COVERAGE)
-    string(REPLACE "-fprofile-instr-generate " "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-    string(REPLACE "-fcoverage-mapping " "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-    string(REPLACE "-fno-sycl-use-footer " "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+    string(REPLACE "${PROFILE_FLAGS}" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 endif()
 
 # Tensor-specific debug flags
