@@ -40,7 +40,6 @@ used from several threads, and launches never share engine output.
 # pylint: disable=no-name-in-module
 # pylint: disable=protected-access
 
-import ctypes
 import functools
 import math
 import operator
@@ -527,35 +526,6 @@ def _pcg_advance(state, inc, k):
     return (mult * state + add) & _MASK128
 
 
-# NumPy's Cython state setters convert through a C long, which is 32 bits
-# on Windows
-_LONG_BITS = 8 * ctypes.sizeof(ctypes.c_long)
-
-
-def _as_c_int(value, c_type, bits, signed):
-    """`value` as Cython converts it to the C type `c_type`, with its errors."""
-
-    if not hasattr(type(value), "__int__"):
-        raise TypeError("an integer is required")
-    value = int(value)
-    if signed:
-        long_lim, lim = 1 << (_LONG_BITS - 1), 1 << (bits - 1)
-        if not -long_lim <= value < long_lim:
-            raise OverflowError("Python int too large to convert to C long")
-        if not -lim <= value < lim:
-            raise OverflowError(f"value too large to convert to {c_type}")
-    else:
-        if value < 0:
-            raise OverflowError(f"can't convert negative value to {c_type}")
-        if value >> _LONG_BITS:
-            raise OverflowError(
-                "Python int too large to convert to C unsigned long"
-            )
-        if value >> bits:
-            raise OverflowError(f"value too large to convert to {c_type}")
-    return value
-
-
 def _pcg_output(state):
     """The output of PCG64DXSM for the state before a step."""
 
@@ -666,24 +636,18 @@ class PCG64DXSM(BitGenerator):
 
     @state.setter
     def state(self, value):
-        if not isinstance(value, dict):
-            raise TypeError("state must be a dict")
-
-        bitgen = value.get("bit_generator", None)
-        if bitgen != self.__class__.__name__:
-            raise ValueError(
-                f"state must be for a {self.__class__.__name__} PRNG"
-            )
-
-        state = int(value["state"]["state"]) & _MASK128
-        inc = int(value["state"]["inc"]) & _MASK128
-        # NumPy takes any C int has_uint32 and tests it against 0
-        has_uint32 = int(
-            _as_c_int(value["has_uint32"], "int", 32, signed=True) != 0
-        )
-        uinteger = _as_c_int(value["uinteger"], "uint32_t", 32, signed=False)
+        # NumPy's setter raises NumPy's errors, whose text depends on the
+        # platform and on the Python and Cython versions
+        ref = numpy.random.PCG64DXSM(0)
+        ref.state = value
+        value = ref.state
+        state = value["state"]
+        # NumPy takes any nonzero has_uint32 as true
+        has_uint32 = int(value["has_uint32"] != 0)
         with self._lock:
-            self._set_state(state, inc, has_uint32, uinteger)
+            self._set_state(
+                state["state"], state["inc"], has_uint32, value["uinteger"]
+            )
 
     def advance(self, delta):
         """
