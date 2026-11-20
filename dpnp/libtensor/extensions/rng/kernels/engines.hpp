@@ -179,6 +179,13 @@ public:
     }
 };
 
+// Whether a sampler draws from a BlockBitGen
+template <typename BitGenT>
+inline constexpr bool is_block_bitgen_v = false;
+
+template <typename EngineT>
+inline constexpr bool is_block_bitgen_v<BlockBitGen<EngineT>> = true;
+
 struct Philox4x32x10
 {
     using engine_t = mkl_rng_dev::philox4x32x10<1>;
