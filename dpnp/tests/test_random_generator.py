@@ -566,16 +566,25 @@ class TestPCG64DXSM:
 
     def test_state_errors(self):
         bg = PCG64DXSM(42)
-        assert_raises(TypeError, setattr, bg, "state", 1)
-        assert_raises(
-            ValueError, setattr, bg, "state", {"bit_generator": "PCG64"}
-        )
-
         ref = numpy.random.PCG64DXSM(42)
-        # the messages differ by the size of a C long
+        for state in (1, {"bit_generator": "PCG64"}):
+            _assert_same_error(
+                lambda: setattr(ref, "state", state),
+                lambda: setattr(bg, "state", state),
+            )
+
+        # the messages differ by the platform and the Cython version
+        inc = ref.state["state"]["inc"]
         bad = {
             "uinteger": [-1, 2**32, 2**64, "1", None, numpy.nan],
             "has_uint32": [2**31, -(2**31) - 1, 2**63, -(2**63) - 1, "1"],
+            "state": [
+                {"state": 2**128, "inc": inc},
+                {"state": -1, "inc": inc},
+                {"state": "1", "inc": inc},
+                {"state": 1, "inc": 2**128},
+                {"state": 1},
+            ],
         }
         for key, values in bad.items():
             for v in values:
@@ -584,6 +593,8 @@ class TestPCG64DXSM:
                     lambda: setattr(ref, "state", state),
                     lambda: setattr(bg, "state", state),
                 )
+        # a failed setter leaves the state as it was
+        assert bg.state == PCG64DXSM(42).state
 
     def test_state_has_uint32(self):
         # NumPy takes any nonzero has_uint32 as true
