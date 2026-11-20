@@ -931,10 +931,13 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.BitGenerator.sycl_device.html">dpnp.random.BitGenerator.sycl_device</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.BitGenerator.sycl_queue.html">dpnp.random.BitGenerator.sycl_queue</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Philox4x3210.html">dpnp.random.Philox4x3210</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.Philox4x3210.state.html">dpnp.random.Philox4x3210.state</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.PCG64DXSM.html">dpnp.random.PCG64DXSM</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.PCG64DXSM.advance.html">dpnp.random.PCG64DXSM.advance</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.PCG64DXSM.jumped.html">dpnp.random.PCG64DXSM.jumped</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.PCG64DXSM.state.html">dpnp.random.PCG64DXSM.state</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.MRG32k3a.html">dpnp.random.MRG32k3a</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.MRG32k3a.state.html">dpnp.random.MRG32k3a.state</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.SeedSequence.html">dpnp.random.SeedSequence</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.RandomState.html">dpnp.random.RandomState</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/generated/dpnp.random.seed.html">dpnp.random.seed</a></li>
@@ -1335,7 +1338,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""The state of the bit generator, as a dictionary."""</span>
+<span class="w">        </span><span class="sd">"""Get or set the state of the bit generator, as a dictionary."""</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_num_work_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
@@ -1397,6 +1400,9 @@
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return raw 64-bit outputs of the bit generator.</span>
 
+<span class="sd">        For full documentation refer to</span>
+<span class="sd">        :obj:`numpy.random.BitGenerator.random_raw`.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        size : {None, int, tuple of ints}, optional</span>
@@ -1424,9 +1430,9 @@
 <span class="sd">        Unlike NumPy, a zero-dimensional array is returned rather than a</span>
 <span class="sd">        Python integer when `size` is ``None``. With ``output=False``, the</span>
 <span class="sd">        state advances by the number of elements of `size`, and an invalid</span>
-<span class="sd">        `size` raises as it does with ``output=True``. NumPy advances by</span>
-<span class="sd">        the sum of the dimensions of `size` instead, and not at all when</span>
-<span class="sd">        that sum is negative.</span>
+<span class="sd">        `size` raises as it does with ``output=True``, as in NumPy 2.5.5</span>
+<span class="sd">        and later. Older NumPy advances by the sum of the dimensions of</span>
+<span class="sd">        `size` instead, and not at all when that sum is negative.</span>
 
 <span class="sd">        """</span>
 
@@ -1452,6 +1458,8 @@
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Create new independent child bit generators on the same SYCL queue.</span>
 
+<span class="sd">        For full documentation refer to :obj:`numpy.random.BitGenerator.spawn`.</span>
+
 <span class="sd">        Children are seeded by :meth:`numpy.random.SeedSequence.spawn` of</span>
 <span class="sd">        :attr:`seed_seq`.</span>
 
@@ -1464,6 +1472,12 @@
 <span class="sd">        -------</span>
 <span class="sd">        out : list of BitGenerator</span>
 <span class="sd">            The child bit generators.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            When the underlying seed sequence does not implement spawning,</span>
+<span class="sd">            as when `key` is given to :class:`dpnp.random.Philox4x3210`.</span>
 
 <span class="sd">        """</span>
 
@@ -1568,11 +1582,12 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        The state of the bit generator.</span>
+<span class="sd">        Get or set the state of the bit generator.</span>
 
 <span class="sd">        A dictionary ``{"bit_generator": "Philox4x3210", "state": {"key":</span>
 <span class="sd">        key, "counter": counter}}`` with the 64-bit key and the 128-bit</span>
-<span class="sd">        counter as Python integers.</span>
+<span class="sd">        counter as Python integers. Setting it to a dictionary of this form</span>
+<span class="sd">        restarts the stream at that key and counter.</span>
 
 <span class="sd">        """</span>
 
@@ -1781,7 +1796,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        The state of the bit generator.</span>
+<span class="sd">        Get or set the state of the bit generator.</span>
 
 <span class="sd">        A dictionary ``{"bit_generator": "PCG64DXSM", "state": {"state":</span>
 <span class="sd">        state, "inc": inc}, "has_uint32": has_uint32, "uinteger":</span>
@@ -2045,7 +2060,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        The state of the bit generator.</span>
+<span class="sd">        Get or set the state of the bit generator.</span>
 
 <span class="sd">        A dictionary ``{"bit_generator": "MRG32k3a", "state": {"s1": s1,</span>
 <span class="sd">        "s2": s2}}``, where `s1` and `s2` are the lists of the three words</span>
