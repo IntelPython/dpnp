@@ -3456,8 +3456,6 @@ public:
         const MinOpT min_op{};
         const MaxOpT max_op{};
 
-        // one tree for both: a tree each crashed the OpenCL CPU compiler in
-        // its barrier pass (CMPLRLLVM-79305)
         local_mem_[lid] = red_min;
         local_mem_[wgs + lid] = red_max;
         sycl::group_barrier(wg, sycl::memory_scope::work_group);
@@ -3670,7 +3668,8 @@ sycl::event
         }
         else {
             using SlmT = sycl::local_accessor<argTy, 1>;
-            SlmT local_memory = SlmT(sycl::range<1>{2 * wg}, cgh);
+            const auto slmRange = sycl::range<1>{2 * wg};
+            SlmT local_memory = SlmT(slmRange, cgh);
 
             using GroupReducerT =
                 CustomMinMaxGroupReducer<argTy, MinOpT, MaxOpT, SlmT>;
