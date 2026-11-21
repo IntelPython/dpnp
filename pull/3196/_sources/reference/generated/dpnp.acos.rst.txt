@@ -1,0 +1,10 @@
+﻿
+
+dpnp.acos
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: acos

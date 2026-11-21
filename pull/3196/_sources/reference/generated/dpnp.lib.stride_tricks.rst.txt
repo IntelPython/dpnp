@@ -1,0 +1,18 @@
+﻿dpnp.lib.stride\_tricks
+=======================
+
+.. automodule:: dpnp.lib.stride_tricks
+
+   
+
+
+
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      as_strided
+
+
+
