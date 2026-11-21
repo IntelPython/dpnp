@@ -78,7 +78,6 @@ class TestUniform(common_distributions.Uniform, GeneratorTestCase):
 @testing.parameterize(*common_distributions.exponential_params)
 @testing.with_requires("numpy>=1.17.0")
 @testing.fix_random()
-@pytest.mark.skip("continuous distributions are not supported yet")
 class TestExponential(common_distributions.Exponential, GeneratorTestCase):
     pass
 
@@ -102,14 +101,12 @@ class TestBinomial(common_distributions.Binomial, GeneratorTestCase):
 @testing.parameterize(*common_distributions.beta_params)
 @testing.with_requires("numpy>=1.17.0")
 @testing.fix_random()
-@pytest.mark.skip("continuous distributions are not supported yet")
 class TestBeta(common_distributions.Beta, GeneratorTestCase):
     pass
 
 
 @testing.with_requires("numpy>=1.17.0")
 @testing.fix_random()
-@pytest.mark.skip("continuous distributions are not supported yet")
 class TestStandardExponential(
     InvalidOutsMixin,
     common_distributions.StandardExponential,
@@ -120,7 +117,6 @@ class TestStandardExponential(
 
 @testing.parameterize(*common_distributions.gamma_params)
 @testing.fix_random()
-@pytest.mark.skip("continuous distributions are not supported yet")
 class TestGamma(
     common_distributions.Gamma,
     GeneratorTestCase,
@@ -130,7 +126,6 @@ class TestGamma(
 
 @testing.parameterize(*common_distributions.standard_gamma_params)
 @testing.fix_random()
-@pytest.mark.skip("continuous distributions are not supported yet")
 class TestStandardGamma(
     common_distributions.StandardGamma,
     GeneratorTestCase,
@@ -139,7 +134,6 @@ class TestStandardGamma(
 
 
 @testing.fix_random()
-@pytest.mark.skip("continuous distributions are not supported yet")
 class TestStandardGammaInvalid(InvalidOutsMixin, GeneratorTestCase):
 
     target_method = "standard_gamma"
@@ -167,7 +161,6 @@ class TestStandardGammaInvalid(InvalidOutsMixin, GeneratorTestCase):
 
 
 @testing.fix_random()
-@pytest.mark.skip("continuous distributions are not supported yet")
 class TestStandardGammaEmpty(GeneratorTestCase):
 
     target_method = "standard_gamma"
@@ -384,7 +377,6 @@ class TestHypergeometricValidation:
 
 @testing.parameterize(*common_distributions.power_params)
 @testing.fix_random()
-@pytest.mark.skip("continuous distributions are not supported yet")
 class TestPower(common_distributions.Power, GeneratorTestCase):
     pass
 
@@ -397,7 +389,10 @@ class TestPower(common_distributions.Power, GeneratorTestCase):
 # )
 class TestRandomStateThreadSafe(unittest.TestCase):
 
-    @pytest.mark.skip("continuous distributions are not supported yet")
+    # upstream passes a function rather than a tuple as `args` of six threads
+    @pytest.mark.filterwarnings(
+        "ignore::pytest.PytestUnhandledThreadExceptionWarning"
+    )
     def test_default_rng_thread_safe(self):
         def _f(func, args=()):
             # cupy.cuda.Device().use()
@@ -435,14 +430,12 @@ class TestLogseries(common_distributions.Logseries, GeneratorTestCase):
 
 @testing.parameterize(*common_distributions.chisquare_params)
 @testing.fix_random()
-@pytest.mark.skip("continuous distributions are not supported yet")
 class TestChisquare(common_distributions.Chisquare, GeneratorTestCase):
     pass
 
 
 @testing.parameterize(*common_distributions.f_params)
 @testing.fix_random()
-@pytest.mark.skip("continuous distributions are not supported yet")
 class TestF(common_distributions.F, GeneratorTestCase):
     pass
 
