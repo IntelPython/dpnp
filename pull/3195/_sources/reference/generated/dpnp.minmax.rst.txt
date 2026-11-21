@@ -1,0 +1,10 @@
+﻿
+
+dpnp.minmax
+===========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: minmax
