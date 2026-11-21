@@ -1170,7 +1170,6 @@
 <span class="c1"># pylint: disable=no-name-in-module</span>
 <span class="c1"># pylint: disable=protected-access</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">ctypes</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">operator</span>
@@ -1669,35 +1668,6 @@
     <span class="k">return</span> <span class="p">(</span><span class="n">mult</span> <span class="o">*</span> <span class="n">state</span> <span class="o">+</span> <span class="n">add</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">_MASK128</span>
 
 
-<span class="c1"># NumPy's Cython state setters convert through a C long, which is 32 bits</span>
-<span class="c1"># on Windows</span>
-<span class="n">_LONG_BITS</span> <span class="o">=</span> <span class="mi">8</span> <span class="o">*</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">sizeof</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_long</span><span class="p">)</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_as_c_int</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">c_type</span><span class="p">,</span> <span class="n">bits</span><span class="p">,</span> <span class="n">signed</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""`value` as Cython converts it to the C type `c_type`, with its errors."""</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="s2">"__int__"</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"an integer is required"</span><span class="p">)</span>
-    <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">signed</span><span class="p">:</span>
-        <span class="n">long_lim</span><span class="p">,</span> <span class="n">lim</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">_LONG_BITS</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">bits</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="o">-</span><span class="n">long_lim</span> <span class="o">&lt;=</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="n">long_lim</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">OverflowError</span><span class="p">(</span><span class="s2">"Python int too large to convert to C long"</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="o">-</span><span class="n">lim</span> <span class="o">&lt;=</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="n">lim</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">OverflowError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"value too large to convert to </span><span class="si">{</span><span class="n">c_type</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">OverflowError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"can't convert negative value to </span><span class="si">{</span><span class="n">c_type</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;&gt;</span> <span class="n">_LONG_BITS</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">OverflowError</span><span class="p">(</span>
-                <span class="s2">"Python int too large to convert to C unsigned long"</span>
-            <span class="p">)</span>
-        <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;&gt;</span> <span class="n">bits</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">OverflowError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"value too large to convert to </span><span class="si">{</span><span class="n">c_type</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">value</span>
-
-
 <span class="k">def</span><span class="w"> </span><span class="nf">_pcg_output</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""The output of PCG64DXSM for the state before a step."""</span>
 
@@ -1810,24 +1780,18 @@
 
     <span class="nd">@state</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"state must be a dict"</span><span class="p">)</span>
-
-        <span class="n">bitgen</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"bit_generator"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">bitgen</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"state must be for a </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> PRNG"</span>
-            <span class="p">)</span>
-
-        <span class="n">state</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s2">"state"</span><span class="p">][</span><span class="s2">"state"</span><span class="p">])</span> <span class="o">&amp;</span> <span class="n">_MASK128</span>
-        <span class="n">inc</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s2">"state"</span><span class="p">][</span><span class="s2">"inc"</span><span class="p">])</span> <span class="o">&amp;</span> <span class="n">_MASK128</span>
-        <span class="c1"># NumPy takes any C int has_uint32 and tests it against 0</span>
-        <span class="n">has_uint32</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
-            <span class="n">_as_c_int</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s2">"has_uint32"</span><span class="p">],</span> <span class="s2">"int"</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="n">signed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span>
-        <span class="p">)</span>
-        <span class="n">uinteger</span> <span class="o">=</span> <span class="n">_as_c_int</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s2">"uinteger"</span><span class="p">],</span> <span class="s2">"uint32_t"</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="n">signed</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="c1"># NumPy's setter raises NumPy's errors, whose text depends on the</span>
+        <span class="c1"># platform and on the Python and Cython versions</span>
+        <span class="n">ref</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PCG64DXSM</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">ref</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">ref</span><span class="o">.</span><span class="n">state</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s2">"state"</span><span class="p">]</span>
+        <span class="c1"># NumPy takes any nonzero has_uint32 as true</span>
+        <span class="n">has_uint32</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s2">"has_uint32"</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_set_state</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">inc</span><span class="p">,</span> <span class="n">has_uint32</span><span class="p">,</span> <span class="n">uinteger</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_set_state</span><span class="p">(</span>
+                <span class="n">state</span><span class="p">[</span><span class="s2">"state"</span><span class="p">],</span> <span class="n">state</span><span class="p">[</span><span class="s2">"inc"</span><span class="p">],</span> <span class="n">has_uint32</span><span class="p">,</span> <span class="n">value</span><span class="p">[</span><span class="s2">"uinteger"</span><span class="p">]</span>
+            <span class="p">)</span>
 
 <div class="viewcode-block" id="PCG64DXSM.advance">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.random.PCG64DXSM.advance.html#dpnp.random.PCG64DXSM.advance">[docs]</a>
