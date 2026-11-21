@@ -375,10 +375,12 @@ mark_as_advanced(
 )
 
 if(DPNP_GENERATE_COVERAGE)
+    # Host only: device counters become device globals in every kernel image of
+    # their module, which crash the OpenCL CPU runtime, and never reach the profile
     string(
         CONCAT PROFILE_FLAGS
-        "-fprofile-instr-generate "
-        "-fcoverage-mapping "
+        "-Xarch_host -fprofile-instr-generate "
+        "-Xarch_host -fcoverage-mapping "
         "-fno-sycl-use-footer "
         # "-save-temps=obj "
     )

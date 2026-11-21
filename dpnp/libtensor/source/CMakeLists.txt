@@ -346,9 +346,12 @@ foreach(_src_fn ${_dpnp_sources})
         "${_clang_prefix}-fno-finite-math-only"
     )
     if(DPNP_GENERATE_COVERAGE)
+        # host only, as PROFILE_FLAGS in the top-level CMakeLists.txt
         list(
             APPEND _combined_options_prop
+            -Xarch_host
             -fprofile-instr-generate
+            -Xarch_host
             -fcoverage-mapping
             -fno-sycl-use-footer
         )
@@ -413,7 +416,9 @@ foreach(python_module_name ${_py_trgts})
         if(DPNP_TENSOR_GENERATE_COVERAGE_FOR_PYBIND11_EXTENSIONS)
             target_compile_options(
                 ${python_module_name}
-                PRIVATE -fprofile-instr-generate -fcoverage-mapping
+                PRIVATE
+                    "SHELL:-Xarch_host -fprofile-instr-generate"
+                    "SHELL:-Xarch_host -fcoverage-mapping"
             )
         endif()
         target_link_options(
