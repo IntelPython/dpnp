@@ -1,0 +1,10 @@
+﻿
+
+dpnp.bitwise\_left\_shift
+=========================
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: bitwise_left_shift

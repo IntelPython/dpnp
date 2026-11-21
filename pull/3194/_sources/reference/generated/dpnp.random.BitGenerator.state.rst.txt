@@ -1,0 +1,14 @@
+
+:orphan:
+
+
+dpnp.random.BitGenerator.state
+==============================
+
+.. currentmodule:: dpnp.random
+
+
+property
+
+
+.. autoproperty:: BitGenerator.state

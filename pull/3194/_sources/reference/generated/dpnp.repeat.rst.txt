@@ -1,0 +1,10 @@
+﻿
+
+dpnp.repeat
+===========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: repeat
