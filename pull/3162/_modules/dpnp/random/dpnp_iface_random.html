@@ -1196,8 +1196,10 @@
 
 <span class="c1"># The seeds of the states made for new queues: spawned children of the seed</span>
 <span class="c1"># given to the last seed() call, so that seeded code gets the same values</span>
-<span class="c1"># on every run, or OS entropy before any seed() call</span>
+<span class="c1"># on every run, or OS entropy before any seed() call. The lock is that of</span>
+<span class="c1"># the bit generator whose seed sequence it is, which spawns from it too.</span>
 <span class="n">_seed_source</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">_seed_source_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
 
 <span class="n">_ISpawnableSeedSequence</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">bit_generator</span><span class="o">.</span><span class="n">ISpawnableSeedSequence</span>
 
@@ -1270,7 +1272,8 @@
             <span class="k">if</span> <span class="n">_seed_source</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">rs</span> <span class="o">=</span> <span class="n">RandomState</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="p">(</span><span class="n">child</span><span class="p">,)</span> <span class="o">=</span> <span class="n">_seed_source</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">with</span> <span class="n">_seed_source_lock</span><span class="p">:</span>
+                    <span class="p">(</span><span class="n">child</span><span class="p">,)</span> <span class="o">=</span> <span class="n">_seed_source</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
                 <span class="n">rs</span> <span class="o">=</span> <span class="n">RandomState</span><span class="p">(</span><span class="n">Philox4x3210</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">))</span>
             <span class="n">_dpnp_random_states</span><span class="p">[</span><span class="n">sycl_queue</span><span class="p">]</span> <span class="o">=</span> <span class="n">rs</span>
         <span class="k">return</span> <span class="n">rs</span>
@@ -1311,7 +1314,7 @@
 
 <span class="sd">    """</span>
     <span class="c1"># pylint: disable=global-statement, protected-access</span>
-    <span class="k">global</span> <span class="n">_seed_source</span>
+    <span class="k">global</span> <span class="n">_seed_source</span><span class="p">,</span> <span class="n">_seed_source_lock</span>
 
     <span class="n">rs</span> <span class="o">=</span> <span class="n">_get_random_state</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">)</span>
     <span class="n">bit_generator</span> <span class="o">=</span> <span class="n">rs</span><span class="o">.</span><span class="n">_generator</span><span class="o">.</span><span class="n">bit_generator</span>
@@ -1326,10 +1329,13 @@
     <span class="c1"># spawn from the seed sequence of the reseeded bit generator itself, so</span>
     <span class="c1"># that its own children differ from those of the new states</span>
     <span class="n">source</span> <span class="o">=</span> <span class="n">bit_generator</span><span class="o">.</span><span class="n">seed_seq</span>
+    <span class="n">lock</span> <span class="o">=</span> <span class="n">bit_generator</span><span class="o">.</span><span class="n">lock</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">_ISpawnableSeedSequence</span><span class="p">):</span>
         <span class="n">source</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">SeedSequence</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">generate_state</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+        <span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
     <span class="k">with</span> <span class="n">_random_states_lock</span><span class="p">:</span>
-        <span class="n">_seed_source</span> <span class="o">=</span> <span class="n">source</span></div>
+        <span class="n">_seed_source</span> <span class="o">=</span> <span class="n">source</span>
+        <span class="n">_seed_source_lock</span> <span class="o">=</span> <span class="n">lock</span></div>
 
 
 
