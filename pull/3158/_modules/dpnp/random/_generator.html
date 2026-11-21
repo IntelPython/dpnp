@@ -2441,6 +2441,11 @@
 <span class="sd">        out : dpnp.ndarray</span>
 <span class="sd">            The samples.</span>
 
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If `a` &lt;= 0, for an `a` on the host.</span>
+
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
 <span class="sd">        `dtype` and `usm_type` are not in NumPy's signature.</span>
@@ -3044,6 +3049,12 @@
 <span class="sd">        -------</span>
 <span class="sd">        out : dpnp.ndarray</span>
 <span class="sd">            The samples.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            When `df` &lt;= 0, for a `df` on the host, or when an inappropriate</span>
+<span class="sd">            `size` (e.g. ``size=-1``) is given.</span>
 
 <span class="sd">        Limitations</span>
 <span class="sd">        -----------</span>
