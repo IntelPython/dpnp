@@ -6,7 +6,7 @@ from dpnp import random
 from dpnp.tests.third_party.cupy import testing
 
 
-@pytest.mark.skip("random.get_random_state() is not supported yet")
+@pytest.mark.skip("random.get_random_state() is CuPy-only API")
 class TestResetSeed(unittest.TestCase):
 
     # thread_unsafe marker requires pytest-run-parallel, not used by dpnp
