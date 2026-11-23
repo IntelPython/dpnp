@@ -35,27 +35,9 @@ import dpnp
 from dpnp.tensor import get_coerced_usm_type, get_execution_queue
 
 __all__ = [
-    "convert_item",
     "get_usm_allocations",
     "map_dtype_to_device",
 ]
-
-
-def convert_item(item):
-    """Convert a USM array, or a list or tuple of them, to NumPy arrays."""
-
-    if hasattr(item, "__sycl_usm_array_interface__"):
-        return dpnp.asnumpy(item)
-    if hasattr(item, "__array_interface__"):
-        # detect if it is a container (TODO any better way?)
-        if getattr(item, "__module__", "none") != "numpy":
-            return dpnp.asnumpy(item)
-        return item
-    if isinstance(item, list):
-        return [convert_item(x) for x in item]
-    if isinstance(item, tuple):
-        return tuple(convert_item(x) for x in item)
-    return item
 
 
 def _get_coerced_usm_type(objects):
