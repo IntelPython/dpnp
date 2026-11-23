@@ -254,6 +254,7 @@
 <li class="toctree-l3"><a class="reference internal" href="dpnp.ndarray.sort.html">dpnp.ndarray.sort</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpnp.ndarray.argsort.html">dpnp.ndarray.argsort</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpnp.ndarray.partition.html">dpnp.ndarray.partition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpnp.ndarray.argpartition.html">dpnp.ndarray.argpartition</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpnp.ndarray.searchsorted.html">dpnp.ndarray.searchsorted</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpnp.ndarray.nonzero.html">dpnp.ndarray.nonzero</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpnp.ndarray.compress.html">dpnp.ndarray.compress</a></li>
@@ -960,6 +961,7 @@
 <li class="toctree-l4"><a class="reference internal" href="dpnp.argsort.html">dpnp.argsort</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.sort_complex.html">dpnp.sort_complex</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.partition.html">dpnp.partition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.argpartition.html">dpnp.argpartition</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.top_k.html">dpnp.top_k</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.argmax.html">dpnp.argmax</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.nanargmax.html">dpnp.nanargmax</a></li>
@@ -1114,10 +1116,10 @@ values) will be cast if necessary.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </dd>
 <dt><strong>overwrite_input</strong><span class="classifier">bool, optional</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then allow use of memory of input array <cite>a</cite> for
-calculations. The input array will be modified by the call to
+calculations. The input array may be modified by the call to
 <a class="reference internal" href="#dpnp.nanmedian" title="dpnp.nanmedian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.nanmedian</span></code></a>. This will save memory when you do not need to
 preserve the contents of the input array. Treat the input as undefined,
-but it will probably be fully or partially sorted.</p>
+but it may be fully or partially sorted.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 </dd>
 <dt><strong>keepdims</strong><span class="classifier">{None, bool}, optional</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the reduced axes (dimensions) are included in the result
@@ -1140,6 +1142,11 @@ is allocated.</p>
 </dl>
 </dd>
 </dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This function synchronizes in order to test for all-NaN slices in the array.
+This may harm performance in some applications.</p>
+</div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
@@ -1156,6 +1163,11 @@ is allocated.</p>
 middle value of a sorted copy of <code class="docutils literal notranslate"><span class="pre">V</span></code>, <code class="docutils literal notranslate"><span class="pre">V_sorted</span></code> - i.e.,
 <code class="docutils literal notranslate"><span class="pre">V_sorted[(N-1)/2]</span></code>, when <code class="docutils literal notranslate"><span class="pre">N</span></code> is odd, and the average of the
 two middle values of <code class="docutils literal notranslate"><span class="pre">V_sorted</span></code> when <code class="docutils literal notranslate"><span class="pre">N</span></code> is even.</p>
+<p>On a device without double precision floating-point support, the average
+of two middle values of a 64-bit integer data type is the single precision
+value nearest to their exact average. NumPy adds them in double precision
+first, so for values of magnitude about <span class="math notranslate nohighlight">\(2^{52}\)</span> or more the result
+can differ from NumPy's cast to single precision.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">10.0</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
@@ -1178,11 +1190,9 @@ two middle values of <code class="docutils literal notranslate"><span class="pre
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">overwrite_input</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="go">array([7., 2.])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">a</span><span class="o">==</span><span class="n">b</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite_input</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="go">array(3.)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">a</span><span class="o">==</span><span class="n">b</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1264,5 +1274,6 @@ two middle values of <code class="docutils literal notranslate"><span class="pre
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     </body>
 </html>
