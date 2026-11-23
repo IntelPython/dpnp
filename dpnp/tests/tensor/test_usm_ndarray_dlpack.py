@@ -394,6 +394,8 @@ def test_from_dlpack_capsule_null_deleter(versioned, on_device):
     if on_device:
         q = get_queue_or_skip()
         x = dpt.arange(4, dtype="i4", sycl_queue=q)
+        # the raw capsule carries no event and is imported on another queue
+        q.wait()
         data, device = x._pointer, x.__dlpack_device__()
     else:
         x = np.arange(4, dtype="i4")
