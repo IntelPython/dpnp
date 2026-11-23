@@ -414,6 +414,28 @@ def test_from_dlpack_capsule_null_deleter(versioned, on_device):
     del y, y_host, caps
 
 
+@pytest.mark.parametrize(
+    "versioned", [True, False], ids=["versioned", "legacy"]
+)
+def test_from_dlpack_capsule_null_data(versioned):
+    q = get_queue_or_skip()
+    device = dpt.empty(0, sycl_queue=q).__dlpack_device__()
+    calls = []
+    # DLPack asks for a NULL data pointer in a tensor of size zero
+    mt = make_managed_tensor(
+        make_dl_tensor((0,), (kDLInt, 32, 1), device, strides=(1,)),
+        versioned=versioned,
+        deleter=lambda _: calls.append(1),
+    )
+
+    y = _dlp.from_dlpack_capsule(make_dlpack_capsule(mt))
+    assert y.shape == (0,)
+    assert y.dtype == dpt.int32
+    assert y.sycl_device == q.sycl_device
+    del y
+    assert calls == [1]
+
+
 def test_from_dlpack_kwargs():
     try:
         x = dpt.arange(100, dtype="i4")
