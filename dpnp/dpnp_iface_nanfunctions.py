@@ -648,6 +648,11 @@ def nanmedian(a, axis=None, out=None, overwrite_input=False, keepdims=False):
 
     For full documentation refer to :obj:`numpy.nanmedian`.
 
+    Warnings
+    --------
+    This function synchronizes in order to test for all-NaN slices in the array.
+    This may harm performance in some applications.
+
     Parameters
     ----------
     a : {dpnp.ndarray, usm_ndarray}
@@ -668,10 +673,10 @@ def nanmedian(a, axis=None, out=None, overwrite_input=False, keepdims=False):
         Default: ``None``.
     overwrite_input : bool, optional
        If ``True``, then allow use of memory of input array `a` for
-       calculations. The input array will be modified by the call to
+       calculations. The input array may be modified by the call to
        :obj:`dpnp.nanmedian`. This will save memory when you do not need to
        preserve the contents of the input array. Treat the input as undefined,
-       but it will probably be fully or partially sorted.
+       but it may be fully or partially sorted.
 
        Default: ``False``.
     keepdims : {None, bool}, optional
@@ -706,6 +711,12 @@ def nanmedian(a, axis=None, out=None, overwrite_input=False, keepdims=False):
     ``V_sorted[(N-1)/2]``, when ``N`` is odd, and the average of the
     two middle values of ``V_sorted`` when ``N`` is even.
 
+    On a device without double precision floating-point support, the average
+    of two middle values of a 64-bit integer data type is the single precision
+    value nearest to their exact average. NumPy adds them in double precision
+    first, so for values of magnitude about :math:`2^{52}` or more the result
+    can differ from NumPy's cast to single precision.
+
     Examples
     --------
     >>> import dpnp as np
@@ -727,17 +738,17 @@ def nanmedian(a, axis=None, out=None, overwrite_input=False, keepdims=False):
     >>> b = a.copy()
     >>> np.nanmedian(b, axis=1, overwrite_input=True)
     array([7., 2.])
-    >>> assert not np.all(a==b)
     >>> b = a.copy()
     >>> np.nanmedian(b, axis=None, overwrite_input=True)
     array(3.)
-    >>> assert not np.all(a==b)
 
     """
 
     dpnp.check_supported_arrays_type(a)
-    ignore_nan = False
-    if dpnp.issubdtype(a.dtype, dpnp.inexact):
+    # selecting the medians of real data types ignores NaNs at no extra cost,
+    # while the sort used for complex data types only has to if there are any
+    ignore_nan = dpnp.issubdtype(a.dtype, dpnp.floating)
+    if dpnp.issubdtype(a.dtype, dpnp.complexfloating):
         mask = dpnp.isnan(a)
         if dpnp.any(mask):
             ignore_nan = True

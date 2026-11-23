@@ -7,7 +7,7 @@
 - `dpnp_utils/`: shared helpers (`get_usm_allocations`, `map_dtype_to_device`, reduction wrappers)
 - `linalg/`, `fft/`, `random/`, `scipy/`, `lib/`: subpackages, each exporting through its own `__init__.py`
 - `random/`: `_bit_generator.py` (`BitGenerator`, `Philox4x3210`; `SeedSequence` is NumPy's) and `_generator.py` (`Generator`, which implements every distribution). The kernels are in `dpnp.libtensor._rng_impl`.
-- Legacy, don't extend: the Cython `dpnp_algo` path and `dpnp_backend_c` (still used by `dpnp.partition` and `dpnp.random`), and the NumPy fallback `call_origin`. New kernels go into `dpnp/libtensor` (see `dpnp/libtensor/AGENTS.md`).
+- Legacy, don't extend: the Cython `dpnp_algo` path and `dpnp_backend_c` (still used by `dpnp.random`), and the NumPy fallback `call_origin`. New kernels go into `dpnp/libtensor` (see `dpnp/libtensor/AGENTS.md`).
 
 ## Adding a Public Function
 1. Implement it in the matching `dpnp_iface_*.py` or subpackage module. Iface modules have no `__all__`.
