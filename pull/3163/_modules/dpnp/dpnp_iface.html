@@ -14,11 +14,11 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
 
     <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
-        <title>dpnp.dpnp_iface - Data Parallel Extension for NumPy (dpnp) 0.22.0dev2 documentation</title>
+        <title>dpnp.dpnp_iface - Data Parallel Extension for NumPy (dpnp) 0.22.0dev3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
@@ -172,7 +172,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.22.0dev2 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.22.0dev3 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.22.0dev2 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.22.0dev3 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -253,6 +253,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.sort.html">dpnp.ndarray.sort</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.argsort.html">dpnp.ndarray.argsort</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.partition.html">dpnp.ndarray.partition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.argpartition.html">dpnp.ndarray.argpartition</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.searchsorted.html">dpnp.ndarray.searchsorted</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.nonzero.html">dpnp.ndarray.nonzero</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.compress.html">dpnp.ndarray.compress</a></li>
@@ -1008,6 +1009,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.argsort.html">dpnp.argsort</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.sort_complex.html">dpnp.sort_complex</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.partition.html">dpnp.partition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.argpartition.html">dpnp.argpartition</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.top_k.html">dpnp.top_k</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.argmax.html">dpnp.argmax</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.nanargmax.html">dpnp.nanargmax</a></li>
@@ -1095,10 +1097,6 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../tensor.html">Tensor (<code class="docutils literal notranslate"><span class="pre">dpnp.tensor</span></code>)</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Development information</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../dpnp_backend_api.html">C++ backend API Reference</a></li>
 </ul>
 
 </div>
@@ -1189,11 +1187,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_array</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">dpnp_descriptor</span><span class="p">,</span>
-    <span class="n">map_dtype_to_device</span><span class="p">,</span>
-    <span class="n">use_origin_backend</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">map_dtype_to_device</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.tensor._device</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_queue_device</span>
 
 
@@ -1486,79 +1480,6 @@
         <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">map_dtype_to_device</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">_sycl_queue</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">get_dpnp_descriptor</span><span class="p">(</span>
-    <span class="n">ext_obj</span><span class="p">,</span>
-    <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">alloc_dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">alloc_usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">alloc_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
-<span class="sd">    Return True:</span>
-<span class="sd">      never</span>
-<span class="sd">    Return DPNP internal data descriptor object if:</span>
-<span class="sd">      1. We can proceed with input data object with DPNP</span>
-<span class="sd">      2. We want to handle input data object</span>
-<span class="sd">    Return False if:</span>
-<span class="sd">      1. We do not want to work with input data object</span>
-<span class="sd">      2. We can not handle with input data object</span>
-<span class="sd">    """</span>
-
-    <span class="k">if</span> <span class="n">use_origin_backend</span><span class="p">():</span>
-        <span class="k">return</span> <span class="kc">False</span>
-
-    <span class="c1"># If input object is a scalar, it means it was allocated on host memory.</span>
-    <span class="c1"># We need to copy it to USM memory according to compute follows data.</span>
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">):</span>
-        <span class="n">ext_obj</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-            <span class="n">ext_obj</span><span class="p">,</span>
-            <span class="n">dtype</span><span class="o">=</span><span class="n">alloc_dtype</span><span class="p">,</span>
-            <span class="n">usm_type</span><span class="o">=</span><span class="n">alloc_usm_type</span><span class="p">,</span>
-            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">alloc_queue</span><span class="p">,</span>
-        <span class="p">)</span>
-
-    <span class="c1"># while dpnp functions have no implementation with strides support</span>
-    <span class="c1"># we need to create a non-strided copy</span>
-    <span class="c1"># if function get implementation for strides case</span>
-    <span class="c1"># then this behavior can be disabled with setting "copy_when_strides"</span>
-    <span class="k">if</span> <span class="n">copy_when_strides</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">,</span> <span class="s2">"strides"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># TODO: replace this workaround when usm_ndarray will provide</span>
-        <span class="c1"># such functionality</span>
-        <span class="n">shape_offsets</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
-            <span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">ext_obj</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ext_obj</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
-        <span class="p">)</span>
-
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">,</span> <span class="s2">"__sycl_usm_array_interface__"</span><span class="p">):</span>
-            <span class="n">ext_obj_offset</span> <span class="o">=</span> <span class="n">ext_obj</span><span class="o">.</span><span class="n">__sycl_usm_array_interface__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                <span class="s2">"offset"</span><span class="p">,</span> <span class="mi">0</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">ext_obj_offset</span> <span class="o">=</span> <span class="mi">0</span>
-
-        <span class="k">if</span> <span class="n">ext_obj</span><span class="o">.</span><span class="n">strides</span> <span class="o">!=</span> <span class="n">shape_offsets</span> <span class="ow">or</span> <span class="n">ext_obj_offset</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">ext_obj</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">"C"</span><span class="p">)</span>
-
-    <span class="c1"># legacy backend functions ran on the default SYCL queue, so the input</span>
-    <span class="c1"># is copied to that queue; a function implemented for any queue can</span>
-    <span class="c1"># disable this by setting "copy_when_nondefault_queue"</span>
-    <span class="n">queue</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">,</span> <span class="s2">"sycl_queue"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">queue</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">copy_when_nondefault_queue</span><span class="p">:</span>
-        <span class="n">default_queue</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">()</span>
-        <span class="n">queue_is_default</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">dpt</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">([</span><span class="n">queue</span><span class="p">,</span> <span class="n">default_queue</span><span class="p">])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">queue_is_default</span><span class="p">:</span>
-            <span class="n">ext_obj</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">default_queue</span><span class="p">)</span>
-
-    <span class="n">dpnp_desc</span> <span class="o">=</span> <span class="n">dpnp_descriptor</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">dpnp_desc</span><span class="o">.</span><span class="n">is_valid</span><span class="p">:</span>  <span class="c1"># pylint: disable=using-constant-test</span>
-        <span class="k">return</span> <span class="n">dpnp_desc</span>
-
-    <span class="k">return</span> <span class="kc">False</span>
 
 
 <div class="viewcode-block" id="get_include">
@@ -1866,12 +1787,12 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=39a3fc55"></script>
+</div><script src="../../_static/documentation_options.js?v=9ddb784c"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     </body>
 </html>
