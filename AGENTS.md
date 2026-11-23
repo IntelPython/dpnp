@@ -68,7 +68,6 @@ Read the `AGENTS.md` nearest the files you change. When editing these files, eve
 - [dpnp/AGENTS.md](dpnp/AGENTS.md): Python layer, adding a function, docstrings
 - [dpnp/tests/AGENTS.md](dpnp/tests/AGENTS.md): test helpers, fp64, CuPy tests, running the suite
 - [dpnp/libtensor/AGENTS.md](dpnp/libtensor/AGENTS.md): libtensor kernels, pybind11 SYCL modules and extensions, C++ rules, build options
-- [dpnp/backend/AGENTS.md](dpnp/backend/AGENTS.md): legacy `dpnp_backend_c`
 - [dpnp/tensor/AGENTS.md](dpnp/tensor/AGENTS.md): `dpnp.tensor`
 - [doc/AGENTS.md](doc/AGENTS.md): Sphinx docs
 - [benchmarks/AGENTS.md](benchmarks/AGENTS.md): ASV benchmarks

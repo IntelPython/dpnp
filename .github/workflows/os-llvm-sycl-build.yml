@@ -201,7 +201,7 @@ jobs:
           python scripts/build_locally.py --c-compiler=clang --cxx-compiler=clang++ \
               --compiler-root="${SYCL_BUNDLE_FOLDER}/dpcpp_compiler/bin" \
               --onemath \
-              --cmake-opts="-DIntelSYCL_DIR=${GITHUB_WORKSPACE}/dpnp/backend/cmake/Modules" || exit 1
+              --cmake-opts="-DIntelSYCL_DIR=${GITHUB_WORKSPACE}/cmake/Modules" || exit 1
 
       - name: Smoke test
         run: |

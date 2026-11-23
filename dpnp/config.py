@@ -32,18 +32,6 @@ import sys
 import types
 import warnings
 
-__DPNP_ORIGIN__ = int(os.getenv("DPNP_ORIGIN", 0))
-"""
-Explicitly use original host Python NumPy
-"""
-
-__DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__ = int(
-    os.getenv("DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK", 1)
-)
-"""
-Trigger non-implemented exception when DPNP fallbacks on NumPy implementation
-"""
-
 # settings that no longer have any effect: attribute name -> env var name
 _DEPRECATED_SETTINGS = {
     "__DPNP_QUEUE_GPU__": "DPNP_QUEUE_GPU",

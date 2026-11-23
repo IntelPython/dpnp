@@ -33,7 +33,6 @@ example3
 # moved cmake scripts
 dpnp/resources/cmake
 
-*dpnp_backend*
 dpnp/include/dpnp/tensor/*.h
 dpnp/**/*.pyd
 *~

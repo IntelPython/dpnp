@@ -27,65 +27,6 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-function(build_dpnp_cython_ext _trgt _src _dest)
-    add_cython_target(${_trgt} ${_src} CXX OUTPUT_VAR _generated_src)
-    message(STATUS "Using ${_trgt}")
-
-    python_add_library(${_trgt} MODULE WITH_SOABI ${_generated_src})
-    set(_trgt_deps "${_trgt}_deps")
-    add_custom_target(${_trgt_deps} DEPENDS ${_src})
-    add_dependencies(${_trgt} ${_trgt_deps})
-
-    if(DPNP_GENERATE_COVERAGE)
-        # Pass CYTHON_USE_SYS_MONITORING=0 to force Cython's legacy (settrace-based)
-        # line tracing instead of the sys.monitoring path
-        target_compile_definitions(
-            ${_trgt}
-            PRIVATE CYTHON_TRACE=1 CYTHON_TRACE_NOGIL=1 CYTHON_USE_SYS_MONITORING=0
-        )
-        target_compile_options(${_trgt} PRIVATE "-fno-sycl-use-footer")
-    endif()
-
-    # NumPy
-    target_compile_definitions(
-        ${_trgt}
-        PRIVATE NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
-    )
-    target_link_libraries(${_trgt} PRIVATE Python::NumPy)
-
-    # Dpctl
-    target_include_directories(${_trgt} PRIVATE ${Dpctl_INCLUDE_DIR})
-    target_link_directories(${_trgt} PRIVATE ${Dpctl_INCLUDE_DIR}/..)
-    target_link_libraries(${_trgt} PRIVATE DPCTLSyclInterface)
-
-    set(_linker_options "LINKER:${DPNP_LDFLAGS}")
-    target_link_options(${_trgt} PRIVATE ${_linker_options})
-
-    if(DPNP_GENERATE_COVERAGE)
-        set(_copy_cxx_trgt "${_trgt}_copy_cxx")
-        add_custom_target(
-            ${_copy_cxx_trgt}
-            ALL
-            COMMAND
-                ${CMAKE_COMMAND} -DSOURCE_FILE=${_generated_src}
-                -DDEST=${CMAKE_CURRENT_SOURCE_DIR} -P
-                ${CMAKE_SOURCE_DIR}/dpnp/cmake/copy_existing.cmake
-            DEPENDS ${_trgt}
-            VERBATIM
-            COMMENT
-                "Copying Cython-generated source for target ${_trgt} to dpnp source layout"
-        )
-    endif()
-
-    set(_rpath_value "$ORIGIN/..")
-    if(DPNP_WITH_REDIST)
-        set(_rpath_value "${_rpath_value}:$ORIGIN/../../../../")
-    endif()
-    set_target_properties(${_trgt} PROPERTIES INSTALL_RPATH ${_rpath_value})
-
-    install(TARGETS ${_trgt} LIBRARY DESTINATION ${_dest})
-endfunction()
-
 function(build_dpnp_tensor_ext _trgt _src _dest)
     cmake_parse_arguments(BUILD_DPNP_TENSOR "" "RELATIVE_PATH" "" ${ARGN})
     add_cython_target(${_trgt} ${_src} CXX OUTPUT_VAR _generated_src)
@@ -144,11 +85,6 @@ function(build_dpnp_tensor_ext _trgt _src _dest)
         file(RELATIVE_PATH _rel_dir ${CMAKE_SOURCE_DIR} ${_original_src_dir})
         install(FILES ${_generated_src} DESTINATION ${CMAKE_INSTALL_PREFIX}/${_rel_dir})
     endif()
-endfunction()
-
-function(build_dpnp_cython_ext_with_backend _trgt _src _dest)
-    build_dpnp_cython_ext(${_trgt} ${_src} ${_dest})
-    target_link_libraries(${_trgt} PRIVATE dpnp_backend_library)
 endfunction()
 
 # Builds a pybind11 extension of dpnp/libtensor/extensions with the options all
@@ -224,7 +160,6 @@ endfunction()
 
 add_subdirectory(tensor)
 
-add_subdirectory(backend)
 add_subdirectory(libtensor/source)
 add_subdirectory(libtensor/extensions/blas)
 add_subdirectory(libtensor/extensions/fft)
@@ -232,7 +167,3 @@ add_subdirectory(libtensor/extensions/lapack)
 add_subdirectory(libtensor/extensions/rng)
 add_subdirectory(libtensor/extensions/vm)
 add_subdirectory(libtensor/extensions/sparse)
-
-add_subdirectory(dpnp_algo)
-add_subdirectory(dpnp_utils)
-add_subdirectory(random)

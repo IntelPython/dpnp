@@ -29,13 +29,30 @@
 import dpctl
 import numpy
 
-from dpnp.dpnp_utils import convert_item
+import dpnp
 
 assert_allclose_orig = numpy.testing.assert_allclose
 assert_almost_equal_orig = numpy.testing.assert_almost_equal
 assert_array_almost_equal_orig = numpy.testing.assert_array_almost_equal
 assert_array_equal_orig = numpy.testing.assert_array_equal
 assert_equal_orig = numpy.testing.assert_equal
+
+
+def convert_item(item):
+    """Convert a USM array, or a list or tuple of them, to NumPy arrays."""
+
+    if hasattr(item, "__sycl_usm_array_interface__"):
+        return dpnp.asnumpy(item)
+    if hasattr(item, "__array_interface__"):
+        # detect if it is a container (TODO any better way?)
+        if getattr(item, "__module__", "none") != "numpy":
+            return dpnp.asnumpy(item)
+        return item
+    if isinstance(item, list):
+        return [convert_item(x) for x in item]
+    if isinstance(item, tuple):
+        return tuple(convert_item(x) for x in item)
+    return item
 
 
 def _assert(assert_func, result, expected, *args, **kwargs):

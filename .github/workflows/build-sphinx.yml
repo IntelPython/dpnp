@@ -149,22 +149,6 @@ jobs:
           make html
         working-directory: doc
 
-      - name: Set a project number to current release
-        run: |
-          PROJECT_NUMBER=$(git describe --tags --abbrev=0)
-          export PROJECT_NUMBER
-
-          echo "PROJECT_NUMBER=${PROJECT_NUMBER}"
-          echo "PROJECT_NUMBER=$PROJECT_NUMBER" >> "$GITHUB_ENV"
-
-      - name: Build backend docs
-        uses: mattnotmitt/doxygen-action@b84fe17600245bb5db3d6c247cc274ea98c15a3b # v1.12
-        with:
-            working-directory: 'dpnp/backend/doc'
-
-      - name: Copy backend docs
-        run: cp -r dpnp/backend/doc/html ${{ env.PUBLISH_DIR }}/backend_doc
-
       # Detect if this is a fork PR
       - name: Check if fork PR
         id: check_fork

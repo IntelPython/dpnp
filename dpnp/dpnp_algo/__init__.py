@@ -25,8 +25,3 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
-
-from dpnp.dpnp_algo.dpnp_algo import *
-from dpnp.dpnp_algo.dpnp_algo import __all__ as __all__dpnp_algo
-
-__all__ = __all__dpnp_algo

@@ -39,7 +39,7 @@ import dpctl
 dpctlpath = os.path.dirname(dpctl.__file__)
 
 # For Windows OS with Python >= 3.7, it is required to explicitly define a path
-# where to search for DLLs towards both DPNP backend and DPCTL Sycl interface,
+# where to search for the DLLs of DPNP and of the DPCTL Sycl interface,
 # otherwise DPNP import will be failing. This is because the libraries
 # are not installed under any of default paths where Python is searching.
 
@@ -65,6 +65,7 @@ from .tensor import __array_api_version__, DLDeviceType
 from .dpnp_array import dpnp_array as ndarray
 from .dpnp_array_api_info import __array_namespace_info__
 from ._version import get_versions
+from . import config as config
 from . import exceptions as exceptions
 from . import fft as fft
 from . import lib as lib
@@ -576,7 +577,6 @@ from .dpnp_iface import (
     check_limitations,
     check_supported_arrays_type,
     default_float_type,
-    get_dpnp_descriptor,
     get_normalized_queue_device,
     get_result_array,
     get_usm_ndarray,
@@ -1050,7 +1050,6 @@ __all__ += [
     "check_limitations",
     "check_supported_arrays_type",
     "default_float_type",
-    "get_dpnp_descriptor",
     "get_normalized_queue_device",
     "get_result_array",
     "get_usm_ndarray",

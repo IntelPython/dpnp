@@ -29,8 +29,6 @@ build:
   dynamic_linking:
     missing_dso_allowlist:
       - "*DPCTLSyclInterface*"
-      - if: win
-        then: "*/dpnp_backend_c.dll"
 
 requirements:
   host:
@@ -67,7 +65,6 @@ requirements:
     - ${{ pin_compatible('onemkl-sycl-blas', lower_bound='x.x', upper_bound='x') }}
     - ${{ pin_compatible('onemkl-sycl-dft', lower_bound='x.x', upper_bound='x') }}
     - ${{ pin_compatible('onemkl-sycl-lapack', lower_bound='x.x', upper_bound='x') }}
-    - ${{ pin_compatible('onemkl-sycl-rng', lower_bound='x.x', upper_bound='x') }}
     - ${{ pin_compatible('onemkl-sycl-vm', lower_bound='x.x', upper_bound='x') }}
     - ${{ pin_compatible('onemkl-sycl-sparse', lower_bound='x.x', upper_bound='x') }}
     - numpy
@@ -80,7 +77,7 @@ requirements:
       - dpctl
       - numpy
       - python
-      # leaked from mkl-devel-dpcpp; drags in unused onemkl-sycl-{datafitting,stats}
+      # leaked from mkl-devel-dpcpp; drags in unused onemkl-sycl-{datafitting,rng,stats}
       - mkl-dpcpp
       # building with Intel DPC++ and do not import the MSVC runtime DLLs
       - if: win
