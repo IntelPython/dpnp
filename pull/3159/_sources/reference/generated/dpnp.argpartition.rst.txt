@@ -1,0 +1,10 @@
+﻿
+
+dpnp.argpartition
+=================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: argpartition

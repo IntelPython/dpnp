@@ -14,11 +14,11 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
 
     <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
-        <title>dpnp.dpnp_iface_statistics - Data Parallel Extension for NumPy (dpnp) 0.22.0dev2 documentation</title>
+        <title>dpnp.dpnp_iface_statistics - Data Parallel Extension for NumPy (dpnp) 0.22.0dev3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
@@ -172,7 +172,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.22.0dev2 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.22.0dev3 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.22.0dev2 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.22.0dev3 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -253,6 +253,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.sort.html">dpnp.ndarray.sort</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.argsort.html">dpnp.ndarray.argsort</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.partition.html">dpnp.ndarray.partition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.argpartition.html">dpnp.ndarray.argpartition</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.searchsorted.html">dpnp.ndarray.searchsorted</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.nonzero.html">dpnp.ndarray.nonzero</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.compress.html">dpnp.ndarray.compress</a></li>
@@ -989,6 +990,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.argsort.html">dpnp.argsort</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.sort_complex.html">dpnp.sort_complex</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.partition.html">dpnp.partition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.argpartition.html">dpnp.argpartition</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.top_k.html">dpnp.top_k</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.argmax.html">dpnp.argmax</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.nanargmax.html">dpnp.nanargmax</a></li>
@@ -2397,10 +2399,10 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    overwrite_input : bool, optional</span>
 <span class="sd">       If ``True``, then allow use of memory of input array `a` for</span>
-<span class="sd">       calculations. The input array will be modified by the call to</span>
+<span class="sd">       calculations. The input array may be modified by the call to</span>
 <span class="sd">       :obj:`dpnp.median`. This will save memory when you do not need to</span>
 <span class="sd">       preserve the contents of the input array. Treat the input as undefined,</span>
-<span class="sd">       but it will probably be fully or partially sorted.</span>
+<span class="sd">       but it may be fully or partially sorted.</span>
 
 <span class="sd">       Default: ``False``.</span>
 <span class="sd">    keepdims : {None, bool}, optional</span>
@@ -2434,6 +2436,12 @@
 <span class="sd">    ``V_sorted[(N-1)/2]``, when ``N`` is odd, and the average of the</span>
 <span class="sd">    two middle values of ``V_sorted`` when ``N`` is even.</span>
 
+<span class="sd">    On a device without double precision floating-point support, the average</span>
+<span class="sd">    of two middle values of a 64-bit integer data type is the single precision</span>
+<span class="sd">    value nearest to their exact average. NumPy adds them in double precision</span>
+<span class="sd">    first, so for values of magnitude about :math:`2^{52}` or more the result</span>
+<span class="sd">    can differ from NumPy's cast to single precision.</span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
@@ -2461,11 +2469,9 @@
 <span class="sd">    &gt;&gt;&gt; b = a.copy()</span>
 <span class="sd">    &gt;&gt;&gt; np.median(b, axis=1, overwrite_input=True)</span>
 <span class="sd">    array([7., 2.])</span>
-<span class="sd">    &gt;&gt;&gt; assert not np.all(a==b)</span>
 <span class="sd">    &gt;&gt;&gt; b = a.copy()</span>
 <span class="sd">    &gt;&gt;&gt; np.median(b, axis=None, overwrite_input=True)</span>
 <span class="sd">    array(3.5)</span>
-<span class="sd">    &gt;&gt;&gt; assert not np.all(a==b)</span>
 
 <span class="sd">    """</span>
 
@@ -3223,12 +3229,12 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=39a3fc55"></script>
+</div><script src="../../_static/documentation_options.js?v=9ddb784c"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     </body>
 </html>
