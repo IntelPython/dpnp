@@ -111,10 +111,6 @@ Functions</h2></td></tr>
 <tr class="memitem:gab577c1444f9e878b90162013bf2c4591" id="r_gab577c1444f9e878b90162013bf2c4591"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#gab577c1444f9e878b90162013bf2c4591">dpnp_memory_alloc_c</a> (DPCTLSyclQueueRef q_ref, size_t size_in_bytes)</td></tr>
 <tr class="memdesc:gab577c1444f9e878b90162013bf2c4591"><td class="mdescLeft">&#160;</td><td class="mdescRight">SYCL queue memory allocation.  <br /></td></tr>
 <tr class="separator:gab577c1444f9e878b90162013bf2c4591"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gad6b710733eb11c4f51e92cab7e34dcb5" id="r_gad6b710733eb11c4f51e92cab7e34dcb5"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
-<tr class="memitem:gad6b710733eb11c4f51e92cab7e34dcb5"><td class="memTemplItemLeft" align="right" valign="top">DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#gad6b710733eb11c4f51e92cab7e34dcb5">dpnp_partition_c</a> (DPCTLSyclQueueRef q_ref, void *array, void *array2, void *result, const size_t kth, const shape_elem_type *shape, const size_t ndim, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
-<tr class="memdesc:gad6b710733eb11c4f51e92cab7e34dcb5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a partitioned copy of an array.  <br /></td></tr>
-<tr class="separator:gad6b710733eb11c4f51e92cab7e34dcb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga2c1f63f22354673088112c4f248c98a2" id="r_ga2c1f63f22354673088112c4f248c98a2"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:ga2c1f63f22354673088112c4f248c98a2"><td class="memTemplItemLeft" align="right" valign="top">DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ga2c1f63f22354673088112c4f248c98a2">dpnp_initval_c</a> (DPCTLSyclQueueRef q_ref, void *result1, void *value, size_t size, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
 <tr class="memdesc:ga2c1f63f22354673088112c4f248c98a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">implementation of creating filled with value array function  <br /></td></tr>
@@ -323,74 +319,6 @@ template&lt;typename _DataType &gt; </div>
     <tr><td class="paramdir">[in]</td><td class="paramname">q_ref</td><td>Reference to SYCL queue. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Output array. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in the output array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">dep_event_vec_ref</td><td>Reference to vector of SYCL events. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="gad6b710733eb11c4f51e92cab7e34dcb5" name="gad6b710733eb11c4f51e92cab7e34dcb5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gad6b710733eb11c4f51e92cab7e34dcb5">&#9670;&#160;</a></span>dpnp_partition_c()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename _DataType &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">DPCTLSyclEventRef dpnp_partition_c </td>
-          <td>(</td>
-          <td class="paramtype">DPCTLSyclQueueRef</td>          <td class="paramname"><span class="paramname"><em>q_ref</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>array</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>array2</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>result</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const size_t</td>          <td class="paramname"><span class="paramname"><em>kth</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const shape_elem_type *</td>          <td class="paramname"><span class="paramname"><em>shape</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const size_t</td>          <td class="paramname"><span class="paramname"><em>ndim</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const DPCTLEventVectorRef</td>          <td class="paramname"><span class="paramname"><em>dep_event_vec_ref</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Return a partitioned copy of an array. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">q_ref</td><td>Reference to SYCL queue. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">array</td><td>Input array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">array2</td><td>Copy input array. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Result array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">kth</td><td>Element index to partition by. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">shape</td><td>Shape of input array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">ndim</td><td>Number of elements in shape. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">dep_event_vec_ref</td><td>Reference to vector of SYCL events. </td></tr>
   </table>
   </dd>

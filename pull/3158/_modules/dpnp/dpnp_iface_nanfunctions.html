@@ -253,6 +253,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.sort.html">dpnp.ndarray.sort</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.argsort.html">dpnp.ndarray.argsort</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.partition.html">dpnp.ndarray.partition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.argpartition.html">dpnp.ndarray.argpartition</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.searchsorted.html">dpnp.ndarray.searchsorted</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.nonzero.html">dpnp.ndarray.nonzero</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.compress.html">dpnp.ndarray.compress</a></li>
@@ -979,6 +980,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.argsort.html">dpnp.argsort</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.sort_complex.html">dpnp.sort_complex</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.partition.html">dpnp.partition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.argpartition.html">dpnp.argpartition</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.top_k.html">dpnp.top_k</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.argmax.html">dpnp.argmax</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.nanargmax.html">dpnp.nanargmax</a></li>
@@ -1773,6 +1775,11 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.nanmedian`.</span>
 
+<span class="sd">    Warnings</span>
+<span class="sd">    --------</span>
+<span class="sd">    This function synchronizes in order to test for all-NaN slices in the array.</span>
+<span class="sd">    This may harm performance in some applications.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
@@ -1793,10 +1800,10 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    overwrite_input : bool, optional</span>
 <span class="sd">       If ``True``, then allow use of memory of input array `a` for</span>
-<span class="sd">       calculations. The input array will be modified by the call to</span>
+<span class="sd">       calculations. The input array may be modified by the call to</span>
 <span class="sd">       :obj:`dpnp.nanmedian`. This will save memory when you do not need to</span>
 <span class="sd">       preserve the contents of the input array. Treat the input as undefined,</span>
-<span class="sd">       but it will probably be fully or partially sorted.</span>
+<span class="sd">       but it may be fully or partially sorted.</span>
 
 <span class="sd">       Default: ``False``.</span>
 <span class="sd">    keepdims : {None, bool}, optional</span>
@@ -1831,6 +1838,12 @@
 <span class="sd">    ``V_sorted[(N-1)/2]``, when ``N`` is odd, and the average of the</span>
 <span class="sd">    two middle values of ``V_sorted`` when ``N`` is even.</span>
 
+<span class="sd">    On a device without double precision floating-point support, the average</span>
+<span class="sd">    of two middle values of a 64-bit integer data type is the single precision</span>
+<span class="sd">    value nearest to their exact average. NumPy adds them in double precision</span>
+<span class="sd">    first, so for values of magnitude about :math:`2^{52}` or more the result</span>
+<span class="sd">    can differ from NumPy's cast to single precision.</span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
@@ -1852,17 +1865,17 @@
 <span class="sd">    &gt;&gt;&gt; b = a.copy()</span>
 <span class="sd">    &gt;&gt;&gt; np.nanmedian(b, axis=1, overwrite_input=True)</span>
 <span class="sd">    array([7., 2.])</span>
-<span class="sd">    &gt;&gt;&gt; assert not np.all(a==b)</span>
 <span class="sd">    &gt;&gt;&gt; b = a.copy()</span>
 <span class="sd">    &gt;&gt;&gt; np.nanmedian(b, axis=None, overwrite_input=True)</span>
 <span class="sd">    array(3.)</span>
-<span class="sd">    &gt;&gt;&gt; assert not np.all(a==b)</span>
 
 <span class="sd">    """</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">ignore_nan</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">inexact</span><span class="p">):</span>
+    <span class="c1"># selecting the medians of real data types ignores NaNs at no extra cost,</span>
+    <span class="c1"># while the sort used for complex data types only has to if there are any</span>
+    <span class="n">ignore_nan</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">floating</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
             <span class="n">ignore_nan</span> <span class="o">=</span> <span class="kc">True</span>

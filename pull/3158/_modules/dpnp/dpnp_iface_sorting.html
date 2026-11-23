@@ -253,6 +253,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.sort.html">dpnp.ndarray.sort</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.argsort.html">dpnp.ndarray.argsort</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.partition.html">dpnp.ndarray.partition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.argpartition.html">dpnp.ndarray.argpartition</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.searchsorted.html">dpnp.ndarray.searchsorted</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.nonzero.html">dpnp.ndarray.nonzero</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.compress.html">dpnp.ndarray.compress</a></li>
@@ -979,6 +980,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.argsort.html">dpnp.argsort</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.sort_complex.html">dpnp.sort_complex</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.partition.html">dpnp.partition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.argpartition.html">dpnp.argpartition</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.top_k.html">dpnp.top_k</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.argmax.html">dpnp.argmax</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.nanargmax.html">dpnp.nanargmax</a></li>
@@ -1144,22 +1146,167 @@
 
 <span class="sd">"""</span>
 
+<span class="c1"># pylint: disable=protected-access</span>
+<span class="c1"># pylint: disable=no-name-in-module</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">operator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedTuple</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpu</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.libtensor._tensor_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.libtensor._tensor_sorting_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sorting_ext</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
 
-<span class="c1"># pylint: disable=no-name-in-module</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_algo</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">dpnp_partition</span><span class="p">,</span>
-<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_array</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">map_dtype_to_device</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.tensor._numpy_helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_axis_index</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_normalize_kth</span><span class="p">(</span><span class="n">kth</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">check_bounds</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Validate `kth` as NumPy does and return it as a list of non-negative</span>
+<span class="sd">    integers.</span>
+
+<span class="sd">    """</span>
+
+    <span class="n">kth</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">kth</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">kth</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"object too deep for desired array"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">kth</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">numpy</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Booleans unacceptable as partition index"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">numpy</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">kth</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Partition index must be integer"</span><span class="p">)</span>
+
+    <span class="n">kth</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">kth</span><span class="o">.</span><span class="n">ravel</span><span class="p">()]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">check_bounds</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">kth</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">kth</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">k</span> <span class="o">+=</span> <span class="n">length</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">length</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"kth(=</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">) out of bounds (</span><span class="si">{</span><span class="n">length</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+        <span class="n">kth</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span>
+    <span class="k">return</span> <span class="n">kth</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_partition_by_sort</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">sycl_device</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Whether rows of `n` elements of `dtype` are partitioned faster by a full</span>
+<span class="sd">    sort than by the work-group kernel of radix select on `sycl_device`.</span>
+
+<span class="sd">    """</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">sycl_device</span><span class="o">.</span><span class="n">is_gpu</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="n">dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="c1"># the sort gains for 4-byte keys only with few distinct values</span>
+    <span class="k">if</span> <span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">"iu"</span> <span class="ow">or</span> <span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="c1"># shorter rows are ranked by a sub-group each</span>
+    <span class="n">sub_group_max_n</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">8</span> <span class="o">*</span> <span class="nb">min</span><span class="p">(</span><span class="n">sycl_device</span><span class="o">.</span><span class="n">sub_group_sizes</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">sub_group_max_n</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">128</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_wrap_partition_argpartition</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">kth</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">return_indices</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Partition `a` along `axis` about a single `kth` by radix select, falling</span>
+<span class="sd">    back to a full sort for several `kth`, for complex data types and for the</span>
+<span class="sd">    rows whose values `_partition_by_sort` finds a sort faster for.</span>
+
+<span class="sd">    """</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">kind</span> <span class="o">!=</span> <span class="s2">"introselect"</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">"`kind` keyword argument is only supported with its default value."</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">"`order` keyword argument is only supported with its default value."</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="n">nd</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">nd</span><span class="p">)</span>
+    <span class="c1"># an empty array is partitioned whatever kth is</span>
+    <span class="n">kth</span> <span class="o">=</span> <span class="n">_normalize_kth</span><span class="p">(</span><span class="n">kth</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">],</span> <span class="n">check_bounds</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">kth</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># nothing is to be put in its sorted position</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">return_indices</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="n">idx_shape</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">nd</span>
+        <span class="n">idx_shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
+            <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">],</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span>
+            <span class="n">usm_type</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">idx_shape</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">kth</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span>
+        <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="n">return_indices</span>
+            <span class="ow">and</span> <span class="n">_partition_by_sort</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">],</span> <span class="n">a</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">):</span>
+        <span class="n">sort_fn</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">argsort</span> <span class="k">if</span> <span class="n">return_indices</span> <span class="k">else</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sort</span>
+        <span class="k">return</span> <span class="n">sort_fn</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+
+    <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="o">!=</span> <span class="n">nd</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">perm</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nd</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">axis</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">axis</span><span class="p">]</span>
+        <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">perm</span><span class="p">)</span>
+
+    <span class="n">exec_q</span> <span class="o">=</span> <span class="n">usm_a</span><span class="o">.</span><span class="n">sycl_queue</span>
+    <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpu</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">exec_q</span><span class="p">]</span>
+    <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
+
+    <span class="c1"># the rows are partitioned along the last axis of C-contiguous arrays</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">usm_a</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span><span class="p">:</span>
+        <span class="n">usm_tmp</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">"C"</span><span class="p">)</span>
+        <span class="n">ht_ev</span><span class="p">,</span> <span class="n">copy_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">usm_tmp</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
+        <span class="p">)</span>
+        <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">,</span> <span class="n">copy_ev</span><span class="p">)</span>
+        <span class="n">usm_a</span> <span class="o">=</span> <span class="n">usm_tmp</span>
+        <span class="n">dep_evs</span> <span class="o">=</span> <span class="p">[</span><span class="n">copy_ev</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">return_indices</span><span class="p">:</span>
+        <span class="n">partition_fn</span> <span class="o">=</span> <span class="n">sorting_ext</span><span class="o">.</span><span class="n">_argpartition</span>
+        <span class="n">res_dt</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">int64</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">partition_fn</span> <span class="o">=</span> <span class="n">sorting_ext</span><span class="o">.</span><span class="n">_partition</span>
+        <span class="n">res_dt</span> <span class="o">=</span> <span class="n">usm_a</span><span class="o">.</span><span class="n">dtype</span>
+
+    <span class="n">usm_res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+        <span class="n">usm_a</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_a</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="s2">"C"</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">ht_ev</span><span class="p">,</span> <span class="n">part_ev</span> <span class="o">=</span> <span class="n">partition_fn</span><span class="p">(</span>
+        <span class="n">usm_a</span><span class="p">,</span> <span class="n">kth</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">usm_res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
+    <span class="p">)</span>
+    <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">,</span> <span class="n">part_ev</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">axis</span> <span class="o">!=</span> <span class="n">nd</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">inv_perm</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">nd</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">perm</span><span class="p">[</span><span class="n">d</span><span class="p">])</span>
+        <span class="n">usm_res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">usm_res</span><span class="p">,</span> <span class="n">inv_perm</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_res</span><span class="p">)</span>
 
 
 <span class="c1"># pylint:disable=missing-class-docstring</span>
@@ -1204,6 +1351,82 @@
         <span class="n">usm_a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="n">descending</span><span class="p">,</span> <span class="n">stable</span><span class="o">=</span><span class="n">stable</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_res</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="argpartition">
+<a class="viewcode-back" href="../../reference/generated/dpnp.argpartition.html#dpnp.argpartition">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">argpartition</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">kth</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">"introselect"</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Perform an indirect partition along the given axis using the algorithm</span>
+<span class="sd">    specified by the `kind` keyword. It returns an array of indices of the</span>
+<span class="sd">    same shape as `a` that index data along the given axis in partitioned</span>
+<span class="sd">    order.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.argpartition`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Array to sort.</span>
+<span class="sd">    kth : {int, sequence of ints}</span>
+<span class="sd">        Element index to partition by. The k-th element will be in its final</span>
+<span class="sd">        sorted position and all smaller elements will be moved before it and</span>
+<span class="sd">        all larger elements behind it. The order of all elements in the</span>
+<span class="sd">        partitions is undefined. If provided with a sequence of k-th it will</span>
+<span class="sd">        partition all of them into their sorted position at once.</span>
+<span class="sd">    axis : {None, int}, optional</span>
+<span class="sd">        Axis along which to sort. If ``None``, the array is flattened before</span>
+<span class="sd">        sorting. The default is ``-1``, which sorts along the last axis.</span>
+
+<span class="sd">        Default: ``-1``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    index_array : dpnp.ndarray</span>
+<span class="sd">        Array of indices that partition `a` along the specified axis. If `a`</span>
+<span class="sd">        is one-dimensional, ``a[index_array]`` yields a partitioned `a`. More</span>
+<span class="sd">        generally, ``dpnp.take_along_axis(a, index_array, axis=axis)`` always</span>
+<span class="sd">        yields the partitioned `a`, irrespective of dimensionality.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameters `kind` and `order` are only supported with its default value.</span>
+<span class="sd">    Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.partition` : Describes partition algorithms used.</span>
+<span class="sd">    :obj:`dpnp.ndarray.partition` : Inplace partition.</span>
+<span class="sd">    :obj:`dpnp.argsort` : Full indirect sort.</span>
+<span class="sd">    :obj:`dpnp.take_along_axis` : Apply ``index_array`` from argpartition to</span>
+<span class="sd">                                  an array as if by calling partition.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    One dimensional array:</span>
+
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([3, 4, 2, 1])</span>
+<span class="sd">    &gt;&gt;&gt; x[np.argpartition(x, 3)]</span>
+<span class="sd">    array([2, 1, 3, 4]) # may vary</span>
+<span class="sd">    &gt;&gt;&gt; x[np.argpartition(x, (1, 3))]</span>
+<span class="sd">    array([1, 2, 3, 4]) # may vary</span>
+
+<span class="sd">    Multi-dimensional array:</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.array([[3, 4, 2], [1, 3, 1]])</span>
+<span class="sd">    &gt;&gt;&gt; index_array = np.argpartition(x, kth=1, axis=-1)</span>
+<span class="sd">    &gt;&gt;&gt; # below is the same as np.partition(x, kth=1)</span>
+<span class="sd">    &gt;&gt;&gt; np.take_along_axis(x, index_array, axis=-1)</span>
+<span class="sd">    array([[2, 3, 4],</span>
+<span class="sd">           [1, 1, 3]])</span>
+
+<span class="sd">    """</span>
+
+    <span class="k">return</span> <span class="n">_wrap_partition_argpartition</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">kth</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">return_indices</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="argsort">
@@ -1387,60 +1610,9 @@
 
 <span class="sd">    """</span>
 
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">kind</span> <span class="o">!=</span> <span class="s2">"introselect"</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">"`kind` keyword argument is only supported with its default value."</span>
-        <span class="p">)</span>
-    <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">"`order` keyword argument is only supported with its default value."</span>
-        <span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-        <span class="n">axis</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-
-    <span class="n">nd</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span>
-    <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">nd</span><span class="p">)</span>
-    <span class="n">length</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span>
-
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kth</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="n">kth</span> <span class="o">=</span> <span class="p">(</span><span class="n">kth</span><span class="p">,)</span>
-    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kth</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">"kth must be int or sequence of ints, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">kth</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
-        <span class="p">)</span>
-    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">kth</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"kth is a sequence, but not all elements are integers"</span><span class="p">)</span>
-
-    <span class="n">nkth</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">kth</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">nkth</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-
-    <span class="c1"># validate kth</span>
-    <span class="n">kth</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">kth</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nkth</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">kth</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">kth</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">length</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">kth</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">length</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"kth(=</span><span class="si">{</span><span class="n">kth</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">) out of bounds </span><span class="si">{</span><span class="n">length</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-
-    <span class="n">dt</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span>
-    <span class="k">if</span> <span class="p">(</span>
-        <span class="n">nd</span> <span class="o">&gt;</span> <span class="mi">1</span>
-        <span class="ow">or</span> <span class="n">nkth</span> <span class="o">&gt;</span> <span class="mi">1</span>
-        <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">unsignedinteger</span><span class="p">)</span>
-        <span class="ow">or</span> <span class="n">dt</span> <span class="ow">in</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">int8</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">int16</span><span class="p">)</span>
-        <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_cuda_backend</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">get_array</span><span class="p">())</span>
-    <span class="p">):</span>
-        <span class="c1"># sort is a faster path in case of ndim &gt; 1</span>
-        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
-
-    <span class="n">desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dpnp_partition</span><span class="p">(</span><span class="n">desc</span><span class="p">,</span> <span class="n">kth</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">axis</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span></div>
+    <span class="k">return</span> <span class="n">_wrap_partition_argpartition</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">kth</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">return_indices</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span></div>
 
 
 
@@ -1625,7 +1797,7 @@
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.tensor.top_k` : Array API version; returns the elements in an</span>
 <span class="sd">        unspecified order.</span>
-<span class="sd">    :obj:`dpnp.partition` : Partial sort.</span>
+<span class="sd">    :obj:`dpnp.argpartition` : Indirect partition.</span>
 <span class="sd">    :obj:`dpnp.sort` : Full sorting.</span>
 
 <span class="sd">    Notes</span>

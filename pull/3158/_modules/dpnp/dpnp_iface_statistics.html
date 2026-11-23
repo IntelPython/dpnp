@@ -253,6 +253,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.sort.html">dpnp.ndarray.sort</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.argsort.html">dpnp.ndarray.argsort</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.partition.html">dpnp.ndarray.partition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.argpartition.html">dpnp.ndarray.argpartition</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.searchsorted.html">dpnp.ndarray.searchsorted</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.nonzero.html">dpnp.ndarray.nonzero</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.compress.html">dpnp.ndarray.compress</a></li>
@@ -979,6 +980,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.argsort.html">dpnp.argsort</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.sort_complex.html">dpnp.sort_complex</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.partition.html">dpnp.partition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.argpartition.html">dpnp.argpartition</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.top_k.html">dpnp.top_k</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.argmax.html">dpnp.argmax</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.nanargmax.html">dpnp.nanargmax</a></li>
@@ -2387,10 +2389,10 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    overwrite_input : bool, optional</span>
 <span class="sd">       If ``True``, then allow use of memory of input array `a` for</span>
-<span class="sd">       calculations. The input array will be modified by the call to</span>
+<span class="sd">       calculations. The input array may be modified by the call to</span>
 <span class="sd">       :obj:`dpnp.median`. This will save memory when you do not need to</span>
 <span class="sd">       preserve the contents of the input array. Treat the input as undefined,</span>
-<span class="sd">       but it will probably be fully or partially sorted.</span>
+<span class="sd">       but it may be fully or partially sorted.</span>
 
 <span class="sd">       Default: ``False``.</span>
 <span class="sd">    keepdims : {None, bool}, optional</span>
@@ -2424,6 +2426,12 @@
 <span class="sd">    ``V_sorted[(N-1)/2]``, when ``N`` is odd, and the average of the</span>
 <span class="sd">    two middle values of ``V_sorted`` when ``N`` is even.</span>
 
+<span class="sd">    On a device without double precision floating-point support, the average</span>
+<span class="sd">    of two middle values of a 64-bit integer data type is the single precision</span>
+<span class="sd">    value nearest to their exact average. NumPy adds them in double precision</span>
+<span class="sd">    first, so for values of magnitude about :math:`2^{52}` or more the result</span>
+<span class="sd">    can differ from NumPy's cast to single precision.</span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
@@ -2451,11 +2459,9 @@
 <span class="sd">    &gt;&gt;&gt; b = a.copy()</span>
 <span class="sd">    &gt;&gt;&gt; np.median(b, axis=1, overwrite_input=True)</span>
 <span class="sd">    array([7., 2.])</span>
-<span class="sd">    &gt;&gt;&gt; assert not np.all(a==b)</span>
 <span class="sd">    &gt;&gt;&gt; b = a.copy()</span>
 <span class="sd">    &gt;&gt;&gt; np.median(b, axis=None, overwrite_input=True)</span>
 <span class="sd">    array(3.5)</span>
-<span class="sd">    &gt;&gt;&gt; assert not np.all(a==b)</span>
 
 <span class="sd">    """</span>
 
