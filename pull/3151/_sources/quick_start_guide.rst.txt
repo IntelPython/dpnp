@@ -70,18 +70,17 @@ Alternatively you can create and activate a local conda build environment:
     conda create -n build-env conda-build
     conda activate build-env
 
-And to build dpnp package from the sources, with ``dpctl``'s dev build from ``dppy/label/dev``, which a flexible channel
-priority lets conda take over conda-forge's release:
+And to build dpnp package from the sources, with ``dpctl``'s dev build from ``dppy/label/dev``:
 
 .. code-block:: bash
 
-    CONDA_CHANNEL_PRIORITY=flexible conda-build conda-recipe -c conda-forge -c dppy/label/dev --override-channels --python "3.14.* *_cp314"
+    conda-build conda-recipe -c dppy/label/dev -c conda-forge --override-channels --python 3.14
 
 Finally, to install the result package:
 
 .. code-block:: bash
 
-    conda install dpnp -c local
+    conda install dpnp -c local -c dppy/label/dev -c conda-forge --override-channels
 
 
 Build and Install with scikit-build
