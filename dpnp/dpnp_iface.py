@@ -55,11 +55,7 @@ import dpnp.libtensor._tensor_impl as ti
 import dpnp.tensor as dpt
 
 from .dpnp_array import dpnp_array
-from .dpnp_utils import (
-    dpnp_descriptor,
-    map_dtype_to_device,
-    use_origin_backend,
-)
+from .dpnp_utils import map_dtype_to_device
 from .tensor._device import normalize_queue_device
 
 
@@ -349,81 +345,6 @@ def default_float_type(device=None, sycl_queue=None):
         device=device, sycl_queue=sycl_queue
     )
     return map_dtype_to_device(dpnp.float64, _sycl_queue.sycl_device)
-
-
-def get_dpnp_descriptor(
-    ext_obj,
-    copy_when_strides=True,
-    copy_when_nondefault_queue=True,
-    alloc_dtype=None,
-    alloc_usm_type=None,
-    alloc_queue=None,
-):
-    """
-    Return True:
-      never
-    Return DPNP internal data descriptor object if:
-      1. We can proceed with input data object with DPNP
-      2. We want to handle input data object
-    Return False if:
-      1. We do not want to work with input data object
-      2. We can not handle with input data object
-    """
-
-    if use_origin_backend():
-        return False
-
-    # If input object is a scalar, it means it was allocated on host memory.
-    # We need to copy it to USM memory according to compute follows data.
-    if dpnp.isscalar(ext_obj):
-        ext_obj = dpnp.array(
-            ext_obj,
-            dtype=alloc_dtype,
-            usm_type=alloc_usm_type,
-            sycl_queue=alloc_queue,
-        )
-
-    # while dpnp functions have no implementation with strides support
-    # we need to create a non-strided copy
-    # if function get implementation for strides case
-    # then this behavior can be disabled with setting "copy_when_strides"
-    if copy_when_strides and getattr(ext_obj, "strides", None) is not None:
-        # TODO: replace this workaround when usm_ndarray will provide
-        # such functionality
-        shape_offsets = tuple(
-            numpy.prod(ext_obj.shape[i + 1 :], dtype=numpy.int64)
-            for i in range(ext_obj.ndim)
-        )
-
-        if hasattr(ext_obj, "__sycl_usm_array_interface__"):
-            ext_obj_offset = ext_obj.__sycl_usm_array_interface__.get(
-                "offset", 0
-            )
-        else:
-            ext_obj_offset = 0
-
-        if ext_obj.strides != shape_offsets or ext_obj_offset != 0:
-            ext_obj = dpnp.array(ext_obj, order="C")
-
-    # while dpnp functions are based on DPNP_QUEUE
-    # we need to create a copy on device associated with DPNP_QUEUE
-    # if function get implementation for different queue
-    # then this behavior can be disabled with setting
-    # "copy_when_nondefault_queue"
-    queue = getattr(ext_obj, "sycl_queue", None)
-    if queue is not None and copy_when_nondefault_queue:
-        default_queue = dpctl.SyclQueue()
-        queue_is_default = (
-            dpt.get_execution_queue([queue, default_queue]) is not None
-        )
-        if not queue_is_default:
-            ext_obj = dpnp.array(ext_obj, sycl_queue=default_queue)
-
-    dpnp_desc = dpnp_descriptor(ext_obj)
-    if dpnp_desc.is_valid:  # pylint: disable=using-constant-test
-        return dpnp_desc
-
-    return False
 
 
 def get_include():

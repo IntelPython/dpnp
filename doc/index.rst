@@ -75,20 +75,6 @@ and numerical data types and provides implementations of selected
 
             To the tensor documentation
 
-    .. grid-item-card:: Development information
-
-        C++ backend API reference and extension documentation for developers.
-
-        +++
-
-        .. button-ref:: dpnp_backend_api
-            :ref-type: doc
-            :expand:
-            :color: secondary
-            :click-parent:
-
-            To the backend API reference
-
 
 .. toctree::
    :maxdepth: 2
@@ -99,10 +85,3 @@ and numerical data types and provides implementations of selected
    quick_start_guide
    reference/index
    tensor
-
-.. toctree::
-   :maxdepth: 1
-   :hidden:
-   :caption: Development information
-
-   dpnp_backend_api

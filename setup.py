@@ -53,9 +53,6 @@ skbuild.setup(
     package_data={
         "dpnp": [
             "include/*.h*",
-            "libdpnp_backend_c.so",
-            "dpnp_backend_c.lib",
-            "dpnp_backend_c.dll",
             "resources/cmake/*.cmake",
             "libtensor/include/ext/*.h*",
             "libtensor/include/ext/*/*.h*",

@@ -48,8 +48,7 @@ class TestDeprecatedSettings:
         assert value == 1
 
     @pytest.mark.parametrize(
-        "name",
-        ["__DPNP_ORIGIN__", "__DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__"],
+        "name", ["__DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__"]
     )
     def test_no_warning(self, monkeypatch, name):
         with warnings.catch_warnings():

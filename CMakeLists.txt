@@ -42,7 +42,6 @@ option(
     "Build dpnp tensor pybind11 offloading extensions with coverage instrumentation"
     OFF
 )
-option(DPNP_BACKEND_TESTS "Enable building of DPNP backend test suite" OFF)
 option(
     DPNP_WITH_REDIST
     "Build DPNP assuming DPC++ redistributable is installed into Python prefix"
@@ -70,7 +69,7 @@ set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
 # 7. CMake variables defined in the Platform files for the current system (like in /usr/local for Linux)
 # 8. Paths stored in the CMake System Package Registry
 # 9. Paths specified by the PATHS option (assumed hard-coded guesses)
-set(path_to_cmake_dir ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules)
+set(path_to_cmake_dir ${CMAKE_SOURCE_DIR}/cmake/Modules)
 # TODO: use the commented logic once the compiler resolves CMake issue CMPLRLLVM-73484
 # find_package(IntelSYCL REQUIRED PATHS ${path_to_cmake_dir})
 find_package(IntelSYCL QUIET)

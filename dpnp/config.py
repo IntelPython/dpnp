@@ -32,11 +32,6 @@ import sys
 import types
 import warnings
 
-__DPNP_ORIGIN__ = int(os.getenv("DPNP_ORIGIN", 0))
-"""
-Explicitly use original host Python NumPy
-"""
-
 __DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__ = int(
     os.getenv("DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK", 1)
 )

@@ -38,6 +38,7 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Changed `dpnp.median`, `dpnp.nanmedian` and `dpnp.partition` with a single `kth` to use a radix select instead of a full sort for all but complex data types and, on a GPU, `dpnp.partition` of rows of 65 to 128 elements of 8-byte integers [#3138](https://github.com/IntelPython/dpnp/pull/3138)
 * Improved performance of `dpnp.top_k` and `dpnp.tensor.top_k` on a GPU for batches of rows of 65536 to about 10^6 elements that occupy it with a work-group per row [#3138](https://github.com/IntelPython/dpnp/pull/3138)
 * Reimplemented `dpnp.random.RandomState` and the `dpnp.random` functions on device kernels, drawing on the queue of the generator. `device`, `usm_type` and `sycl_queue` are now keyword-only, `usm_type` defaults to the USM type of the array parameters, `randint(dtype=int)` returns `int64` and `shuffle` requires a `dpnp.ndarray` or `usm_ndarray` [#3162](https://github.com/IntelPython/dpnp/pull/3162)
+* Moved the vendored CMake modules of `IntelSYCL`, `MKL`, `TBB` and `oneDPL` from `dpnp/backend/cmake/Modules` to `cmake/Modules` [#3163](https://github.com/IntelPython/dpnp/pull/3163)
 
 ### Deprecated
 
@@ -52,6 +53,9 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Dropped support for Python 3.10 [#3173](https://github.com/IntelPython/dpnp/pull/3173)
 * Removed the `USE_GROUP_LOAD_STORE` macro from the libtensor header `utils/sycl_utils.hpp`, so `sub_group_load` and `sub_group_store` always use the `sycl_ext_oneapi_group_load_store` extension; the `sycl::sub_group` member load/store fallback it selected does not compile with DPC++ 2026.0, the minimum supported compiler [#3174](https://github.com/IntelPython/dpnp/pull/3174)
 * Removed the legacy implementation of `dpnp.partition` from the backend [#3138](https://github.com/IntelPython/dpnp/pull/3138)
+* Removed the legacy backend implementation of `dpnp.random`, which no longer needs `onemkl-sycl-rng` [#3163](https://github.com/IntelPython/dpnp/pull/3163)
+* Removed the legacy `dpnp_backend_c` library with its GTest suite and the `DPNP_BACKEND_TESTS` CMake option, the Cython module `dpnp.dpnp_algo.dpnp_algo` built on it, and the NumPy fallback helper `call_origin` [#3163](https://github.com/IntelPython/dpnp/pull/3163)
+* Removed `dpnp.get_dpnp_descriptor` and the `dpnp.config.__DPNP_ORIGIN__` setting, set by the `DPNP_ORIGIN` environment variable, which only it read [#3163](https://github.com/IntelPython/dpnp/pull/3163)
 
 ### Fixed
 

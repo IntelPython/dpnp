@@ -130,7 +130,7 @@ repos:
     rev: 0.29.2
     hooks:
     -   id: gersemi
-        exclude: "dpnp/backend/cmake/Modules/"
+        exclude: "cmake/Modules/"
         args: ["-i", "-l", "88", "--no-warn-about-unknown-commands"]
 -   repo: https://github.com/MarcoGorelli/cython-lint
     rev: v0.22.1
