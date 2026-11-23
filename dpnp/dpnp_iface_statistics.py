@@ -1253,10 +1253,10 @@ def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
         Default: ``None``.
     overwrite_input : bool, optional
        If ``True``, then allow use of memory of input array `a` for
-       calculations. The input array will be modified by the call to
+       calculations. The input array may be modified by the call to
        :obj:`dpnp.median`. This will save memory when you do not need to
        preserve the contents of the input array. Treat the input as undefined,
-       but it will probably be fully or partially sorted.
+       but it may be fully or partially sorted.
 
        Default: ``False``.
     keepdims : {None, bool}, optional
@@ -1290,6 +1290,12 @@ def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
     ``V_sorted[(N-1)/2]``, when ``N`` is odd, and the average of the
     two middle values of ``V_sorted`` when ``N`` is even.
 
+    On a device without double precision floating-point support, the average
+    of two middle values of a 64-bit integer data type is the single precision
+    value nearest to their exact average. NumPy adds them in double precision
+    first, so for values of magnitude about :math:`2^{52}` or more the result
+    can differ from NumPy's cast to single precision.
+
     Examples
     --------
     >>> import dpnp as np
@@ -1317,11 +1323,9 @@ def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
     >>> b = a.copy()
     >>> np.median(b, axis=1, overwrite_input=True)
     array([7., 2.])
-    >>> assert not np.all(a==b)
     >>> b = a.copy()
     >>> np.median(b, axis=None, overwrite_input=True)
     array(3.5)
-    >>> assert not np.all(a==b)
 
     """
 
