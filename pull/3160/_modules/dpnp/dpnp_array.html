@@ -14,11 +14,11 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
 
     <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
-        <title>dpnp.dpnp_array - Data Parallel Extension for NumPy (dpnp) 0.22.0dev2 documentation</title>
+        <title>dpnp.dpnp_array - Data Parallel Extension for NumPy (dpnp) 0.22.0dev3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=57d6a6bc" />
     
@@ -172,7 +172,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.22.0dev2 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.22.0dev3 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.22.0dev2 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.22.0dev3 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -253,6 +253,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.sort.html">dpnp.ndarray.sort</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.argsort.html">dpnp.ndarray.argsort</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.partition.html">dpnp.ndarray.partition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.argpartition.html">dpnp.ndarray.argpartition</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.searchsorted.html">dpnp.ndarray.searchsorted</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.nonzero.html">dpnp.ndarray.nonzero</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/generated/dpnp.ndarray.compress.html">dpnp.ndarray.compress</a></li>
@@ -998,6 +999,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.argsort.html">dpnp.argsort</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.sort_complex.html">dpnp.sort_complex</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.partition.html">dpnp.partition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.argpartition.html">dpnp.argpartition</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.top_k.html">dpnp.top_k</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.argmax.html">dpnp.argmax</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.nanargmax.html">dpnp.nanargmax</a></li>
@@ -2029,7 +2031,22 @@
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span></div>
 
 
-    <span class="c1"># 'argpartition',</span>
+<div class="viewcode-block" id="dpnp_array.argpartition">
+<a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.argpartition.html#dpnp.dpnp_array.dpnp_array.argpartition">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">argpartition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">kth</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">"introselect"</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return indices that would partition this array.</span>
+
+<span class="sd">        Refer to :obj:`dpnp.argpartition` for full documentation.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        :obj:`dpnp.argpartition` : Equivalent function.</span>
+
+<span class="sd">        """</span>
+
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">argpartition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kth</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="dpnp_array.argsort">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.argsort.html#dpnp.dpnp_array.dpnp_array.argsort">[docs]</a>
@@ -2077,7 +2094,7 @@
 <span class="sd">        :obj:`dpnp.argsort` : Return the indices that would sort an array.</span>
 <span class="sd">        :obj:`dpnp.lexsort` : Indirect stable sort on multiple keys.</span>
 <span class="sd">        :obj:`dpnp.searchsorted` : Find elements in a sorted array.</span>
-<span class="sd">        :obj:`dpnp.partition` : Partial sort.</span>
+<span class="sd">        :obj:`dpnp.argpartition` : Indirect partial sort.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -2909,8 +2926,10 @@
 <span class="sd">        two partitions on the either side of the k-th element in the output</span>
 <span class="sd">        array is undefined.</span>
 
-<span class="sd">        Refer to `dpnp.partition` for full documentation.</span>
+<span class="sd">        Refer to :obj:`dpnp.partition` for full documentation.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
 <span class="sd">        kth : {int, sequence of ints}</span>
 <span class="sd">            Element index to partition by. The kth element value will be in its</span>
 <span class="sd">            final sorted position and all smaller elements will be moved before</span>
@@ -2920,9 +2939,14 @@
 <span class="sd">            indexed by kth of them into their sorted position at once.</span>
 <span class="sd">        axis : int, optional</span>
 <span class="sd">            Axis along which to sort. The default is ``-1``, which means sort</span>
-<span class="sd">            along the the last axis.</span>
+<span class="sd">            along the last axis.</span>
 
 <span class="sd">            Default: ``-1``.</span>
+
+<span class="sd">        Limitations</span>
+<span class="sd">        -----------</span>
+<span class="sd">        Parameters `kind` and `order` are only supported with its default</span>
+<span class="sd">        value. Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
@@ -3939,12 +3963,12 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=39a3fc55"></script>
+</div><script src="../../_static/documentation_options.js?v=9ddb784c"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     </body>
 </html>
