@@ -51,6 +51,7 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Fixed a crash of the OpenCL CPU compiler in `dpnp.sort`, `dpnp.argsort`, `dpnp.tensor.sort` and `dpnp.tensor.argsort` by radix sort of rows of 2049 to 16384 elements [#3191](https://github.com/IntelPython/dpnp/pull/3191)
 * Fixed `__dlpack__` of `dpnp.ndarray` and `dpnp.tensor.usm_ndarray` to export a writable 0-d array as writable when `max_version` is given, which made `dpnp.from_dlpack` and `dpnp.tensor.from_dlpack` return a read-only view of it [#3181](https://github.com/IntelPython/dpnp/pull/3181)
 * Fixed a segfault when freeing an array that `dpnp.from_dlpack` or `dpnp.tensor.from_dlpack` imported from a DLPack tensor without a deleter [#3181](https://github.com/IntelPython/dpnp/pull/3181)
+* Fixed a `TypeError` in `dpnp.from_dlpack` and `dpnp.tensor.from_dlpack` when importing a DLPack tensor on a oneAPI device with a NULL data pointer, which DLPack asks for in a tensor of size zero [#3197](https://github.com/IntelPython/dpnp/pull/3197)
 
 ### Security
 
