@@ -47,6 +47,10 @@ namespace dpnp::kernels::rng
 // `result_type` is the type of the samples, and `param_types` lists the
 // type of each parameter, in the order the constructor takes them.
 //
+// `halves_per_item` is the number of 32-bit halves of raw 64-bit outputs
+// the sampler takes for every element, if that number is fixed, and 0
+// otherwise.
+//
 // `words_per_item` is the number of 32-bit words the sampler takes per
 // element, on average over the items_per_work_item consecutive elements of one
 // work-item, if that number is fixed whatever the parameters and the
@@ -58,6 +62,7 @@ struct SamplerBase
     using result_type = ResT;
     using param_types = std::tuple<ParamTs...>;
 
+    static constexpr unsigned halves_per_item = 0;
     static constexpr unsigned words_per_item = 0;
 };
 
@@ -70,7 +75,8 @@ template <typename T>
 class RawSampler : public SamplerBase<T>
 {
 public:
-    static constexpr unsigned words_per_item = sizeof(T) / 4;
+    static constexpr unsigned halves_per_item = sizeof(T) / 4;
+    static constexpr unsigned words_per_item = halves_per_item;
 
     template <typename BitGenT, typename IndexT>
     T operator()(BitGenT &bg, const IndexT)
@@ -93,7 +99,8 @@ private:
     Param<T> high_;
 
 public:
-    static constexpr unsigned words_per_item = sizeof(T) / 4;
+    static constexpr unsigned halves_per_item = sizeof(T) / 4;
+    static constexpr unsigned words_per_item = halves_per_item;
 
     UniformSampler(const Param<T> &low, const Param<T> &high)
         : low_(low), high_(high)
