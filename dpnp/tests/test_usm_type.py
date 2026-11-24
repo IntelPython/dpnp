@@ -660,6 +660,7 @@ def test_1in_1out(func, data, usm_type):
     "func, data",
     [
         pytest.param("frexp", numpy.arange(9)),
+        pytest.param("minmax", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("modf", [0, 3.5]),
     ],
 )
@@ -773,6 +774,8 @@ def test_2in_2out(func, data1, data2, usm_type_x, usm_type_y):
     [
         pytest.param("searchsorted", [11, 12, 13, 14, 15], 13),
         pytest.param("broadcast_to", numpy.ones(7), (2, 7)),
+        pytest.param("partition", [[2.0, 1.0, 7.0], [4.0, 0.0, 3.0]], 1),
+        pytest.param("argpartition", [[2.0, 1.0, 7.0], [4.0, 0.0, 3.0]], 1),
     ],
 )
 @pytest.mark.parametrize("usm_type", list_of_usm_types)
@@ -1607,6 +1610,58 @@ class TestLinAlgebra:
             [usm_type, usm_type_rhs]
         )
 
+    @pytest.mark.parametrize(
+        "data",
+        [
+            [[4.0, 2.0], [2.0, 3.0]],
+            numpy.empty((0, 0)),
+            [[[4.0, 2.0], [2.0, 3.0]]],
+            numpy.empty((1, 0, 0)),
+        ],
+    )
+    def test_cho_factor(self, data, usm_type):
+        a = dpnp.array(data, usm_type=usm_type)
+        c, _ = dpnp.scipy.linalg.cho_factor(a)
+
+        assert a.usm_type == usm_type
+        assert c.usm_type == usm_type
+
+    @pytest.mark.parametrize("usm_type_rhs", list_of_usm_types)
+    @pytest.mark.parametrize(
+        "a_data, b_data",
+        [
+            ([[4.0, 2.0], [2.0, 3.0]], [1.0, 2.0]),
+            ([[4.0, 2.0], [2.0, 3.0]], numpy.empty((2, 0))),
+            ([[[4.0, 2.0], [2.0, 3.0]]], [1.0, 2.0]),
+            ([[[4.0, 2.0], [2.0, 3.0]]], numpy.empty((1, 2, 0))),
+        ],
+    )
+    def test_cho_solve(self, a_data, b_data, usm_type, usm_type_rhs):
+        a = dpnp.array(a_data, usm_type=usm_type)
+        c, low = dpnp.scipy.linalg.cho_factor(a)
+        b = dpnp.array(b_data, usm_type=usm_type_rhs)
+
+        result = dpnp.scipy.linalg.cho_solve((c, low), b)
+
+        assert c.usm_type == usm_type
+        assert b.usm_type == usm_type_rhs
+        assert result.usm_type == dpt.get_coerced_usm_type(
+            [usm_type, usm_type_rhs]
+        )
+
+    @pytest.mark.parametrize("usm_type_rhs", list_of_usm_types)
+    def test_cho_solve_overwrite_b(self, usm_type, usm_type_rhs):
+        a = dpnp.array([[4.0, 2.0], [2.0, 3.0]], usm_type=usm_type)
+        c, low = dpnp.scipy.linalg.cho_factor(a)
+        b = dpnp.ones((2, 1), order="F", usm_type=usm_type_rhs)
+
+        result = dpnp.scipy.linalg.cho_solve((c, low), b, overwrite_b=True)
+
+        res_usm_type = dpt.get_coerced_usm_type([usm_type, usm_type_rhs])
+        assert result.usm_type == res_usm_type
+        # `b` is overwritten only if it has the USM type of the result
+        assert (result is b) == (usm_type_rhs == res_usm_type)
+
     @pytest.mark.parametrize("n", [-1, 0, 1, 2, 3])
     def test_matrix_power(self, n, usm_type):
         a = dpnp.array([[1, 2], [3, 5]], usm_type=usm_type)
@@ -1832,3 +1887,49 @@ class TestLinAlgebra:
         assert result.usm_type == dpt.get_coerced_usm_type(
             [usm_type, usm_type_other]
         )
+
+
+@pytest.mark.parametrize(
+    "func, args, kwargs",
+    [
+        pytest.param("normal", [[1.0, 2.0]], {}),
+        pytest.param("random", [3], {}),
+        pytest.param("uniform", [], {"size": 3}),
+    ],
+)
+@pytest.mark.parametrize("usm_type", list_of_usm_types)
+def test_generator(func, args, kwargs, usm_type):
+    for rng in (dpnp.random.default_rng(1),):
+        meth = getattr(rng, func, None)
+        if meth is None:  # a Generator method RandomState doesn't have
+            continue
+        res = meth(*args, **kwargs, usm_type=usm_type)
+        assert res.usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types)
+def test_generator_array_params(usm_type):
+    rng = dpnp.random.default_rng(1)
+    x = dpnp.full(4, 2.0, usm_type=usm_type)
+
+    assert rng.normal(x, usm_type=usm_type).usm_type == usm_type
+    assert rng.normal(x).usm_type == usm_type
+
+
+@pytest.mark.parametrize("func", ["normal", "uniform"])
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types)
+def test_generator_coerced_usm_type(func, usm_type_x, usm_type_y):
+    rng = dpnp.random.default_rng(1)
+    x = dpnp.zeros(4, usm_type=usm_type_x)
+    y = dpnp.ones(4, usm_type=usm_type_y)
+
+    res = getattr(rng, func)(x, y)
+    assert res.usm_type == dpt.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+
+@pytest.mark.parametrize("bit_generator", [dpnp.random.Philox4x3210])
+@pytest.mark.parametrize("usm_type", list_of_usm_types)
+def test_bit_generator(bit_generator, usm_type):
+    res = bit_generator(1).random_raw(5, usm_type=usm_type)
+    assert res.usm_type == usm_type

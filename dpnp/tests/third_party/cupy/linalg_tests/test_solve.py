@@ -63,8 +63,8 @@ class TestSolve(unittest.TestCase):
         self.check_x((2, 3, 3), (3,))
         self.check_x((2, 5, 3, 3), (3,))
 
-    def check_shape(self, a_shape, b_shape, error_types):
-        for xp, error_type in error_types.items():
+    def check_shape(self, a_shape, b_shape, error_type):
+        for xp in (numpy, cupy):
             # TODO: to roll back the change once the issue with CUDA support is resolved for random
             # a = xp.random.rand(*a_shape)
             # b = xp.random.rand(*b_shape)
@@ -104,22 +104,13 @@ class TestSolve(unittest.TestCase):
 
     @testing.with_requires("numpy>=2.0")
     def test_invalid_shape(self):
-        linalg_errors = {
-            numpy: numpy.linalg.LinAlgError,
-            cupy: cupy.linalg.LinAlgError,
-        }
-        value_errors = {
-            numpy: ValueError,
-            cupy: ValueError,
-        }
-
-        self.check_shape((2, 3), (4,), linalg_errors)
-        self.check_shape((3, 3), (2,), value_errors)
-        self.check_shape((3, 3), (2, 2), value_errors)
-        self.check_shape((3, 3, 4), (3,), linalg_errors)
-        self.check_shape((3, 3), (0,), value_errors)
-        self.check_shape((0, 3, 4), (3,), linalg_errors)
-        self.check_shape((3, 3), (), value_errors)
+        self.check_shape((2, 3), (4,), numpy.linalg.LinAlgError)
+        self.check_shape((3, 3), (2,), ValueError)
+        self.check_shape((3, 3), (2, 2), ValueError)
+        self.check_shape((3, 3, 4), (3,), numpy.linalg.LinAlgError)
+        self.check_shape((3, 3), (0,), ValueError)
+        self.check_shape((0, 3, 4), (3,), numpy.linalg.LinAlgError)
+        self.check_shape((3, 3), (), ValueError)
         # Not allowed since numpy 2
         self.check_shape(
             (0, 2, 2),
@@ -127,7 +118,7 @@ class TestSolve(unittest.TestCase):
                 0,
                 2,
             ),
-            value_errors,
+            ValueError,
         )
         self.check_shape(
             (2, 4, 4),
@@ -135,7 +126,7 @@ class TestSolve(unittest.TestCase):
                 2,
                 4,
             ),
-            value_errors,
+            ValueError,
         )
         self.check_shape(
             (2, 3, 2, 2),
@@ -144,7 +135,7 @@ class TestSolve(unittest.TestCase):
                 3,
                 2,
             ),
-            value_errors,
+            ValueError,
         )
 
 
@@ -194,7 +185,7 @@ class TestInv(unittest.TestCase):
         # TODO: to roll back the change once the issue with CUDA support is resolved for random
         # a = cupy.random.rand(*a_shape)
         a = cupy.asarray(numpy.random.rand(*a_shape))
-        with self.assertRaises(cupy.linalg.LinAlgError):
+        with self.assertRaises(numpy.linalg.LinAlgError):
             cupy.linalg.inv(a)
 
     def test_inv(self):
@@ -223,9 +214,7 @@ class TestInvInvalid(unittest.TestCase):
     def test_inv(self, dtype):
         for xp in (numpy, cupy):
             a = xp.array([[1, 2], [2, 4]]).astype(dtype)
-            with pytest.raises(
-                (numpy.linalg.LinAlgError, cupy.linalg.LinAlgError)
-            ):
+            with pytest.raises(numpy.linalg.LinAlgError):
                 xp.linalg.inv(a)
 
     @testing.for_dtypes("ifdFD")
@@ -233,7 +222,7 @@ class TestInvInvalid(unittest.TestCase):
         for xp in (numpy, cupy):
             a = xp.array([[[1, 2], [2, 4]]]).astype(dtype)
             assert a.ndim >= 3  # CuPy internally uses a batched function.
-            with pytest.raises(xp.linalg.LinAlgError):
+            with pytest.raises(numpy.linalg.LinAlgError):
                 xp.linalg.inv(a)
 
 
@@ -318,7 +307,7 @@ class TestLstsq:
         # b = cupy.random.rand(*b_shape)
         a = cupy.asarray(numpy.random.rand(*a_shape))
         b = cupy.asarray(numpy.random.rand(*b_shape))
-        with pytest.raises(cupy.linalg.LinAlgError):
+        with pytest.raises(numpy.linalg.LinAlgError):
             cupy.linalg.lstsq(a, b, rcond=None)
 
     def test_lstsq_solutions(self):
@@ -393,7 +382,7 @@ class TestTensorInv(unittest.TestCase):
         # TODO: to roll back the change once the issue with CUDA support is resolved for random
         # a = cupy.random.rand(*a_shape)
         a = cupy.asarray(numpy.random.rand(*a_shape))
-        with self.assertRaises(cupy.linalg.LinAlgError):
+        with self.assertRaises(numpy.linalg.LinAlgError):
             cupy.linalg.tensorinv(a, ind=ind)
 
     def check_ind(self, a_shape, ind):

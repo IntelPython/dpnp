@@ -511,6 +511,7 @@ from .dpnp_iface_searching import (
     where,
 )
 from .dpnp_iface_sorting import (
+    argpartition,
     argsort,
     partition,
     sort,
@@ -548,6 +549,7 @@ from .dpnp_iface_statistics import (
     mean,
     median,
     min,
+    minmax,
     ptp,
     std,
     var,
@@ -988,6 +990,7 @@ __all__ += [
 __all__ += [
     "argmax",
     "argmin",
+    "argpartition",
     "argwhere",
     "argsort",
     "count_nonzero",
@@ -1018,6 +1021,7 @@ __all__ += [
     "mean",
     "median",
     "min",
+    "minmax",
     "nanmax",
     "nanmean",
     "nanmedian",

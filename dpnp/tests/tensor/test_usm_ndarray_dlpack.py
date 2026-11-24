@@ -394,6 +394,8 @@ def test_from_dlpack_capsule_null_deleter(versioned, on_device):
     if on_device:
         q = get_queue_or_skip()
         x = dpt.arange(4, dtype="i4", sycl_queue=q)
+        # the raw capsule carries no event and is imported on another queue
+        q.wait()
         data, device = x._pointer, x.__dlpack_device__()
     else:
         x = np.arange(4, dtype="i4")
@@ -415,27 +417,23 @@ def test_from_dlpack_capsule_null_deleter(versioned, on_device):
 @pytest.mark.parametrize(
     "versioned", [True, False], ids=["versioned", "legacy"]
 )
-@pytest.mark.parametrize("shape", [(5,), (2, 3), (1, 4), (2, 0, 3)])
-def test_from_dlpack_capsule_null_strides(versioned, shape):
+def test_from_dlpack_capsule_null_data(versioned):
     q = get_queue_or_skip()
-    x_np = np.arange(np.prod(shape), dtype="i4").reshape(shape)
-    x = dpt.asarray(x_np, sycl_queue=q)
-    # the raw capsule carries no event to order the copy before the import
-    q.wait()
-    # NULL strides mean C-contiguous before DLPack 1.2
+    device = dpt.empty(0, sycl_queue=q).__dlpack_device__()
+    calls = []
+    # DLPack asks for a NULL data pointer in a tensor of size zero
     mt = make_managed_tensor(
-        make_dl_tensor(
-            shape, (kDLInt, 32, 1), x.__dlpack_device__(), data=x._pointer
-        ),
+        make_dl_tensor((0,), (kDLInt, 32, 1), device, strides=(1,)),
         versioned=versioned,
-        version=(1, 1),
+        deleter=lambda _: calls.append(1),
     )
-    caps = make_dlpack_capsule(mt)
 
-    y = _dlp.from_dlpack_capsule(caps)
-    assert y.shape == shape
-    assert y.flags.c_contiguous
-    assert np.array_equal(dpt.asnumpy(y), x_np)
+    y = _dlp.from_dlpack_capsule(make_dlpack_capsule(mt))
+    assert y.shape == (0,)
+    assert y.dtype == dpt.int32
+    assert y.sycl_device == q.sycl_device
+    del y
+    assert calls == [1]
 
 
 def test_from_dlpack_kwargs():

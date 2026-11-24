@@ -214,4 +214,30 @@ struct SyrkTypePairSupportFactory
                          // fall-through
                          dpnp_td_ns::NotDefinedEntry>::is_defined;
 };
+
+/**
+ * @brief A factory to define pairs of supported types for which
+ * MKL BLAS library provides support in oneapi::mkl::blas::trsm_batch<T>
+ * function.
+ *
+ * @tparam T Type of input triangular matrices and of the right-hand sides
+ * overwritten by the solutions.
+ */
+template <typename T>
+struct TrsmBatchTypePairSupportFactory
+{
+    static constexpr bool is_defined =
+        std::disjunction<dpnp_td_ns::TypePairDefinedEntry<T, float, T, float>,
+                         dpnp_td_ns::TypePairDefinedEntry<T, double, T, double>,
+                         dpnp_td_ns::TypePairDefinedEntry<T,
+                                                          std::complex<float>,
+                                                          T,
+                                                          std::complex<float>>,
+                         dpnp_td_ns::TypePairDefinedEntry<T,
+                                                          std::complex<double>,
+                                                          T,
+                                                          std::complex<double>>,
+                         // fall-through
+                         dpnp_td_ns::NotDefinedEntry>::is_defined;
+};
 } // namespace dpnp::extensions::blas::types

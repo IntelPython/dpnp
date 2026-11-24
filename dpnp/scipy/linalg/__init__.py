@@ -35,9 +35,12 @@ to provide efficient low-level implementations of standard algorithms.
 
 """
 
+from ._decomp_cholesky import cho_factor, cho_solve
 from ._decomp_lu import lu, lu_factor, lu_solve
 
 __all__ = [
+    "cho_factor",
+    "cho_solve",
     "lu",
     "lu_factor",
     "lu_solve",

@@ -142,7 +142,7 @@ class TestCholeskyInvalid(unittest.TestCase):
     def check_L(self, array):
         for xp in (numpy, cupy):
             a = xp.asarray(array)
-            with pytest.raises(xp.linalg.LinAlgError):
+            with pytest.raises(numpy.linalg.LinAlgError):
                 xp.linalg.cholesky(a)
 
     @testing.for_dtypes(

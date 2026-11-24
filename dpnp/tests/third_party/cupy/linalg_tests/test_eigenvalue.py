@@ -358,13 +358,13 @@ class TestSymEigenvalueInvalid:
     def test_eigh_shape_error(self, UPLO, shape):
         for xp in (numpy, cupy):
             a = xp.zeros(shape)
-            with pytest.raises(xp.linalg.LinAlgError):
+            with pytest.raises(numpy.linalg.LinAlgError):
                 xp.linalg.eigh(a, UPLO)
 
     def test_eigvalsh_shape_error(self, UPLO, shape):
         for xp in (numpy, cupy):
             a = xp.zeros(shape)
-            with pytest.raises(xp.linalg.LinAlgError):
+            with pytest.raises(numpy.linalg.LinAlgError):
                 xp.linalg.eigvalsh(a, UPLO)
 
 
@@ -387,7 +387,7 @@ class TestEigenvalueInvalid:
         #     pytest.skip("geev is not available")
         for xp in (numpy, cupy):
             a = xp.zeros(shape)
-            with pytest.raises(xp.linalg.LinAlgError):
+            with pytest.raises(numpy.linalg.LinAlgError):
                 xp.linalg.eig(a)
 
     def test_eigvals_shape_error(self, shape):
@@ -395,7 +395,7 @@ class TestEigenvalueInvalid:
         #     pytest.skip("geev is not available")
         for xp in (numpy, cupy):
             a = xp.zeros(shape)
-            with pytest.raises(xp.linalg.LinAlgError):
+            with pytest.raises(numpy.linalg.LinAlgError):
                 xp.linalg.eigvals(a)
 
 

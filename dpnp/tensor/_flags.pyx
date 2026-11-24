@@ -51,10 +51,7 @@ cdef class Flags:
     instance, which describe how the instance interfaces with its underlying
     memory.
     """
-    cdef int flags_
-    cdef usm_ndarray arr_
-
-    def __cinit__(self, usm_ndarray arr, int flags):
+    def __init__(self, usm_ndarray arr not None, int flags):
         self.arr_ = arr
         self.flags_ = flags
 
@@ -93,6 +90,8 @@ cdef class Flags:
     def writable(self, new_val):
         if not isinstance(new_val, bool):
             raise TypeError("Expecting a boolean value")
+        if self.arr_ is None:
+            raise TypeError("Flags object is not initialized")
         self.arr_._set_writable_flag(new_val)
 
     @property
