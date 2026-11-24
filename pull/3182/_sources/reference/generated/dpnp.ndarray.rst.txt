@@ -15,6 +15,7 @@
          ndarray.any
          ndarray.argmax
          ndarray.argmin
+         ndarray.argpartition
          ndarray.argsort
          ndarray.asnumpy
          ndarray.astype
