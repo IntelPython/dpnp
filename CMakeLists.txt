@@ -92,6 +92,26 @@ find_package(
     HINTS ${MKL_ROOT}/lib/cmake ${MKL_ROOT}/lib/cmake/mkl $ENV{MKLROOT}
     PATHS ${path_to_cmake_dir}
 )
+# libmkl_sycl_* rely on the module to load the oneMKL interface, threading and
+# core libraries, which lld drops under the --as-needed of the conda LDFLAGS
+if(UNIX)
+    foreach(
+        _domain
+        BLAS
+        DFT
+        LAPACK
+        SPARSE
+        VM
+    )
+        if(TARGET MKL::MKL_SYCL::${_domain})
+            set_property(
+                TARGET MKL::MKL_SYCL::${_domain}
+                APPEND
+                PROPERTY INTERFACE_LINK_OPTIONS "LINKER:--no-as-needed"
+            )
+        endif()
+    endforeach()
+endif()
 
 set(ONEDPL_PAR_BACKEND tbb)
 find_package(oneDPL REQUIRED PATHS ${path_to_cmake_dir})
