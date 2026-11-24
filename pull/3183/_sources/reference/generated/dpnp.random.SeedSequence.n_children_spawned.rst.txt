@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.random.SeedSequence.n\_children\_spawned
+=============================================
+
+.. currentmodule:: dpnp.random
+
+attribute
+
+.. autoattribute:: SeedSequence.n_children_spawned
