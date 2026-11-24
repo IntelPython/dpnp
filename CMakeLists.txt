@@ -49,8 +49,8 @@ option(
 )
 option(
     DPNP_TENSOR_OFFLOAD_COMPRESS
-    "Build dpnp tensor using offload section compression feature of DPC++ to reduce \
-size of shared object with offloading sections"
+    "Build the dpnp SYCL modules using offload section compression feature of DPC++ \
+to reduce size of shared object with offloading sections"
     OFF
 )
 
@@ -92,6 +92,26 @@ find_package(
     HINTS ${MKL_ROOT}/lib/cmake ${MKL_ROOT}/lib/cmake/mkl $ENV{MKLROOT}
     PATHS ${path_to_cmake_dir}
 )
+# libmkl_sycl_* rely on the module to load the oneMKL interface, threading and
+# core libraries, which lld drops under the --as-needed of the conda LDFLAGS
+if(UNIX)
+    foreach(
+        _domain
+        BLAS
+        DFT
+        LAPACK
+        SPARSE
+        VM
+    )
+        if(TARGET MKL::MKL_SYCL::${_domain})
+            set_property(
+                TARGET MKL::MKL_SYCL::${_domain}
+                APPEND
+                PROPERTY INTERFACE_LINK_OPTIONS "LINKER:--no-as-needed"
+            )
+        endif()
+    endforeach()
+endif()
 
 set(ONEDPL_PAR_BACKEND tbb)
 find_package(oneDPL REQUIRED PATHS ${path_to_cmake_dir})
@@ -324,6 +344,7 @@ elseif(UNIX)
         "-Wunused-function "
         "-Wuninitialized "
         "-Wmissing-declarations "
+        "-Wno-unused-parameter "
         "-fdiagnostics-color=auto "
     )
     string(
@@ -340,12 +361,14 @@ elseif(UNIX)
         "-fwrapv "
     )
     string(CONCAT CFLAGS "${WARNING_FLAGS}" "${SDL_FLAGS}")
-    string(CONCAT CXXFLAGS "${WARNING_FLAGS}" "${SDL_FLAGS}" "-fsycl ")
+    # -fsycl is added only to SYCL sources, by add_sycl_to_target()
+    string(CONCAT CXXFLAGS "${WARNING_FLAGS}" "${SDL_FLAGS}")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 ${CFLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 ${CXXFLAGS}")
-    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${CFLAGS} -O0 -g1 -DDEBUG")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${CXXFLAGS} -O0 -g1 -DDEBUG")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${CFLAGS} -O0 -g -DDEBUG")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${CXXFLAGS} -O0 -g -DDEBUG")
     set(DPNP_LDFLAGS "-z,noexecstack,-z,relro,-z,now")
+    add_link_options("-fuse-ld=lld")
 else()
     message(FATAL_ERROR "Unsupported system.")
 endif()
@@ -365,7 +388,8 @@ install(
 
 # Define flags for CMAKE_BUILD_TYPE=Coverage
 set(CMAKE_C_FLAGS_COVERAGE "${CMAKE_C_FLAGS_DEBUG} -O1 -g1 -DDEBUG")
-set(CMAKE_CXX_FLAGS_COVERAGE "${CMAKE_CXX_FLAGS_DEBUG} -O1 -g1 -DDEBUG")
+# -g1 is not supported for SYCL devices
+set(CMAKE_CXX_FLAGS_COVERAGE "${CMAKE_CXX_FLAGS_DEBUG} -O1 -Xarch_host -g1 -DDEBUG")
 set(CMAKE_MODULE_LINKER_FLAGS_COVERAGE "${CMAKE_MODULE_LINKER_FLAGS_DEBUG}")
 mark_as_advanced(
     CMAKE_C_FLAGS_COVERAGE

@@ -39,6 +39,7 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Improved performance of `dpnp.top_k` and `dpnp.tensor.top_k` on a GPU for batches of rows of 65536 to about 10^6 elements that occupy it with a work-group per row [#3138](https://github.com/IntelPython/dpnp/pull/3138)
 * Reimplemented `dpnp.random.RandomState` and the `dpnp.random` functions on device kernels, drawing on the queue of the generator. `device`, `usm_type` and `sycl_queue` are now keyword-only, `usm_type` defaults to the USM type of the array parameters, `randint(dtype=int)` returns `int64` and `shuffle` requires a `dpnp.ndarray` or `usm_ndarray` [#3162](https://github.com/IntelPython/dpnp/pull/3162)
 * Moved the vendored CMake modules of `IntelSYCL`, `MKL`, `TBB` and `oneDPL` from `dpnp/backend/cmake/Modules` to `cmake/Modules` [#3163](https://github.com/IntelPython/dpnp/pull/3163)
+* Aligned the build flags of all dpnp SYCL modules with those of `dpnp.tensor`, so the dpnp kernels and the oneMKL extensions are compiled with `-fno-fast-math` and the extensions get the hardening linker flags and `DPNP_TENSOR_OFFLOAD_COMPRESS` [#3198](https://github.com/IntelPython/dpnp/pull/3198)
 
 ### Deprecated
 

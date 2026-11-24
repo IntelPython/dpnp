@@ -40,7 +40,7 @@ get_filename_component(
 
 # Sources of the functions dpnp implements beyond the array API. They are
 # compiled into the same modules as the libtensor functions but keep the
-# floating-point and coverage settings of the former dpnp extensions.
+# coverage settings of the former dpnp extensions.
 # They come first in each module: the linker keeps the first copy of an inline
 # function both groups instantiate, so coverage builds keep the instrumented one.
 set(_dpnp_elementwise_sources
@@ -257,119 +257,58 @@ target_include_directories(${_static_lib_trgt} PRIVATE ${_libtensor_include_dir}
 target_link_libraries(${_static_lib_trgt} PRIVATE pybind11::headers Python::Module)
 set_target_properties(${_static_lib_trgt} PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
-set(_py_trgts)
-
-set(python_module_name _tensor_impl)
-pybind11_add_module(${python_module_name} MODULE ${_tensor_impl_sources})
-add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_impl_sources})
-target_link_libraries(${python_module_name} PRIVATE ${_static_lib_trgt})
-list(APPEND _py_trgts ${python_module_name})
-
-set(python_module_name _tensor_accumulation_impl)
-pybind11_add_module(${python_module_name} MODULE ${_tensor_accumulation_impl_sources})
-add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_accumulation_impl_sources})
-target_link_libraries(${python_module_name} PRIVATE ${_static_lib_trgt})
-list(APPEND _py_trgts ${python_module_name})
-
-set(python_module_name _tensor_elementwise_impl)
-pybind11_add_module(${python_module_name} MODULE ${_tensor_elementwise_impl_sources})
-add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_elementwise_impl_sources})
-target_link_libraries(${python_module_name} PRIVATE ${_static_lib_trgt})
-list(APPEND _py_trgts ${python_module_name})
-
-set(python_module_name _tensor_reductions_impl)
-pybind11_add_module(${python_module_name} MODULE ${_tensor_reductions_impl_sources})
-add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_reductions_impl_sources})
-target_link_libraries(${python_module_name} PRIVATE ${_static_lib_trgt})
-list(APPEND _py_trgts ${python_module_name})
-
-set(python_module_name _tensor_sorting_impl)
-pybind11_add_module(${python_module_name} MODULE ${_tensor_sorting_impl_sources})
-add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_sorting_impl_sources})
-target_link_libraries(${python_module_name} PRIVATE ${_static_lib_trgt})
-list(APPEND _py_trgts ${python_module_name})
-
-set(python_module_name _tensor_linalg_impl)
-pybind11_add_module(${python_module_name} MODULE ${_tensor_linalg_impl_sources})
-add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_linalg_impl_sources})
-target_link_libraries(${python_module_name} PRIVATE ${_static_lib_trgt})
-list(APPEND _py_trgts ${python_module_name})
-
-set(python_module_name _statistics_impl)
-pybind11_add_module(${python_module_name} MODULE ${_statistics_impl_sources})
-add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_statistics_impl_sources})
-list(APPEND _py_trgts ${python_module_name})
-
-set(python_module_name _window_impl)
-pybind11_add_module(${python_module_name} MODULE ${_window_impl_sources})
-add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_window_impl_sources})
-list(APPEND _py_trgts ${python_module_name})
-
-set(_clang_prefix "")
-if(WIN32)
-    set(_clang_prefix "/clang:")
-endif()
-
-set(_no_fast_math_sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/copy_and_cast_usm_to_usm.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/full_ctor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/linear_sequences.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/clip.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/where.cpp
+set(_py_trgts
+    _tensor_impl
+    _tensor_accumulation_impl
+    _tensor_elementwise_impl
+    _tensor_reductions_impl
+    _tensor_sorting_impl
+    _tensor_linalg_impl
+    _statistics_impl
+    _window_impl
 )
-list(
-    APPEND _no_fast_math_sources
-    ${_elementwise_sources}
-    ${_reduction_sources}
-    ${_dpnp_reduction_sources}
-    ${_sorting_sources}
-    ${_linalg_sources}
-    ${_accumulator_sources}
-    # shares the radix select instantiations with topk.cpp in its module
-    ${_dpnp_sorting_sources}
-)
-# elementwise_functions_type_utils.cpp is in both the elementwise and linalg lists
-list(REMOVE_DUPLICATES _no_fast_math_sources)
-
-foreach(_src_fn ${_no_fast_math_sources})
-    get_source_file_property(_cmpl_options_prop ${_src_fn} COMPILE_OPTIONS)
-    set(_combined_options_prop ${_cmpl_options_prop} "${_clang_prefix}-fno-fast-math")
-    set_source_files_properties(
-        ${_src_fn}
-        PROPERTIES COMPILE_OPTIONS "${_combined_options_prop}"
+foreach(python_module_name ${_py_trgts})
+    build_dpnp_pybind11_ext(
+        ${python_module_name}
+        SOURCES ${${python_module_name}_sources}
+        INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}
+        LARGE_RANGES
     )
 endforeach()
-
-# The two groups of sources are compiled with different floating-point flags.
-# An inline function with FP math that both instantiate gets the flags of the
-# copy the linker keeps (the dpnp one, see above), so keep such helpers out of
-# shared headers or give them the same flags in both groups.
-# dpnp sources of the modules with the libtensor radix select kernels
-set(_dpnp_radix_select_sources ${_dpnp_sorting_sources} ${_statistics_impl_sources})
-foreach(_src_fn ${_dpnp_sources})
-    get_source_file_property(_cmpl_options_prop ${_src_fn} COMPILE_OPTIONS)
-    set(_combined_options_prop
-        ${_cmpl_options_prop}
-        "${_clang_prefix}-fno-approx-func"
-        "${_clang_prefix}-fno-finite-math-only"
-    )
-    if(DPNP_GENERATE_COVERAGE AND NOT _src_fn IN_LIST _dpnp_radix_select_sources)
-        list(
-            APPEND _combined_options_prop
-            -fprofile-instr-generate
-            -fcoverage-mapping
-            -fno-sycl-use-footer
-        )
-    endif()
-    set_source_files_properties(
-        ${_src_fn}
-        PROPERTIES COMPILE_OPTIONS "${_combined_options_prop}"
-    )
+foreach(
+    python_module_name
+    _tensor_impl
+    _tensor_accumulation_impl
+    _tensor_elementwise_impl
+    _tensor_reductions_impl
+    _tensor_sorting_impl
+    _tensor_linalg_impl
+)
+    target_link_libraries(${python_module_name} PRIVATE ${_static_lib_trgt})
 endforeach()
 
 if(DPNP_GENERATE_COVERAGE)
-    # libtensor code the dpnp functions use, measured like the dpnp sources.
-    # Host only: their device coverage records break sycl-link
+    # dpnp sources of the modules with the libtensor radix select kernels
+    set(_dpnp_radix_select_sources ${_dpnp_sorting_sources} ${_statistics_impl_sources})
+    set(_dpnp_device_coverage_sources ${_dpnp_sources})
+    list(REMOVE_ITEM _dpnp_device_coverage_sources ${_dpnp_radix_select_sources})
+    set_property(
+        SOURCE ${_dpnp_device_coverage_sources}
+        APPEND
+        PROPERTY
+            COMPILE_OPTIONS
+                -fprofile-instr-generate
+                -fcoverage-mapping
+                -fno-sycl-use-footer
+    )
+
+    # libtensor code the dpnp functions use, measured like the dpnp sources
+    set_property(
+        SOURCE ${_static_lib_sources}
+        APPEND
+        PROPERTY COMPILE_OPTIONS -fprofile-instr-generate -fcoverage-mapping
+    )
+    # Host only: the device coverage records of a kernel-less TU break sycl-link
     # (a source property, unlike target options, keeps the repeated -Xarch_host).
     # The radix select modules are host only too: every kernel image of a module
     # gets all its device counters as device globals, and their init events
@@ -377,7 +316,6 @@ if(DPNP_GENERATE_COVERAGE)
     # The device counts never reach the profile anyway
     set_property(
         SOURCE
-            ${_static_lib_sources}
             ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/elementwise_functions_type_utils.cpp
             ${_dpnp_radix_select_sources}
         APPEND
@@ -391,67 +329,11 @@ if(DPNP_GENERATE_COVERAGE)
     )
 endif()
 
-set(_linker_options "LINKER:${DPNP_LDFLAGS}")
-foreach(python_module_name ${_py_trgts})
-    target_compile_options(
-        ${python_module_name}
-        PRIVATE -fno-sycl-id-queries-fit-in-int
-    )
-    target_link_options(
-        ${python_module_name}
-        PRIVATE -fsycl-device-code-split=per_kernel -fno-sycl-id-queries-fit-in-int
-    )
-    if(DPNP_TENSOR_OFFLOAD_COMPRESS)
-        target_link_options(${python_module_name} PRIVATE --offload-compress)
-    endif()
-
-    target_include_directories(
-        ${python_module_name}
-        PRIVATE
-            ${CMAKE_SOURCE_DIR}/dpnp/include
-            ${_libtensor_include_dir}
-            ${CMAKE_CURRENT_SOURCE_DIR}/
-    )
-
-    target_include_directories(
-        ${python_module_name}
-        SYSTEM
-        PRIVATE
-            ${SYCL_INCLUDE_DIR}
-            ${Dpctl_INCLUDE_DIR}
-            ${CMAKE_BINARY_DIR} # For generated Cython headers
-    )
-    target_link_options(${python_module_name} PRIVATE ${_linker_options})
-    if(DPNP_GENERATE_COVERAGE)
-        if(DPNP_TENSOR_GENERATE_COVERAGE_FOR_PYBIND11_EXTENSIONS)
-            target_compile_options(
-                ${python_module_name}
-                PRIVATE -fprofile-instr-generate -fcoverage-mapping
-            )
-        endif()
-        target_link_options(
+if(DPNP_GENERATE_COVERAGE AND DPNP_TENSOR_GENERATE_COVERAGE_FOR_PYBIND11_EXTENSIONS)
+    foreach(python_module_name ${_py_trgts})
+        target_compile_options(
             ${python_module_name}
             PRIVATE -fprofile-instr-generate -fcoverage-mapping
         )
-    endif()
-    if(_dpnp_sycl_targets)
-        # make fat binary
-        target_compile_options(
-            ${python_module_name}
-            PRIVATE ${_dpnp_sycl_target_compile_options}
-        )
-        target_link_options(
-            ${python_module_name}
-            PRIVATE ${_dpnp_sycl_target_link_options}
-        )
-    endif()
-    # Ensure Cython modules build first so _usmarray.h exists
-    add_dependencies(${python_module_name} _usmarray)
-    if(DPNP_WITH_REDIST)
-        set_target_properties(
-            ${python_module_name}
-            PROPERTIES INSTALL_RPATH "$ORIGIN/../../../.."
-        )
-    endif()
-    install(TARGETS ${python_module_name} DESTINATION "dpnp/libtensor")
-endforeach()
+    endforeach()
+endif()

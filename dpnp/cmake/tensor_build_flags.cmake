@@ -27,20 +27,9 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-# Directory-scoped build flags shared by the dpnp.tensor Cython extensions and
-# the libtensor pybind11 modules built in dpnp/libtensor/source. Include it from
-# the CMakeLists.txt of a directory before defining any targets there.
-
-# Tensor-specific flags
-
-# dpctl doesn't add -fsycl globally
-# only to pybind11 module sources via add_sycl_to_target()
-string(REPLACE "-fsycl " "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-
-# Use LLD linker (dpctl sets this at root level)
-if(UNIX)
-    add_link_options("-fuse-ld=lld")
-endif()
+# Directory-scoped build flags of the dpnp.tensor Cython extensions and the
+# libtensor pybind11 modules built in dpnp/libtensor/source. Include it from the
+# CMakeLists.txt of a directory before defining any targets there.
 
 # Remove global coverage flags for tensor
 # use link-time only approach like dpctl
@@ -49,25 +38,3 @@ if(DPNP_GENERATE_COVERAGE)
     string(REPLACE "-fcoverage-mapping " "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
     string(REPLACE "-fno-sycl-use-footer " "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 endif()
-
-# Tensor-specific debug flags
-# Disable device code debug info for Debug and Coverage builds to speed up linking
-if(
-    CMAKE_BUILD_TYPE STREQUAL "Debug"
-    OR CMAKE_BUILD_TYPE STREQUAL "DEBUG"
-    OR CMAKE_BUILD_TYPE STREQUAL "Coverage"
-)
-    if(WIN32)
-        add_compile_options(-Xsycl-target-frontend=spir64 "-g0")
-    elseif(UNIX)
-        add_compile_options(-Xsycl-target-frontend=spir64 "-g0")
-        if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG")
-            string(REPLACE "-g1" "-g" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
-            string(REPLACE "-g1" "-g" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
-        endif()
-    endif()
-endif()
-
-# Match dpctl warning flags
-# Suppress unused parameter warnings
-add_compile_options(-Wno-unused-parameter)
