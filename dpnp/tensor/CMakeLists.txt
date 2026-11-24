@@ -27,8 +27,6 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-find_package(Python COMPONENTS Development.Module)
-
 include(${CMAKE_SOURCE_DIR}/dpnp/cmake/tensor_build_flags.cmake)
 
 file(GLOB _cython_sources *.pyx)

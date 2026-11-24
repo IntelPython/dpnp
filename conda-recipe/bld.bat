@@ -1,18 +1,24 @@
+:: conda-forge folds the Intel compiler runtime libs (libircmt.lib, ...) into the
+:: build-only dpcpp_impl package (not visible from the host env), so they live
+:: in the build prefix and are off the linker's default LIB
+set "LIB=%BUILD_PREFIX%\Library\lib;%LIB%"
+
 "%PYTHON%" setup.py clean --all
 
 set "MKLROOT=%PREFIX%/Library"
 set "TBB_ROOT_HINT=%PREFIX%/Library"
 set "DPL_ROOT_HINT=%PREFIX%/Library"
+:: useful for building in resources constrained VMs (public CI)
+set "CMAKE_ARGS=%CMAKE_ARGS% -DCMAKE_INTERPROCEDURAL_OPTIMIZATION:BOOL=FALSE"
 
-REM Overriding IPO is useful for building in resources constrained VMs (public CI)
-if not "%OVERRIDE_INTEL_IPO%"=="" (
-  set "CMAKE_ARGS=%CMAKE_ARGS% -DCMAKE_INTERPROCEDURAL_OPTIMIZATION:BOOL=FALSE"
+:: try to detect SYCL resource/include dir from icpx
+for /f "usebackq delims=" %%R in (`icpx --print-resource-dir 2^>NUL`) do (
+  set "SYCL_RESOURCE_DIR=%%R"
 )
 
-FOR %%V IN (17.0.0 17 18.0.0 18 19.0.0 19 20.0.0 20 21.0.0 21 22.0.0 22) DO @(
-  REM set DIR_HINT if directory exists
-  IF EXIST "%BUILD_PREFIX%\Library\lib\clang\%%V\" (
-    set "SYCL_INCLUDE_DIR_HINT=%BUILD_PREFIX%\Library\lib\clang\%%V"
+if defined SYCL_RESOURCE_DIR (
+  if exist "%SYCL_RESOURCE_DIR%\include" (
+    set "SYCL_INCLUDE_DIR_HINT=%SYCL_RESOURCE_DIR%"
   )
 )
 
@@ -20,18 +26,15 @@ set "CC=icx"
 set "CXX=icx"
 
 set "CMAKE_GENERATOR=Ninja"
-:: Make CMake verbose
+:: make CMake verbose
 set "VERBOSE=1"
 
-%PYTHON% -m build -w -n -x
-if %ERRORLEVEL% neq 0 exit 1
+:: set CMAKE to use less threads to avoid OOM
+set CMAKE_BUILD_PARALLEL_LEVEL=%CPU_COUNT%
 
-:: `pip install dist\numpy*.whl` does not work on windows,
-:: so use a loop; there's only one wheel in dist/ anyway
-for /f %%f in ('dir /b /S .\dist') do (
-  %PYTHON% -m wheel tags --remove --build %GIT_DESCRIBE_NUMBER% %%f
-  if %ERRORLEVEL% neq 0 exit 1
-)
+:: flags mean: --wheel --no-isolation --skip-dependency-check
+%PYTHON% -m build -w -n -x
+if %errorlevel% neq 0 exit 1
 
 :: wheel file was renamed
 for /f %%f in ('dir /b /S .\dist') do (
@@ -42,11 +45,5 @@ for /f %%f in ('dir /b /S .\dist') do (
     --no-index ^
     --prefix %PREFIX% ^
     -vv
-  if %ERRORLEVEL% neq 0 exit 1
-)
-
-:: Copy wheel package
-if NOT "%WHEELS_OUTPUT_FOLDER%"=="" (
-  copy dist\dpnp*.whl %WHEELS_OUTPUT_FOLDER%
-  if %ERRORLEVEL% neq 0 exit 1
+    if errorlevel 1 exit 1
 )

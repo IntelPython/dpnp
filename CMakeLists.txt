@@ -133,6 +133,16 @@ execute_process(
 set(CYTHON_FLAGS "-t -w \"${CMAKE_SOURCE_DIR}\" -I \"${Dpctl_Cython_INCLUDE_DIR}\"")
 find_package(Cython REQUIRED)
 
+# CMake finds a wheel's <prefix>/lib/cmake/dpctl only with <prefix>/bin on PATH,
+# so not in a Windows venv (Scripts) or in one that isn't activated
+if(NOT DEFINED Dpctl_ROOT AND NOT DEFINED ENV{Dpctl_ROOT})
+    execute_process(
+        COMMAND "${Python_EXECUTABLE}" -m dpctl --cmakedir
+        OUTPUT_VARIABLE Dpctl_ROOT
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+    )
+endif()
 find_package(Dpctl REQUIRED)
 message(STATUS "Dpctl_INCLUDE_DIR=" ${Dpctl_INCLUDE_DIR})
 
