@@ -34,6 +34,7 @@ from ._helper import (
     has_cpu,
     has_gpu,
     has_sycl_platforms,
+    no_host_copy,
     skip_if_dtype_not_supported,
 )
 
@@ -43,5 +44,6 @@ __all__ = [
     "has_gpu",
     "has_sycl_platforms",
     "get_queue_or_skip",
+    "no_host_copy",
     "skip_if_dtype_not_supported",
 ]

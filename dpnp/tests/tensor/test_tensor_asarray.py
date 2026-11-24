@@ -30,11 +30,11 @@ import dpctl
 import numpy as np
 import pytest
 
-import dpnp.libtensor._tensor_impl as ti
 import dpnp.tensor as dpt
 
 from .helper import (
     get_queue_or_skip,
+    no_host_copy,
     skip_if_dtype_not_supported,
 )
 
@@ -665,13 +665,9 @@ def test_asarray_to_device_with_unsupported_dtype(dt):
     assert y.sycl_device == d1
 
 
-def _raise_on_host_copy(*args, **kwargs):
-    raise AssertionError("synchronizing host copy was used")
-
-
 @pytest.mark.parametrize("dt", _all_dtypes)
 @pytest.mark.parametrize("kind", ["python", "numpy", "0d"])
-def test_asarray_scalar_no_host_copy(monkeypatch, dt, kind):
+def test_asarray_scalar_no_host_copy(dt, kind):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dt, q)
 
@@ -684,28 +680,22 @@ def test_asarray_scalar_no_host_copy(monkeypatch, dt, kind):
     else:
         obj, dtype = expected, None
 
-    monkeypatch.setattr(
-        ti, "_copy_numpy_ndarray_into_usm_ndarray", _raise_on_host_copy
-    )
-    x = dpt.asarray(obj, dtype=dtype, sycl_queue=q)
-    monkeypatch.undo()
+    with no_host_copy():
+        x = dpt.asarray(obj, dtype=dtype, sycl_queue=q)
 
     assert x.shape == ()
     assert x.dtype == expected.dtype
     assert dpt.asnumpy(x) == expected
 
 
-def test_asarray_scalar_fp64_on_device_without_fp64(monkeypatch):
+def test_asarray_scalar_fp64_on_device_without_fp64():
     q = get_queue_or_skip()
     if q.sycl_device.has_aspect_fp64:
         pytest.skip("Device supports double precision")
 
-    monkeypatch.setattr(
-        ti, "_copy_numpy_ndarray_into_usm_ndarray", _raise_on_host_copy
-    )
-    x = dpt.asarray(np.float64(2.5), sycl_queue=q)
-    y = dpt.asarray(np.complex128(1.5 - 2j), sycl_queue=q)
-    monkeypatch.undo()
+    with no_host_copy():
+        x = dpt.asarray(np.float64(2.5), sycl_queue=q)
+        y = dpt.asarray(np.complex128(1.5 - 2j), sycl_queue=q)
 
     assert x.dtype == dpt.float32
     assert y.dtype == dpt.complex64
@@ -721,14 +711,11 @@ def test_asarray_scalar_fp64_on_device_without_fp64(monkeypatch):
         (np.array(1.5 - 2j, dtype="c8"), "f4", 1.5),
     ],
 )
-def test_asarray_scalar_with_cast(monkeypatch, obj, dt, expected):
+def test_asarray_scalar_with_cast(obj, dt, expected):
     q = get_queue_or_skip()
 
-    monkeypatch.setattr(
-        ti, "_copy_numpy_ndarray_into_usm_ndarray", _raise_on_host_copy
-    )
-    x = dpt.asarray(obj, dtype=dt, sycl_queue=q)
-    monkeypatch.undo()
+    with no_host_copy():
+        x = dpt.asarray(obj, dtype=dt, sycl_queue=q)
 
     assert x.shape == ()
     assert x.dtype == dpt.dtype(dt)

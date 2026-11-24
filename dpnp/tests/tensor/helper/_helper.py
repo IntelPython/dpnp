@@ -26,8 +26,12 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+import contextlib
+
 import dpctl
 import pytest
+
+import dpnp.libtensor._tensor_impl as ti
 
 
 def has_gpu(backend="opencl"):
@@ -87,3 +91,18 @@ def skip_if_dtype_not_supported(dt, q_or_dev):
         pytest.skip(
             f"{dev.name} does not support half precision floating point type"
         )
+
+
+def _raise_on_host_copy(*args, **kwargs):
+    raise AssertionError("synchronizing host copy was used")
+
+
+@contextlib.contextmanager
+def no_host_copy():
+    """Makes the synchronizing host copy
+    `_copy_numpy_ndarray_into_usm_ndarray` raise within the block."""
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setattr(
+            ti, "_copy_numpy_ndarray_into_usm_ndarray", _raise_on_host_copy
+        )
+        yield
