@@ -52,6 +52,7 @@
 #include "utils/type_utils.hpp"
 
 #include "full_ctor.hpp"
+#include "simplify_iteration_space.hpp"
 
 namespace py = pybind11;
 namespace td_ns = dpnp::tensor::type_dispatch;
@@ -220,8 +221,65 @@ struct FullStridedFactory
     }
 };
 
+typedef sycl::event (*full_strided_1d_fn_ptr_t)(
+    sycl::queue &,
+    std::size_t,
+    py::ssize_t,
+    py::ssize_t,
+    const py::object &,
+    char *,
+    const std::vector<sycl::event> &);
+
+/*!
+ * @brief Function to submit kernel to fill given one-dimensional strided
+ * memory allocation with specified value.
+ *
+ * @param exec_q  Sycl queue to which kernel is submitted for execution.
+ * @param nelems  Length of the sequence
+ * @param offset  Offset of the first element from `dst_p`, in elements.
+ * @param step  Stride between consecutive elements, in elements.
+ * @param py_value  Python object representing the value to fill the array with.
+ * Must be convertible to `dstTy`.
+ * @param dst_p  Kernel accessible USM pointer to the start of array to be
+ * populated.
+ * @param depends  List of events to wait for before starting computations, if
+ * any.
+ *
+ * @return Event to wait on to ensure that computation completes.
+ * @defgroup CtorKernels
+ */
+template <typename dstTy>
+sycl::event full_strided_1d_impl(sycl::queue &exec_q,
+                                 std::size_t nelems,
+                                 py::ssize_t offset,
+                                 py::ssize_t step,
+                                 const py::object &py_value,
+                                 char *dst_p,
+                                 const std::vector<sycl::event> &depends)
+{
+    dstTy fill_v = py::cast<dstTy>(py_value);
+
+    using dpnp::tensor::kernels::constructors::full_strided_1d_impl;
+    sycl::event fill_ev = full_strided_1d_impl<dstTy>(
+        exec_q, nelems, offset, step, fill_v, dst_p, depends);
+
+    return fill_ev;
+}
+
+template <typename fnT, typename Ty>
+struct FullStrided1DFactory
+{
+    fnT get()
+    {
+        fnT f = full_strided_1d_impl<Ty>;
+        return f;
+    }
+};
+
 static full_contig_fn_ptr_t full_contig_dispatch_vector[td_ns::num_types];
 static full_strided_fn_ptr_t full_strided_dispatch_vector[td_ns::num_types];
+static full_strided_1d_fn_ptr_t
+    full_strided_1d_dispatch_vector[td_ns::num_types];
 
 std::pair<sycl::event, sycl::event>
     usm_ndarray_full(const py::object &py_value,
@@ -264,8 +322,40 @@ std::pair<sycl::event, sycl::event>
     }
     else {
         int nd = dst.get_ndim();
-        auto const &dst_shape = dst.get_shape_vector();
+        const py::ssize_t *dst_shape = dst.get_shape_raw();
         auto const &dst_strides = dst.get_strides_vector();
+
+        using shT = std::vector<py::ssize_t>;
+        shT simplified_shape;
+        shT simplified_strides;
+        py::ssize_t dst_offset(0);
+
+        // nd, simplified_* and dst_offset are modified by reference
+        simplify_iteration_space_1(nd, dst_shape, dst_strides,
+                                   // output
+                                   simplified_shape, simplified_strides,
+                                   dst_offset);
+
+        if (nd == 1) {
+            // shape and stride go by value, so no packed temporaries to free
+            // in host tasks
+            sycl::event full_1d_event;
+            const py::ssize_t step = simplified_strides.front();
+            if (step == 1) {
+                auto fn = full_contig_dispatch_vector[dst_typeid];
+                full_1d_event =
+                    fn(exec_q, static_cast<std::size_t>(dst_nelems), py_value,
+                       dst_data + dst_offset * dst.get_elemsize(), depends);
+            }
+            else {
+                auto fn = full_strided_1d_dispatch_vector[dst_typeid];
+                full_1d_event =
+                    fn(exec_q, static_cast<std::size_t>(dst_nelems), dst_offset,
+                       step, py_value, dst_data, depends);
+            }
+            return std::make_pair(
+                keep_args_alive(exec_q, {dst}, {full_1d_event}), full_1d_event);
+        }
 
         auto fn = full_strided_dispatch_vector[dst_typeid];
 
@@ -273,7 +363,7 @@ std::pair<sycl::event, sycl::event>
         host_task_events.reserve(2);
         using dpnp::tensor::offset_utils::device_allocate_and_pack;
         auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
-            exec_q, host_task_events, dst_shape, dst_strides);
+            exec_q, host_task_events, simplified_shape, simplified_strides);
         auto shape_strides_owner = std::move(std::get<0>(ptr_size_event_tuple));
         const sycl::event &copy_shape_ev = std::get<2>(ptr_size_event_tuple);
         py::ssize_t *shape_strides = shape_strides_owner.get();
@@ -285,8 +375,8 @@ std::pair<sycl::event, sycl::event>
         all_deps.push_back(copy_shape_ev);
 
         const sycl::event &full_strided_ev =
-            fn(exec_q, nd, dst_nelems, shape_strides, py_value, dst_data,
-               all_deps);
+            fn(exec_q, nd, dst_nelems, shape_strides, py_value,
+               dst_data + dst_offset * dst.get_elemsize(), all_deps);
 
         // free shape_strides
         const auto &temporaries_cleanup_ev =
@@ -310,6 +400,11 @@ void init_full_ctor_dispatch_vectors(void)
     DispatchVectorBuilder<full_strided_fn_ptr_t, FullStridedFactory, num_types>
         dvb2;
     dvb2.populate_dispatch_vector(full_strided_dispatch_vector);
+
+    DispatchVectorBuilder<full_strided_1d_fn_ptr_t, FullStrided1DFactory,
+                          num_types>
+        dvb3;
+    dvb3.populate_dispatch_vector(full_strided_1d_dispatch_vector);
 }
 
 } // namespace dpnp::tensor::py_internal

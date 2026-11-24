@@ -757,8 +757,24 @@ def test_setitem_scalar(dtype, usm_type):
 @pytest.mark.parametrize("dtype", _all_dtypes)
 @pytest.mark.parametrize(
     "key",
-    [Ellipsis, 2, slice(1, 4), slice(None, None, 2), (slice(None), 1)],
-    ids=["ellipsis", "int", "slice", "step", "column"],
+    [
+        Ellipsis,
+        2,
+        slice(1, 4),
+        slice(None, None, 2),
+        (slice(None), 1),
+        slice(None, None, -1),
+        (slice(None, None, -1), slice(None, None, 2)),
+    ],
+    ids=[
+        "ellipsis",
+        "int",
+        "slice",
+        "step",
+        "column",
+        "reversed",
+        "reversed_step",
+    ],
 )
 def test_setitem_scalar_no_host_copy(dtype, key):
     q = get_queue_or_skip()
