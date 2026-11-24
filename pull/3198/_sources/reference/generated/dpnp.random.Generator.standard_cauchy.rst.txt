@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.random.Generator.standard\_cauchy
+======================================
+
+.. currentmodule:: dpnp.random
+
+method
+
+.. automethod:: Generator.standard_cauchy

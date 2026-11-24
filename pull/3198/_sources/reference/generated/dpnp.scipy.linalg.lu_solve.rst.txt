@@ -1,0 +1,10 @@
+﻿
+
+dpnp.scipy.linalg.lu\_solve
+===========================
+
+.. currentmodule:: dpnp.scipy.linalg
+
+
+
+.. autofunction:: lu_solve

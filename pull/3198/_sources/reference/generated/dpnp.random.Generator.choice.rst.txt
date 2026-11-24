@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.random.Generator.choice
+============================
+
+.. currentmodule:: dpnp.random
+
+method
+
+.. automethod:: Generator.choice

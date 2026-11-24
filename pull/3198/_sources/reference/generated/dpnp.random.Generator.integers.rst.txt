@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.random.Generator.integers
+==============================
+
+.. currentmodule:: dpnp.random
+
+method
+
+.. automethod:: Generator.integers

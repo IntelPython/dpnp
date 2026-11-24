@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.random.Generator.geometric
+===============================
+
+.. currentmodule:: dpnp.random
+
+method
+
+.. automethod:: Generator.geometric

@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.random.Generator.dirichlet
+===============================
+
+.. currentmodule:: dpnp.random
+
+method
+
+.. automethod:: Generator.dirichlet

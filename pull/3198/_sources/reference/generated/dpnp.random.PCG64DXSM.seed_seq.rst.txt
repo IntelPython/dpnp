@@ -1,0 +1,14 @@
+
+:orphan:
+
+
+dpnp.random.PCG64DXSM.seed\_seq
+===============================
+
+.. currentmodule:: dpnp.random
+
+
+property
+
+
+.. autoproperty:: PCG64DXSM.seed_seq

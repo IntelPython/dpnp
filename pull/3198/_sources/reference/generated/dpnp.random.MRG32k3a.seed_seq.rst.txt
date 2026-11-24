@@ -1,0 +1,14 @@
+
+:orphan:
+
+
+dpnp.random.MRG32k3a.seed\_seq
+==============================
+
+.. currentmodule:: dpnp.random
+
+
+property
+
+
+.. autoproperty:: MRG32k3a.seed_seq

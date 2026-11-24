@@ -1,0 +1,10 @@
+﻿
+
+dpnp.random.get\_bit\_generator
+===============================
+
+.. currentmodule:: dpnp.random
+
+
+
+.. autofunction:: get_bit_generator

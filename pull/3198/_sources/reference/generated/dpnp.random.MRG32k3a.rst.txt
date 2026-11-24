@@ -1,0 +1,30 @@
+﻿dpnp.random.MRG32k3a
+====================
+
+.. currentmodule:: dpnp.random
+
+.. autoclass:: MRG32k3a
+
+   
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         MRG32k3a.random_raw
+         MRG32k3a.spawn
+
+
+
+   
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         MRG32k3a.lock
+         MRG32k3a.seed_seq
+         MRG32k3a.state
+         MRG32k3a.sycl_device
+         MRG32k3a.sycl_queue
+
