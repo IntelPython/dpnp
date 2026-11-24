@@ -165,3 +165,23 @@ class Binary(_Ufunc):
 
     def time_binary(self, executor, ufunc, size, dtype):
         self.sync(self.fn(self.a, self.b))
+
+
+# ---------------------------------------------------------------------------
+# A Python scalar operand
+# ---------------------------------------------------------------------------
+
+
+class BinaryScalar(_Ufunc):
+    """Binary ufuncs with a Python scalar operand, e.g. ``2 * x``."""
+
+    params = [_EXECUTOR_NAMES, ["add", "multiply"], _SIZES_1D, _FLOAT_DTYPES]
+
+    def setup(self, executor, ufunc, size, dtype):
+        super().setup(executor, ufunc, size, dtype)
+        self.a = self._input(size, dtype, _DEFAULT_RANGE)
+        self.sync(self.fn(self.a, 2))
+
+    def time_binary_scalar(self, executor, ufunc, size, dtype):
+        # the second call's scalar is filled behind the first call
+        self.sync(self.fn(self.fn(self.a, 2), 2))
