@@ -254,6 +254,7 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.sort.html">dpnp.ndarray.sort</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.argsort.html">dpnp.ndarray.argsort</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.partition.html">dpnp.ndarray.partition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.argpartition.html">dpnp.ndarray.argpartition</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.searchsorted.html">dpnp.ndarray.searchsorted</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.nonzero.html">dpnp.ndarray.nonzero</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.compress.html">dpnp.ndarray.compress</a></li>
@@ -960,6 +961,7 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.argsort.html">dpnp.argsort</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.sort_complex.html">dpnp.sort_complex</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.partition.html">dpnp.partition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.argpartition.html">dpnp.argpartition</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.top_k.html">dpnp.top_k</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.argmax.html">dpnp.argmax</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.nanargmax.html">dpnp.nanargmax</a></li>
@@ -1093,7 +1095,7 @@
 <h1>Comparison Table NumPy/ DPNP/ CuPy<a class="headerlink" href="#comparison-table-numpy-dpnp-cupy" title="Link to this heading">¶</a></h1>
 <p>Here is a list of NumPy and CuPy APIs and its corresponding DPNP implementations.</p>
 <p><code class="docutils literal notranslate"><span class="pre">-</span></code> in DPNP column means that DPNP implementation is not provided yet.</p>
-<p><strong>NumPy(v2.5.5) / DPNP(v0.22.0dev3+7.gbe4cd70d2) / CuPy(v14.2.0) APIs</strong></p>
+<p><strong>NumPy(v2.5.5) / DPNP(v0.22.0dev3+57.g6fdffcb31) / CuPy(v14.2.0) APIs</strong></p>
 <section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper docutils container">
@@ -1106,12 +1108,12 @@
 </tr>
 <tr class="row-even"><td><p>Module-Level</p></td>
 <td><p>388</p></td>
-<td><p>324</p></td>
+<td><p>325</p></td>
 <td><p>353</p></td>
 </tr>
 <tr class="row-odd"><td><p>Multi-Dimensional Array</p></td>
 <td><p>53</p></td>
-<td><p>45</p></td>
+<td><p>46</p></td>
 <td><p>48</p></td>
 </tr>
 <tr class="row-even"><td><p>Linear Algebra</p></td>
@@ -1131,7 +1133,7 @@
 </tr>
 <tr class="row-odd"><td><p>Total</p></td>
 <td><p>543</p></td>
-<td><p>467</p></td>
+<td><p>469</p></td>
 <td><p>490</p></td>
 </tr>
 </tbody>
@@ -1246,7 +1248,7 @@
 <td><p><a class="reference external" href="https://docs.cupy.dev/en/stable/reference/generated/cupy.argmin.html#cupy.argmin" title="(in CuPy v14.2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.argmin</span></code></a></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.argpartition.html#numpy.argpartition" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.argpartition</span></code></a></p></td>
-<td><p>-</p></td>
+<td><p><a class="reference internal" href="generated/dpnp.argpartition.html#dpnp.argpartition" title="dpnp.argpartition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.argpartition</span></code></a></p></td>
 <td><p><a class="reference external" href="https://docs.cupy.dev/en/stable/reference/generated/cupy.argpartition.html#cupy.argpartition" title="(in CuPy v14.2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.argpartition</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.argsort.html#numpy.argsort" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.argsort</span></code></a></p></td>
@@ -2706,7 +2708,7 @@
 <td><p><strong>CuPy Total</strong></p></td>
 </tr>
 <tr class="row-odd"><td><p>388</p></td>
-<td><p>324</p></td>
+<td><p>325</p></td>
 <td><p>353</p></td>
 </tr>
 </tbody>
@@ -2741,7 +2743,7 @@
 <td><p><a class="reference external" href="https://docs.cupy.dev/en/stable/reference/generated/cupy.ndarray.html#cupy.ndarray.argmin" title="(in CuPy v14.2.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.argmin()</span></code></a></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.argpartition.html#numpy.ndarray.argpartition" title="(in NumPy v2.5)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.argpartition()</span></code></a></p></td>
-<td><p>-</p></td>
+<td><p><a class="reference internal" href="generated/dpnp.ndarray.argpartition.html#dpnp.ndarray.argpartition" title="dpnp.ndarray.argpartition"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.argpartition()</span></code></a></p></td>
 <td><p><a class="reference external" href="https://docs.cupy.dev/en/stable/reference/generated/cupy.ndarray.html#cupy.ndarray.argpartition" title="(in CuPy v14.2.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.argpartition()</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.argsort.html#numpy.ndarray.argsort" title="(in NumPy v2.5)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.argsort()</span></code></a></p></td>
@@ -2941,7 +2943,7 @@
 <td><p><strong>CuPy Total</strong></p></td>
 </tr>
 <tr class="row-even"><td><p>53</p></td>
-<td><p>45</p></td>
+<td><p>46</p></td>
 <td><p>48</p></td>
 </tr>
 </tbody>
