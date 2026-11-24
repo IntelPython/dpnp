@@ -851,7 +851,7 @@ cpdef object from_dlpack_capsule(object py_caps):
             cpython.PyCapsule_SetName(py_caps, "used_dltensor_versioned")
 
         if dl_tensor.data is NULL:
-            usm_mem = dpmem.MemoryUSMDevice(sz, q)
+            usm_mem = dpmem.MemoryUSMDevice(sz, queue=q)
         else:
             mem_ptr_delta = dl_tensor.byte_offset - (
                 element_offset * element_bytesize
