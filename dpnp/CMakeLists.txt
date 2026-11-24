@@ -87,9 +87,8 @@ function(build_dpnp_tensor_ext _trgt _src _dest)
     endif()
 endfunction()
 
-# Builds a pybind11 extension of dpnp/libtensor/extensions with the options all
-# of them share and installs it into dpnp/libtensor, next to the libtensor
-# modules.
+# Builds a pybind11 SYCL module with the options all of them share and installs it
+# into dpnp/libtensor. Every module of dpnp/libtensor/source and extensions/ uses it.
 # INCLUDE_DIRS come before the common include directories, and LARGE_RANGES is
 # for modules whose kernels can be launched over more than INT_MAX work-items.
 function(build_dpnp_pybind11_ext _trgt)
@@ -125,24 +124,30 @@ function(build_dpnp_pybind11_ext _trgt)
             ${CMAKE_BINARY_DIR} # For generated Cython headers
     )
 
+    # device debug info makes the device link of Debug and Coverage builds much slower
+    if(CMAKE_BUILD_TYPE MATCHES "^(Debug|DEBUG|Coverage)$")
+        target_compile_options(${_trgt} PRIVATE -Xsycl-target-frontend=spir64 -g0)
+    endif()
+
+    # keep IEEE semantics (NaN, inf, signed zeros, rounding) instead of the
+    # fast floating-point model icpx defaults to
     if(WIN32)
-        target_compile_options(
-            ${_trgt}
-            PRIVATE /clang:-fno-approx-func /clang:-fno-finite-math-only
-        )
+        target_compile_options(${_trgt} PRIVATE /clang:-fno-fast-math)
     else()
-        target_compile_options(${_trgt} PRIVATE -fno-approx-func -fno-finite-math-only)
+        target_compile_options(${_trgt} PRIVATE -fno-fast-math)
     endif()
 
-    if(_arg_LARGE_RANGES)
-        target_compile_options(${_trgt} PUBLIC -fno-sycl-id-queries-fit-in-int)
-    endif()
-
-    target_link_options(${_trgt} PUBLIC -fsycl-device-code-split=per_kernel)
     if(_arg_LARGE_RANGES)
         # DPC++ 2026.2 records the ID range at link time, so pass it there too
-        target_link_options(${_trgt} PUBLIC -fno-sycl-id-queries-fit-in-int)
+        target_compile_options(${_trgt} PRIVATE -fno-sycl-id-queries-fit-in-int)
+        target_link_options(${_trgt} PRIVATE -fno-sycl-id-queries-fit-in-int)
     endif()
+
+    target_link_options(${_trgt} PRIVATE -fsycl-device-code-split=per_kernel)
+    if(DPNP_TENSOR_OFFLOAD_COMPRESS)
+        target_link_options(${_trgt} PRIVATE --offload-compress)
+    endif()
+    target_link_options(${_trgt} PRIVATE "LINKER:${DPNP_LDFLAGS}")
 
     if(DPNP_GENERATE_COVERAGE)
         target_link_options(
