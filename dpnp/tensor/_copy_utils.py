@@ -103,7 +103,7 @@ def _copy_from_numpy(np_ary, usm_type="device", sycl_queue=None):
 
 def _fill_from_numpy_scalar(dst, np_ary, depends):
     """
-    Fills `dst` with the value of 0-d `np_ary`, cast on the host as
+    Fills `dst` with the value of 0-d `np_ary`, cast as
     `_copy_numpy_ndarray_into_usm_ndarray` would cast it.
     """
     copy_q = dst.sycl_queue
@@ -116,18 +116,31 @@ def _fill_from_numpy_scalar(dst, np_ary, depends):
     if np_ary.dtype.kind == "c" and dst_dt.kind not in "bc":
         # the copy kernel keeps the real part, NumPy also warns
         np_ary = np_ary.real
-    # the copy kernel casts NaN and out-of-range values without warning
+    _manager = SequentialOrderManager[copy_q]
+    if np_ary.dtype.kind == "f" and dst_dt.kind in "iu":
+        # NaN, inf and out-of-range values have no defined integer value,
+        # so cast with the copy kernel of the device
+        src_dt = np_ary.dtype
+        val = dpt.empty((), dtype=src_dt, sycl_queue=copy_q)
+        hev, fill_ev = ti._full_usm_ndarray(
+            np_ary[()].item(), val, sycl_queue=copy_q
+        )
+        _manager.add_event_pair(hev, fill_ev)
+        src = dpt.usm_ndarray(
+            dst.shape, dtype=src_dt, buffer=val, strides=(0,) * dst.ndim
+        )
+        hev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=src, dst=dst, sycl_queue=copy_q, depends=[*depends, fill_ev]
+        )
+        _manager.add_event_pair(hev, cpy_ev)
+        return
+    # the copy kernel casts out-of-range values without warning
     with np.errstate(all="ignore"):
-        if np_ary.dtype.kind == "f" and dst_dt.kind in "iu":
-            # the copy kernel narrows through int64, so it wraps like NumPy
-            # integer casts where a direct NumPy float cast saturates
-            if dst_dt.itemsize < 8 or (dst_dt.kind == "u" and np_ary < 0):
-                np_ary = np_ary.astype(np.int64)
         fill_val = np_ary.astype(dst_dt)[()].item()
     hev, fill_ev = ti._full_usm_ndarray(
         fill_val, dst, sycl_queue=copy_q, depends=depends
     )
-    SequentialOrderManager[copy_q].add_event_pair(hev, fill_ev)
+    _manager.add_event_pair(hev, fill_ev)
 
 
 def _copy_from_numpy_into(dst, np_ary):

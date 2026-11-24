@@ -720,3 +720,17 @@ def test_asarray_scalar_with_cast(obj, dt, expected):
     assert x.shape == ()
     assert x.dtype == dpt.dtype(dt)
     assert dpt.asnumpy(x) == np.asarray(expected, dtype=dt)
+
+
+# these float to integer casts are undefined in C++, so the fill must give
+# what the copy kernel gives on the same device
+@pytest.mark.parametrize("val", [np.nan, np.inf, -np.inf, 1e300], ids=repr)
+@pytest.mark.parametrize("dt", ["u1", "i8"])
+def test_asarray_scalar_cast_matches_copy(val, dt):
+    q = get_queue_or_skip()
+
+    with no_host_copy():
+        x = dpt.asarray(np.float64(val), dtype=dt, sycl_queue=q)
+    y = dpt.asarray(np.array([val]), dtype=dt, sycl_queue=q)
+
+    assert dpt.asnumpy(x) == dpt.asnumpy(y)[0]

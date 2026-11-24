@@ -773,19 +773,15 @@ def test_setitem_scalar_no_host_copy(dtype, key):
     assert np.array_equal(dpt.asnumpy(X), expected)
 
 
-# expected values are those of the copy kernel, which narrows floats to
-# integers through int64 and keeps the real part of complex values
+# the copy kernel keeps the real part of complex values
 @pytest.mark.parametrize(
     "val, dtype, expected",
     [
-        (1e10, "i2", -7168),
-        (1e10, "u2", 58368),
-        (1e10, "i4", 1410065408),
-        (-1.0, "u1", 255),
-        (np.float32(-1), "u8", 2**64 - 1),
         (300, "i1", 44),
         (2.7, "i4", 2),
+        (-2.7, "i4", -2),
         (1.5 - 2j, "f4", 1.5),
+        (1.5 - 2j, "i4", 1),
         (1j, "?", True),
         (0j, "?", False),
         (float("nan"), "?", True),
@@ -800,6 +796,41 @@ def test_setitem_scalar_cast(val, dtype, expected):
         X[...] = val
 
     assert dpt.asnumpy(X) == np.asarray(expected, dtype=dtype)
+
+
+# these float to integer casts are undefined in C++, so the fill must give
+# what the copy kernel gives on the same device
+@pytest.mark.parametrize("dtype", _integral_dtypes)
+@pytest.mark.parametrize(
+    "val",
+    [
+        np.nan,
+        np.inf,
+        -np.inf,
+        1e300,
+        -1e300,
+        1e10,
+        -1.0,
+        np.float32(-1),
+        np.float16(-np.inf),
+        1e10 + 1j,
+    ],
+    ids=repr,
+)
+@pytest.mark.parametrize("key", [Ellipsis, (slice(None), 1)])
+@pytest.mark.filterwarnings("error")
+def test_setitem_scalar_cast_matches_copy(key, val, dtype):
+    q = get_queue_or_skip()
+    if isinstance(val, np.float16):
+        skip_if_dtype_not_supported("f2", q)
+    X = dpt.zeros((3, 3), dtype=dtype, sycl_queue=q)
+
+    with no_host_copy():
+        X[key] = val
+    Y = dpt.zeros(X[key].shape, dtype=dtype, sycl_queue=q)
+    Y[...] = np.full(Y.shape, val)
+
+    assert np.array_equal(dpt.asnumpy(X[key]), dpt.asnumpy(Y))
 
 
 def test_setitem_errors():
