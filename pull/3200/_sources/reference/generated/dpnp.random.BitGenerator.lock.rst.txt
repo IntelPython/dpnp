@@ -1,0 +1,14 @@
+
+:orphan:
+
+
+dpnp.random.BitGenerator.lock
+=============================
+
+.. currentmodule:: dpnp.random
+
+
+property
+
+
+.. autoproperty:: BitGenerator.lock

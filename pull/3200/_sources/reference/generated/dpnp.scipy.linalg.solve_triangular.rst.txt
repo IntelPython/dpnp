@@ -1,0 +1,10 @@
+﻿
+
+dpnp.scipy.linalg.solve\_triangular
+===================================
+
+.. currentmodule:: dpnp.scipy.linalg
+
+
+
+.. autofunction:: solve_triangular
