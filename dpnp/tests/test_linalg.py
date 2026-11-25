@@ -1,3 +1,4 @@
+import itertools
 import warnings
 
 import dpctl
@@ -167,6 +168,55 @@ def _make_hpd_np(shape, dtype, order="C"):
     n = shape[-1]
     a = a @ numpy.swapaxes(a, -1, -2).conj() + n * numpy.eye(n, dtype=dtype)
     return numpy.array(a, order=order)
+
+
+def _make_tri_np(shape, dtype, lower):
+    """
+    Random triangular matrix (or a batch of them), well conditioned also with
+    a unit diagonal, with large values in the other triangle, which must not
+    be read. The diagonal is ``n + 1``: wrong if read with a unit diagonal.
+
+    """
+
+    n = shape[-1]
+    if numpy.issubdtype(dtype, numpy.inexact):
+        # a small triangle keeps a unit diagonal dominant
+        a = generate_random_numpy_array(shape, dtype, low=-1, high=1)
+        a /= max(n, 1)
+        big = 1e3
+    else:
+        # integers are truncated: [-2, 2) gives -1, 0 and 1
+        a = generate_random_numpy_array(shape, dtype, low=-2, high=2)
+        big = 100
+    used = numpy.tri(n, k=-1, dtype=bool)
+    a = numpy.where(used if lower else used.T, a, numpy.asarray(big, dtype))
+    a[..., numpy.eye(n, dtype=bool)] = n + 1
+    return a
+
+
+def _solve_tri_np(a, b, trans=0, lower=False, unit_diagonal=False):
+    """NumPy reference of `solve_triangular`."""
+    t = numpy.tril(a) if lower else numpy.triu(a)
+    if unit_diagonal:
+        t[..., numpy.eye(a.shape[-1], dtype=bool)] = 1
+    if trans in (1, "T"):
+        t = numpy.swapaxes(t, -1, -2)
+    elif trans in (2, "C"):
+        t = numpy.swapaxes(t, -1, -2).conj()
+    return numpy.linalg.solve(t, b)
+
+
+def _with_layout(x_np, layout):
+    """dpnp copy of `x_np` in the C, F, strided or negative-stride layout."""
+    if layout in ("C", "F"):
+        return dpnp.array(x_np, order=layout)
+    if layout == "strided":
+        step = (slice(None, None, 2),) * x_np.ndim
+        base = numpy.zeros(tuple(2 * d for d in x_np.shape), x_np.dtype)
+        base[step] = x_np
+        return dpnp.array(base)[step]
+    flip = (slice(None, None, -1),) * x_np.ndim
+    return dpnp.array(x_np[flip])[flip]
 
 
 def _tri(a, lower):
@@ -819,6 +869,481 @@ class TestChoSolve:
             dpnp.scipy.linalg.cho_solve,
             (numpy.eye(2), False),
             dpnp.ones(2),
+        )
+
+
+class TestSolveTriangular:
+    @pytest.mark.parametrize("trans", [0, 1, 2, "N", "T", "C"])
+    @pytest.mark.parametrize("lower", [True, False])
+    @pytest.mark.parametrize("unit_diagonal", [True, False])
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    def test_solve_triangular(self, trans, lower, unit_diagonal, dtype):
+        a_np = _make_tri_np((5, 5), dtype, lower)
+        a = dpnp.array(a_np)
+
+        for b_shape in [(5,), (5, 1), (5, 3)]:
+            b_np = generate_random_numpy_array(b_shape, dtype)
+            b = dpnp.array(b_np)
+
+            x = dpnp.scipy.linalg.solve_triangular(
+                a, b, trans=trans, lower=lower, unit_diagonal=unit_diagonal
+            )
+            expected = _solve_tri_np(a_np, b_np, trans, lower, unit_diagonal)
+            assert_dtype_allclose(x, expected, check_only_type_kind=True)
+            assert_array_equal(b, b_np)
+        assert_array_equal(a, a_np)
+
+    @pytest.mark.parametrize("layout", ["C", "F", "strided", "negative"])
+    @pytest.mark.parametrize("trans", [0, 1, 2])
+    @pytest.mark.parametrize("lower", [True, False])
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_layout(self, layout, trans, lower, dtype):
+        a_np = _make_tri_np((4, 4), dtype, lower)
+        a = _with_layout(a_np, layout)
+
+        for b_shape in [(4,), (4, 1), (4, 17)]:
+            b_np = generate_random_numpy_array(b_shape, dtype)
+            b = _with_layout(b_np, layout)
+
+            x = dpnp.scipy.linalg.solve_triangular(
+                a, b, trans=trans, lower=lower
+            )
+            assert_dtype_allclose(x, _solve_tri_np(a_np, b_np, trans, lower))
+            assert_array_equal(b, b_np)
+        assert_array_equal(a, a_np)
+
+    # sizes on both sides of 32, where oneMKL trtrs changes its algorithm
+    @pytest.mark.parametrize("n", [1, 32, 33, 64])
+    @pytest.mark.parametrize("lower", [True, False])
+    @pytest.mark.parametrize("unit_diagonal", [True, False])
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_sizes(self, n, lower, unit_diagonal, dtype):
+        a_np = _make_tri_np((n, n), dtype, lower)
+        b_np = generate_random_numpy_array((n, 3), dtype)
+        a, b = dpnp.array(a_np), dpnp.array(b_np, order="F")
+
+        for trans in [0, 1, 2]:
+            x = dpnp.scipy.linalg.solve_triangular(
+                a, b, trans=trans, lower=lower, unit_diagonal=unit_diagonal
+            )
+            expected = _solve_tri_np(a_np, b_np, trans, lower, unit_diagonal)
+            assert_dtype_allclose(x, expected)
+
+    @pytest.mark.parametrize("diag", [0, numpy.inf, numpy.nan])
+    @pytest.mark.parametrize("order", ["C", "F"])
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_unit_diagonal_not_read(self, diag, order, dtype):
+        # a zero is not singular, and NaN is fine without check_finite
+        a_np = _make_tri_np((4, 4), dtype, lower=True)
+        numpy.fill_diagonal(a_np, diag)
+        b_np = generate_random_numpy_array((4, 2), dtype)
+        a = dpnp.array(a_np, order=order)
+
+        for trans in [0, 1, 2]:
+            x = dpnp.scipy.linalg.solve_triangular(
+                a,
+                dpnp.array(b_np),
+                trans=trans,
+                lower=True,
+                unit_diagonal=True,
+                check_finite=False,
+            )
+            expected = _solve_tri_np(a_np, b_np, trans, True, True)
+            assert_dtype_allclose(x, expected)
+
+    @pytest.mark.parametrize("a_shape", [(4, 4), (2, 4, 4)])
+    @pytest.mark.parametrize("order", ["C", "F"])
+    @pytest.mark.parametrize("a_dtype", get_float_complex_dtypes())
+    @pytest.mark.parametrize("b_dtype", get_float_complex_dtypes())
+    def test_mixed_dtypes(self, a_shape, order, a_dtype, b_dtype):
+        # the conjugation for trans C is decided from the dtype of `a`
+        a_np = _make_tri_np(a_shape, a_dtype, lower=False)
+        b_np = generate_random_numpy_array(a_shape[:-1] + (2,), b_dtype)
+        a = dpnp.array(a_np, order=order)
+
+        for trans in [0, 1, 2]:
+            x = dpnp.scipy.linalg.solve_triangular(
+                a, dpnp.array(b_np), trans=trans
+            )
+            assert_dtype_allclose(x, _solve_tri_np(a_np, b_np, trans))
+
+    @pytest.mark.parametrize(
+        "a_shape, b_shape",
+        [
+            ((1, 4, 4), (4,)),
+            ((3, 4, 4), (4,)),
+            ((3, 4, 4), (4, 2)),
+            ((3, 4, 4), (3, 4, 2)),
+            ((3, 4, 4), (1, 4, 2)),
+            ((2, 1, 4, 4), (1, 3, 4, 2)),
+            ((2, 3, 4, 4), (2, 1, 4, 2)),
+            ((3, 4, 4), (1, 1, 4, 2)),
+            ((4, 4), (2, 4, 3)),
+            ((4, 4), (2, 3, 4, 1)),
+            ((1, 1, 4, 4), (2, 4, 3)),
+        ],
+    )
+    @pytest.mark.parametrize("lower", [True, False])
+    @pytest.mark.parametrize("order", ["C", "F"])
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_batched(self, a_shape, b_shape, lower, order, dtype):
+        a_np = _make_tri_np(a_shape, dtype, lower)
+        b_np = generate_random_numpy_array(b_shape, dtype, order)
+        a, b = dpnp.array(a_np, order=order), dpnp.array(b_np, order=order)
+
+        for trans, unit_diagonal in itertools.product([0, 1, 2], [True, False]):
+            x = dpnp.scipy.linalg.solve_triangular(
+                a,
+                b,
+                trans=trans,
+                lower=lower,
+                unit_diagonal=unit_diagonal,
+                overwrite_b=True,
+            )
+            expected = _solve_tri_np(a_np, b_np, trans, lower, unit_diagonal)
+            assert x.shape == expected.shape
+            assert_dtype_allclose(x, expected)
+            # a batched `b` is always copied
+            assert_array_equal(b, b_np)
+
+    @pytest.mark.parametrize("lower", [True, False])
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_batched_column_major(self, lower, dtype):
+        # each matrix F-contiguous: passed to oneMKL without a copy
+        a_np = _make_tri_np((3, 4, 4), dtype, lower)
+        b_np = generate_random_numpy_array((3, 4, 2), dtype)
+        a = dpnp.ascontiguousarray(dpnp.array(a_np).mT).mT
+
+        for trans in [0, 1, 2]:
+            x = dpnp.scipy.linalg.solve_triangular(
+                a, dpnp.array(b_np), trans=trans, lower=lower
+            )
+            assert_dtype_allclose(x, _solve_tri_np(a_np, b_np, trans, lower))
+
+    def test_broadcast_a(self):
+        dtype = dpnp.default_float_type()
+        a_np = _make_tri_np((4, 4), dtype, lower=True)
+        b_np = generate_random_numpy_array((3, 4, 2), dtype)
+        a = dpnp.broadcast_to(dpnp.array(a_np), (3, 4, 4))
+
+        x = dpnp.scipy.linalg.solve_triangular(a, dpnp.array(b_np), lower=True)
+        assert_dtype_allclose(x, _solve_tri_np(a_np, b_np, lower=True))
+
+    # on GPU, a real type with a small batch and at least 16 columns uses
+    # a shared `a` (also f64 with batch <= 8), the rest is folded into one
+    # solve
+    @pytest.mark.parametrize(
+        "b_shape",
+        [
+            (2, 3, 4, 2),
+            (2, 4, 16),
+            (8, 4, 4),
+            (9, 4, 4),
+            (32, 4, 1),
+            (33, 4, 16),
+        ],
+    )
+    @pytest.mark.parametrize("order", ["C", "F"])
+    @pytest.mark.parametrize("a_dtype", get_float_complex_dtypes())
+    @pytest.mark.parametrize("b_dtype", get_float_complex_dtypes())
+    def test_2d_a_batched_b(self, b_shape, order, a_dtype, b_dtype):
+        # a 2-D `a` is not broadcast to the RHS batch
+        a_np = _make_tri_np((4, 4), a_dtype, lower=False)
+        b_np = generate_random_numpy_array(b_shape, b_dtype)
+        a, b = dpnp.array(a_np, order=order), dpnp.array(b_np)
+
+        for trans in [0, 1, 2]:
+            x = dpnp.scipy.linalg.solve_triangular(a, b, trans=trans)
+            assert_dtype_allclose(x, _solve_tri_np(a_np, b_np, trans))
+            assert_array_equal(b, b_np)
+
+    @pytest.mark.parametrize("a_shape", [(4, 4), (1, 4, 4), (1, 1, 4, 4)])
+    @pytest.mark.parametrize("fold", [True, False])
+    @pytest.mark.parametrize("lower", [True, False])
+    @pytest.mark.parametrize("order", ["C", "F"])
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_2d_a_batched_b_path(
+        self, monkeypatch, a_shape, fold, lower, order, dtype
+    ):
+        # the shared `a` is chosen on GPU only: force each path
+        calls = []
+        monkeypatch.setattr(
+            "dpnp.scipy.linalg._utils._fold_tri_rhs",
+            lambda *args: calls.append(args) or fold,
+        )
+        a_np = _make_tri_np(a_shape, dtype, lower)
+        b_np = generate_random_numpy_array((3, 4, 2), dtype)
+        a, b = dpnp.array(a_np, order=order), dpnp.array(b_np)
+
+        for trans in [0, 1, 2]:
+            x = dpnp.scipy.linalg.solve_triangular(
+                a, b, trans=trans, lower=lower
+            )
+            assert_dtype_allclose(x, _solve_tri_np(a_np, b_np, trans, lower))
+        # an `a` with size-1 batch dimensions is not broadcast either
+        assert len(calls) == 3
+
+    @pytest.mark.parametrize("b_shape", [(4,), (4, 3)])
+    @pytest.mark.parametrize("trans", [0, 1, 2])
+    @pytest.mark.parametrize("order", ["C", "F"])
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_overwrite_inplace(self, b_shape, trans, order, dtype):
+        a_np = _make_tri_np((4, 4), dtype, lower=True)
+        b_np = generate_random_numpy_array(b_shape, dtype)
+        a, b = dpnp.array(a_np, order=order), dpnp.array(b_np, order="F")
+
+        x = dpnp.scipy.linalg.solve_triangular(
+            a, b, trans=trans, lower=True, overwrite_b=True
+        )
+        assert x is b
+        assert_dtype_allclose(x, _solve_tri_np(a_np, b_np, trans, True))
+
+    @pytest.mark.parametrize("case", ["C-contig", "int", "strided"])
+    def test_overwrite_copy(self, case):
+        if case == "C-contig":
+            b = dpnp.ones((3, 2), order="C")
+        elif case == "int":
+            b = dpnp.ones((3, 2), dtype=dpnp.int32, order="F")
+        else:
+            b = dpnp.ones((6, 2), order="F")[::2]
+        b_orig = b.copy()
+
+        x = dpnp.scipy.linalg.solve_triangular(
+            4 * dpnp.eye(3), b, overwrite_b=True
+        )
+        assert x is not b
+        assert_array_equal(b, b_orig)
+        assert_allclose(x, b_orig / 4)
+
+    def test_overwrite_read_only(self):
+        b = dpnp.ones(2)
+        b.flags["W"] = False
+
+        x = dpnp.scipy.linalg.solve_triangular(
+            4 * dpnp.eye(2), b, overwrite_b=True
+        )
+        assert x is not b
+        assert_allclose(x, numpy.full(2, 0.25))
+
+    def test_overwrite_b_overlaps_a(self):
+        # SciPy overwrites `a` here, dpnp solves in a copy
+        a_np = _make_tri_np((3, 3), dpnp.default_float_type(), lower=False)
+        a = dpnp.array(a_np, order="F")
+
+        x = dpnp.scipy.linalg.solve_triangular(a, a, overwrite_b=True)
+        assert x is not a
+        assert_array_equal(a, a_np)
+        assert_dtype_allclose(x, _solve_tri_np(a_np, a_np))
+
+        # partially overlapping view of `a`
+        x = dpnp.scipy.linalg.solve_triangular(a, a[:, :2], overwrite_b=True)
+        assert_array_equal(a, a_np)
+        assert_dtype_allclose(x, _solve_tri_np(a_np, a_np[:, :2]))
+
+    @pytest.mark.parametrize("overwrite_b", [False, True])
+    def test_usm_ndarray(self, overwrite_b):
+        dtype = dpnp.default_float_type()
+        a_np = _make_tri_np((3, 3), dtype, lower=False)
+        b_np = generate_random_numpy_array((3, 2), dtype, order="F")
+        a, b = dpt.asarray(a_np), dpt.asarray(b_np, order="F")
+
+        x = dpnp.scipy.linalg.solve_triangular(a, b, overwrite_b=overwrite_b)
+        assert isinstance(x, dpnp.ndarray)
+        assert_dtype_allclose(x, _solve_tri_np(a_np, b_np))
+        assert numpy.array_equal(dpt.asnumpy(b), b_np) is not overwrite_b
+
+        # a batch
+        a_np = _make_tri_np((2, 3, 3), dtype, lower=False)
+        x = dpnp.scipy.linalg.solve_triangular(dpt.asarray(a_np), b)
+        assert isinstance(x, dpnp.ndarray)
+        assert_dtype_allclose(x, _solve_tri_np(a_np, dpt.asnumpy(b)))
+
+    @pytest.mark.parametrize("trans", [True, numpy.int64(2), numpy.uint8(0)])
+    def test_trans_integer_types(self, trans):
+        dtype = dpnp.default_float_type()
+        a_np = _make_tri_np((3, 3), dtype, lower=False)
+        b_np = generate_random_numpy_array((3,), dtype)
+
+        x = dpnp.scipy.linalg.solve_triangular(
+            dpnp.array(a_np), dpnp.array(b_np), trans=trans
+        )
+        assert_dtype_allclose(x, _solve_tri_np(a_np, b_np, int(trans)))
+
+    # SciPy accepts some of them, solves the transposed system for others
+    # or raises an error of its Fortran wrapper
+    @pytest.mark.parametrize("trans", [3, -1, "X", "n", "", 1.0, None, [0]])
+    def test_trans_invalid(self, trans):
+        assert_raises_regex(
+            ValueError,
+            "`trans` must be 0, 1, 2",
+            dpnp.scipy.linalg.solve_triangular,
+            dpnp.eye(2),
+            dpnp.ones(2),
+            trans=trans,
+        )
+
+    @pytest.mark.parametrize("lower", [True, False])
+    def test_lower_array(self, lower):
+        dtype = dpnp.default_float_type()
+        a_np = _make_tri_np((3, 3), dtype, lower)
+        b_np = generate_random_numpy_array((3,), dtype)
+        expected = _solve_tri_np(a_np, b_np, lower=lower)
+
+        for low in [dpnp.array(lower), numpy.full(2, lower), [lower]]:
+            x = dpnp.scipy.linalg.solve_triangular(
+                dpnp.array(a_np), dpnp.array(b_np), lower=low
+            )
+            assert_dtype_allclose(x, expected)
+
+    @pytest.mark.parametrize("low", ["False", None, [True, False], []])
+    def test_lower_invalid(self, low):
+        assert_raises(
+            ValueError,
+            dpnp.scipy.linalg.solve_triangular,
+            dpnp.eye(2),
+            dpnp.ones(2),
+            lower=low,
+        )
+
+    @pytest.mark.parametrize("idx", [0, 2, 4])
+    @pytest.mark.parametrize("zero", [0.0, -0.0])
+    @pytest.mark.parametrize("check_finite", [True, False])
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_singular(self, idx, zero, check_finite, dtype):
+        a_np = _make_tri_np((5, 5), dtype, lower=True)
+        a_np[idx, idx] = zero
+        b = dpnp.ones((5, 2), dtype=dtype, order="F")
+
+        # as SciPy, the 0-based index is reported, before `b` is overwritten
+        for order in ["C", "F"]:
+            assert_raises_regex(
+                dpnp.linalg.LinAlgError,
+                f"singular matrix: resolution failed at diagonal {idx}$",
+                dpnp.scipy.linalg.solve_triangular,
+                dpnp.array(a_np, order=order),
+                b,
+                lower=True,
+                overwrite_b=True,
+                check_finite=check_finite,
+            )
+        assert_array_equal(b, numpy.ones((5, 2), dtype=dtype))
+
+    def test_singular_batched(self):
+        # as SciPy, the first singular matrix of the batch is reported
+        a_np = _make_tri_np((2, 3, 4, 4), dpnp.default_float_type(), False)
+        a_np[0, 2, 1, 1] = 0
+        a_np[1, 0, 3, 3] = 0
+        a = dpnp.array(a_np)
+
+        for b in [dpnp.ones(4), dpnp.ones((2, 1, 4, 2))]:
+            assert_raises_regex(
+                dpnp.linalg.LinAlgError,
+                "resolution failed at diagonal 1$",
+                dpnp.scipy.linalg.solve_triangular,
+                a,
+                b,
+            )
+
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_nan_diagonal_not_singular(self, dtype):
+        a = dpnp.eye(3, dtype=dtype)
+        a[1, 1] = dpnp.nan
+
+        x = dpnp.scipy.linalg.solve_triangular(
+            a, dpnp.ones(3, dtype=dtype), check_finite=False
+        )
+        assert dpnp.isnan(x[1]) and x[2] == 1
+
+    @pytest.mark.parametrize(
+        "a_shape, b_shape, x_shape",
+        [
+            ((0, 0), (0,), (0,)),
+            ((0, 0), (0, 2), (0, 2)),
+            ((2, 2), (2, 0), (2, 0)),
+            ((2, 0, 0), (0,), (2, 0)),
+            ((2, 0, 0), (2, 0, 3), (2, 0, 3)),
+            ((2, 2, 2), (2, 2, 0), (2, 2, 0)),
+            # SciPy raises for a zero-size batch
+            ((0, 2, 2), (2,), (0, 2)),
+            ((2, 2), (0, 2, 1), (0, 2, 1)),
+            ((1, 2, 2), (0, 2, 1), (0, 2, 1)),
+        ],
+    )
+    @pytest.mark.parametrize("dtype", [dpnp.int32, dpnp.float32])
+    def test_empty(self, a_shape, b_shape, x_shape, dtype):
+        # as SciPy, a singular `a` is not reported for an empty solution
+        a = dpnp.zeros(a_shape, dtype=dtype)
+        b = dpnp.ones(b_shape, dtype=dtype)
+
+        x = dpnp.scipy.linalg.solve_triangular(a, b)
+        assert x.shape == x_shape
+        if dtype == dpnp.int32:
+            assert x.dtype == dpnp.default_float_type(sycl_queue=a.sycl_queue)
+        else:
+            assert x.dtype == dtype
+
+    @pytest.mark.parametrize("bad", [numpy.inf, -numpy.inf, numpy.nan])
+    @pytest.mark.parametrize("where", ["used", "unused", "diag", "b"])
+    @pytest.mark.parametrize("a_shape", [(3, 3), (2, 3, 3)])
+    def test_check_finite(self, bad, where, a_shape):
+        a = dpnp.eye(3) + dpnp.zeros(a_shape)
+        b = dpnp.ones(3)
+        if where == "b":
+            b[1] = bad
+        else:
+            ij = {"used": (0, 2), "unused": (2, 0), "diag": (1, 1)}[where]
+            a[(...,) + ij] = bad
+
+        # as SciPy, the whole `a` is checked
+        assert_raises_regex(
+            ValueError,
+            "array must not contain infs or NaNs",
+            dpnp.scipy.linalg.solve_triangular,
+            a,
+            b,
+        )
+        if where == "unused":
+            x = dpnp.scipy.linalg.solve_triangular(a, b, check_finite=False)
+            assert_array_equal(x, numpy.ones(a_shape[:-1]))
+
+    def test_check_finite_empty_b(self):
+        a = dpnp.full((2, 2), dpnp.nan)
+        assert_raises(
+            ValueError, dpnp.scipy.linalg.solve_triangular, a, dpnp.ones((2, 0))
+        )
+
+    @pytest.mark.parametrize(
+        "a_shape, b_shape, match",
+        [
+            ((3, 3), (2,), r"shapes of a \(3, 3\) and b \(2,\) are incompat"),
+            ((3, 3), (2, 2), r"a \(3, 3\) and b \(2, 2\)"),
+            ((), (1,), "expected square matrix"),
+            ((3,), (3,), "expected square matrix"),
+            ((3, 2), (3,), "expected square matrix"),
+            ((2, 3, 4), (3,), "expected square matrix"),
+            # SciPy raises IndexError
+            ((3, 3), (), "at least one dimension"),
+            # as SciPy, the shapes of a single system are reported
+            ((2, 3, 3), (2, 3), r"a \(3, 3\) and b \(2, 3\)"),
+            ((2, 3, 3), (2, 2, 1), r"a \(3, 3\) and b \(2, 1\)"),
+            ((2, 4, 4), (2,), r"a \(4, 4\) and b \(2,\)"),
+            ((4, 4), (2, 3, 1), r"a \(4, 4\) and b \(3, 1\)"),
+            ((2, 4, 4), (3, 4, 1), "Shape mismatch"),
+        ],
+    )
+    def test_shape_errors(self, a_shape, b_shape, match):
+        a, b = dpnp.ones(a_shape), dpnp.ones(b_shape)
+        assert_raises_regex(
+            ValueError, match, dpnp.scipy.linalg.solve_triangular, a, b
+        )
+
+    def test_errors(self):
+        a, b = dpnp.eye(2), dpnp.ones(2)
+        assert_raises(
+            TypeError, dpnp.scipy.linalg.solve_triangular, numpy.eye(2), b
+        )
+        assert_raises(
+            TypeError, dpnp.scipy.linalg.solve_triangular, a, numpy.ones(2)
         )
 
 

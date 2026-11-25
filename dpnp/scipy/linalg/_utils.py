@@ -356,46 +356,60 @@ def _batched_lu_solve(lu, piv, b, res_type, trans=0):
 def _batched_cho_solve(c, lower, b, res_type, res_usm_type, exec_q):
     """Solve a batched equation system given Cholesky factors."""
 
-    b_ndim_orig = b.ndim
-    # a single factor, also with size-1 batch dimensions, is not broadcast
-    c_2d = (
-        dpnp.reshape(c, c.shape[-2:])
-        if all(dim == 1 for dim in c.shape[:-2])
-        else None
+    def solve(c_f, b_f, uplo, _):
+        n, nrhs, batch_size = b_f.shape
+        if c_f.ndim == 2 and _fold_rhs_batch(
+            exec_q, res_type, batch_size, nrhs
+        ):
+            _potrs(c_f, dpnp.reshape(b_f, (n, -1), order="F"), uplo, exec_q)
+        else:
+            _cho_solve_trsm(c_f, b_f, uplo, exec_q)
+
+    # a transposed complex factor is solved with conj(A), see `_factor_f`
+    return _batched_tri_solve(
+        c, b, lower, True, solve, res_type, res_usm_type, exec_q
     )
-    c, b = _align_lu_solve_broadcast(c, b)
+
+
+def _batched_tri_solve(
+    a, b, lower, conj_flipped, solve, res_type, res_usm_type, exec_q
+):
+    """
+    Solve with the triangular matrices or factors `a` (..., n, n) for `b`
+    (n,) or (..., n, nrhs), one of them at least being batched.
+
+    The batch dimensions are broadcast, but an `a` with only size-1 batch
+    dimensions stays 2-D and is shared by the RHS batch.
+    `solve(a_f, b_f, uplo, flipped)` solves in place of the (n, nrhs, batch)
+    F-contiguous `b_f`, given `a_f`, `flipped` from `_factor_f` and `uplo`
+    for `a_f`. With `conj_flipped`, a flipped complex `a` is solved for
+    conj(b), and the solution is conjugated back.
+
+    """
+
+    b_ndim_orig = b.ndim
+    a_bcast, b = _align_lu_solve_broadcast(a, b)
 
     if b.size == 0:
         return dpnp.empty(
             b.shape, dtype=res_type, usm_type=res_usm_type, sycl_queue=exec_q
         )
 
-    n = c.shape[-1]
+    n = a.shape[-1]
     nrhs = b.shape[-1] if b_ndim_orig > 1 else 1
-    batch_size = c.size // (n * n)
+    batch_size = a_bcast.size // (n * n)
 
-    if c_2d is not None:
-        c_f, uplo, conj = _cho_factor_f(c_2d, lower, res_type)
-        fold = _fold_rhs_batch(exec_q, res_type, batch_size, nrhs)
+    # a single matrix, also with size-1 batch dimensions, is not broadcast
+    if a.size == n * n:
+        a = dpnp.reshape(a, (n, n))
     else:
-        fold = False
-        c = dpnp.reshape(c, (batch_size, n, n))
-        c_is_complex = dpnp.issubdtype(c.dtype, dpnp.complexfloating)
-        c = dpnp.astype(c, res_type, copy=False)
-
-        # oneMKL expects each factor in column-major order: (n, n, batch)
-        c_f = dpnp.transpose(c, (1, 2, 0))
-        if c_f.flags.f_contiguous:
-            uplo, conj = int(lower), False
-        else:
-            # pass C-contiguous factors transposed, see `dpnp_cho_solve`
-            c = dpnp.ascontiguousarray(c)
-            c_f = dpnp.transpose(c, (2, 1, 0))
-            uplo, conj = int(not lower), c_is_complex
+        a = dpnp.reshape(a_bcast, (batch_size, n, n))
+    a_f, flipped, a_is_complex = _factor_f(a, res_type)
+    conj = conj_flipped and flipped and a_is_complex
 
     # the solves overwrite `b`: copy it to (n, nrhs, batch) layout,
     # through a view in its shape, so a broadcast `b` is not materialized
-    b_h = dpnp.empty(
+    b_f = dpnp.empty(
         (n, nrhs, batch_size),
         dtype=res_type,
         order="F",
@@ -403,16 +417,13 @@ def _batched_cho_solve(c, lower, b, res_type, res_usm_type, exec_q):
         sycl_queue=exec_q,
     )
     b_nd = b if b_ndim_orig > 1 else b[..., None]
-    x = dpnp.reshape(dpnp.moveaxis(b_h, -1, 0), b_nd.shape, copy=False)
+    x = dpnp.reshape(dpnp.moveaxis(b_f, -1, 0), b_nd.shape, copy=False)
     _copy_rhs(b_nd, x, conj, exec_q)
 
-    if fold:
-        _potrs(c_f, dpnp.reshape(b_h, (n, -1), order="F"), uplo, exec_q)
-    else:
-        _cho_solve_trsm(c_f, b_h, uplo, exec_q)
+    solve(a_f, b_f, int(lower != flipped), flipped)
 
     if conj:
-        dpnp.conj(b_h, out=b_h)
+        dpnp.conj(b_f, out=b_f)
 
     return x if b_ndim_orig > 1 else x[..., 0]
 
@@ -432,38 +443,38 @@ def _cho_solve_trsm(c_f, b_f, uplo, exec_q):
 
     # A = F^H F for an upper factor F and A = F F^H for a lower one
     # (oneapi::mkl::uplo: upper=0, lower=1; trans_op: 0=N, 2=C)
-    _manager = dpu.SequentialOrderManager[exec_q]
-    c_usm = dpnp.get_usm_ndarray(c_f)
     for trans_op in (2, 0) if uplo == 0 else (0, 2):
-        # Call the BLAS extension function _trsm_batch
-        # to solve the systems with triangular matrices
-        ht_ev, trsm_ev = bi._trsm_batch(
-            exec_q,
-            c_usm,
-            dpnp.get_usm_ndarray(b_f),
-            uplo,
-            trans_op=trans_op,
-            depends=_manager.submitted_events,
-        )
-        _manager.add_event_pair(ht_ev, trsm_ev)
+        _trsm(c_f, b_f, uplo, trans_op, False, exec_q)
 
 
-def _cho_factor_f(c, lower, res_type):
+def _factor_f(a, res_type):
     """
-    Return a 2-D factor `c` in the layout expected by oneMKL potrs and trsm.
+    Return the matrix `a` (n, n), or the stack `a` (batch, n, n), cast to
+    `res_type` in the column-major layout of oneMKL: an F-contiguous (n, n)
+    or (n, n, batch) array.
 
-    oneMKL is column-major: an F-contiguous `c` is used as is, otherwise
-    `c.T` is passed with flipped `uplo`, so the solves are with conj(A)
-    for a complex factor and the RHS and the solution have to be conjugated
-    (a real factor cast to a complex type needs none).
+    An F-ordered `a` is used as is, otherwise its C-contiguous copy is passed
+    transposed (flipped), so `uplo` is flipped and op(A) changes. A flipped
+    complex `a` gives conj(A) for op C, so the solves with it are done for
+    the conjugated RHS and solution (a real `a` cast to a complex type needs
+    none).
+    Also returns whether `a` is flipped and whether it was complex.
 
     """
 
-    c_is_complex = dpnp.issubdtype(c.dtype, dpnp.complexfloating)
-    c = dpnp.astype(c, res_type, copy=False)
-    if c.flags.f_contiguous:
-        return c, int(lower), False
-    return dpnp.ascontiguousarray(c).T, int(not lower), c_is_complex
+    a_is_complex = dpnp.issubdtype(a.dtype, dpnp.complexfloating)
+    a = dpnp.astype(a, res_type, copy=False)
+
+    if a.ndim == 2:
+        if a.flags.f_contiguous:
+            return a, False, a_is_complex
+        return dpnp.ascontiguousarray(a).T, True, a_is_complex
+
+    a_f = dpnp.transpose(a, (1, 2, 0))
+    if a_f.flags.f_contiguous:
+        return a_f, False, a_is_complex
+    a = dpnp.ascontiguousarray(a)
+    return dpnp.transpose(a, (2, 1, 0)), True, a_is_complex
 
 
 def _fold_rhs_batch(exec_q, res_type, batch_size, nrhs):
@@ -489,6 +500,23 @@ def _fold_rhs_batch(exec_q, res_type, batch_size, nrhs):
     )
 
 
+def _fold_tri_rhs(exec_q, res_type, batch_size, nrhs):
+    """
+    Whether to solve with a 2-D triangular matrix in one trsm call, with the
+    RHS batch folded into the columns.
+
+    The rule of `_fold_rhs_batch` for float64 only: for a single trsm with
+    oneMKL 2026.2, the shared matrix (stride 0) pays off in float64 on Intel
+    GPUs (PVC, Battlemage, Lunar Lake, Panther Lake), while in float32 it is
+    up to 1.9x slower on Alder Lake and at most 1.3x faster elsewhere.
+
+    """
+
+    return res_type != dpnp.float64 or _fold_rhs_batch(
+        exec_q, res_type, batch_size, nrhs
+    )
+
+
 def _potrs(c_f, b_f, uplo, exec_q):
     """Solve ``A X = B`` in place of the F-contiguous `b_f` with potrs."""
 
@@ -504,6 +532,41 @@ def _potrs(c_f, b_f, uplo, exec_q):
         depends=_manager.submitted_events,
     )
     _manager.add_event_pair(ht_ev, potrs_ev)
+
+
+def _trsm(a_f, b_f, uplo, trans_op, unit_diagonal, exec_q):
+    """
+    Solve ``op(A) X = B`` in place of the (n, nrhs, batch) F-contiguous `b_f`
+    for the F-contiguous (n, n, batch) or shared (n, n) `a_f`.
+
+    """
+
+    # Call the BLAS extension function _trsm_batch
+    # to solve the systems with triangular matrices
+    _manager = dpu.SequentialOrderManager[exec_q]
+    ht_ev, trsm_ev = bi._trsm_batch(
+        exec_q,
+        dpnp.get_usm_ndarray(a_f),
+        dpnp.get_usm_ndarray(b_f),
+        uplo,
+        trans_op=trans_op,
+        unit_diag=unit_diagonal,
+        depends=_manager.submitted_events,
+    )
+    _manager.add_event_pair(ht_ev, trsm_ev)
+
+
+def _tri_trans_op(trans, flipped):
+    """
+    Return op(A) for oneMKL, given `trans` (0, 1 or 2) of `solve_triangular`.
+
+    For a flipped `a` (see `_factor_f`), oneMKL sees `a.T`: it is solved with
+    its transpose for trans N, and with it for trans T and C (for a complex
+    `a`, the conjugated system is solved for trans C).
+
+    """
+
+    return int(trans == 0) if flipped else trans
 
 
 def _copy_rhs(src, dst, conj, exec_q):
@@ -747,7 +810,8 @@ def dpnp_cho_solve(c, lower, b, overwrite_b=False, check_finite=True):
     if b.size == 0:
         return dpnp.empty_like(b, dtype=res_type, usm_type=res_usm_type)
 
-    c_f, uplo, conj = _cho_factor_f(c, lower, res_type)
+    c_f, flipped, c_is_complex = _factor_f(c, res_type)
+    uplo, conj = int(lower != flipped), flipped and c_is_complex
 
     # SciPy-compatible behavior
     # Copy is required if:
@@ -1124,3 +1188,120 @@ def dpnp_lu_solve(lu, piv, b, trans=0, overwrite_b=False, check_finite=True):
     _manager.add_event_pair(ht_ev, getrs_ev)
 
     return b_h
+
+
+def dpnp_solve_triangular(
+    a,
+    b,
+    trans=0,
+    lower=False,
+    unit_diagonal=False,
+    overwrite_b=False,
+    check_finite=True,
+):
+    """
+    dpnp_solve_triangular(a, b, trans=0, lower=False, unit_diagonal=False,
+                          overwrite_b=False, check_finite=True)
+
+    Solve the equation ``a x = b`` for `x`, assuming `a` is a triangular
+    matrix (SciPy-compatible behavior).
+
+    This function mimics the behavior of `scipy.linalg.solve_triangular`
+    including support for `overwrite_b` and `check_finite`, with `trans`
+    given as 0, 1 or 2.
+
+    """
+
+    res_usm_type, exec_q = get_usm_allocations([a, b])
+    res_type = _common_type(a, b)
+
+    # as SciPy, report the shapes of a single system
+    b_core = b.shape if b.ndim < 2 else b.shape[-2:]
+    if a.shape[-1] != b_core[0]:
+        raise ValueError(
+            f"shapes of a {a.shape[-2:]} and b {b_core} are incompatible"
+        )
+    batch_shape = dpnp.broadcast_shapes(a.shape[:-2], b.shape[:-2])
+    is_empty = 0 in batch_shape or 0 in b_core
+
+    # submit all checks before waiting for the first result
+    is_finite = (
+        (dpnp.isfinite(a).all(), dpnp.isfinite(b).all()) if check_finite else ()
+    )
+    # as SciPy, the diagonal is read only to solve a non-empty system
+    is_nonsingular = (
+        unit_diagonal
+        or is_empty
+        or dpnp.all(dpnp.diagonal(a, axis1=-2, axis2=-1))
+    )
+
+    if not all(is_finite):
+        raise ValueError("array must not contain infs or NaNs")
+    if not is_nonsingular:
+        # the first zero of the first singular matrix, as SciPy reports it
+        is_zero = dpnp.diagonal(a, axis1=-2, axis2=-1) == 0
+        idx = int(dpnp.argmax(dpnp.ravel(is_zero))) % a.shape[-1]
+        raise dpnp.linalg.LinAlgError(
+            f"singular matrix: resolution failed at diagonal {idx}"
+        )
+
+    if a.ndim > 2 or b.ndim > 2:
+
+        def solve(a_f, b_f, uplo, flipped):
+            n, nrhs, batch_size = b_f.shape
+            if a_f.ndim == 2 and _fold_tri_rhs(
+                exec_q, res_type, batch_size, nrhs
+            ):
+                b_f = dpnp.reshape(b_f, (n, -1, 1), order="F")
+            trans_op = _tri_trans_op(trans, flipped)
+            _trsm(a_f, b_f, uplo, trans_op, unit_diagonal, exec_q)
+
+        # `overwrite_b` only permits overwriting: a batched `b` is copied
+        return _batched_tri_solve(
+            a, b, lower, trans == 2, solve, res_type, res_usm_type, exec_q
+        )
+
+    # accommodate empty arrays
+    if is_empty:
+        return dpnp.empty_like(b, dtype=res_type, usm_type=res_usm_type)
+
+    a_f, flipped, a_is_complex = _factor_f(a, res_type)
+    conj = flipped and trans == 2 and a_is_complex
+
+    # SciPy-compatible behavior
+    # Copy is required if:
+    # - overwrite_b is False (always copy),
+    # - dtype mismatch,
+    # - not F-contiguous,
+    # - not writeable,
+    # - USM type differs from the result one,
+    # - b overlaps `a` (e.g. `solve_triangular(a, a)`)
+    if (
+        not overwrite_b
+        or b.usm_type != res_usm_type
+        or _is_copy_required(b, res_type)
+        or ti._array_overlap(dpnp.get_usm_ndarray(a), dpnp.get_usm_ndarray(b))
+    ):
+        b_f = dpnp.empty_like(
+            b, order="F", dtype=res_type, usm_type=res_usm_type
+        )
+        _copy_rhs(b, b_f, conj, exec_q)
+    else:
+        # input is suitable for in-place modification
+        b_f = dpnp.get_result_array(b)
+        if conj:
+            dpnp.conj(b_f, out=b_f)
+
+    _trsm(
+        a_f,
+        dpnp.reshape(b_f, (a.shape[0], -1, 1), order="F"),
+        int(lower != flipped),
+        _tri_trans_op(trans, flipped),
+        unit_diagonal,
+        exec_q,
+    )
+
+    if conj:
+        dpnp.conj(b_f, out=b_f)
+
+    return b_f
