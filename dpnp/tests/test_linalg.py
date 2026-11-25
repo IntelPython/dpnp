@@ -912,7 +912,6 @@ class TestSolveTriangular:
             assert_array_equal(b, b_np)
         assert_array_equal(a, a_np)
 
-    # sizes on both sides of 32, where oneMKL trtrs changes its algorithm
     @pytest.mark.parametrize("n", [1, 32, 33, 64])
     @pytest.mark.parametrize("lower", [True, False])
     @pytest.mark.parametrize("unit_diagonal", [True, False])
