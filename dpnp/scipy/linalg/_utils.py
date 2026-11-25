@@ -483,8 +483,8 @@ def _fold_rhs_batch(exec_q, res_type, batch_size, nrhs):
     folded into the columns.
 
     Otherwise, for a real type on GPU and a small batch, where oneMKL potrs
-    slows down above 16 columns, the factor is shared by the batch in
-    trsm_batch (stride 0).
+    and trsm slow down above 16 columns (internal MKLD-20503), the factor is
+    shared by the batch in trsm_batch (stride 0).
     The cutoffs were measured with oneMKL 2026.2 on Intel GPUs (PVC,
     Battlemage, Panther Lake), so CUDA and HIP devices always fold.
 
@@ -507,8 +507,9 @@ def _fold_tri_rhs(exec_q, res_type, batch_size, nrhs):
 
     The rule of `_fold_rhs_batch` for float64 only: for a single trsm with
     oneMKL 2026.2, the shared matrix (stride 0) pays off in float64 on Intel
-    GPUs (PVC, Battlemage, Lunar Lake, Panther Lake), while in float32 it is
-    up to 1.9x slower on Alder Lake and at most 1.3x faster elsewhere.
+    GPUs (PVC, Battlemage, Lunar Lake, Panther Lake; internal MKLD-20503),
+    while in float32 it is up to 1.9x slower on Alder Lake and at most 1.3x
+    faster elsewhere.
 
     """
 
