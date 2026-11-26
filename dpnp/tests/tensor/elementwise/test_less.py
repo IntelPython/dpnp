@@ -181,3 +181,14 @@ def test_less_very_large_py_int():
     x = dpt.asarray(py_int, dtype="u8")
     assert not x < -1
     assert dpt.less(-1, x)
+
+
+@pytest.mark.parametrize("py_int", [-(2**63) - 1, 2**64])
+def test_less_py_int_out_of_int_range(py_int):
+    get_queue_or_skip()
+
+    x = dpt.asarray(3, dtype="i8")
+    with pytest.raises(OverflowError):
+        dpt.less(x, py_int)
+    with pytest.raises(OverflowError):
+        dpt.less(py_int, x)

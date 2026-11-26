@@ -252,3 +252,26 @@ def test_arg_validation():
     wt = tu.WeakFloatingType(2.0)
     with pytest.raises(ValueError):
         tu._resolve_weak_types(wt, wt, None)
+
+
+def test_resolve_weak_types_all_py_ints_min_int_dtype():
+    dev = MockDevice(fp16=True, fp64=True)
+
+    wit = tu.WeakIntegralType(2**63)
+    res = tu._resolve_weak_types_all_py_ints(wit, dpt.int64, dev)
+    assert res == (dpt.uint64, dpt.int64)
+
+    wit = tu.WeakIntegralType(-1)
+    res = tu._resolve_weak_types_all_py_ints(dpt.uint8, wit, dev)
+    assert res == (dpt.uint8, dpt.int8)
+
+
+@pytest.mark.parametrize("val", [-(2**63) - 1, 2**64])
+def test_resolve_weak_types_all_py_ints_out_of_int_range(val):
+    dev = MockDevice(fp16=True, fp64=True)
+    wit = tu.WeakIntegralType(val)
+
+    with pytest.raises(OverflowError):
+        tu._resolve_weak_types_all_py_ints(wit, dpt.int8, dev)
+    with pytest.raises(OverflowError):
+        tu._resolve_weak_types_all_py_ints(dpt.int8, wit, dev)

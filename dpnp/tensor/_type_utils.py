@@ -426,6 +426,19 @@ def _resolve_weak_types(o1_dtype, o2_dtype, dev):
         return o1_dtype, o2_dtype
 
 
+def _min_int_dtype(val):
+    """
+    Returns the smallest integer data type that can hold the Python integer
+    `val`, or raises `OverflowError` when no integer data type can.
+    """
+    dt = np.min_scalar_type(val)
+    if dt.kind not in "iu":
+        raise OverflowError(
+            f"Python integer {val} out of bounds for every integer data type"
+        )
+    return dpt.dtype(dt)
+
+
 def _resolve_weak_types_all_py_ints(o1_dtype, o2_dtype, dev):
     """
     Resolves weak data type per NEP-0050 for comparisons and
@@ -456,7 +469,7 @@ def _resolve_weak_types_all_py_ints(o1_dtype, o2_dtype, dev):
                 o1_val = o1_dtype.get()
                 o2_iinfo = dpt.iinfo(o2_dtype)
                 if (o1_val < o2_iinfo.min) or (o1_val > o2_iinfo.max):
-                    return dpt.dtype(np.min_scalar_type(o1_val)), o2_dtype
+                    return _min_int_dtype(o1_val), o2_dtype
             return o2_dtype, o2_dtype
     elif _is_weak_dtype(o2_dtype):
         o1_kind_num = _strong_dtype_num_kind(o1_dtype)
@@ -479,7 +492,7 @@ def _resolve_weak_types_all_py_ints(o1_dtype, o2_dtype, dev):
                 o2_val = o2_dtype.get()
                 o1_iinfo = dpt.iinfo(o1_dtype)
                 if (o2_val < o1_iinfo.min) or (o2_val > o1_iinfo.max):
-                    return o1_dtype, dpt.dtype(np.min_scalar_type(o2_val))
+                    return o1_dtype, _min_int_dtype(o2_val)
             return o1_dtype, o1_dtype
     else:
         return o1_dtype, o2_dtype
