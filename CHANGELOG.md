@@ -59,8 +59,8 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Fixed `dpnp.partition` to accept NumPy integers and integer arrays as `kth`, and to raise as NumPy does for a boolean or an empty `kth` [#3138](https://github.com/IntelPython/dpnp/pull/3138)
 * Fixed `dpnp.nanmedian` raising `TypeError` for an `out` array of a lower precision data type instead of casting to it as `dpnp.median` does [#3138](https://github.com/IntelPython/dpnp/pull/3138)
 * Fixed a `TypeError` in `dpnp.from_dlpack` and `dpnp.tensor.from_dlpack` when importing a DLPack tensor on a oneAPI device with a NULL data pointer, which DLPack asks for in a tensor of size zero [#3197](https://github.com/IntelPython/dpnp/pull/3197)
-* Fixed binary functions raising `OverflowError` or `ValueError` for a Python integer outside the range of the array data type. The logical functions now raise `OverflowError` for a Python integer outside the `int64` range for any data type  [#XXXX](https://github.com/IntelPython/dpnp/pull/XXXX)
-* Fixed the misleading `ValueError` about an unsupported data type that `dpnp.tensor` comparison functions, `dpnp.tensor.divide` and `dpnp.tensor.searchsorted` raised for a Python integer outside the `int64` and `uint64` ranges, which now raise `OverflowError` [#XXXX](https://github.com/IntelPython/dpnp/pull/XXXX)
+* Fixed binary functions raising `OverflowError` or `ValueError` for a Python integer outside the range of the array data type. The logical functions now raise `OverflowError` for a Python integer outside the `int64` range for any data type [#3202](https://github.com/IntelPython/dpnp/pull/3202)
+* Fixed the misleading `ValueError` about an unsupported data type that `dpnp.tensor` comparison functions, `dpnp.tensor.divide` and `dpnp.tensor.searchsorted` raised for a Python integer outside the `int64` and `uint64` ranges, which now raise `OverflowError` [#3202](https://github.com/IntelPython/dpnp/pull/3202)
 
 ### Security
 
