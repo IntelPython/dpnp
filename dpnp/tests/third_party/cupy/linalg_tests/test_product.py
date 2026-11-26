@@ -13,11 +13,6 @@ from dpnp.tests.helper import has_support_aspect64
 from dpnp.tests.third_party.cupy import testing
 from dpnp.tests.third_party.cupy.testing._helper import skip_if_after_baseline
 
-# both numpy.dot (NumPy 2.6+) and dpnp.dot warn for a.ndim >= 2 and b.ndim > 2
-_ignore_dot_nd_deprecation = pytest.mark.filterwarnings(
-    "ignore:.*dot received arrays with a.ndim >= 2:DeprecationWarning"
-)
-
 
 @testing.parameterize(
     *testing.product(
@@ -50,9 +45,9 @@ _ignore_dot_nd_deprecation = pytest.mark.filterwarnings(
 class TestDot(unittest.TestCase):
     # no_int8=True is added to avoid overflow for shape=((2, 3, 4), (3, 4, 2))
     # and ((2, 3), (3, 4)) cases on cpu
-    @_ignore_dot_nd_deprecation
     @testing.for_all_dtypes_combination(["dtype_a", "dtype_b"], no_int8=True)
     @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
+    @pytest.mark.filterwarnings("ignore:.*a.ndim.*b.ndim:DeprecationWarning")
     def test_dot(self, xp, dtype_a, dtype_b):
         shape_a, shape_b = self.shape
         if self.trans_a:
@@ -65,11 +60,11 @@ class TestDot(unittest.TestCase):
             b = testing.shaped_arange(shape_b, xp, dtype_b)
         return xp.dot(a, b)
 
-    @_ignore_dot_nd_deprecation
     @testing.for_float_dtypes(name="dtype_a")
     @testing.for_float_dtypes(name="dtype_b")
     @testing.for_float_dtypes(name="dtype_c")
     @testing.numpy_cupy_allclose(accept_error=ValueError)
+    @pytest.mark.filterwarnings("ignore:.*a.ndim.*b.ndim:DeprecationWarning")
     def test_dot_with_out(self, xp, dtype_a, dtype_b, dtype_c):
         shape_a, shape_b = self.shape
         if self.trans_a:
@@ -252,26 +247,38 @@ class TestProduct:
         b = testing.shaped_arange((2,), xp, dtype)
         return xp.dot(a, b)
 
-    @_ignore_dot_nd_deprecation
     @testing.for_all_dtypes(no_int8=True)
     @testing.numpy_cupy_allclose()
     def test_transposed_dot(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype).transpose(1, 0, 2)
         b = testing.shaped_arange((2, 3, 4), xp, dtype).transpose(0, 2, 1)
-        return xp.dot(a, b)
+        if xp is numpy and testing.numpy_satisfies("<2.6"):
+            res = xp.dot(a, b)
+        else:
+            # NumPy 2.6 deprecated this pointing at tensordot, we do too
+            with pytest.warns(DeprecationWarning, match="a.ndim.*b.ndim"):
+                res = xp.dot(a, b)
 
-    @_ignore_dot_nd_deprecation
+        return res
+
     @testing.for_all_dtypes(no_int8=True)
     @testing.numpy_cupy_allclose()
     def test_transposed_dot_with_out(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype).transpose(1, 0, 2)
         b = testing.shaped_arange((4, 2, 3), xp, dtype).transpose(2, 0, 1)
         c = xp.ndarray((3, 2, 3, 2), dtype=dtype)
-        xp.dot(a, b, out=c)
+        if xp is numpy and testing.numpy_satisfies("<2.6"):
+            xp.dot(a, b, out=c)
+        else:
+            # NumPy 2.6 deprecated this pointing at tensordot, we do too
+            with pytest.warns(DeprecationWarning, match="a.ndim.*b.ndim"):
+                xp.dot(a, b, out=c)
+
         return c
 
-    @_ignore_dot_nd_deprecation
     @testing.for_all_dtypes()
+    # Note that CuPy doesn't warn here (it errors first)
+    @pytest.mark.filterwarnings("ignore:.*a.ndim.*b.ndim:DeprecationWarning")
     def test_transposed_dot_with_out_f_contiguous(self, dtype):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((2, 3, 4), xp, dtype).transpose(1, 0, 2)

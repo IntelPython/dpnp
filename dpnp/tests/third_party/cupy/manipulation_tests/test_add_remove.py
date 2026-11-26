@@ -103,7 +103,7 @@ class TestDelete:
         return xp.delete(arr, make_obj(xp))
 
 
-class TestAppend(unittest.TestCase):
+class TestAppend:
 
     @testing.for_all_dtypes_combination(
         names=["dtype1", "dtype2"], no_bool=True
@@ -119,20 +119,37 @@ class TestAppend(unittest.TestCase):
         names=["dtype1", "dtype2"], no_bool=True
     )
     @testing.numpy_cupy_array_equal()
+    @pytest.mark.filterwarnings("ignore:.*append.*scalar:FutureWarning")
     def test_scalar_lhs(self, xp, dtype1, dtype2):
         scalar = xp.dtype(dtype1).type(10).item()
         return xp.append(scalar, xp.arange(20, dtype=dtype2))
 
-    @pytest.mark.filterwarnings(
-        "ignore:.*append converted Python numeric scalars:FutureWarning"
-    )
     @testing.for_all_dtypes_combination(
         names=["dtype1", "dtype2"], no_bool=True
     )
     @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
+    @pytest.mark.filterwarnings("ignore:.*append.*scalar:FutureWarning")
     def test_scalar_rhs(self, xp, dtype1, dtype2):
         scalar = xp.dtype(dtype2).type(10).item()
         return xp.append(xp.arange(20, dtype=dtype1), scalar)
+
+    @pytest.mark.skip("Scalar input is not supported")
+    @pytest.mark.parametrize(
+        "val1,val2,expected_dtype",
+        # Cover (relevant) branches for the future warning that
+        # NumPy also gives since NumPy 2.6. (expedcted dtype is still old one)
+        [
+            (cupy.ones(3, dtype="float32"), 1.0, "float64"),
+            (cupy.ones(3, dtype="uint8"), 200, "int64"),
+            (cupy.ones(3, dtype="float32"), 1j, "complex128"),
+        ],
+    )
+    def test_scalar_futurewarning(self, val1, val2, expected_dtype):
+        # Note that the above tests, cover the actual result dtype.
+        with pytest.warns(FutureWarning, match="append.*scalar"):
+            assert cupy.append(val1, val2).dtype == cupy.dtype(expected_dtype)
+        with pytest.warns(FutureWarning, match="append.*scalar"):
+            assert cupy.append(val2, val1).dtype == cupy.dtype(expected_dtype)
 
     @pytest.mark.skip("Scalar input is not supported")
     @testing.for_all_dtypes_combination(
