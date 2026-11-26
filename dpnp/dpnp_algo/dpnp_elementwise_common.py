@@ -73,6 +73,9 @@ __all__ = [
     "acceptance_fn_negative",
     "acceptance_fn_sign",
     "acceptance_fn_subtract",
+    "py_int_for_comparison",
+    "py_int_for_divide",
+    "py_int_for_logical",
     "resolve_weak_types_2nd_arg_int",
 ]
 
@@ -598,6 +601,13 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
             sycl_dev - The :class:`dpctl.SyclDevice` where the function
                 evaluation is carried out.
         One of `o1_dtype` and `o2_dtype` must be a ``dtype`` instance.
+    py_int_converter : {None, callable}, optional
+        Function that replaces a Python integer argument of this binary
+        function before its data type is resolved. The function takes
+        2 arguments:
+            x - The Python integer argument
+            other - The other argument, an array
+        and returns the scalar to use instead of `x`.
 
     """
 
@@ -612,6 +622,7 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
         binary_inplace_fn=None,
         acceptance_fn=None,
         weak_type_resolver=None,
+        py_int_converter=None,
     ):
         def _call_func(src1, src2, dst, sycl_queue, depends=None):
             """
@@ -642,6 +653,7 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
             weak_type_resolver=weak_type_resolver,
         )
         self.__name__ = "DPNPBinaryFunc"
+        self.py_int_converter_ = py_int_converter
 
     def __call__(
         self,
@@ -679,6 +691,12 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
                 f"Requested function={self.name_} only takes `out` or `dtype` "
                 "as an argument, but both were provided."
             )
+
+        if self.py_int_converter_ is not None:
+            if _is_py_int(x1):
+                x1 = self.py_int_converter_(x1, x2)
+            elif _is_py_int(x2):
+                x2 = self.py_int_converter_(x2, x1)
 
         x1_usm = dpnp.get_usm_ndarray_or_scalar(x1)
         x2_usm = dpnp.get_usm_ndarray_or_scalar(x2)
@@ -1428,3 +1446,49 @@ def resolve_weak_types_2nd_arg_int(o1_dtype, o2_dtype, sycl_dev):
                     dti.default_device_int_type(sycl_dev)
                 )
     return dtu._resolve_weak_types(o1_dtype, o2_dtype, sycl_dev)
+
+
+_INT64_MIN = numpy.iinfo(numpy.int64).min
+_INT64_MAX = numpy.iinfo(numpy.int64).max
+_UINT64_MAX = numpy.iinfo(numpy.uint64).max
+
+
+def _is_py_int(x):
+    """Return ``True`` if `x` is a Python integer, but not a boolean."""
+    return isinstance(x, int) and not isinstance(x, bool)
+
+
+def py_int_for_comparison(x, other):
+    """
+    Replace a Python integer outside the range of every integer data type
+    with the infinity of its sign, which an integer array compares with alike.
+
+    """
+
+    if other.dtype.kind in "iu" and not _INT64_MIN <= x <= _UINT64_MAX:
+        return numpy.inf if x > 0 else -numpy.inf
+    return x
+
+
+def py_int_for_divide(x, other):
+    """
+    Convert a Python integer outside the range of every integer data type
+    to a float, as NumPy divides an integer array by it in floating point.
+
+    """
+
+    if other.dtype.kind in "iu" and not _INT64_MIN <= x <= _UINT64_MAX:
+        return float(x)
+    return x
+
+
+def py_int_for_logical(x, _other):
+    """
+    Convert a Python integer to its truth value, as NumPy converts it to int64
+    first and so raises outside the int64 range.
+
+    """
+
+    if not _INT64_MIN <= x <= _INT64_MAX:
+        raise OverflowError(f"Python integer {x} out of bounds for int64")
+    return bool(x)

@@ -71,6 +71,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     acceptance_fn_negative,
     acceptance_fn_sign,
     acceptance_fn_subtract,
+    py_int_for_divide,
     resolve_weak_types_2nd_arg_int,
 )
 from .dpnp_array import dpnp_array
@@ -1542,6 +1543,7 @@ divide = DPNPBinaryFunc(
     binary_inplace_fn=ti._divide_inplace,
     acceptance_fn=dtu._acceptance_fn_divide,
     weak_type_resolver=dtu._resolve_weak_types_all_py_ints,
+    py_int_converter=py_int_for_divide,
 )
 
 

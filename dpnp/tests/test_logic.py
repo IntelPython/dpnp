@@ -19,6 +19,7 @@ from .helper import (
     get_complex_dtypes,
     get_float_complex_dtypes,
     get_float_dtypes,
+    get_integer_dtypes,
     get_integer_float_dtypes,
     numpy_version,
 )
@@ -423,6 +424,50 @@ def test_comparison_no_broadcast_with_shapes(op, sh1, sh2):
     with pytest.raises(ValueError):
         getattr(dpnp, op)(x1, x2)
         getattr(numpy, op)(x1_np, x2_np)
+
+
+class TestPyIntScalar:
+    LOGICAL_OPS = ["logical_and", "logical_or", "logical_xor"]
+
+    @pytest.mark.parametrize(
+        "op",
+        [
+            "equal",
+            "greater",
+            "greater_equal",
+            "less",
+            "less_equal",
+            "not_equal",
+        ],
+    )
+    @pytest.mark.parametrize("val", [-(2**100), -(2**63) - 1, 2**64, 2**100])
+    @pytest.mark.parametrize("dt", get_integer_dtypes(all_int_types=True))
+    def test_comparison_out_of_range(self, op, val, dt):
+        info = numpy.iinfo(dt)
+        a = numpy.array([info.min, 0, info.max], dtype=dt)
+        ia = dpnp.array(a)
+
+        assert_equal(getattr(dpnp, op)(ia, val), getattr(numpy, op)(a, val))
+        assert_equal(getattr(dpnp, op)(val, ia), getattr(numpy, op)(val, a))
+
+    @pytest.mark.parametrize("op", LOGICAL_OPS)
+    @pytest.mark.parametrize("val", [0, 2**40, -(2**63), 2**63 - 1])
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    def test_logical(self, op, val, dt):
+        a = numpy.array([0, 1, 0, 3], dtype=dt)
+        ia = dpnp.array(a)
+
+        assert_equal(getattr(dpnp, op)(ia, val), getattr(numpy, op)(a, val))
+        assert_equal(getattr(dpnp, op)(val, ia), getattr(numpy, op)(val, a))
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    @pytest.mark.parametrize("op", LOGICAL_OPS)
+    @pytest.mark.parametrize("val", [2**63, -(2**63) - 1])
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    def test_logical_out_of_int64_range(self, xp, op, val, dt):
+        a = xp.array([0, 1], dtype=dt)
+        assert_raises(OverflowError, getattr(xp, op), a, val)
+        assert_raises(OverflowError, getattr(xp, op), val, a)
 
 
 @pytest.mark.parametrize(

@@ -530,3 +530,14 @@ def test_add_out_need_temporary():
     dpt.add(x[:6], 1, out=x[-6:])
 
     assert dpt.all(x[:-6] == 1) and dpt.all(x[-6:] == 2)
+
+
+def test_add_out_overlap_scalar_cast():
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported("f8", q)
+
+    # the kernel reads the float32 scalar as float64
+    x = dpt.ones(5, dtype="f8", sycl_queue=q)
+    r = dpt.add(x, np.float32(2.5), out=x)
+    assert r is x
+    assert dpt.all(x == 3.5)
