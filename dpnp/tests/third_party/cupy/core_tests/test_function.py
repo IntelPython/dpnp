@@ -5,9 +5,7 @@ import pytest
 
 import dpnp as cupy
 
-# from cupy._core import core
 # from cupy.cuda import compiler
-# from cupy.cuda import runtime
 from dpnp.tests.third_party.cupy import testing
 
 pytest.skip(
@@ -16,9 +14,7 @@ pytest.skip(
 
 
 def _compile_func(kernel_name, code):
-    # workaround for hipRTC
-    extra_source = core._get_header_source() if runtime.is_hip else None
-    mod = compiler._compile_module_with_cache(code, extra_source=extra_source)
+    mod = compiler._compile_module_with_cache(code)
     return mod.get_function(kernel_name)
 
 
