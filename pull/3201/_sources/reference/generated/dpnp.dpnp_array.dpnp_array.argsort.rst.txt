@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.dpnp\_array.dpnp\_array.argsort
+====================================
+
+.. currentmodule:: dpnp.dpnp_array
+
+method
+
+.. automethod:: dpnp_array.argsort

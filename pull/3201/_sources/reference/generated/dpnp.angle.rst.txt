@@ -1,0 +1,10 @@
+﻿
+
+dpnp.angle
+==========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: angle

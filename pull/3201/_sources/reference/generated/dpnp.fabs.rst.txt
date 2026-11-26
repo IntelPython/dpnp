@@ -1,0 +1,10 @@
+﻿
+
+dpnp.fabs
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: fabs
