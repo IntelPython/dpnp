@@ -1,0 +1,14 @@
+
+:orphan:
+
+
+dpnp.ndarray.sycl\_queue
+========================
+
+.. currentmodule:: dpnp
+
+
+property
+
+
+.. autoproperty:: ndarray.sycl_queue

@@ -1,0 +1,10 @@
+﻿
+
+dpnp.unique\_inverse
+====================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: unique_inverse

@@ -1,0 +1,10 @@
+﻿
+
+dpnp.power
+==========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: power
