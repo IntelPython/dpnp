@@ -51,9 +51,13 @@ import numpy
 import dpnp
 import dpnp.libtensor._tensor_elementwise_impl as ti
 import dpnp.tensor as dpt
-from dpnp.tensor._type_utils import _resolve_weak_types_all_py_ints
 
-from .dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
+from .dpnp_algo.dpnp_elementwise_common import (
+    DPNPBinaryComparisonFunc,
+    DPNPBinaryFunc,
+    DPNPUnaryFunc,
+    py_int_for_logical,
+)
 from .dpnp_array import dpnp_array
 from .dpnp_utils import get_usm_allocations
 from .exceptions import ExecutionPlacementError
@@ -658,12 +662,11 @@ array([ True,  True, False])
 
 """
 
-equal = DPNPBinaryFunc(
+equal = DPNPBinaryComparisonFunc(
     "equal",
     ti._equal_result_type,
     ti._equal,
     _EQUAL_DOCSTRING,
-    weak_type_resolver=_resolve_weak_types_all_py_ints,
 )
 
 
@@ -735,12 +738,11 @@ array([ True, False])
 
 """
 
-greater = DPNPBinaryFunc(
+greater = DPNPBinaryComparisonFunc(
     "greater",
     ti._greater_result_type,
     ti._greater,
     _GREATER_DOCSTRING,
-    weak_type_resolver=_resolve_weak_types_all_py_ints,
 )
 
 
@@ -813,12 +815,11 @@ array([ True,  True, False])
 
 """
 
-greater_equal = DPNPBinaryFunc(
+greater_equal = DPNPBinaryComparisonFunc(
     "greater_equal",
     ti._greater_equal_result_type,
     ti._greater_equal,
     _GREATER_EQUAL_DOCSTRING,
-    weak_type_resolver=_resolve_weak_types_all_py_ints,
 )
 
 
@@ -1759,12 +1760,11 @@ array([ True, False])
 
 """
 
-less = DPNPBinaryFunc(
+less = DPNPBinaryComparisonFunc(
     "less",
     ti._less_result_type,
     ti._less,
     _LESS_DOCSTRING,
-    weak_type_resolver=_resolve_weak_types_all_py_ints,
 )
 
 
@@ -1836,12 +1836,11 @@ array([False,  True,  True])
 
 """
 
-less_equal = DPNPBinaryFunc(
+less_equal = DPNPBinaryComparisonFunc(
     "less_equal",
     ti._less_equal_result_type,
     ti._less_equal,
     _LESS_EQUAL_DOCSTRING,
-    weak_type_resolver=_resolve_weak_types_all_py_ints,
 )
 
 
@@ -1920,6 +1919,7 @@ logical_and = DPNPBinaryFunc(
     ti._logical_and_result_type,
     ti._logical_and,
     _LOGICAL_AND_DOCSTRING,
+    py_int_converter=py_int_for_logical,
 )
 
 
@@ -2063,6 +2063,7 @@ logical_or = DPNPBinaryFunc(
     ti._logical_or_result_type,
     ti._logical_or,
     _LOGICAL_OR_DOCSTRING,
+    py_int_converter=py_int_for_logical,
 )
 
 
@@ -2139,6 +2140,7 @@ logical_xor = DPNPBinaryFunc(
     ti._logical_xor_result_type,
     ti._logical_xor,
     _LOGICAL_XOR_DOCSTRING,
+    py_int_converter=py_int_for_logical,
 )
 
 
@@ -2209,10 +2211,9 @@ array([False,  True])
 
 """
 
-not_equal = DPNPBinaryFunc(
+not_equal = DPNPBinaryComparisonFunc(
     "not_equal",
     ti._not_equal_result_type,
     ti._not_equal,
     _NOT_EQUAL_DOCSTRING,
-    weak_type_resolver=_resolve_weak_types_all_py_ints,
 )

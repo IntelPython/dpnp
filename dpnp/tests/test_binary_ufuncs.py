@@ -816,6 +816,36 @@ class TestNextafter:
         assert_equal(result, expected)
 
 
+class TestOutOfRangePyInt:
+    @pytest.mark.parametrize(
+        "func",
+        [
+            "arctan2",
+            "copysign",
+            "divide",
+            "heaviside",
+            "hypot",
+            "logaddexp",
+            "logaddexp2",
+            "nextafter",
+        ],
+    )
+    @pytest.mark.parametrize("val", [2**63, 2**64, -(2**63) - 1])
+    @pytest.mark.parametrize("dt", [dpnp.bool] + get_integer_dtypes())
+    @numpy.errstate(over="ignore")
+    def test_float_result(self, func, val, dt):
+        a = numpy.array([1, 2, 5], dtype=dt)
+        ia = dpnp.array(a)
+
+        result = getattr(dpnp, func)(ia, val)
+        expected = getattr(numpy, func)(a, val)
+        assert_dtype_allclose(result, expected)
+
+        result = getattr(dpnp, func)(val, ia)
+        expected = getattr(numpy, func)(val, a)
+        assert_dtype_allclose(result, expected)
+
+
 class TestPower:
     ALL_DTYPES = get_all_dtypes(no_none=True)
 

@@ -500,3 +500,19 @@ def test_atan2_special_case_ninf_and_ninf(dt):
     diff = dpt.abs(dpt.subtract(actual, expected))
     atol = 8 * dpt.finfo(diff.dtype).eps
     assert dpt.all(dpt.less_equal(diff, atol))
+
+
+@pytest.mark.parametrize("dt", ["b1", "i4", "i8", "u8"])
+@pytest.mark.parametrize("val", [2**63, 2**64, -(2**63) - 1])
+def test_atan2_python_int_out_of_dtype_range(dt, val):
+    q = get_queue_or_skip()
+
+    a = np.array([1, 2, 5], dtype=dt)
+    x = dpt.asarray(a, sycl_queue=q)
+    for r, expected in [
+        (dpt.atan2(x, val), np.arctan2(a, val)),
+        (dpt.atan2(val, x), np.arctan2(val, a)),
+    ]:
+        assert _compare_dtypes(r.dtype, expected.dtype, sycl_queue=q)
+        tol = 8 * dpt.finfo(r.dtype).resolution
+        assert_allclose(dpt.asnumpy(r), expected, atol=tol, rtol=tol)

@@ -50,6 +50,16 @@ from ._type_utils import (
 )
 
 
+def _scalar_to_usm_ndarray(o, o_dtype, buf_dt, exec_q):
+    """
+    Converts a scalar operand to the data type the kernel reads, `buf_dt`, or
+    to `o_dtype` when the kernel reads that one.
+    """
+    # one conversion keeps a Python int that `o_dtype` can't hold from overflow
+    dt = o_dtype if buf_dt is None else buf_dt
+    return dpt.asarray(o, dtype=dt, sycl_queue=exec_q)
+
+
 class UnaryElementwiseFunc:
     """
     Class that implements unary element-wise functions.
@@ -600,9 +610,10 @@ class BinaryElementwiseFunc:
                             ):
                                 buf2_dt = o2_dtype
                         else:
-                            src2 = dpt.asarray(
-                                o2, dtype=o2_dtype, sycl_queue=exec_q
+                            src2 = _scalar_to_usm_ndarray(
+                                o2, o2_dtype, buf2_dt, exec_q
                             )
+                            buf2_dt = None
                         if buf2_dt is None:
                             if src2.shape != res_shape:
                                 src2 = dpt.broadcast_to(src2, res_shape)
@@ -652,11 +663,13 @@ class BinaryElementwiseFunc:
         if isinstance(o1, dpt.usm_ndarray):
             src1 = o1
         else:
-            src1 = dpt.asarray(o1, dtype=o1_dtype, sycl_queue=exec_q)
+            src1 = _scalar_to_usm_ndarray(o1, o1_dtype, buf1_dt, exec_q)
+            buf1_dt = None
         if isinstance(o2, dpt.usm_ndarray):
             src2 = o2
         else:
-            src2 = dpt.asarray(o2, dtype=o2_dtype, sycl_queue=exec_q)
+            src2 = _scalar_to_usm_ndarray(o2, o2_dtype, buf2_dt, exec_q)
+            buf2_dt = None
 
         if order == "A":
             order = (

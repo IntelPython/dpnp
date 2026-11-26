@@ -19,6 +19,7 @@ from .helper import (
     get_complex_dtypes,
     get_float_complex_dtypes,
     get_float_dtypes,
+    get_integer_dtypes,
     get_integer_float_dtypes,
     numpy_version,
 )
@@ -423,6 +424,105 @@ def test_comparison_no_broadcast_with_shapes(op, sh1, sh2):
     with pytest.raises(ValueError):
         getattr(dpnp, op)(x1, x2)
         getattr(numpy, op)(x1_np, x2_np)
+
+
+class TestPyIntScalar:
+    COMPARISON_OPS = [
+        "equal",
+        "greater",
+        "greater_equal",
+        "less",
+        "less_equal",
+        "not_equal",
+    ]
+    LOGICAL_OPS = ["logical_and", "logical_or", "logical_xor"]
+
+    @pytest.mark.parametrize("op", COMPARISON_OPS)
+    @pytest.mark.parametrize("val", [-(2**100), -(2**63) - 1, 2**64, 2**100])
+    @pytest.mark.parametrize("dt", get_integer_dtypes(all_int_types=True))
+    def test_comparison_out_of_range(self, op, val, dt):
+        info = numpy.iinfo(dt)
+        a = numpy.array([info.min, 0, info.max], dtype=dt)
+        ia = dpnp.array(a)
+
+        assert_equal(getattr(dpnp, op)(ia, val), getattr(numpy, op)(a, val))
+        assert_equal(getattr(dpnp, op)(val, ia), getattr(numpy, op)(val, a))
+
+    @pytest.mark.parametrize("op", COMPARISON_OPS)
+    @pytest.mark.parametrize("val", [-(2**63) - 1, 2**64])
+    def test_comparison_out_of_range_out_order(self, op, val):
+        a = numpy.asfortranarray(
+            numpy.arange(6, dtype=numpy.int16).reshape(2, 3)
+        )
+        ia = dpnp.array(a, order="F")
+
+        for x1, x2, ix1, ix2 in [(a, val, ia, val), (val, a, val, ia)]:
+            expected = getattr(numpy, op)(x1, x2)
+            result = getattr(dpnp, op)(ix1, ix2)
+            assert_equal(result, expected)
+            assert result.flags.f_contiguous
+
+            iout = dpnp.empty(expected.shape, dtype=dpnp.bool)
+            result = getattr(dpnp, op)(ix1, ix2, out=iout)
+            assert result is iout
+            assert_equal(result, expected)
+
+    @pytest.mark.parametrize(
+        "op",
+        [
+            operator.eq,
+            operator.ge,
+            operator.gt,
+            operator.le,
+            operator.lt,
+            operator.ne,
+        ],
+    )
+    def test_comparison_out_of_range_operator(self, op):
+        a = numpy.array([-1, 0, 1])
+        ia = dpnp.array(a)
+        assert_equal(op(ia, 2**64), op(a, 2**64))
+        assert_equal(op(-(2**64), ia), op(-(2**64), a))
+
+    @pytest.mark.parametrize("op", COMPARISON_OPS)
+    def test_comparison_out_of_range_dtype(self, op):
+        # with `dtype`, the integer is converted to it as any scalar operand
+        ia = dpnp.array([1, 2, 3])
+        assert_raises(OverflowError, getattr(dpnp, op), ia, 2**64, dtype="i8")
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    @pytest.mark.parametrize("op", COMPARISON_OPS)
+    def test_comparison_out_of_range_bool(self, xp, op):
+        a = xp.array([True, False])
+        assert_raises(OverflowError, getattr(xp, op), a, 2**64)
+        assert_raises(OverflowError, getattr(xp, op), 2**64, a)
+
+    @pytest.mark.parametrize("op", COMPARISON_OPS)
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_comparison_out_of_range_float(self, op, dt):
+        a = numpy.array([1.0, 2**64, numpy.inf], dtype=dt)
+        ia = dpnp.array(a)
+        assert_equal(getattr(dpnp, op)(ia, 2**64), getattr(numpy, op)(a, 2**64))
+        assert_equal(getattr(dpnp, op)(2**64, ia), getattr(numpy, op)(2**64, a))
+
+    @pytest.mark.parametrize("op", LOGICAL_OPS)
+    @pytest.mark.parametrize("val", [0, 2**40, -(2**63), 2**63 - 1])
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    def test_logical(self, op, val, dt):
+        a = numpy.array([0, 1, 0, 3], dtype=dt)
+        ia = dpnp.array(a)
+
+        assert_equal(getattr(dpnp, op)(ia, val), getattr(numpy, op)(a, val))
+        assert_equal(getattr(dpnp, op)(val, ia), getattr(numpy, op)(val, a))
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    @pytest.mark.parametrize("op", LOGICAL_OPS)
+    @pytest.mark.parametrize("val", [2**63, -(2**63) - 1])
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    def test_logical_out_of_int64_range(self, xp, op, val, dt):
+        a = xp.array([0, 1], dtype=dt)
+        assert_raises(OverflowError, getattr(xp, op), a, val)
+        assert_raises(OverflowError, getattr(xp, op), val, a)
 
 
 @pytest.mark.parametrize(
