@@ -828,6 +828,11 @@ cpdef object from_dlpack_capsule(object py_caps):
             offset_max = 0
             for i in range(dl_tensor.ndim - 1, -1, -1):
                 shape_i = dl_tensor.shape[i]
+                if shape_i == 0:
+                    # an empty tensor spans no elements
+                    offset_min = 0
+                    offset_max = 0
+                    break
                 # NULL strides mean C-contiguous before DLPack 1.2
                 if dl_tensor.strides is NULL:
                     stride_i = c_stride

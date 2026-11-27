@@ -437,6 +437,33 @@ def test_from_dlpack_capsule_null_data(versioned):
 
 
 @pytest.mark.parametrize(
+    "shape, strides",
+    [((0, 3), (3, 1)), ((3, 0), (1, 3)), ((2, 0, 4), (0, 4, 1))],
+)
+def test_from_dlpack_capsule_null_data_empty_nd(shape, strides):
+    q = get_queue_or_skip()
+    device = dpt.empty(0, sycl_queue=q).__dlpack_device__()
+    mt = make_managed_tensor(
+        make_dl_tensor(shape, (kDLInt, 32, 1), device, strides=strides)
+    )
+
+    y = _dlp.from_dlpack_capsule(make_dlpack_capsule(mt))
+    assert y.shape == shape
+    # the other extents of an empty tensor take no memory
+    assert y.usm_data.nbytes == y.itemsize
+
+
+@pytest.mark.parametrize("shape", [(0, 3), (2, 0, 4)])
+def test_from_dlpack_empty_nd_memory(shape):
+    q = get_queue_or_skip()
+    x = dpt.empty(shape, dtype="i4", sycl_queue=q)
+
+    y = dpt.from_dlpack(x)
+    assert y.shape == shape
+    assert y.usm_data.nbytes == x.usm_data.nbytes
+
+
+@pytest.mark.parametrize(
     "versioned", [True, False], ids=["versioned", "legacy"]
 )
 @pytest.mark.parametrize("shape", [(5,), (2, 3), (1, 4), (2, 0, 3)])

@@ -59,6 +59,7 @@ This release drops support for Python 3.10, making Python 3.11 the minimum requi
 * Fixed `dpnp.partition` to accept NumPy integers and integer arrays as `kth`, and to raise as NumPy does for a boolean or an empty `kth` [#3138](https://github.com/IntelPython/dpnp/pull/3138)
 * Fixed `dpnp.nanmedian` raising `TypeError` for an `out` array of a lower precision data type instead of casting to it as `dpnp.median` does [#3138](https://github.com/IntelPython/dpnp/pull/3138)
 * Fixed a `TypeError` in `dpnp.from_dlpack` and `dpnp.tensor.from_dlpack` when importing a DLPack tensor on a oneAPI device with a NULL data pointer, which DLPack asks for in a tensor of size zero [#3197](https://github.com/IntelPython/dpnp/pull/3197)
+* Fixed `dpnp.from_dlpack` and `dpnp.tensor.from_dlpack` sizing the memory of an empty DLPack tensor on a oneAPI device by its nonzero dimensions, which allocated that size for a NULL data pointer (8 GiB for shape `(0, 2**31)` of `int32`) and otherwise claimed more memory than the producer allocated [#3203](https://github.com/IntelPython/dpnp/pull/3203)
 * Fixed a segfault in `dpnp.from_dlpack` and `dpnp.tensor.from_dlpack` when importing a DLPack tensor on a oneAPI device with NULL strides, which DLPack before 1.2 allows for a C-contiguous tensor [#3183](https://github.com/IntelPython/dpnp/pull/3183)
 
 ### Security
