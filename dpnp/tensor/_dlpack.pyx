@@ -828,6 +828,11 @@ cpdef object from_dlpack_capsule(object py_caps):
             for i in range(dl_tensor.ndim):
                 stride_i = dl_tensor.strides[i]
                 shape_i = dl_tensor.shape[i]
+                if shape_i == 0:
+                    # an empty tensor spans no elements
+                    offset_min = 0
+                    offset_max = 0
+                    break
                 if shape_i > 1:
                     shape_i -= 1
                     if stride_i > 0:
