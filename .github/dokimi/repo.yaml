@@ -1,0 +1,7 @@
+# Agent guidance files that dokimi (https://github.com/intel/dokimi) checks in CI,
+# see .github/workflows/agent-guidance.yml.
+schema: repo_manifest.v1
+id: dpnp
+source: {url: https://github.com/IntelPython/dpnp}
+guidance:
+  globs: ["**/AGENTS.md"]
