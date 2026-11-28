@@ -1,0 +1,10 @@
+﻿
+
+dpnp.rollaxis
+=============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: rollaxis

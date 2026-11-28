@@ -1,0 +1,10 @@
+﻿
+
+dpnp.atan
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: atan
