@@ -15,6 +15,7 @@
          dpnp_array.any
          dpnp_array.argmax
          dpnp_array.argmin
+         dpnp_array.argpartition
          dpnp_array.argsort
          dpnp_array.asnumpy
          dpnp_array.astype
