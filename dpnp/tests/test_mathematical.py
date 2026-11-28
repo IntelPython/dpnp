@@ -1178,12 +1178,18 @@ class TestInterp:
 
     @pytest.mark.parametrize("dtype", ALL_DTYPES_NO_COMPLEX)
     @pytest.mark.parametrize(
-        "left, right", [[-40, 40], [dpnp.array(-40), dpnp.array(40)]]
+        "left, right",
+        [
+            [-40, 40],
+            [dpnp.array(-40), dpnp.array(40)],
+            [-40, None],
+            [None, 40],
+        ],
     )
     def test_left_right_args(self, dtype, left, right):
         x = numpy.array([0, 1, 2, 3, 4, 5, 6], dtype=dtype)
-        xp = numpy.array([0, 3, 6], dtype=dtype)
-        fp = numpy.array([0, 9, 18], dtype=dtype)
+        xp = numpy.array([1, 3, 5], dtype=dtype)
+        fp = numpy.array([3, 9, 15], dtype=dtype)
 
         ix = dpnp.array(x)
         ixp = dpnp.array(xp)
