@@ -1,0 +1,14 @@
+
+:orphan:
+
+
+dpnp.random.BitGenerator.seed\_seq
+==================================
+
+.. currentmodule:: dpnp.random
+
+
+property
+
+
+.. autoproperty:: BitGenerator.seed_seq
