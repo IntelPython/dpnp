@@ -34,6 +34,7 @@ import dpnp.tensor as dpt
 
 from .helper import (
     get_queue_or_skip,
+    no_host_copy,
     skip_if_dtype_not_supported,
 )
 
@@ -662,3 +663,74 @@ def test_asarray_to_device_with_unsupported_dtype(dt):
     x = dpt.ones(10, dtype=dt, device=d0)
     y = dpt.asarray(x, device=d1)
     assert y.sycl_device == d1
+
+
+@pytest.mark.parametrize("dt", _all_dtypes)
+@pytest.mark.parametrize("kind", ["python", "numpy", "0d"])
+def test_asarray_scalar_no_host_copy(dt, kind):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dt, q)
+
+    val = {"b": True, "i": 7, "u": 7, "f": 2.5, "c": 1.5 - 2j}
+    expected = np.asarray(val[np.dtype(dt).kind], dtype=dt)
+    if kind == "python":
+        obj, dtype = expected.item(), dt
+    elif kind == "numpy":
+        obj, dtype = expected[()], None
+    else:
+        obj, dtype = expected, None
+
+    with no_host_copy():
+        x = dpt.asarray(obj, dtype=dtype, sycl_queue=q)
+
+    assert x.shape == ()
+    assert x.dtype == expected.dtype
+    assert dpt.asnumpy(x) == expected
+
+
+def test_asarray_scalar_fp64_on_device_without_fp64():
+    q = get_queue_or_skip()
+    if q.sycl_device.has_aspect_fp64:
+        pytest.skip("Device supports double precision")
+
+    with no_host_copy():
+        x = dpt.asarray(np.float64(2.5), sycl_queue=q)
+        y = dpt.asarray(np.complex128(1.5 - 2j), sycl_queue=q)
+
+    assert x.dtype == dpt.float32
+    assert y.dtype == dpt.complex64
+    assert dpt.asnumpy(x) == np.float32(2.5)
+    assert dpt.asnumpy(y) == np.complex64(1.5 - 2j)
+
+
+@pytest.mark.parametrize(
+    "obj, dt, expected",
+    [
+        (np.float32(2.5), "i4", 2),
+        (np.int64(300), "i1", 44),
+        (np.array(1.5 - 2j, dtype="c8"), "f4", 1.5),
+    ],
+)
+def test_asarray_scalar_with_cast(obj, dt, expected):
+    q = get_queue_or_skip()
+
+    with no_host_copy():
+        x = dpt.asarray(obj, dtype=dt, sycl_queue=q)
+
+    assert x.shape == ()
+    assert x.dtype == dpt.dtype(dt)
+    assert dpt.asnumpy(x) == np.asarray(expected, dtype=dt)
+
+
+# these float to integer casts are undefined in C++, so the fill must give
+# what the copy kernel gives on the same device
+@pytest.mark.parametrize("val", [np.nan, np.inf, -np.inf, 1e300], ids=repr)
+@pytest.mark.parametrize("dt", ["u1", "i8"])
+def test_asarray_scalar_cast_matches_copy(val, dt):
+    q = get_queue_or_skip()
+
+    with no_host_copy():
+        x = dpt.asarray(np.float64(val), dtype=dt, sycl_queue=q)
+    y = dpt.asarray(np.array([val]), dtype=dt, sycl_queue=q)
+
+    assert dpt.asnumpy(x) == dpt.asnumpy(y)[0]

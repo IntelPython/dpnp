@@ -26,11 +26,12 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+import numpy as np
 import pytest
 
 import dpnp.tensor as dpt
 
-from ..helper import get_queue_or_skip
+from ..helper import get_queue_or_skip, no_host_copy
 
 unary_fn = dpt.negative
 binary_fn = dpt.divide
@@ -148,3 +149,24 @@ def test_binary_no_inplace_op():
 
     with pytest.raises(ValueError):
         dpt.logaddexp._inplace_op(x1, x2)
+
+
+@pytest.mark.parametrize(
+    "op, expected",
+    [
+        (lambda x: x * 2, 2),
+        (lambda x: 2 * x, 2),
+        (lambda x: x == np.float32(2), False),
+        (lambda x: dpt.add(x, 2, out=x), 3),
+        (lambda x: x.__iadd__(2), 3),
+    ],
+    ids=["array_scalar", "scalar_array", "numpy_scalar", "out", "inplace"],
+)
+def test_binary_scalar_operand_no_host_copy(op, expected):
+    q = get_queue_or_skip()
+    x = dpt.ones(16, dtype="f4", sycl_queue=q)
+
+    with no_host_copy():
+        res = op(x)
+
+    assert (dpt.asnumpy(res) == expected).all()

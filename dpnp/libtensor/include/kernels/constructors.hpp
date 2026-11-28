@@ -62,6 +62,8 @@ class linear_sequence_affine_kernel;
 template <typename Ty>
 class full_strided_kernel;
 template <typename Ty>
+class full_strided_1d_kernel;
+template <typename Ty>
 class eye_kernel;
 
 using namespace dpnp::tensor::offset_utils;
@@ -343,6 +345,52 @@ sycl::event full_strided_impl(sycl::queue &q,
 
         cgh.parallel_for<KernelName>(sycl::range<1>{nelems},
                                      Impl(dst_tp, fill_v, strided_indexer));
+    });
+
+    return fill_ev;
+}
+
+/*!
+ * @brief Function to submit kernel to fill given one-dimensional strided
+ * memory allocation with specified value.
+ *
+ * @param exec_q  Sycl queue to which kernel is submitted for execution.
+ * @param nelems  Length of the sequence
+ * @param offset  Offset of the first element from `dst_p`, in elements.
+ * @param step  Stride between consecutive elements, in elements.
+ * @param fill_v  Value to fill the array with
+ * @param dst_p  Kernel accessible USM pointer to the start of array to be
+ * populated.
+ * @param depends  List of events to wait for before starting computations, if
+ * any.
+ *
+ * @return Event to wait on to ensure that computation completes.
+ * @defgroup CtorKernels
+ */
+template <typename dstTy>
+sycl::event full_strided_1d_impl(sycl::queue &q,
+                                 std::size_t nelems,
+                                 ssize_t offset,
+                                 ssize_t step,
+                                 dstTy fill_v,
+                                 char *dst_p,
+                                 const std::vector<sycl::event> &depends)
+{
+    dpnp::tensor::type_utils::validate_type_for_device<dstTy>(q);
+
+    dstTy *dst_tp = reinterpret_cast<dstTy *>(dst_p);
+
+    using dpnp::tensor::offset_utils::Strided1DIndexer;
+    const Strided1DIndexer indexer(offset, nelems, step);
+
+    sycl::event fill_ev = q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+
+        using KernelName = full_strided_1d_kernel<dstTy>;
+        using Impl = FullStridedFunctor<dstTy, Strided1DIndexer>;
+
+        cgh.parallel_for<KernelName>(sycl::range<1>{nelems},
+                                     Impl(dst_tp, fill_v, indexer));
     });
 
     return fill_ev;
