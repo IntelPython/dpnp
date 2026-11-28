@@ -74,12 +74,14 @@ jobs:
         run: |
           echo "Latest tag is ${{ steps.find_latest_tag.outputs.tag }}"
 
-      # Only for the local setup-miniconda action; the tests run from the installed package
+      # Only for the local setup-miniconda action and the CI scripts; the tests run from the installed package
       - name: Checkout DPNP repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-          sparse-checkout: .github/actions
+          sparse-checkout: |
+            .github/actions
+            .github/scripts
 
       - name: Setup miniconda
         uses: ./.github/actions/setup-miniconda
@@ -129,7 +131,7 @@ jobs:
         id: run_tests
         continue-on-error: true
         run: |
-          python -m pytest -ra --pyargs ${{ env.package-name }}.tests
+          python -m pytest -ra --continue-on-collection-errors --pyargs ${{ env.package-name }}.tests
         env:
           SYCL_CACHE_PERSISTENT: 1
 
@@ -146,7 +148,8 @@ jobs:
             . $CONDA/etc/profile.d/mamba.sh
             mamba activate ${{ env.test-env-name }}
 
-            python -m pytest -ra --pyargs ${{ env.package-name }}.tests
+            python ".github/scripts/test_retries.py" record
+            python -m pytest -ra --lf --continue-on-collection-errors --pyargs ${{ env.package-name }}.tests
         env:
           SYCL_CACHE_PERSISTENT: 1
 
@@ -159,6 +162,7 @@ jobs:
           max_attempts: ${{ env.rerun-tests-max-attempts }}
           retry_on: any
           command: |
-            python -m pytest -ra --pyargs ${{ env.package-name }}.tests
+            python ".github/scripts/test_retries.py" record
+            python -m pytest -ra --lf --continue-on-collection-errors --pyargs ${{ env.package-name }}.tests
         env:
           SYCL_CACHE_PERSISTENT: 1
