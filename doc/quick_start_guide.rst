@@ -230,7 +230,8 @@ needed when building C++ extensions with dpnp:
     python -m dpnp --tensor-include-dir  # print path to libtensor include directory
 
 These options are useful when building pybind11 extensions that use
-``dpnp4pybind11.hpp`` or libtensor kernel headers.
+``dpnp4pybind11.hpp`` or libtensor kernel headers. Such extensions must be
+compiled as C++20 or later.
 
 
 Testing
