@@ -229,6 +229,7 @@ add_subdirectory(libtensor/source)
 add_subdirectory(libtensor/extensions/blas)
 add_subdirectory(libtensor/extensions/fft)
 add_subdirectory(libtensor/extensions/lapack)
+add_subdirectory(libtensor/extensions/rng)
 add_subdirectory(libtensor/extensions/vm)
 add_subdirectory(libtensor/extensions/sparse)
 

@@ -378,6 +378,8 @@ cpdef to_dlpack_versioned_capsule(usm_ndarray usm_ary, bint copied):
     cdef Py_ssize_t si = 1
 
     ary_base = usm_ary.get_base()
+    # read for 0-d arrays too, they are exported read-only otherwise
+    flags = usm_ary.flags_
 
     # Find ordinal number of the parent device
     device_id = get_array_dlpack_device_id(usm_ary)
@@ -402,7 +404,6 @@ cpdef to_dlpack_versioned_capsule(usm_ndarray usm_ary, bint copied):
         for i in range(nd):
             shape_strides_ptr[i] = shape_ptr[i]
         strides_ptr = usm_ary.get_strides()
-        flags = usm_ary.flags_
         if strides_ptr:
             for i in range(nd):
                 shape_strides_ptr[nd + i] = strides_ptr[i]
@@ -602,7 +603,8 @@ cdef class _DLManagedTensorOwner:
         self.dlm_tensor = NULL
 
     def __dealloc__(self):
-        if self.dlm_tensor:
+        # the deleter may be NULL if the tensor needs no cleanup
+        if self.dlm_tensor and self.dlm_tensor.deleter is not NULL:
             self.dlm_tensor.deleter(self.dlm_tensor)
             self.dlm_tensor = NULL
 
@@ -625,7 +627,8 @@ cdef class _DLManagedTensorVersionedOwner:
         self.dlmv_tensor = NULL
 
     def __dealloc__(self):
-        if self.dlmv_tensor:
+        # the deleter may be NULL if the tensor needs no cleanup
+        if self.dlmv_tensor and self.dlmv_tensor.deleter is not NULL:
             self.dlmv_tensor.deleter(self.dlmv_tensor)
             self.dlmv_tensor = NULL
 
@@ -759,6 +762,7 @@ cpdef object from_dlpack_capsule(object py_caps):
     cdef Py_ssize_t element_offset = 0
     cdef int64_t stride_i = -1
     cdef int64_t shape_i = -1
+    cdef int64_t c_stride = 1
 
     if cpython.PyCapsule_IsValid(py_caps, "dltensor"):
         dlm_tensor = <DLManagedTensor*>cpython.PyCapsule_GetPointer(
@@ -822,9 +826,19 @@ cpdef object from_dlpack_capsule(object py_caps):
         if dl_tensor.ndim > 0:
             offset_min = 0
             offset_max = 0
-            for i in range(dl_tensor.ndim):
-                stride_i = dl_tensor.strides[i]
+            for i in range(dl_tensor.ndim - 1, -1, -1):
                 shape_i = dl_tensor.shape[i]
+                if shape_i == 0:
+                    # an empty tensor spans no elements
+                    offset_min = 0
+                    offset_max = 0
+                    break
+                # NULL strides mean C-contiguous before DLPack 1.2
+                if dl_tensor.strides is NULL:
+                    stride_i = c_stride
+                    c_stride *= shape_i
+                else:
+                    stride_i = dl_tensor.strides[i]
                 if shape_i > 1:
                     shape_i -= 1
                     if stride_i > 0:
@@ -848,7 +862,7 @@ cpdef object from_dlpack_capsule(object py_caps):
             cpython.PyCapsule_SetName(py_caps, "used_dltensor_versioned")
 
         if dl_tensor.data is NULL:
-            usm_mem = dpmem.MemoryUSMDevice(sz, q)
+            usm_mem = dpmem.MemoryUSMDevice(sz, queue=q)
         else:
             mem_ptr_delta = dl_tensor.byte_offset - (
                 element_offset * element_bytesize

@@ -625,6 +625,8 @@ def test_logic_op_2in(op, device):
     [
         pytest.param("searchsorted", [11, 12, 13, 14, 15], 13),
         pytest.param("broadcast_to", numpy.ones(7), (2, 7)),
+        pytest.param("partition", [[2.0, 1.0, 7.0], [4.0, 0.0, 3.0]], 1),
+        pytest.param("argpartition", [[2.0, 1.0, 7.0], [4.0, 0.0, 3.0]], 1),
     ],
 )
 @pytest.mark.parametrize("device", valid_queues, ids=dev_ids)
@@ -938,6 +940,79 @@ def test_random_state(func, args, kwargs, device, usm_type):
     res_array = getattr(rs, func)(*args, **kwargs)
     assert usm_type == res_array.usm_type
     assert_sycl_queue_equal(res_array.sycl_queue, sycl_queue)
+
+
+_generator_methods = [
+    pytest.param("normal", [], {"size": (3, 4)}),
+    pytest.param("random", [], {"size": (3, 4)}),
+    pytest.param("standard_normal", [], {"size": (3, 4)}),
+    pytest.param("uniform", [], {"size": (3, 4)}),
+]
+
+
+@pytest.mark.parametrize("func, args, kwargs", _generator_methods)
+@pytest.mark.parametrize("device", valid_queues, ids=dev_ids)
+def test_generator(func, args, kwargs, device):
+    rng = dpnp.random.default_rng(1, device=device)
+    res = getattr(rng, func)(*args, **kwargs)
+    assert_sycl_queue_equal(res.sycl_queue, device)
+    assert_sycl_queue_equal(res.sycl_queue, rng.sycl_queue)
+
+    sycl_queue = dpctl.SyclQueue(device.sycl_device, property="in_order")
+    rng = dpnp.random.default_rng(1, sycl_queue=sycl_queue)
+    res = getattr(rng, func)(*args, **kwargs)
+    assert_sycl_queue_equal(res.sycl_queue, sycl_queue)
+
+
+@pytest.mark.parametrize("bit_generator", [dpnp.random.Philox4x3210])
+@pytest.mark.parametrize("device", valid_queues, ids=dev_ids)
+def test_bit_generator(bit_generator, device):
+    sycl_queue = dpctl.SyclQueue(device.sycl_device, property="in_order")
+    bg = bit_generator(1, sycl_queue=sycl_queue)
+    assert_sycl_queue_equal(bg.random_raw(5).sycl_queue, sycl_queue)
+    for child in bg.spawn(2):
+        assert_sycl_queue_equal(child.sycl_queue, sycl_queue)
+
+    bg = bit_generator(1, device=device)
+    assert_sycl_queue_equal(bg.random_raw(5).sycl_queue, device)
+
+
+# "f", "i" and "p" stand for float, integer and probability arrays on another
+# queue than the generator's
+_diff_queue_methods = [
+    pytest.param("normal", ["f"]),
+    pytest.param("uniform", ["f", 5.0]),
+]
+
+
+def _diff_queue_args(args, device):
+    sycl_queue = dpctl.SyclQueue(device.sycl_device)
+    x = {
+        "f": dpnp.full(4, 2.0, sycl_queue=sycl_queue),
+        "i": dpnp.full(4, 5, sycl_queue=sycl_queue),
+        "p": dpnp.full(4, 0.25, sycl_queue=sycl_queue),
+    }
+    return [x[a] if isinstance(a, str) else a for a in args]
+
+
+@pytest.mark.parametrize(
+    "func, args",
+    _diff_queue_methods
+    + [
+        pytest.param("random", [4, None], id="random-out"),
+    ],
+)
+@pytest.mark.parametrize("device", valid_queues, ids=dev_ids)
+def test_generator_diff_queue(func, args, device):
+    rng = dpnp.random.default_rng(1, device=device)
+    args = _diff_queue_args(args, device)
+    kwargs = {}
+    if func in ("permuted", "random") and not dpnp.is_supported_array_type(
+        args[0]
+    ):
+        kwargs["out"] = _diff_queue_args(["f"], device)[0]
+    with assert_raises(ExecutionPlacementError):
+        getattr(rng, func)(*args, **kwargs)
 
 
 @pytest.mark.parametrize("device", valid_queues, ids=dev_ids)

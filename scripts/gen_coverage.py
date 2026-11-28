@@ -50,12 +50,12 @@ _STAGES = ("build", "dpnp-tests", "tensor-tests", "report")
 _DPNP_PROFRAW = "dpnp_pytest.profraw"
 _TENSOR_PROFRAW = "dpnp_tensor_pytest.profraw"
 # pybind11 modules of dpnp/libtensor holding libtensor functions only, unlike
-# _tensor_impl and _tensor_elementwise_impl which hold dpnp functions too
+# _tensor_impl, _tensor_elementwise_impl and _tensor_sorting_impl which hold
+# dpnp functions too
 _TENSOR_ONLY_OBJS = (
     "_tensor_accumulation_impl.",
     "_tensor_linalg_impl.",
     "_tensor_reductions_impl.",
-    "_tensor_sorting_impl.",
 )
 
 
@@ -322,7 +322,7 @@ def export_coverage(args, setup_dir, env, bin_llvm):
                 "export",
                 "-format=lcov",
                 "-ignore-filename-regex=/tmp/icpx*",
-                r"-ignore-filename-regex=.*/libtensor/include/kernels/.*\.hpp$",
+                r"-ignore-filename-regex=.*/libtensor/(include|extensions/[^/]+)/kernels/.*\.hpp$",
                 "-instr-profile=" + instr_profile_fn,
             ]
             + objects

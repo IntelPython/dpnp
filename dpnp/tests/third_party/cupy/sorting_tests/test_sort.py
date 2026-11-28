@@ -826,7 +826,6 @@ class TestPartition(unittest.TestCase):
         }
     )
 )
-@pytest.mark.skip("argpartition isn't supported yet")
 class TestArgpartition(unittest.TestCase):
 
     def argpartition(self, a, kth, axis=-1):
