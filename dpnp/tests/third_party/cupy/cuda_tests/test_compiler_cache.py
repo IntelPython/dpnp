@@ -15,7 +15,14 @@ pytest.skip(
 #     DiskKernelCacheBackend,
 #     _hash_length,
 #     _default_cache_dir,
+#     _hash_hexdigest,
 # )
+
+
+def test_hash_hexdigest_chunks():
+    chunks = ("", b"a", "\u03b2", b"", "c")
+    assert _hash_hexdigest(*chunks) == _hash_hexdigest(b"\0a\0\xce\xb2\0\0c")
+    assert _hash_hexdigest(*chunks, sep=None) == _hash_hexdigest(b"a\xce\xb2c")
 
 
 class TestDiskKernelCacheBackend:
