@@ -1,8 +1,8 @@
 name: OneAPI packages to build DPNP without OneAPI env activated
 channels:
-  - https://software.repos.intel.com/python/conda/
+  - conda-forge
 dependencies:
   - dpcpp_linux-64
   - mkl-devel-dpcpp
   - onedpl-devel
-  - tbb-devel * intel_* # MKL hardly dependces on TBB from Intel channel
+  - tbb-devel

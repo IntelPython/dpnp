@@ -7,6 +7,9 @@ requires = [
   "cython>=3.1.0",
   # WARNING: use only dpctl version available on PyPi
   "dpctl>=0.23.0",
+  # dpctl's import at build time needs them, which its dev wheels don't declare
+  "intel-cmplr-lib-rt",
+  "intel-sycl-rt",
   "ninja>=1.11.1; platform_system!='Windows'",
   # NOTE: no DPNP restriction on NumPy version, so follow NumPy's drop schedule
   "numpy>=1.26.0",
@@ -109,6 +112,68 @@ Repository = "https://github.com/IntelPython/dpnp.git"
 line-length = 80
 target-version = ['py311', 'py312', 'py313', 'py314', 'py315']
 
+[tool.cibuildwheel]
+build-verbosity = 1
+# TODO: build cp315t once dpctl's dev wheels have it: https://github.com/IntelPython/dpctl/pull/2409
+skip = "cp315t-*"
+
+[tool.cibuildwheel.linux]
+# git describe gives the version, and root doesn't own the copied checkout
+before-all = [
+  "git config --global --add safe.directory '*'",
+  "python {project}/ci/install_icx.py /opt/sdk"
+]
+# The SYCL runtime, oneMKL and the compiler's libraries come from wheels at run time, see [tool.gh-ci].
+# auditwheel would bundle those libraries, so the tag is set here, and ci/build.py checks it.
+repair-wheel-command = "python -m pip install -q wheel && python -m wheel tags --remove --platform-tag manylinux_2_28_x86_64 {wheel} && mv \"$(dirname {wheel})\"/*-manylinux_2_28_x86_64.whl {dest_dir}"
+
+[tool.cibuildwheel.linux.environment]
+# ci/install_icx.py links icpx and installs the libraries here
+CC = "/opt/icx/bin/icx"
+CMAKE_ARGS = "-DDPNP_WITH_REDIST:BOOL=ON"
+CMAKE_BUILD_PARALLEL_LEVEL = "4"
+CMAKE_GENERATOR = "Ninja"
+CMAKE_PREFIX_PATH = "/opt/sdk"
+CPATH = "/opt/sdk/include"
+CXX = "/opt/icx/bin/icpx"
+# As conda-forge links: full RELRO, only the libraries a module uses, and RPATH over LD_LIBRARY_PATH
+LDFLAGS = "-Wl,-z,relro -Wl,-z,now -Wl,--as-needed -Wl,--disable-new-dtags -Wl,--gc-sections"
+# conda-forge's libstdc++, which dpctl's import at build time needs, see ci/install_icx.py
+LD_LIBRARY_PATH = "/opt/stdcxx"
+MKLROOT = "/opt/sdk"
+# The dpctl dev series the wheels require, from dppy's dev index, is what they build against
+PIP_CONSTRAINT = "/project/environments/dpctl_wheel_build.txt"
+# pip skips an index that times out, then finds no dpctl dev build
+PIP_DEFAULT_TIMEOUT = "60"
+PIP_EXTRA_INDEX_URL = "https://pypi.anaconda.org/dppy/label/dev/simple"
+PIP_RETRIES = "10"
+
+[tool.cibuildwheel.windows]
+# Intel's icx, and oneMKL, oneDPL and oneTBB, from conda-forge; DLLs come from wheels at run time, see [tool.gh-ci]
+before-all = "python {project}/ci/install_icx.py C:/sdk"
+# The DLLs come from wheels at run time, so there is nothing to bundle
+repair-wheel-command = ""
+
+[tool.cibuildwheel.windows.environment]
+# ci/install_icx.py installs the compiler and the libraries here
+CC = "C:/sdk/Library/bin/icx.exe"
+CMAKE_BUILD_PARALLEL_LEVEL = "4"
+CMAKE_GENERATOR = "Ninja"
+CMAKE_PREFIX_PATH = "C:/sdk/Library"
+CXX = "C:/sdk/Library/bin/icx.exe"
+DPL_ROOT_HINT = "C:/sdk/Library"
+INCLUDE = "C:/sdk/Library/include;$INCLUDE"
+LIB = "C:/sdk/Library/lib;$LIB"
+MKLROOT = "C:/sdk/Library"
+PATH = "C:/sdk/Library/bin;$PATH"
+# The dpctl dev series the wheels require, from dppy's dev index, is what they build against
+PIP_CONSTRAINT = "environments/dpctl_wheel_build.txt"
+# pip skips an index that times out, then finds no dpctl dev build
+PIP_DEFAULT_TIMEOUT = "60"
+PIP_EXTRA_INDEX_URL = "https://pypi.anaconda.org/dppy/label/dev/simple"
+PIP_RETRIES = "10"
+TBB_ROOT_HINT = "C:/sdk/Library"
+
 [tool.codespell]
 builtin = "clear,rare,informal,names"
 check-filenames = true
@@ -141,6 +206,20 @@ source = [
 
 [tool.cython-lint]
 max-line-length = 80
+
+[tool.gh-ci.pin-compatible]
+# What the wheels need at run time, which conda packages get from the recipe:
+# each >= the version the build installed of what it maps to, < its next major
+dpcpp-cpp-rt = "dpcpp"
+intel-cmplr-lib-rt = "dpcpp"
+intel-sycl-rt = "dpcpp"
+mkl = "mkl-devel-dpcpp"
+onemkl-sycl-blas = "mkl-devel-dpcpp"
+onemkl-sycl-dft = "mkl-devel-dpcpp"
+onemkl-sycl-lapack = "mkl-devel-dpcpp"
+onemkl-sycl-rng = "mkl-devel-dpcpp"
+onemkl-sycl-sparse = "mkl-devel-dpcpp"
+onemkl-sycl-vm = "mkl-devel-dpcpp"
 
 [tool.isort]
 ensure_newline_before_comments = true

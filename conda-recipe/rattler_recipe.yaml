@@ -1,3 +1,5 @@
+# TODO: not built by CI and not kept current (pins, build script variables, run_test scripts);
+# only the reference for building with rattler-build again, see https://github.com/IntelPython/dpnp/pull/3151
 schema_version: 1
 
 context:
