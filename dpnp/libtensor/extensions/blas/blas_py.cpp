@@ -169,10 +169,11 @@ PYBIND11_MODULE(_blas_impl, m, py::mod_gil_not_used())
               "Call `trsm_batch` from oneMKL BLAS library to solve "
               "op(A) X = B for a batch of triangular matrices A "
               "(a 2-D A is shared by the batch). "
-              "trans_op picks op(A): 0=N, 1=T, 2=C.",
+              "trans_op picks op(A): 0=N, 1=T, 2=C. With unit_diag, "
+              "the diagonal of A is assumed to be 1 and is not referenced.",
               py::arg("sycl_queue"), py::arg("matrixA"), py::arg("matrixB"),
               py::arg("upper_lower"), py::arg("trans_op") = 0,
-              py::arg("depends") = py::list());
+              py::arg("unit_diag") = false, py::arg("depends") = py::list());
     }
 
     {

@@ -35,6 +35,7 @@ to provide efficient low-level implementations of standard algorithms.
 
 """
 
+from ._basic import solve_triangular
 from ._decomp_cholesky import cho_factor, cho_solve
 from ._decomp_lu import lu, lu_factor, lu_solve
 
@@ -44,4 +45,5 @@ __all__ = [
     "lu",
     "lu_factor",
     "lu_solve",
+    "solve_triangular",
 ]
