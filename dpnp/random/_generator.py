@@ -37,6 +37,7 @@ driven by a oneMKL or oneMath device engine. The values differ from NumPy's.
 
 # pylint: disable=no-name-in-module
 # pylint: disable=protected-access
+# pylint: disable=too-many-lines
 
 import itertools
 
@@ -44,6 +45,7 @@ import numpy
 
 import dpnp
 import dpnp.libtensor._rng_impl as ri
+import dpnp.libtensor._tensor_impl as ti
 import dpnp.tensor as dpt
 from dpnp.exceptions import ExecutionPlacementError
 from dpnp.tensor import validate_usm_type
@@ -57,6 +59,7 @@ _float_types = (numpy.dtype(numpy.float32), numpy.dtype(numpy.float64))
 # numpy/random/_common.pyx
 _CONS_NONE = 0
 _CONS_NON_NEGATIVE = 1
+_CONS_POSITIVE = 2
 
 
 # Python scalars, the most common parameters, skip the NumPy checks
@@ -140,6 +143,36 @@ def _as_host_float(value):
     return numpy.asarray(value, dtype=numpy.float64)
 
 
+def _check_arrays(params, dtype=None):
+    """
+    `params` as arrays of `dtype` to check, with the module to check them
+    by, which is ``None`` when some are on the device, as the check would
+    wait for the device.
+
+    """
+
+    if any(dpnp.is_supported_array_type(p) for p in params):
+        return None, [None] * len(params)
+    for p in params:
+        _check_host_cast(p)
+    return numpy, [numpy.asarray(p, dtype) for p in params]
+
+
+def _raise_to_float32_tiny(value):
+    """
+    Raise a positive host parameter below the smallest normal ``float32``
+    value to it, as one that is 0 in ``float32`` would be invalid.
+
+    """
+
+    if dpnp.is_supported_array_type(value):
+        return value
+    tiny = numpy.finfo(numpy.float32).tiny
+    val = _as_host_float(value)
+    val = numpy.where((val > 0) & (val < tiny), tiny, val)
+    return val if val.ndim else float(val)
+
+
 def _uniform_range(low, high, dtype, overflow_msg):
     """
     ``high - low``, raising OverflowError with `overflow_msg` unless it is
@@ -194,8 +227,12 @@ def _check_constraint(value, name, cons, scalar):
     if cons == _CONS_NON_NEGATIVE:
         if numpy.any(~numpy.isnan(val) & numpy.signbit(val)):
             raise ValueError(f"{name} < 0")
+    elif cons == _CONS_POSITIVE:
+        if numpy.any(val <= 0):
+            raise ValueError(f"{name} <= 0")
 
 
+# pylint: disable=too-many-public-methods
 class Generator:
     """
     A container for the bit generator and the distribution samplers.
@@ -441,8 +478,19 @@ class Generator:
                     p, dtype=dtype, usm_type=usm_type, sycl_queue=queue
                 )
                 if _repeats_along_samples(p.shape, shape):
-                    return dpnp.ascontiguousarray(p)
-                return dpnp.ascontiguousarray(dpnp.broadcast_to(p, shape))
+                    p = dpnp.ascontiguousarray(p)
+                else:
+                    p = dpnp.ascontiguousarray(dpnp.broadcast_to(p, shape))
+                if out is not None:
+                    usm_p, usm_out = map(dpnp.get_usm_ndarray, (p, out))
+                    # the kernel reads element i % p.size of `p` before
+                    # writing element i of `out`, so only an exact alias is
+                    # safe
+                    if ti._array_overlap(
+                        usm_p, usm_out
+                    ) and not ti._same_logical_tensors(usm_p, usm_out):
+                        p = dpnp.copy(p)
+                return p
             # as in NumPy, None is NaN along with array parameters
             return float(_as_host_float(p))
 
@@ -492,10 +540,21 @@ class Generator:
             kernel_params=kernel_params,
         )
 
-    def _cont(self, kernel, name, size, dtype, usm_type, *params, out=None):
+    def _cont(
+        self,
+        kernel,
+        name,
+        size,
+        dtype,
+        usm_type,
+        *params,
+        out=None,
+        kernel_params=None,
+    ):
         """
         Draw samples of a continuous distribution after checking `params`,
         triples of the value, the name and the constraint of a parameter.
+        `kernel_params` replace the values passed to the kernel.
 
         """
 
@@ -505,7 +564,14 @@ class Generator:
         for value, pname, cons in params:
             _check_constraint(value, pname, cons, scalar)
         return self._float_sample(
-            kernel, values, size, dtype, usm_type, name, out=out
+            kernel,
+            values,
+            size,
+            dtype,
+            usm_type,
+            name,
+            out=out,
+            kernel_params=kernel_params,
         )
 
     def random(self, size=None, dtype=None, out=None, *, usm_type=None):
@@ -784,6 +850,1240 @@ class Generator:
             usm_type,
             (loc, "loc", _CONS_NONE),
             (scale, "scale", _CONS_NON_NEGATIVE),
+        )
+
+    def lognormal(
+        self, mean=0.0, sigma=1.0, size=None, dtype=None, *, usm_type=None
+    ):
+        """
+        Draw samples from a log-normal distribution.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.lognormal`.
+
+        Parameters
+        ----------
+        mean : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \
+                optional
+            The mean of the underlying normal distribution.
+
+            Default: ``0.0``.
+        sigma : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \
+                optional
+            The standard deviation of the underlying normal distribution,
+            non-negative.
+
+            Default: ``1.0``.
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, the broadcast shape of `mean` and
+            `sigma`.
+
+            Default: ``None``.
+        dtype : {None, dtype}, optional
+            The data type of the output, :obj:`dpnp.float32` or
+            :obj:`dpnp.float64`.
+
+            Default: ``None``, which means the default floating-point type of
+            the device.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+            Default: ``None``, which means the USM type of the array
+            parameters, or ``"device"`` when there are none.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> rng = np.random.default_rng(42)
+        >>> y = np.log(rng.lognormal(0.0, 0.5, 10**5))
+        >>> bool(abs(y.mean()) < 0.01), bool(abs(y.std() - 0.5) < 0.01)
+        (True, True)
+
+        """
+        return self._cont(
+            ri._lognormal,
+            "lognormal",
+            size,
+            dtype,
+            usm_type,
+            (mean, "mean", _CONS_NONE),
+            (sigma, "sigma", _CONS_NON_NEGATIVE),
+        )
+
+    def standard_cauchy(self, size=None, dtype=None, *, usm_type=None):
+        """
+        Draw samples from a standard Cauchy distribution with mode = 0.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.standard_cauchy`.
+
+        Parameters
+        ----------
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, a zero-dimensional array is returned.
+
+            Default: ``None``.
+        dtype : {None, dtype}, optional
+            The data type of the output, :obj:`dpnp.float32` or
+            :obj:`dpnp.float64`.
+
+            Default: ``None``, which means the default floating-point type of
+            the device.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+            Default: ``None``, which means ``"device"``.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> rng = np.random.default_rng(42)
+        >>> x = rng.standard_cauchy(10**5)
+        >>> bool(abs(np.median(x)) < 0.05)
+        True
+
+        """
+        return self._float_sample(
+            ri._standard_cauchy, (), size, dtype, usm_type, "standard_cauchy"
+        )
+
+    def wald(self, mean, scale, size=None, dtype=None, *, usm_type=None):
+        """
+        Draw samples from a Wald, or inverse Gaussian, distribution.
+
+        For full documentation refer to :obj:`numpy.random.Generator.wald`.
+
+        Parameters
+        ----------
+        mean : {float, array_like of floats, dpnp.ndarray, usm_ndarray}
+            The mean of the distribution, positive.
+        scale : {float, array_like of floats, dpnp.ndarray, usm_ndarray}
+            The scale parameter of the distribution, positive.
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, the broadcast shape of `mean` and
+            `scale`.
+
+            Default: ``None``.
+        dtype : {None, dtype}, optional
+            The data type of the output, :obj:`dpnp.float32` or
+            :obj:`dpnp.float64`.
+
+            Default: ``None``, which means the default floating-point type of
+            the device.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+            Default: ``None``, which means the USM type of the array
+            parameters, or ``"device"`` when there are none.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> rng = np.random.default_rng(42)
+        >>> x = rng.wald(1.0, 2.0, 10**5)
+        >>> bool((x > 0).all()), bool(abs(x.mean() - 1) < 0.02)
+        (True, True)
+
+        """
+        return self._cont(
+            ri._wald,
+            "wald",
+            size,
+            dtype,
+            usm_type,
+            (mean, "mean", _CONS_POSITIVE),
+            (scale, "scale", _CONS_POSITIVE),
+        )
+
+    def standard_exponential(
+        self,
+        size=None,
+        dtype=None,
+        method="zig",
+        out=None,
+        *,
+        usm_type=None,
+    ):
+        """
+        Draw samples from the standard exponential distribution.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.standard_exponential`.
+
+        Parameters
+        ----------
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, a zero-dimensional array is returned.
+
+            Default: ``None``.
+        dtype : {None, dtype}, optional
+            The data type of the output, :obj:`dpnp.float32` or
+            :obj:`dpnp.float64`.
+
+            Default: ``None``, which means the default floating-point type of
+            the device.
+        method : {"zig", "inv"}, optional
+            The sampling method. Both draw by inversion, see Limitations.
+
+            Default: ``"zig"``.
+        out : {None, dpnp.ndarray, usm_ndarray}, optional
+            A C- or F-contiguous array to fill, of the data type `dtype` and on
+            the SYCL queue of the generator. If `size` is given as well, it
+            must be the shape of `out`.
+
+            Default: ``None``.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array. Ignored when
+            `out` is given.
+
+            Default: ``None``, which means ``"device"``.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples, or `out` when it is given.
+
+        Limitations
+        -----------
+        `dtype` defaults to the default floating-point type of the device, and
+        `usm_type` is not in NumPy's signature. Both methods use inversion;
+        ``"zig"`` is accepted for compatibility.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> rng = np.random.default_rng(42)
+        >>> x = rng.standard_exponential(10**5)
+        >>> bool((x >= 0).all()), bool(abs(x.mean() - 1) < 0.02)
+        (True, True)
+
+        """
+
+        if method not in ("zig", "inv"):
+            raise ValueError("method must be either 'inv' or 'zig'")
+        return self._float_sample(
+            ri._exponential,
+            (),
+            size,
+            dtype,
+            usm_type,
+            "standard_exponential",
+            out=out,
+            kernel_params=(1.0,),
+        )
+
+    def exponential(self, scale=1.0, size=None, dtype=None, *, usm_type=None):
+        """
+        Draw samples from an exponential distribution.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.exponential`.
+
+        Parameters
+        ----------
+        scale : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \
+                optional
+            The scale parameter of the distribution, the inverse of the rate,
+            non-negative.
+
+            Default: ``1.0``.
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, the shape of `scale`.
+
+            Default: ``None``.
+        dtype : {None, dtype}, optional
+            The data type of the output, :obj:`dpnp.float32` or
+            :obj:`dpnp.float64`.
+
+            Default: ``None``, which means the default floating-point type of
+            the device.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+            Default: ``None``, which means the USM type of the array
+            parameters, or ``"device"`` when there are none.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> rng = np.random.default_rng(42)
+        >>> x = rng.exponential(2.0, 10**5)
+        >>> bool((x >= 0).all()), bool(abs(x.mean() - 2) < 0.04)
+        (True, True)
+
+        """
+        return self._cont(
+            ri._exponential,
+            "exponential",
+            size,
+            dtype,
+            usm_type,
+            (scale, "scale", _CONS_NON_NEGATIVE),
+        )
+
+    def pareto(self, a, size=None, dtype=None, *, usm_type=None):
+        """
+        Draw samples from a Pareto II (AKA Lomax) distribution with the
+        specified shape.
+
+        For full documentation refer to :obj:`numpy.random.Generator.pareto`.
+
+        Parameters
+        ----------
+        a : {float, array_like of floats, dpnp.ndarray, usm_ndarray}
+            The shape of the distribution, positive.
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, the shape of `a`.
+
+            Default: ``None``.
+        dtype : {None, dtype}, optional
+            The data type of the output, :obj:`dpnp.float32` or
+            :obj:`dpnp.float64`.
+
+            Default: ``None``, which means the default floating-point type of
+            the device.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+            Default: ``None``, which means the USM type of the array
+            parameters, or ``"device"`` when there are none.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> rng = np.random.default_rng(42)
+        >>> x = rng.pareto(3.0, 10**5)
+        >>> bool((x >= 0).all()), bool(abs((x > 1).mean() - 0.125) < 0.01)
+        (True, True)
+
+        """
+        return self._cont(
+            ri._pareto,
+            "pareto",
+            size,
+            dtype,
+            usm_type,
+            (a, "a", _CONS_POSITIVE),
+        )
+
+    def weibull(self, a, size=None, dtype=None, *, usm_type=None):
+        """
+        Draw samples from a Weibull distribution.
+
+        For full documentation refer to :obj:`numpy.random.Generator.weibull`.
+
+        Parameters
+        ----------
+        a : {float, array_like of floats, dpnp.ndarray, usm_ndarray}
+            The shape of the distribution, non-negative.
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, the shape of `a`.
+
+            Default: ``None``.
+        dtype : {None, dtype}, optional
+            The data type of the output, :obj:`dpnp.float32` or
+            :obj:`dpnp.float64`.
+
+            Default: ``None``, which means the default floating-point type of
+            the device.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+            Default: ``None``, which means the USM type of the array
+            parameters, or ``"device"`` when there are none.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> rng = np.random.default_rng(42)
+        >>> x = rng.weibull(2.0, 10**5)
+        >>> bool((x >= 0).all()), bool(abs((x**2).mean() - 1) < 0.02)
+        (True, True)
+
+        """
+        return self._cont(
+            ri._weibull,
+            "weibull",
+            size,
+            dtype,
+            usm_type,
+            (a, "a", _CONS_NON_NEGATIVE),
+        )
+
+    def power(self, a, size=None, dtype=None, *, usm_type=None):
+        """
+        Draw samples in [0, 1] from a power distribution with positive
+        exponent ``a - 1``.
+
+        For full documentation refer to :obj:`numpy.random.Generator.power`.
+
+        Parameters
+        ----------
+        a : {float, array_like of floats, dpnp.ndarray, usm_ndarray}
+            The parameter of the distribution, positive.
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, the shape of `a`.
+
+            Default: ``None``.
+        dtype : {None, dtype}, optional
+            The data type of the output, :obj:`dpnp.float32` or
+            :obj:`dpnp.float64`.
+
+            Default: ``None``, which means the default floating-point type of
+            the device.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+            Default: ``None``, which means the USM type of the array
+            parameters, or ``"device"`` when there are none.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples.
+
+        Raises
+        ------
+        ValueError
+            If `a` <= 0, for an `a` on the host.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> rng = np.random.default_rng(42)
+        >>> x = rng.power(3.0, 10**5)
+        >>> a = bool(((0 <= x) & (x <= 1)).all())
+        >>> b = bool(abs(x.mean() - 0.75) < 0.005)
+        >>> a, b
+        (True, True)
+
+        """
+        return self._cont(
+            ri._power, "power", size, dtype, usm_type, (a, "a", _CONS_POSITIVE)
+        )
+
+    def rayleigh(self, scale=1.0, size=None, dtype=None, *, usm_type=None):
+        """
+        Draw samples from a Rayleigh distribution.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.rayleigh`.
+
+        Parameters
+        ----------
+        scale : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \
+                optional
+            The scale of the distribution, also its mode, non-negative.
+
+            Default: ``1.0``.
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, the shape of `scale`.
+
+            Default: ``None``.
+        dtype : {None, dtype}, optional
+            The data type of the output, :obj:`dpnp.float32` or
+            :obj:`dpnp.float64`.
+
+            Default: ``None``, which means the default floating-point type of
+            the device.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+            Default: ``None``, which means the USM type of the array
+            parameters, or ``"device"`` when there are none.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> rng = np.random.default_rng(42)
+        >>> x = rng.rayleigh(2.0, 10**5)
+        >>> bool((x >= 0).all()), bool(abs((x**2).mean() - 8) < 0.2)
+        (True, True)
+
+        """
+        return self._cont(
+            ri._rayleigh,
+            "rayleigh",
+            size,
+            dtype,
+            usm_type,
+            (scale, "scale", _CONS_NON_NEGATIVE),
+        )
+
+    def laplace(
+        self, loc=0.0, scale=1.0, size=None, dtype=None, *, usm_type=None
+    ):
+        """
+        Draw samples from the Laplace or double exponential distribution
+        with specified location (or mean) and scale (decay).
+
+        For full documentation refer to :obj:`numpy.random.Generator.laplace`.
+
+        Parameters
+        ----------
+        loc : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \
+                optional
+            The position of the peak of the distribution.
+
+            Default: ``0.0``.
+        scale : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \
+                optional
+            The exponential decay of the distribution, non-negative.
+
+            Default: ``1.0``.
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, the broadcast shape of `loc` and
+            `scale`.
+
+            Default: ``None``.
+        dtype : {None, dtype}, optional
+            The data type of the output, :obj:`dpnp.float32` or
+            :obj:`dpnp.float64`.
+
+            Default: ``None``, which means the default floating-point type of
+            the device.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+            Default: ``None``, which means the USM type of the array
+            parameters, or ``"device"`` when there are none.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> rng = np.random.default_rng(42)
+        >>> x = rng.laplace(1.0, 2.0, 10**5)
+        >>> a = bool(abs(x.mean() - 1) < 0.06)
+        >>> b = bool(abs(abs(x - 1).mean() - 2) < 0.05)
+        >>> a, b
+        (True, True)
+
+        """
+        return self._cont(
+            ri._laplace,
+            "laplace",
+            size,
+            dtype,
+            usm_type,
+            (loc, "loc", _CONS_NONE),
+            (scale, "scale", _CONS_NON_NEGATIVE),
+        )
+
+    def gumbel(
+        self, loc=0.0, scale=1.0, size=None, dtype=None, *, usm_type=None
+    ):
+        """
+        Draw samples from a Gumbel distribution.
+
+        For full documentation refer to :obj:`numpy.random.Generator.gumbel`.
+
+        Parameters
+        ----------
+        loc : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \
+                optional
+            The location of the mode of the distribution.
+
+            Default: ``0.0``.
+        scale : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \
+                optional
+            The scale parameter of the distribution, non-negative.
+
+            Default: ``1.0``.
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, the broadcast shape of `loc` and
+            `scale`.
+
+            Default: ``None``.
+        dtype : {None, dtype}, optional
+            The data type of the output, :obj:`dpnp.float32` or
+            :obj:`dpnp.float64`.
+
+            Default: ``None``, which means the default floating-point type of
+            the device.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+            Default: ``None``, which means the USM type of the array
+            parameters, or ``"device"`` when there are none.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> rng = np.random.default_rng(42)
+        >>> x = rng.gumbel(0.0, 1.0, 10**5)
+        >>> bool(abs(x.mean() - np.euler_gamma) < 0.03)
+        True
+
+        """
+        return self._cont(
+            ri._gumbel,
+            "gumbel",
+            size,
+            dtype,
+            usm_type,
+            (loc, "loc", _CONS_NONE),
+            (scale, "scale", _CONS_NON_NEGATIVE),
+        )
+
+    def logistic(
+        self, loc=0.0, scale=1.0, size=None, dtype=None, *, usm_type=None
+    ):
+        """
+        Draw samples from a logistic distribution.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.logistic`.
+
+        Parameters
+        ----------
+        loc : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \
+                optional
+            The mean of the distribution.
+
+            Default: ``0.0``.
+        scale : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \
+                optional
+            The scale parameter of the distribution, non-negative.
+
+            Default: ``1.0``.
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, the broadcast shape of `loc` and
+            `scale`.
+
+            Default: ``None``.
+        dtype : {None, dtype}, optional
+            The data type of the output, :obj:`dpnp.float32` or
+            :obj:`dpnp.float64`.
+
+            Default: ``None``, which means the default floating-point type of
+            the device.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+            Default: ``None``, which means the USM type of the array
+            parameters, or ``"device"`` when there are none.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> rng = np.random.default_rng(42)
+        >>> x = rng.logistic(1.0, 2.0, 10**5)
+        >>> a = bool(abs(x.mean() - 1) < 0.08)
+        >>> b = bool(abs((x < 1).mean() - 0.5) < 0.01)
+        >>> a, b
+        (True, True)
+
+        """
+        return self._cont(
+            ri._logistic,
+            "logistic",
+            size,
+            dtype,
+            usm_type,
+            (loc, "loc", _CONS_NONE),
+            (scale, "scale", _CONS_NON_NEGATIVE),
+        )
+
+    def triangular(
+        self, left, mode, right, size=None, dtype=None, *, usm_type=None
+    ):
+        """
+        Draw samples from the triangular distribution over the interval
+        [left, right].
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.triangular`.
+
+        Parameters
+        ----------
+        left : {float, array_like of floats, dpnp.ndarray, usm_ndarray}
+            The lower limit of the distribution.
+        mode : {float, array_like of floats, dpnp.ndarray, usm_ndarray}
+            The value where the peak of the distribution occurs, with
+            ``left <= mode <= right``.
+        right : {float, array_like of floats, dpnp.ndarray, usm_ndarray}
+            The upper limit of the distribution, greater than `left`.
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, the broadcast shape of `left`, `mode`
+            and `right`.
+
+            Default: ``None``.
+        dtype : {None, dtype}, optional
+            The data type of the output, :obj:`dpnp.float32` or
+            :obj:`dpnp.float64`.
+
+            Default: ``None``, which means the default floating-point type of
+            the device.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+            Default: ``None``, which means the USM type of the array
+            parameters, or ``"device"`` when there are none.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> rng = np.random.default_rng(42)
+        >>> x = rng.triangular(-1.0, 0.0, 2.0, 10**5)
+        >>> a = bool(((-1 <= x) & (x <= 2)).all())
+        >>> b = bool(abs(x.mean() - 1 / 3) < 0.015)
+        >>> a, b
+        (True, True)
+
+        """
+
+        params = (left, mode, right)
+        self._check_queues(*params)
+        xp, (fleft, fmode, fright) = _check_arrays(params, numpy.float64)
+        if xp is not None:
+            if xp is numpy and _is_scalar_path(*params):
+                for p in params:
+                    _check_real(p)
+            if xp.any(fleft > fmode):
+                raise ValueError("left > mode")
+            if xp.any(fmode > fright):
+                raise ValueError("mode > right")
+            if xp.any(fleft == fright):
+                raise ValueError("left == right")
+        return self._float_sample(
+            ri._triangular, params, size, dtype, usm_type, "triangular"
+        )
+
+    def vonmises(self, mu, kappa, size=None, dtype=None, *, usm_type=None):
+        """
+        Draw samples from a von Mises distribution.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.vonmises`.
+
+        Parameters
+        ----------
+        mu : {float, array_like of floats, dpnp.ndarray, usm_ndarray}
+            The mode of the distribution.
+        kappa : {float, array_like of floats, dpnp.ndarray, usm_ndarray}
+            The concentration of the distribution, non-negative.
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, the broadcast shape of `mu` and
+            `kappa`.
+
+            Default: ``None``.
+        dtype : {None, dtype}, optional
+            The data type of the output, :obj:`dpnp.float32` or
+            :obj:`dpnp.float64`.
+
+            Default: ``None``, which means the default floating-point type of
+            the device.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+            Default: ``None``, which means the USM type of the array
+            parameters, or ``"device"`` when there are none.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> rng = np.random.default_rng(42)
+        >>> x = rng.vonmises(1.0, 4.0, 10**5)
+        >>> a = bool((abs(x) <= np.pi).all())
+        >>> b = bool(abs(np.sin(x - 1).mean()) < 0.01)
+        >>> a, b
+        (True, True)
+
+        """
+        return self._cont(
+            ri._vonmises,
+            "vonmises",
+            size,
+            dtype,
+            usm_type,
+            (mu, "mu", _CONS_NONE),
+            (kappa, "kappa", _CONS_NON_NEGATIVE),
+        )
+
+    def standard_gamma(
+        self, shape, size=None, dtype=None, out=None, *, usm_type=None
+    ):
+        """
+        Draw samples from a standard gamma distribution.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.standard_gamma`.
+
+        Parameters
+        ----------
+        shape : {float, array_like of floats, dpnp.ndarray, usm_ndarray}
+            The shape of the distribution, non-negative.
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, the shape of `shape`.
+
+            Default: ``None``.
+        dtype : {None, dtype}, optional
+            The data type of the output, :obj:`dpnp.float32` or
+            :obj:`dpnp.float64`.
+
+            Default: ``None``, which means the default floating-point type of
+            the device.
+        out : {None, dpnp.ndarray, usm_ndarray}, optional
+            A C-contiguous array to fill, of the data type `dtype` and on the
+            SYCL queue of the generator. If `size` is given as well, it must be
+            the shape of `out`.
+
+            Default: ``None``.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array. Ignored when
+            `out` is given.
+
+            Default: ``None``, which means the USM type of the array
+            parameters, or ``"device"`` when there are none.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples, or `out` when it is given.
+
+        Limitations
+        -----------
+        `dtype` defaults to the default floating-point type of the device, and
+        `usm_type` is not in NumPy's signature.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> rng = np.random.default_rng(42)
+        >>> x = rng.standard_gamma(2.0, 10**5)
+        >>> bool((x >= 0).all()), bool(abs(x.mean() - 2) < 0.03)
+        (True, True)
+
+        """
+
+        self._check_queues(shape, out)
+        _check_constraint(
+            shape,
+            "shape",
+            _CONS_NON_NEGATIVE,
+            _is_scalar_path(shape),
+        )
+        return self._float_sample(
+            ri._gamma,
+            (shape,),
+            size,
+            dtype,
+            usm_type,
+            "standard_gamma",
+            out=out,
+            kernel_params=(shape, 1.0),
+        )
+
+    def gamma(self, shape, scale=1.0, size=None, dtype=None, *, usm_type=None):
+        """
+        Draw samples from a gamma distribution.
+
+        For full documentation refer to :obj:`numpy.random.Generator.gamma`.
+
+        Parameters
+        ----------
+        shape : {float, array_like of floats, dpnp.ndarray, usm_ndarray}
+            The shape of the distribution, non-negative.
+        scale : {float, array_like of floats, dpnp.ndarray, usm_ndarray}, \
+                optional
+            The scale of the distribution, non-negative.
+
+            Default: ``1.0``.
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, the broadcast shape of `shape` and
+            `scale`.
+
+            Default: ``None``.
+        dtype : {None, dtype}, optional
+            The data type of the output, :obj:`dpnp.float32` or
+            :obj:`dpnp.float64`.
+
+            Default: ``None``, which means the default floating-point type of
+            the device.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+            Default: ``None``, which means the USM type of the array
+            parameters, or ``"device"`` when there are none.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> rng = np.random.default_rng(42)
+        >>> x = rng.gamma(2.0, 3.0, 10**5)
+        >>> bool((x >= 0).all()), bool(abs(x.mean() - 6) < 0.1)
+        (True, True)
+
+        """
+        return self._cont(
+            ri._gamma,
+            "gamma",
+            size,
+            dtype,
+            usm_type,
+            (shape, "shape", _CONS_NON_NEGATIVE),
+            (scale, "scale", _CONS_NON_NEGATIVE),
+        )
+
+    def chisquare(self, df, size=None, dtype=None, *, usm_type=None):
+        """
+        Draw samples from a chi-square distribution.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.chisquare`.
+
+        Parameters
+        ----------
+        df : {float, array_like of floats, dpnp.ndarray, usm_ndarray}
+            The number of degrees of freedom, positive.
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, the shape of `df`.
+
+            Default: ``None``.
+        dtype : {None, dtype}, optional
+            The data type of the output, :obj:`dpnp.float32` or
+            :obj:`dpnp.float64`.
+
+            Default: ``None``, which means the default floating-point type of
+            the device.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+            Default: ``None``, which means the USM type of the array
+            parameters, or ``"device"`` when there are none.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples.
+
+        Raises
+        ------
+        ValueError
+            When `df` <= 0, for a `df` on the host, or when an inappropriate
+            `size` (e.g. ``size=-1``) is given.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> rng = np.random.default_rng(42)
+        >>> x = rng.chisquare(4.0, 10**5)
+        >>> bool((x >= 0).all()), bool(abs(x.mean() - 4) < 0.06)
+        (True, True)
+
+        """
+        return self._cont(
+            ri._chisquare,
+            "chisquare",
+            size,
+            dtype,
+            usm_type,
+            (df, "df", _CONS_POSITIVE),
+        )
+
+    def standard_t(self, df, size=None, dtype=None, *, usm_type=None):
+        """
+        Draw samples from a standard Student's t distribution with `df`
+        degrees of freedom.
+
+        For full documentation refer to
+        :obj:`numpy.random.Generator.standard_t`.
+
+        Parameters
+        ----------
+        df : {float, array_like of floats, dpnp.ndarray, usm_ndarray}
+            The number of degrees of freedom, positive.
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, the shape of `df`.
+
+            Default: ``None``.
+        dtype : {None, dtype}, optional
+            The data type of the output, :obj:`dpnp.float32` or
+            :obj:`dpnp.float64`.
+
+            Default: ``None``, which means the default floating-point type of
+            the device.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+            Default: ``None``, which means the USM type of the array
+            parameters, or ``"device"`` when there are none.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> rng = np.random.default_rng(42)
+        >>> x = rng.standard_t(10.0, 10**5)
+        >>> bool(abs(x.mean()) < 0.025), bool(abs(x.var() - 1.25) < 0.05)
+        (True, True)
+
+        """
+        return self._cont(
+            ri._standard_t,
+            "standard_t",
+            size,
+            dtype,
+            usm_type,
+            (df, "df", _CONS_POSITIVE),
+        )
+
+    def f(self, dfnum, dfden, size=None, dtype=None, *, usm_type=None):
+        """
+        Draw samples from an F distribution.
+
+        For full documentation refer to :obj:`numpy.random.Generator.f`.
+
+        Parameters
+        ----------
+        dfnum : {float, array_like of floats, dpnp.ndarray, usm_ndarray}
+            The number of degrees of freedom in the numerator, positive.
+        dfden : {float, array_like of floats, dpnp.ndarray, usm_ndarray}
+            The number of degrees of freedom in the denominator, positive.
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, the broadcast shape of `dfnum` and
+            `dfden`.
+
+            Default: ``None``.
+        dtype : {None, dtype}, optional
+            The data type of the output, :obj:`dpnp.float32` or
+            :obj:`dpnp.float64`.
+
+            Default: ``None``, which means the default floating-point type of
+            the device.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+            Default: ``None``, which means the USM type of the array
+            parameters, or ``"device"`` when there are none.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> rng = np.random.default_rng(42)
+        >>> x = rng.f(5.0, 10.0, 10**5)
+        >>> bool((x >= 0).all()), bool(abs(x.mean() - 1.25) < 0.03)
+        (True, True)
+
+        """
+        return self._cont(
+            ri._f,
+            "f",
+            size,
+            dtype,
+            usm_type,
+            (dfnum, "dfnum", _CONS_POSITIVE),
+            (dfden, "dfden", _CONS_POSITIVE),
+        )
+
+    def beta(self, a, b, size=None, dtype=None, *, usm_type=None):
+        """
+        Draw samples from a beta distribution.
+
+        For full documentation refer to :obj:`numpy.random.Generator.beta`.
+
+        Parameters
+        ----------
+        a : {float, array_like of floats, dpnp.ndarray, usm_ndarray}
+            The alpha parameter of the distribution, positive.
+        b : {float, array_like of floats, dpnp.ndarray, usm_ndarray}
+            The beta parameter of the distribution, positive.
+        size : {None, int, tuple of ints}, optional
+            Output shape. With ``None``, the broadcast shape of `a` and `b`.
+
+            Default: ``None``.
+        dtype : {None, dtype}, optional
+            The data type of the output, :obj:`dpnp.float32` or
+            :obj:`dpnp.float64`.
+
+            Default: ``None``, which means the default floating-point type of
+            the device.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+
+            Default: ``None``, which means the USM type of the array
+            parameters, or ``"device"`` when there are none.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            The samples.
+
+        Limitations
+        -----------
+        `dtype` and `usm_type` are not in NumPy's signature. In single
+        precision, positive `a` and `b` on the host below the smallest normal
+        ``float32`` value are raised to it, so when both are, 0 and 1 are
+        equally likely.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> rng = np.random.default_rng(42)
+        >>> x = rng.beta(2.0, 3.0, 10**5)
+        >>> a = bool(((0 <= x) & (x <= 1)).all())
+        >>> b = bool(abs(x.mean() - 0.4) < 0.005)
+        >>> a, b
+        (True, True)
+
+        """
+        kernel_params = None
+        if self._float_dtype(dtype, "beta") == numpy.float32:
+            kernel_params = (
+                _raise_to_float32_tiny(a),
+                _raise_to_float32_tiny(b),
+            )
+        return self._cont(
+            ri._beta,
+            "beta",
+            size,
+            dtype,
+            usm_type,
+            (a, "a", _CONS_POSITIVE),
+            (b, "b", _CONS_POSITIVE),
+            kernel_params=kernel_params,
         )
 
 

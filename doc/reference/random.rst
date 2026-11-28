@@ -29,8 +29,10 @@ Differences from NumPy
 ----------------------
 
 * The streams differ from NumPy's. For a given seed, output size and data
-  type, the raw bits and the uniform floats are the same on every device,
-  while the normal samples agree to a few ULP.
+  type, the raw bits and the uniform floats are the same on every device.
+  The other distributions use transcendental functions, which may round
+  differently on another device: their samples agree to a few ULP, or
+  differ when a rejection sampler then takes another candidate.
 * The values depend on the output size: a draw is not a prefix of a
   larger one, and two draws of ``n`` values differ from one draw of
   ``2 * n``. Code splitting its draws into chunks gets other values.
@@ -44,7 +46,8 @@ Differences from NumPy
 * Parameters on the host (Python scalars, lists and NumPy arrays) are
   checked as in NumPy. Parameters in :class:`dpnp.ndarray` are
   not, since that would wait for the device.
-  Invalid ones give undefined values, such as NaN.
+  Invalid ones give undefined values, such as NaN, but the kernels handle
+  them safely: they never loop without end or access memory out of bounds.
 * Parameters given as lists or NumPy arrays are copied to the device first,
   which waits for the work already submitted to the queue. Scalars and
   :class:`dpnp.ndarray` parameters don't wait.
@@ -89,9 +92,29 @@ Distributions
    :toctree: generated/
    :nosignatures:
 
+   Generator.beta
+   Generator.chisquare
+   Generator.exponential
+   Generator.f
+   Generator.gamma
+   Generator.gumbel
+   Generator.laplace
+   Generator.logistic
+   Generator.lognormal
    Generator.normal
+   Generator.pareto
+   Generator.power
+   Generator.rayleigh
+   Generator.standard_cauchy
+   Generator.standard_exponential
+   Generator.standard_gamma
    Generator.standard_normal
+   Generator.standard_t
+   Generator.triangular
    Generator.uniform
+   Generator.vonmises
+   Generator.wald
+   Generator.weibull
 
 Bit generators
 --------------
