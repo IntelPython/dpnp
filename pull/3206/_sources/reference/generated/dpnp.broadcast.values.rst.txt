@@ -1,0 +1,14 @@
+
+:orphan:
+
+
+dpnp.broadcast.values
+=====================
+
+.. currentmodule:: dpnp
+
+
+property
+
+
+.. autoproperty:: broadcast.values

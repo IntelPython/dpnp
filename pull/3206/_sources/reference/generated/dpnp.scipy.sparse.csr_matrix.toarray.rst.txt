@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.scipy.sparse.csr\_matrix.toarray
+=====================================
+
+.. currentmodule:: dpnp.scipy.sparse
+
+method
+
+.. automethod:: csr_matrix.toarray
